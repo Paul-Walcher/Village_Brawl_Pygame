@@ -41,3 +41,13 @@ def center_vertically(surface, frame_rect):
     width, height = surface.get_size()
     y = (frame_rect.h - height) // 2 + frame_rect.y
     return y
+
+def center_at(surface, pos):
+
+    px, py = pos
+    width, height = surface.get_size()
+
+    x = (px - width // 2)
+    y = (py - height // 2)
+
+    return (x, y)

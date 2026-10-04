@@ -58,7 +58,7 @@ class IntroFrame(Frame):
 
         if (keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]) and self.entry_delay_clock.elapsed() > self.entry_delay:
 
-            return (FrameEnums.INTRO_MENU_FRAME, None)
+            return (FrameEnums.INTRO_MENU_FRAME, self.data)
 
         #setting opacity
         if self.fading:
@@ -113,7 +113,7 @@ class IntroFrame(Frame):
             self.clock.start()
 
 
-        return (self.frame_enum, None)
+        return (self.frame_enum, self.data)
 
     def draw(self, screen):
 

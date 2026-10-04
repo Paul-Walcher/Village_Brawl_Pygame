@@ -16,7 +16,9 @@ PLAYSETS_FOLDER = "playsets"
 
 INTRO_IMAGES = [SIMAGE(x) for x in ["Wood.png", "Stone.png", "Pebble.png", "Twig.png"]]
 
+class FrameDataID:
 
+    GAMEINFO = "Gameinfo"
 
 class Colors:
 

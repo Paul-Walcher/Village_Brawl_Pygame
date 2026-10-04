@@ -3,9 +3,10 @@ import pygame
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID
 import graphics
 from clock import Clock
+from gameinfo import Gameinfo
 
 
 class ChoosePlaysetFrame(Frame):
@@ -129,7 +130,18 @@ class ChoosePlaysetFrame(Frame):
             if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
 
                 if self.back_focused:
-                    return (FrameEnums.INTRO_MENU_FRAME, None)
+                    return (FrameEnums.INTRO_MENU_FRAME, self.data)
+                if self.playsets_focused:
+                    ginfo = Gameinfo()
+                    ginfo.playset = self.playsets[self.playset_index]
+                    data = {}
+                    if self.data:
+                        self.data[FrameDataID.GAMEINFO] = ginfo
+                        data = self.data
+                    else:
+                        data = {FrameDataID.GAMEINFO: ginfo}
+                    return (FrameEnums.CHOOSE_SAVE_NAME_FRAME, data)
+
 
             if keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
 
@@ -161,7 +173,7 @@ class ChoosePlaysetFrame(Frame):
                     self.render_text()
                     self.keyclock.start()
 
-        return (FrameEnums.CHOOSE_PLAYSET_FRAME, None)
+        return (FrameEnums.CHOOSE_PLAYSET_FRAME, self.data)
 
     def draw(self, screen):
 

@@ -112,13 +112,13 @@ class IntroMenuFrame(Frame):
 
         if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
             if self.chosen_index == 2:
-                return (FrameEnums.INTRO_FRAME, None)
+                return (FrameEnums.INTRO_FRAME, self.data)
 
             if self.chosen_index == 0:
-                return (FrameEnums.CHOOSE_PLAYSET_FRAME, None)
+                return (FrameEnums.CHOOSE_PLAYSET_FRAME, self.data)
 
 
-        return (FrameEnums.INTRO_MENU_FRAME, None)
+        return (FrameEnums.INTRO_MENU_FRAME, self.data)
 
     def draw(self, screen):
 
