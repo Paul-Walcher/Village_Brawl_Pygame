@@ -96,9 +96,26 @@ class IntroMenuFrame(Frame):
             self.render_highlighted()
             self.clock.start()
 
+        if (keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]) and self.clock.elapsed() > self.key_delay:
+
+            if self.chosen_index != 2:
+                self.chosen_index = 2
+                self.render_highlighted()
+                self.clock.start()
+
+        if (keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]) and self.clock.elapsed() > self.key_delay:
+
+            if self.chosen_index == 2 or self.chosen_index == -1:
+                self.chosen_index = 0
+                self.render_highlighted()
+                self.clock.start()
+
         if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
             if self.chosen_index == 2:
                 return (FrameEnums.INTRO_FRAME, None)
+
+            if self.chosen_index == 0:
+                return (FrameEnums.CHOOSE_PLAYSET_FRAME, None)
 
 
         return (FrameEnums.INTRO_MENU_FRAME, None)
