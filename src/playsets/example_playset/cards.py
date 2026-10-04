@@ -19,50 +19,43 @@ card_asset_path = os.path.join(asset_path, "card_assets")
 
 
 enums = importlib.import_module(f"{constants.PLAYSETS_FOLDER}.example_playset.enums")
+tags = importlib.import_module(f"{constants.PLAYSETS_FOLDER}.example_playset.tags")
 
-
-class CardTag:
-
-    HEALING = "Healing"
-
-    HEALING_TOKEN_GENERATOR = "Healing Token Generator"
-    HEALING_TOKEN_CONSUMER = "Healing Token Consumer"
-    HEALING_TOKEN = "Healing Token"
+Card_Tags = tags.Card_Tags
 
 class Small_Rest(Card_Template):
 
-    def __init__(self):
-
-        super().__init__()
-
-        self.name = "Small Rest"
-        self.name_color = constants.Colors.WHITE
-
-        self.card_enum = enums.CardEnums.SMALL_REST
-        self.description = "This card generates 1 Rest Token."
-        self.card_enum = enums.CardEnums.SMALL_REST
-        self.tags = [
-                        CardTag.HEALING,
-                        CardTag.HEALING_TOKEN,
-                        CardTag.HEALING_TOKEN_GENERATOR
-                    ]
-        self.standard_selling_reward = {}
-
-        self.card_image_path = os.path.join(card_asset_path, "Small_Rest_Card.png")
-        self.standard_image_path = os.path.join(standard_asset_path, "Small_Rest.png")
-
-        self.max_per_deck = 40
-        self.activation_phases = []
-
-
-    def activate(self, context, cardinfo, phase, location):
-        pass
-
-    def info(self, context):
-
-        mappings = context.modules.mappings_module
+    @staticmethod
+    def info():
 
         cinfo = CardInfo()
-        cinfo.card_enum = self.card_enum
+
+        cinfo.name = "Small Rest"
+        cinfo.name_color = constants.Colors.WHITE
+
+        cinfo.card_enum = enums.CardEnums.SMALL_REST
+        cinfo.description = "This card generates 1 Rest Token."
+        cinfo.tags = [
+                        Card_Tags.HEALING,
+                        Card_Tags.HEALING_TOKEN,
+                        Card_Tags.HEALING_TOKEN_GENERATOR
+                    ]
+        cinfo.standard_selling_reward = []
+
+        cinfo.card_image_path = os.path.join(card_asset_path, "Small_Rest_Card.png")
+        cinfo.standard_image_path = os.path.join(standard_asset_path, "Small_Rest.png")
+
+        cinfo.max_per_deck = 40
+        cinfo.activation_phases = []
 
         return cinfo
+
+
+    def __init__(self, modules):
+
+        super().__init__(modules, Small_Rest.info())
+
+
+
+    def activate(self, phaseinfo):
+        pass

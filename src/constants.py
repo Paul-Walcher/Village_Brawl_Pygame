@@ -27,6 +27,7 @@ class Colors:
     BLUE = (0, 0, 255)
     YELLOW = (255, 255, 0)
     CYAN = (0, 255, 255)
+    LIGHT_ORANGE = (255, 144, 0)
 
 class Fonts:
 

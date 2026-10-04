@@ -11,13 +11,6 @@ class CardTag:
 
 class CardInfo:
 
-    def __init__(self):
-
-        self.card_enum = None
-        
-
-class Card_Template(ABC):
-
     def __init__(self,
                 name: str = "",
                 name_color: tuple = (255, 255, 255),
@@ -31,25 +24,38 @@ class Card_Template(ABC):
                 activation_phases: list = None
                     ):
 
-    self.name = name
-    self.name_color = name_color
-    self.card_enum = card_enum
-    self.description = description
-    self.tags = (tags if tags is not None else [])
-    self.standard_selling_reward = (standard_selling_reward if standard_selling_reward is not None else {})
-    self.card_image_path = card_image_path
-    self.standard_image_path = standard_image_path
-    self.max_per_deck = max_per_deck
-    self.activation_phases = (activation_phases if activation_phases is not None else [])
+        self.card_enum = None
+
+        self.name = name
+        self.name_color = name_color
+        self.description = description
+        self.tags = (tags if tags is not None else [])
+        self.standard_selling_reward = (standard_selling_reward if standard_selling_reward is not None else [])#list of dictionaries
+        self.card_image_path = card_image_path
+        self.standard_image_path = standard_image_path
+        self.max_per_deck = max_per_deck
+        self.activation_phases = (activation_phases if activation_phases is not None else [])
+
+
+class Card_Template(ABC):
+
+    @staticmethod
+    def info():
+        return CardInfo()
+
+    def __init__(self, modules, info=None):
+
+        self.modules = modules
+        self.mappings = modules.mappings
+        self.enums = modules.enums
+        self.tags = modules.tags
+
+        self.info = (info if info is not None else Card_Template.info())
 
 
     @abstractmethod
-    def activate(self, context, cardinfo, phase, location):
+    def activate(self, phaseinfo):
         """
         Returns an Activation Result
         """
-        pass
-
-    @abstractmethod
-    def info(self, context):
         pass
