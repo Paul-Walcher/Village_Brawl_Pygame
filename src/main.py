@@ -1,6 +1,6 @@
 import pygame
 from gamehandler import Gamehandler
-from intro_frame import IntroFrame
+from Frames.intro_frame import IntroFrame
 
 pygame.init()
 
