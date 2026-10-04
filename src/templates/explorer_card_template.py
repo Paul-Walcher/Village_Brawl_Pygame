@@ -37,7 +37,7 @@ class CardInfo:
         self.activation_phases = (activation_phases if activation_phases is not None else [])
 
 
-class Card_Template(ABC):
+class Explorer_Card_Template(ABC):
 
     @staticmethod
     def info():

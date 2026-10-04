@@ -6,7 +6,7 @@ import importlib
 from enum import Enum, auto
 import constants
 
-from templates.card_template import Card_Template, CardInfo
+from templates.card_template import Explorer_Card_Template, CardInfo
 import terminal_functions as terminal
 import constants
 import deck
@@ -23,7 +23,7 @@ tags = importlib.import_module(f"{constants.PLAYSETS_FOLDER}.example_playset.tag
 
 Card_Tags = tags.Card_Tags
 
-class Small_Rest(Card_Template):
+class Small_Rest(Explorer_Card_Template):
 
     @staticmethod
     def info():
@@ -33,13 +33,14 @@ class Small_Rest(Card_Template):
         cinfo.name = "Small Rest"
         cinfo.name_color = constants.Colors.WHITE
 
-        cinfo.card_enum = enums.CardEnums.SMALL_REST
+        cinfo.card_enum = enums.ExplorerCardEnums.SMALL_REST
         cinfo.description = "This card generates 1 Rest Token."
         cinfo.tags = [
                         Card_Tags.HEALING,
                         Card_Tags.HEALING_TOKEN,
                         Card_Tags.HEALING_TOKEN_GENERATOR
                     ]
+
         cinfo.standard_selling_reward = []
 
         cinfo.card_image_path = os.path.join(card_asset_path, "Small_Rest_Card.png")

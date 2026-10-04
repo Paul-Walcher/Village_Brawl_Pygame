@@ -14,24 +14,40 @@ explorer_mappings = {
                         enums.ExplorerEnums.BASIC_EXPLORER: explorer_module.Basic_Explorer()
 }
 
-card_mappings = {
+explorer_cards_mappings = {
 
 }
 
-item_mappings = {
+village_cards_mappings = {
 
 }
 
-supporter_mappings = {
+village_boss_cards_mappings = {
+
+}
+
+miniboss_cards_mappings = {
+
+}
+
+boss_cards_mappings = {
+
+}
+
+items_mappings = {
+
+}
+
+supporters_mappings = {
 
 }
 
 
-blueprint_mappings = {
+blueprints_mappings = {
 
 }
 
-pack_mappings = {
+packs_mappings = {
 
 }
 
@@ -39,10 +55,38 @@ village_mappings = {
 
 }
 
-building_mappings = {
+buildings_mappings = {
 
 }
 
-villager_mappings = {
+villagers_mappings = {
+
+}
+
+biome_cards_mappings = {
+
+}
+
+biomes_mappings = {
+
+}
+
+minibosses_mappings = {
+
+}
+
+objectives_mappings = {
+
+}
+
+scenarios_mappings = {
+
+}
+
+bosses_mappings = {
+
+}
+
+village_bosses_mappings = {
 
 }
