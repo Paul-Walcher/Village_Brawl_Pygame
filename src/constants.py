@@ -23,6 +23,7 @@ class Colors:
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
+    YELLOW = (255, 255, 0)
 
 class Fonts:
 
@@ -31,7 +32,7 @@ class Fonts:
 class Fontsizes:
 
     SMALL = 20
-    AVERAGE = 20
+    AVERAGE = 50
     BIG = 30
     HUGE = 50
 
@@ -40,3 +41,8 @@ class Fontsizes:
 class KeyAlternatives:
 
     ENTER_ALTERNATIVE = pygame.K_o
+
+    UP_ALTERNATIVE = pygame.K_w
+    DOWN_ALTERNATIVE = pygame.K_s
+    LEFT_ATERNATIVE = pygame.K_a
+    RIGHT_ALTERNATIVE = pygame.K_d

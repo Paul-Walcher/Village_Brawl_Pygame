@@ -40,7 +40,12 @@ class IntroFrame(Frame):
         self.clock.start()
         self.image_clock.start()
 
+        self.entry_delay_clock = clock.Clock()
+        self.entry_delay = 500#ms
+        self.entry_delay_clock.start()
+
     def tick(self):
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -51,7 +56,7 @@ class IntroFrame(Frame):
         if (keys[pygame.K_ESCAPE]):
             return (None, None)
 
-        if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
+        if (keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]) and self.entry_delay_clock.elapsed() > self.entry_delay:
 
             return (FrameEnums.INTRO_MENU_FRAME, None)
 
