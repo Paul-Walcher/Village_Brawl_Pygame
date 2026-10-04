@@ -16,7 +16,7 @@ class ChooseSaveNameFrame(Frame):
 
         center_pos = (self.width // 2, self.height // 2)
 
-        self.back_focused = False
+        self.highlighted_index = -1
         self.is_typing = False
 
         self.savefile_name = ""
@@ -29,6 +29,9 @@ class ChooseSaveNameFrame(Frame):
 
         self.back_text = None
         self.back_pos = None
+
+        self.enter_text = None
+        self.enter_pos = None
 
         self.headline = None
         self.headline_pos = None
@@ -62,13 +65,21 @@ class ChooseSaveNameFrame(Frame):
         self.headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE, "Savefile Name", color=Colors.CYAN)
         self.headline_pos = (graphics.center_horizontally(self.headline, self.frame_rect), self.height // 20)
 
-        if self.back_focused:
+        if self.highlighted_index == 0:
             self.back_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.AVERAGE + 10, "Back", color=Colors.YELLOW)
         else:
             self.back_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.AVERAGE + 4, "Back", color=Colors.WHITE)
 
         self.back_pos = (self.width//20,
                             self.height - self.back_text.get_height() - self.height // 20)
+
+        if self.highlighted_index == 2:
+            self.enter_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.AVERAGE + 10, "Enter", color=Colors.YELLOW)
+        else:
+            self.enter_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.AVERAGE + 4, "Enter", color=Colors.WHITE)
+
+        self.enter_pos = (self.width - self.width//20 - self.enter_text.get_width(),
+                            self.height - self.enter_text.get_height() - self.height // 20)
 
 
 
@@ -93,6 +104,7 @@ class ChooseSaveNameFrame(Frame):
                 if self.is_typing:
                     pygame.key.stop_text_input()
                     self.is_typing = False
+                    self.highlighted_index = 1
                     self.key_delay_clock.start()
                 else:
                     return (None, None)
@@ -105,24 +117,30 @@ class ChooseSaveNameFrame(Frame):
 
             if keys[pygame.K_LEFT] or (keys[KeyAlternatives.LEFT_ALTERNATIVE] and not self.is_typing):
 
-                self.back_focused = True
+                self.highlighted_index -= 1
+                self.highlighted_index %= 3
 
-                if self.is_typing:
+                if self.is_typing and self.highlighted_index != 1:
                     pygame.key.stop_text_input()
-
-                self.is_typing = False
+                    self.is_typing = False
+                elif not self.is_typing and self.highlighted_index == 1:
+                    pygame.key.start_text_input()
+                    self.is_typing = True
 
                 self.render_text()
                 self.key_delay_clock.start()
 
             if keys[pygame.K_RIGHT] or (keys[KeyAlternatives.RIGHT_ALTERNATIVE] and not self.is_typing):
 
-                self.back_focused = False
+                self.highlighted_index += 1
+                self.highlighted_index %= 3
 
-                if not self.is_typing:
+                if self.is_typing and self.highlighted_index != 1:
+                    pygame.key.stop_text_input()
+                    self.is_typing = False
+                elif not self.is_typing and self.highlighted_index == 1:
                     pygame.key.start_text_input()
-
-                self.is_typing = True
+                    self.is_typing = True
 
                 self.render_text()
                 self.key_delay_clock.start()
@@ -130,7 +148,7 @@ class ChooseSaveNameFrame(Frame):
 
             if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
 
-                if self.back_focused:
+                if self.highlighted_index == 0:
                     return (FrameEnums.CHOOSE_PLAYSET_FRAME, self.data)
 
         return (FrameEnums.CHOOSE_SAVE_NAME_FRAME, self.data)
@@ -145,5 +163,6 @@ class ChooseSaveNameFrame(Frame):
         screen.blit(self.typing_frame, self.typing_frame_pos)
         screen.blit(self.savefile_name_font, self.savefile_name_font_pos)
         screen.blit(self.back_text, self.back_pos)
+        screen.blit(self.enter_text, self.enter_pos)
 
         pygame.display.flip()
