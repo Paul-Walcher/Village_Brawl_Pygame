@@ -21,10 +21,6 @@ class Gamehandler:
 
         while self.running:
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-
             frame_enum, data = self.current_frame.tick()
 
             if frame_enum is None:

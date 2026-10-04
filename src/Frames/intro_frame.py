@@ -1,7 +1,7 @@
 import pygame
 from Frames.frame import Frame
 from constants import Colors
-from constants import Fonts, Fontsizes
+from constants import Fonts, Fontsizes, KeyAlternatives
 from constants import SIMAGE, CIMAGE, INTRO_IMAGES
 import graphics
 import clock
@@ -42,10 +42,18 @@ class IntroFrame(Frame):
 
     def tick(self):
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return (None, None)
+
         keys = pygame.key.get_pressed()
 
         if (keys[pygame.K_ESCAPE]):
             return (None, None)
+
+        if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
+
+            return (FrameEnums.INTRO_MENU_FRAME, None)
 
         #setting opacity
         if self.fading:
@@ -98,6 +106,7 @@ class IntroFrame(Frame):
                     self.headline_index -= 1
 
             self.clock.start()
+
 
         return (self.frame_enum, None)
 

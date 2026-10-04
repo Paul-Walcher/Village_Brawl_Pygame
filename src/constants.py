@@ -14,6 +14,8 @@ CIMAGE = lambda x: os.path.join(CARD_IMAGE_PATH, x)
 
 INTRO_IMAGES = [SIMAGE(x) for x in ["Wood.png", "Stone.png", "Pebble.png", "Twig.png"]]
 
+
+
 class Colors:
 
     BLACK = (0, 0, 0)
@@ -34,3 +36,7 @@ class Fontsizes:
     HUGE = 50
 
     BIG_HEADLINE = 200
+
+class KeyAlternatives:
+
+    ENTER_ALTERNATIVE = pygame.K_o
