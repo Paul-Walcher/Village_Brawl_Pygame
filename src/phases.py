@@ -12,7 +12,7 @@ class Phases(Enum):
     START_OF_WAVE_AFTER_DRAW = auto()
     #gets the information of the card activation, village or explorer
     BEFORE_CARD_ACTIVATION = auto()
-    CARD_ACTIVATION = auto()
+    DIRECT_ACTIVATION = auto()
     AFTER_CARD_ACTIVATION = auto()
     BEFORE_ENEMY_CARD_ACTIVATION = auto()
     AFTER_ENEMY_CARD_ACTIVATION = auto()
@@ -47,17 +47,19 @@ all_phases = list(Phases)
 
 class PhaseInfo:
 
-    def __init__(self, gameinfo=None, phase=None, previous_screen=None):
+    #gets the data passed from the frames
 
-        self.gameinfo = gameinfo
+    def __init__(self, data=None, phase=None, previous_screen=None):
+
+        self.data = data
         self.phase = phase
         self.previous_screen = previous_screen
 
 class CardActivationPhaseInfo(PhaseInfo):
 
-    def __init__(self, gameinfo=None, phase=None, previous_screen=None, activated_card=None, activation_location=None, activating_entity=None):
+    def __init__(self, data=None, phase=None, previous_screen=None, activated_card=None, activation_location=None, activating_entity=None):
 
-        super().__init__(gameinfo, phase, previous_screen)
+        super().__init__(data, phase, previous_screen)
 
         self.activated_card = activated_card
         self.activation_location = activation_location
@@ -65,9 +67,9 @@ class CardActivationPhaseInfo(PhaseInfo):
 
 class CardDiscardPhaseInfo(PhaseInfo):
 
-    def __init__(self, gameinfo=None, phase=None, previous_screen=None,discarded_card=None, discarding_location=None, discarding_entity=None):
+    def __init__(self, data=None, phase=None, previous_screen=None,discarded_card=None, discarding_location=None, discarding_entity=None):
 
-        super().__init__(gameinfo, phase, previous_screens)
+        super().__init__(data, phase, previous_screens)
 
         self.discarded_card = discarded_card
         self.discarding_location = discarding_location
