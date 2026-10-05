@@ -6,6 +6,7 @@ from Frames.choose_playset_frame import ChoosePlaysetFrame
 from Frames.choose_save_name_frame import ChooseSaveNameFrame
 from Frames.load_playset_frame import LoadPlaysetFrame
 from Frames.choose_explorer_frame import ChooseExplorerFrame
+from Frames.explorer_info_frame import ExplorerInfoFrame
 
 frame_mappings = {
                     FrameEnums.INTRO_FRAME: IntroFrame,
@@ -13,5 +14,6 @@ frame_mappings = {
                     FrameEnums.CHOOSE_PLAYSET_FRAME: ChoosePlaysetFrame,
                     FrameEnums.CHOOSE_SAVE_NAME_FRAME: ChooseSaveNameFrame,
                     FrameEnums.LOAD_PLAYSET_FRAME: LoadPlaysetFrame,
-                    FrameEnums.CHOOSE_EXPLORER_FRAME: ChooseExplorerFrame
+                    FrameEnums.CHOOSE_EXPLORER_FRAME: ChooseExplorerFrame,
+                    FrameEnums.EXPLORER_INFO_FRAME: ExplorerInfoFrame
                     }

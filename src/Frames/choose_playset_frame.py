@@ -11,9 +11,9 @@ from gameinfo import Gameinfo
 
 class ChoosePlaysetFrame(Frame):
 
-    def __init__(self, width, height, data=None):
+    def __init__(self, data=None, frame=None):
 
-        super().__init__(FrameEnums.CHOOSE_PLAYSET_FRAME, width, height, data)
+        super().__init__(FrameEnums.CHOOSE_PLAYSET_FRAME, data, frame)
 
         self.frame_rect = pygame.Rect(0, 0, self.width, self.height)
 

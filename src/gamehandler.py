@@ -10,6 +10,7 @@ class Gamehandler:
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.width, self.height = self.screen.get_size()
         self.running = 1
+        self.main_frame = pygame.Rect(0, 0, self.width, self.height)
 
         self.current_frame = None
         self.frame_enum = None
@@ -29,7 +30,7 @@ class Gamehandler:
 
             if frame_enum != self.frame_enum:
 
-                self.current_frame = frame_mappings[frame_enum](self.width, self.height, data)
+                self.current_frame = frame_mappings[frame_enum](data, self.main_frame)
                 self.frame_enum = frame_enum
 
 

@@ -4,6 +4,7 @@ import threading
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
+from Frames.explorer_info_frame import ExplorerInfoFrame
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID
 import graphics
 from clock import Clock
@@ -12,18 +13,19 @@ import constants
 
 class ChooseExplorerFrame(Frame):
 
-    def __init__(self, width, height, data=None):
+    def __init__(self, data=None, frame=None):
 
-        super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, width, height, data)
+        super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame)
 
         self.modules = self.data[FrameDataID.MODULES]
+        self.stack = self.data[FrameDataID.STACK]
 
         #getting all explorers
         self.explorer_enums = list(self.modules.enums.ExplorerEnums)
         self.explorer_refs = [self.modules.mappings.explorer_mappings[explorer_enum] for explorer_enum in self.explorer_enums]
         self.explorer_infos = [ref.info() for ref in self.explorer_refs]
 
-        self.explorer_index = 0
+        self.explorer_index = (0 if self.stack.size() == 0 else self.stack.pop())
         self.explorer_dimensions = (int(self.height//4 *3 * 0.714), self.height//4 * 3)
 
         self.headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE,
@@ -58,6 +60,19 @@ class ChooseExplorerFrame(Frame):
         self.key_clock = Clock()
 
         self.key_clock.start()
+
+        self.initialize_info_frame()
+
+    def initialize_info_frame(self):
+
+        data = {FrameDataID.MODULES: self.modules,
+                "ExplorerEnum": self.explorer_enums[self.explorer_index]
+                }
+
+        iframe = pygame.Rect(self.width//2, 0, self.width // 2, self.height)
+        info_frame = ExplorerInfoFrame(data, iframe)
+
+        self.add_subframe(info_frame)
 
     def initialize_rotation(self):
 
@@ -103,6 +118,18 @@ class ChooseExplorerFrame(Frame):
 
 
     def tick(self):
+
+        frames_to_delete = []
+        for subframe in self.subframes:
+
+            fenum, data = subframe.tick()
+            if (fenum is None):
+                frames_to_delete.append(subframe)
+
+        for subframe in frames_to_delete:
+
+            self.remove_subframe(subframe)
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -165,5 +192,9 @@ class ChooseExplorerFrame(Frame):
             screen.blit(self.second_headline, (shex + self.shift, shey))
             screen.blit(self.second_explorer_image, (sex + self.shift, sey))
         screen.blit(self.info_text, self.info_text_pos)
+
+        for subframe in self.subframes[::-1]:
+
+            subframe.draw(screen)
 
         pygame.display.flip()

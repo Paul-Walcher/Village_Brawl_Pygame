@@ -17,10 +17,28 @@ PLAYSETS_FOLDER = "playsets"
 
 INTRO_IMAGES = [SIMAGE(x) for x in ["Wood.png", "Stone.png", "Pebble.png", "Twig.png"]]
 
+class Alpha:
+
+    ZERO = 0
+
+    LEVEL_1 = 30
+    LEVEL_2 = 60
+    LEVEL_3 = 100
+
+    HALF_FULL = 127
+
+    LEVEL_4 = 160
+    LEVEL_5 = 200
+    LEVEL_6 = 230
+
+    FULL = 255
+
 class FrameDataID:
 
     GAMEINFO = "Gameinfo"
     MODULES = "Modules"
+    STACK = "Stack"
+    CURRENT_FRAME = "Current Frame"
 
 class Colors:
 
@@ -32,6 +50,8 @@ class Colors:
     YELLOW = (255, 255, 0)
     CYAN = (0, 255, 255)
     LIGHT_ORANGE = (255, 144, 0)
+    GRAY = (127, 127, 127)
+    DARK_GRAY = (109, 109, 109)
 
 class Fonts:
 

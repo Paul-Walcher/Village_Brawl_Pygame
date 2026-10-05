@@ -9,9 +9,9 @@ from clock import Clock
 
 class ChooseSaveNameFrame(Frame):
 
-    def __init__(self, width, height, data=None):
+    def __init__(self, data=None, frame=None):
 
-        super().__init__(FrameEnums.CHOOSE_SAVE_NAME_FRAME, width, height, data)
+        super().__init__(FrameEnums.CHOOSE_SAVE_NAME_FRAME, data, frame)
 
 
         center_pos = (self.width // 2, self.height // 2)

@@ -49,17 +49,17 @@ class PhaseInfo:
 
     #gets the data passed from the frames
 
-    def __init__(self, data=None, phase=None, previous_screen=None):
+    def __init__(self, data=None, phase=None, parent_frame=None):
 
         self.data = data
         self.phase = phase
-        self.previous_screen = previous_screen
+        self.parent_frame = parent_frame
 
 class CardActivationPhaseInfo(PhaseInfo):
 
-    def __init__(self, data=None, phase=None, previous_screen=None, activated_card=None, activation_location=None, activating_entity=None):
+    def __init__(self, data=None, phase=None, parent_frame=None, activated_card=None, activation_location=None, activating_entity=None):
 
-        super().__init__(data, phase, previous_screen)
+        super().__init__(data, phase, parent_frame)
 
         self.activated_card = activated_card
         self.activation_location = activation_location
@@ -67,9 +67,9 @@ class CardActivationPhaseInfo(PhaseInfo):
 
 class CardDiscardPhaseInfo(PhaseInfo):
 
-    def __init__(self, data=None, phase=None, previous_screen=None,discarded_card=None, discarding_location=None, discarding_entity=None):
+    def __init__(self, data=None, phase=None, parent_frame=None,discarded_card=None, discarding_location=None, discarding_entity=None):
 
-        super().__init__(data, phase, previous_screens)
+        super().__init__(data, phase, parent_frame)
 
         self.discarded_card = discarded_card
         self.discarding_location = discarding_location

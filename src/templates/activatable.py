@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum, auto
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
 
 
 class ActivationResultEnums(Enum):
@@ -27,19 +29,5 @@ class Activatable(ABC):
 
         """
         Returns the activation result.
-        """
-        pass
-
-    @abstractmethod
-    def tick(self):
-        """
-        Is called when the card is currently among the activated cards.
-        """
-        pass
-
-    @abstractmethod
-    def draw(self, screen):
-        """
-        Is called when the card is among the currently activated cards.
         """
         pass

@@ -8,6 +8,56 @@ def render_text(font, fontsize, text, color=constants.Colors.WHITE):
 
     return surface
 
+def to_pages(font, fontsize, frame, text, color=constants.Colors.WHITE, wmargin=0, hmargin=0, line_margin=5):
+
+    f = pygame.font.Font(font, fontsize)
+    x, y, width, height = frame.x, frame.y, frame.w, frame.h
+
+    lines = text.splitlines()
+    pages = []
+    #a page consists of a list of (fontsurface, position)
+
+    cpage = []
+    cy = 0
+
+    while lines:
+
+        cline = lines.pop(0)
+        split_index = len(cline)
+
+        rsize = f.size(cline[:split_index])
+        rw, rh = rsize
+
+        if (cy + rh) > (height - 2*hmargin):
+            pages.append(cpage)
+            cpage = []
+            cy = 0
+            continue
+
+        while rw > (width - 2*wmargin)  and split_index > 0:
+
+            split_index -= 1
+            rsize = f.size(cline[:split_index])
+            rw, rh = rsize
+
+        s1, s2 = cline[:split_index], cline[split_index:]
+
+        frend = f.render(s1, False, color)
+        pos = (x + wmargin, y+cy+hmargin)
+
+        cpage.append((frend, pos))
+        if len(s2) > 0:
+            lines.insert(0, s2)
+
+        cy += rh + line_margin
+
+    return pages
+
+
+
+
+
+
 def render_image(img_path, dimensions=None):
 
     #dimensions = (width, height)
