@@ -11,6 +11,8 @@ class Frame(ABC):
         if self.data is not None:
             self.data[FrameDataID.CURRENT_FRAME] = self
         self.frame = (frame if frame is not None else pygame.Rect(0, 0, 0, 0))
+        self.parent_frame = None
+        self.input_blocked = False
         self.x = self.frame.x
         self.y = self.frame.y
         self.width = self.frame.width
@@ -25,6 +27,14 @@ class Frame(ABC):
     Use the following functions when changing the frame.
     """
 
+    def set_parent_frame(self, pframe):
+        self.parent_frame = pframe
+
+    def block_input(self):
+        self.input_blocked = True
+
+    def unblock_input(self):
+        self.input_blocked = False
 
     def set_frame(self, new_frame):
 

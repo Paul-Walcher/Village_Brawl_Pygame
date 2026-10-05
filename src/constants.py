@@ -4,6 +4,10 @@ Global constants
 import os
 import pygame
 
+pygame.init()
+
+WIDTH, HEIGHT = pygame.display.get_desktop_sizes()[0]
+
 __ADDITIONAL_LOAD_TIME__ = 500#ms
 BASE_ASSET_PATH = "BaseAssets"
 STANDARD_IMAGE_PATH = os.path.join(BASE_ASSET_PATH, "StandardImages")
@@ -16,6 +20,8 @@ CIMAGE = lambda x: os.path.join(CARD_IMAGE_PATH, x)
 PLAYSETS_FOLDER = "playsets"
 
 INTRO_IMAGES = [SIMAGE(x) for x in ["Wood.png", "Stone.png", "Pebble.png", "Twig.png"]]
+
+
 
 class Alpha:
 
@@ -59,12 +65,14 @@ class Fonts:
 
 class Fontsizes:
 
-    SMALL = 20
-    AVERAGE = 50
-    BIG = 80
-    HUGE = 120
+    scale = lambda x: int(x * HEIGHT * (1/1080))
 
-    BIG_HEADLINE = 200
+    SMALL = scale(20)
+    AVERAGE = scale(50)
+    BIG = scale(80)
+    HUGE = scale(120)
+
+    BIG_HEADLINE = scale(200)
 
 class KeyAlternatives:
 
