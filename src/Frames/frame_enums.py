@@ -7,3 +7,4 @@ class FrameEnums(Enum):
     CHOOSE_PLAYSET_FRAME = auto()
     CHOOSE_SAVE_NAME_FRAME = auto()
     LOAD_PLAYSET_FRAME = auto()
+    CHOOSE_EXPLORER_FRAME = auto()

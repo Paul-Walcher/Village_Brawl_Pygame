@@ -84,8 +84,7 @@ class LoadPlaysetFrame(Frame):
             if self.loading_finished and self.extra_clock.elapsed() > constants.__ADDITIONAL_LOAD_TIME__:
 
                 self.data[FrameDataID.MODULES] = self.modules
-                print(self.modules.explorer_module)
-                return (None, None)
+                return (FrameEnums.CHOOSE_EXPLORER_FRAME, self.data)
 
 
         return (FrameEnums.LOAD_PLAYSET_FRAME, self.data)

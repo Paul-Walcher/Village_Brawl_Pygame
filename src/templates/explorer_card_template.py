@@ -5,8 +5,6 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 
 from templates.activatable import Activatable, ActivationResult, ActivationResultEnums
-from frames.Frame import Frame
-
 """
 class CardTag:
     pass
