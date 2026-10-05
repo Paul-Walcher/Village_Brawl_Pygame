@@ -4,6 +4,7 @@ Global constants
 import os
 import pygame
 
+__ADDITIONAL_LOAD_TIME__ = 3000#ms
 BASE_ASSET_PATH = "BaseAssets"
 STANDARD_IMAGE_PATH = os.path.join(BASE_ASSET_PATH, "StandardImages")
 CARD_IMAGE_PATH = os.path.join(BASE_ASSET_PATH, "CardImages")
@@ -19,6 +20,7 @@ INTRO_IMAGES = [SIMAGE(x) for x in ["Wood.png", "Stone.png", "Pebble.png", "Twig
 class FrameDataID:
 
     GAMEINFO = "Gameinfo"
+    MODULES = "Modules"
 
 class Colors:
 

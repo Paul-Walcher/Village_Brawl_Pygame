@@ -6,3 +6,4 @@ class FrameEnums(Enum):
     INTRO_MENU_FRAME = auto()
     CHOOSE_PLAYSET_FRAME = auto()
     CHOOSE_SAVE_NAME_FRAME = auto()
+    LOAD_PLAYSET_FRAME = auto()

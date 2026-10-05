@@ -11,7 +11,7 @@ pack_module = importlib.import_module(f"{constants.PLAYSETS_FOLDER}.example_play
 explorer_module = importlib.import_module(f"{constants.PLAYSETS_FOLDER}.example_playset.explorer")
 
 explorer_mappings = {
-                        enums.ExplorerEnums.BASIC_EXPLORER: explorer_module.Basic_Explorer()
+                        enums.ExplorerEnums.BASIC_EXPLORER: explorer_module.Basic_Explorer
 }
 
 explorer_cards_mappings = {

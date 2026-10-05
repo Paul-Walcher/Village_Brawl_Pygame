@@ -8,7 +8,6 @@ import constants
 from constants import Colors
 
 from templates.explorer_template import Explorer_Template, ExplorerInfo
-import terminal_functions as terminal
 import constants
 from deck import Deck
 

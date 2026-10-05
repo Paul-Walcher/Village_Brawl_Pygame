@@ -6,8 +6,7 @@ import importlib
 from enum import Enum, auto
 import constants
 
-from templates.card_template import Explorer_Card_Template, CardInfo
-import terminal_functions as terminal
+from templates.explorer_card_template import Explorer_Card_Template, CardInfo
 import constants
 import deck
 

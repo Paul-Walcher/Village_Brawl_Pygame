@@ -14,4 +14,7 @@ class Clock:
 
     def elapsed(self):
 
+        if self._stime is None:
+            return 0
+
         return (time.perf_counter() * 1000 - self._stime)

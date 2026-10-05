@@ -150,6 +150,10 @@ class ChooseSaveNameFrame(Frame):
 
                 if self.highlighted_index == 0:
                     return (FrameEnums.CHOOSE_PLAYSET_FRAME, self.data)
+                if self.highlighted_index == 2 and len(self.savefile_name) > 0:
+                    self.data[FrameDataID.GAMEINFO].savefile_name = self.savefile_name
+                    return (FrameEnums.LOAD_PLAYSET_FRAME, self.data)
+
 
         return (FrameEnums.CHOOSE_SAVE_NAME_FRAME, self.data)
 
