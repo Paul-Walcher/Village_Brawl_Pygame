@@ -83,8 +83,6 @@ class Frame(ABC):
         self.subframes.insert(0, subframe)
 
 
-
-
     @abstractmethod
     def tick(self):
         #returns the next frame

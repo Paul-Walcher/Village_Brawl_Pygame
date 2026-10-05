@@ -61,7 +61,15 @@ class ChooseExplorerFrame(Frame):
 
         self.key_clock.start()
 
-        self.initialize_info_frame()
+        self.INFO_FRAME_INACTIVE = 0
+        self.INFO_FRAME_SLIDING_IN = 1
+        self.INFO_FRAME_ACTIVE = 2
+        self.INFO_FRAME_SLIDING_OUT = 3
+
+        self.info_frame_sliding_time = 400#ms
+        self.info_frame_clock = Clock()
+        self.info_frame_state = self.INFO_FRAME_INACTIVE
+        self.info_frame = None
 
     def initialize_info_frame(self):
 
@@ -69,10 +77,26 @@ class ChooseExplorerFrame(Frame):
                 "ExplorerEnum": self.explorer_enums[self.explorer_index]
                 }
 
-        iframe = pygame.Rect(self.width//2, 0, self.width // 2, self.height)
+        iframe = pygame.Rect(self.width, 0, self.width // 2, self.height)
         info_frame = ExplorerInfoFrame(data, iframe)
+        self.info_frame = info_frame
 
         self.add_subframe(info_frame)
+        self.info_frame_state = self.INFO_FRAME_SLIDING_IN
+        self.info_frame_clock.start()
+
+    def deinitialize_info_frame(self):
+
+        self.info_frame_state = self.INFO_FRAME_INACTIVE
+        self.remove_subframe(self.info_frame)
+        self.info_frame = None
+
+    def finalize_info_frame(self):
+
+        final_frame = pygame.Rect(self.width//2, 0, self.width//2, self.height)
+        self.info_frame.set_frame(final_frame)
+
+        self.info_frame_state = self.INFO_FRAME_ACTIVE
 
     def initialize_rotation(self):
 
@@ -135,6 +159,23 @@ class ChooseExplorerFrame(Frame):
             if event.type == pygame.QUIT:
                 return (None, None)
 
+        if self.info_frame_state == self.INFO_FRAME_SLIDING_IN:
+
+            if self.info_frame_clock.elapsed() >= self.info_frame_sliding_time:
+                self.finalize_info_frame()
+            else:
+                info_frame_frame = pygame.Rect(int(self.width - (self.info_frame_clock.elapsed() / self.info_frame_sliding_time * self.width//2)), 0, self.width//2, self.height)
+                self.info_frame.set_frame(info_frame_frame)
+
+        elif self.info_frame_state == self.INFO_FRAME_SLIDING_OUT:
+
+            if self.info_frame_clock.elapsed() >= self.info_frame_sliding_time:
+                self.deinitialize_info_frame()
+            else:
+                info_frame_frame = pygame.Rect(int(self.width // 2 + (self.info_frame_clock.elapsed() / self.info_frame_sliding_time * self.width//2)), 0, self.width//2, self.height)
+                self.info_frame.set_frame(info_frame_frame)
+
+
         keys = pygame.key.get_pressed()
 
         if (keys[pygame.K_ESCAPE]):
@@ -149,6 +190,13 @@ class ChooseExplorerFrame(Frame):
                 self.shift = int((self.rotation_clock.elapsed() / self.rotation_duration) * self.width)
 
         if self.key_clock.elapsed() > self.key_delay:
+
+            if keys[pygame.K_i]:
+                if self.info_frame_state == self.INFO_FRAME_INACTIVE:
+                    self.initialize_info_frame()
+                elif self.info_frame_state == self.INFO_FRAME_ACTIVE:
+                    self.info_frame_state = self.INFO_FRAME_SLIDING_OUT
+                    self.info_frame_clock.start()
 
             if keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
 
