@@ -7,9 +7,9 @@ from clock import Clock
 
 class IntroMenuFrame(Frame):
 
-    def __init__(self, data=None, frame=None):
+    def __init__(self, data=None, frame_dim=None):
 
-        super().__init__(FrameEnums.INTRO_MENU_FRAME, data, frame)
+        super().__init__(FrameEnums.INTRO_MENU_FRAME, data, frame_dim)
 
         self.new_game_text = None
         self.new_game_pos = None

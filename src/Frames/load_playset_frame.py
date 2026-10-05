@@ -12,9 +12,9 @@ import constants
 
 class LoadPlaysetFrame(Frame):
 
-    def __init__(self, data=None, frame=None):
+    def __init__(self, data=None, frame_dim=None):
 
-        super().__init__(FrameEnums.LOAD_PLAYSET_FRAME, data, frame)
+        super().__init__(FrameEnums.LOAD_PLAYSET_FRAME, data, frame_dim)
 
         self.modules = None
 

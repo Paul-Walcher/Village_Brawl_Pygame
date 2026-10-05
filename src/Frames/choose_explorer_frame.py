@@ -13,9 +13,9 @@ import constants
 
 class ChooseExplorerFrame(Frame):
 
-    def __init__(self, data=None, frame=None):
+    def __init__(self, data=None, frame_dim=None):
 
-        super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame)
+        super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame_dim)
 
         self.modules = self.data[FrameDataID.MODULES]
         self.stack = self.data[FrameDataID.STACK]
@@ -31,7 +31,7 @@ class ChooseExplorerFrame(Frame):
         self.headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE,
                                             self.explorer_infos[self.explorer_index].name, self.explorer_infos[self.explorer_index].name_color
                                             )
-        self.headline_pos = (graphics.center_horizontally(self.headline, self.frame), self.height // 20)
+        self.headline_pos = (graphics.center_horizontally(self.headline, self.frame_dim), self.height // 20)
 
         self.headline_size = self.height // 20 + self.headline.get_height()
 
@@ -80,6 +80,7 @@ class ChooseExplorerFrame(Frame):
         iframe = pygame.Rect(self.width, 0, self.width // 2, self.height)
         info_frame = ExplorerInfoFrame(data, iframe)
         self.info_frame = info_frame
+        self.info_frame.set_parent_frame(self)
 
         self.add_subframe(info_frame)
         self.info_frame_state = self.INFO_FRAME_SLIDING_IN
@@ -113,7 +114,7 @@ class ChooseExplorerFrame(Frame):
         self.second_headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE,
                                             self.explorer_infos[self.explorer_index].name, self.explorer_infos[self.explorer_index].name_color
                                             )
-        self.second_headline_pos = (graphics.center_horizontally(self.headline, self.frame) + shift, self.height // 20)
+        self.second_headline_pos = (graphics.center_horizontally(self.headline, self.frame_dim) + shift, self.height // 20)
 
         self.second_explorer_image = graphics.render_image(self.explorer_infos[self.explorer_index].card_image_path, self.explorer_dimensions)
         sx, sy = graphics.get_center_with_surface(self.explorer_image, self.explorer_center_frame)
@@ -131,7 +132,7 @@ class ChooseExplorerFrame(Frame):
         self.headline = self.second_headline
 
         self.explorer_image_pos = graphics.get_center_with_surface(self.explorer_image, self.explorer_center_frame)
-        self.headline_pos = (graphics.center_horizontally(self.headline, self.frame), self.height // 20)
+        self.headline_pos = (graphics.center_horizontally(self.headline, self.frame_dim), self.height // 20)
 
         self.second_explorer_image = None
         self.second_explorer_image_pos = (0, 0)

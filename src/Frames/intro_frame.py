@@ -10,8 +10,8 @@ from Frames.frame_enums import FrameEnums
 
 class IntroFrame(Frame):
 
-    def __init__(self, data=None, frame=None):
-        super().__init__(FrameEnums.INTRO_FRAME, data, frame)
+    def __init__(self, data=None, frame_dim=None):
+        super().__init__(FrameEnums.INTRO_FRAME, data, frame_dim)
 
 
         self.num_headlines = 20
