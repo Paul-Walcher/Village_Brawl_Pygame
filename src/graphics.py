@@ -51,3 +51,16 @@ def center_at(surface, pos):
     y = (py - height // 2)
 
     return (x, y)
+
+def get_center(rect):
+
+    x, y, w, h = rect.x, rect.y, rect.w, rect.h
+
+    return (x + w//2, y + h//2)
+
+def get_center_with_surface(surface, rect):
+
+    x, y = get_center(rect)
+    w, h = surface.get_size()
+
+    return (x - w//2, y - h//2)
