@@ -4,6 +4,8 @@ Template for any explorer.
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 
+from templates.activatable import Activatable, ActivationResult, ActivationResultEnums
+
 """
 class CardTag:
     pass
@@ -24,6 +26,7 @@ class CardInfo:
                 activation_phases: list = None
                     ):
 
+
         self.card_enum = None
 
         self.name = name
@@ -37,7 +40,7 @@ class CardInfo:
         self.activation_phases = (activation_phases if activation_phases is not None else [])
 
 
-class Explorer_Card_Template(ABC):
+class Explorer_Card_Template(Activatable):
 
     @staticmethod
     def info():
@@ -52,10 +55,4 @@ class Explorer_Card_Template(ABC):
 
         self.info = (info if info is not None else Card_Template.info())
 
-
-    @abstractmethod
-    def activate(self, phaseinfo):
-        """
-        Returns an Activation Result
-        """
-        pass
+        super().__init__(self.info.activation_phases)

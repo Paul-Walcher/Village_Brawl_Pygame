@@ -7,6 +7,8 @@ from enum import Enum, auto
 
 from deck import Deck
 
+from templates.activatable import Activatable, ActivationResult, ActivationResultEnums
+
 class ExplorerInfo:
 
     def __init__(self,
@@ -99,7 +101,7 @@ class ExplorerInfo:
         return ecopy
 
 
-class Explorer_Template(ABC):
+class Explorer_Template(Activatable):
 
 
     @staticmethod
@@ -129,6 +131,8 @@ class Explorer_Template(ABC):
         self.packs = {} #enum: amount
         self.unlocked_packs = [] #list of enums
         self.unlockable_packs = [] #list of enums
+
+        super().__init__(self.info.activation_phases)
 
     def load_instances(self):
 
@@ -177,6 +181,5 @@ class Explorer_Template(ABC):
             return True
 
 
-    @abstractmethod
     def activate(self, phaseinfo):
         pass
