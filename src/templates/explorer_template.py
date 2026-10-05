@@ -179,7 +179,3 @@ class Explorer_Template(Activatable):
             for i in range(amount):
                 self.inventory.append(new_item_ref())
             return True
-
-
-    def activate(self, phaseinfo):
-        pass

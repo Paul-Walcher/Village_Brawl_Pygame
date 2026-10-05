@@ -8,3 +8,6 @@ class Gameinfo:
 
         self.playset = ""#name of the playset
         self.savefile_name = ""#name of the savefile
+
+        #activated_cards
+        #self.activated_cards = []
