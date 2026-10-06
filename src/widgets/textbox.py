@@ -13,7 +13,8 @@ import constants
 class Textbox:
 
     def __init__(self, font, fontsize, text, width, height, outline_size=0, outline_color=Colors.BLACK, text_color=Colors.BLACK,
-                background_color=Colors.TRANSPARENT, wmargin=5, hmargin=5, line_margin=2, centered=False
+                background_color=Colors.TRANSPARENT, wmargin=5, hmargin=5, line_margin=2, centered=False,
+                pagenumber_color=Colors.WHITE
 
                 ):
 
@@ -36,8 +37,17 @@ class Textbox:
         self.rpage = []
         self.n_pages = 0
 
+        self.pagenumber_shown = False
+
+        self.pagenumber_percentage = 0.1
+        self.pagenumber_color = pagenumber_color
 
         self.calculate_pages()
+        self.render()
+
+    def set_outline_size(self, size):
+
+        self.outline_size = size
         self.render()
 
     def calculate_pages(self):
@@ -45,11 +55,43 @@ class Textbox:
         self.n_pages = len(self.pages)
 
     def render_page(self):
-        self.rpage = graphics.render_page_from_chars(Fonts.MINECRAFT, self.pages[self.page_index],
-                                                    pygame.Rect(self.outline_size+self.wmargin, self.outline_size+self.hmargin,
-                                                    self.width-self.wmargin-self.outline_size, self.height-self.hmargin-self.outline_size),
-                                                    Colors.GREEN, centered=True, line_margin=self.line_margin
-                                                    )
+        if self.pagenumber_shown:
+
+            aheight = self.height - 2*self.outline_size - 2*self.hmargin
+            awidth = self.width - 2*self.outline_size - 2*self.wmargin
+            pagenum_height = int(self.pagenumber_percentage * aheight) + self.line_margin
+            text_height = aheight - pagenum_height
+
+            toprect = pygame.Rect(self.wmargin + self.outline_size, self.hmargin + self.outline_size, awidth, text_height)
+            numrect = pygame.Rect(self.wmargin + self.outline_size, self.hmargin + self.outline_size + text_height, awidth, pagenum_height)
+
+            pagestr = f"{self.page_index+1}/{self.n_pages}"
+
+            self.rpage = graphics.render_page_from_chars(self.font, self.pages[self.page_index],
+                                                        toprect,
+                                                        Colors.GREEN, centered=True, line_margin=self.line_margin
+                                                        )
+
+            fsize = graphics.get_fontsize(self.font, [pagestr], numrect)
+            pagenum_rendered = graphics.render_text(self.font, fsize, pagestr, self.pagenumber_color)
+            pagenum_pos = graphics.get_center_with_surface(pagenum_rendered, numrect)
+
+            self.rpage.append((pagenum_rendered, pagenum_pos))
+
+        else:
+            self.rpage = graphics.render_page_from_chars(self.font, self.pages[self.page_index],
+                                                        pygame.Rect(self.outline_size+self.wmargin, self.outline_size+self.hmargin,
+                                                        self.width-2*self.wmargin-2*self.outline_size, self.height-2*self.hmargin-2*self.outline_size),
+                                                        Colors.GREEN, centered=True, line_margin=self.line_margin
+                                                        )
+
+    def show_pagenumber(self):
+        self.pagenumber_shown = True
+        self.render()
+
+    def hide_pagenumber(self):
+        self.pagenumber_shown = False
+        self.render()
 
     def num_pages(self):
         return self.n_pages
@@ -63,7 +105,7 @@ class Textbox:
     def prev_page(self):
 
         self.page_index -= 1
-        self.page_index %= sself.n_pages
+        self.page_index %= self.n_pages
         self.render()
 
     def render(self):

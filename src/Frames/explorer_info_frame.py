@@ -35,6 +35,12 @@ class ExplorerInfoFrame(Frame):
         self.key_delay = 200#ms
         self.key_clock = Clock()
 
+        self.NO_FOCUS = -1
+        self.DESCRIPTION_FOCUSED = 0
+        self.MENU_FOCUSED = 1
+
+        self.state = self.NO_FOCUS
+
         #rendering
         self.rerender()
 
@@ -70,11 +76,15 @@ class ExplorerInfoFrame(Frame):
         self.textbox_vmargin = 0.4
         self.textbox_dim = graphics.apply_margins(self.textbox_area, self.textbox_hmargin, self.textbox_vmargin)
 
-        text = self.explorer_info.description + "E " * 1000
+        text = self.explorer_info.description
 
-        self.textbox = Textbox(Fonts.MINECRAFT, Fontsizes.SMALL, text, self.textbox_dim.width, self.textbox_dim.height, text_color=(*Colors.GREEN, 255), outline_size=2, centered=True)
+        self.textbox = Textbox(Fonts.MINECRAFT, Fontsizes.SMALL, text, self.textbox_dim.width, self.textbox_dim.height, text_color=(*Colors.GREEN, 255), centered=True)
         self.textbox_pos = graphics.get_center_with_surface(self.textbox.get_surface(), self.textbox_dim)
 
+        self.textbox.show_pagenumber()
+
+        if self.state == self.DESCRIPTION_FOCUSED:
+            self.textbox.set_outline_size(5)
 
     def rerender(self):
 
@@ -100,9 +110,37 @@ class ExplorerInfoFrame(Frame):
 
         if self.key_clock.elapsed() > self.key_delay:
 
-            if keys[pygame.K_h]:
-                self.textbox.next_page()
-                self.key_clock.start()
+            if keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
+
+                if self.state == self.NO_FOCUS:
+                    self.state = self.DESCRIPTION_FOCUSED
+                    self.textbox.set_outline_size(5)
+                elif self.state == self.DESCRIPTION_FOCUSED:
+                    self.textbox.prev_page()
+                    self.key_clock.start()
+
+            if keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
+
+                if self.state == self.NO_FOCUS:
+                    self.state = self.DESCRIPTION_FOCUSED
+                    self.textbox.set_outline_size(5)
+                elif self.state == self.DESCRIPTION_FOCUSED:
+                    self.textbox.next_page()
+                    self.key_clock.start()
+
+            if keys[pygame.K_UP] or keys[KeyAlternatives.UP_ALTERNATIVE]:
+
+                if self.state == self.NO_FOCUS or self.state == self.MENU_FOCUSED:
+                    self.state = self.DESCRIPTION_FOCUSED
+                    self.textbox.set_outline_size(5)
+
+            if keys[pygame.K_DOWN] or keys[KeyAlternatives.DOWN_ALTERNATIVE]:
+
+                if self.state == self.NO_FOCUS or self.state == self.DESCRIPTION_FOCUSED:
+                    self.state = self.MENU_FOCUSED
+                    self.textbox.set_outline_size(0)
+
+
 
 
 

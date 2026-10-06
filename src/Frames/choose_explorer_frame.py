@@ -71,6 +71,8 @@ class ChooseExplorerFrame(Frame):
         self.info_frame_state = self.INFO_FRAME_INACTIVE
         self.info_frame = None
 
+        self.inputs_blocked = False
+
     def initialize_info_frame(self):
 
         data = {FrameDataID.MODULES: self.modules,
@@ -84,6 +86,7 @@ class ChooseExplorerFrame(Frame):
 
         self.add_subframe(info_frame)
         self.info_frame_state = self.INFO_FRAME_SLIDING_IN
+        self.inputs_blocked = True
         self.info_frame_clock.start()
 
     def deinitialize_info_frame(self):
@@ -91,6 +94,7 @@ class ChooseExplorerFrame(Frame):
         self.info_frame_state = self.INFO_FRAME_INACTIVE
         self.remove_subframe(self.info_frame)
         self.info_frame = None
+        self.inputs_blocked = False
 
     def finalize_info_frame(self):
 
@@ -194,25 +198,26 @@ class ChooseExplorerFrame(Frame):
                     self.info_frame_state = self.INFO_FRAME_SLIDING_OUT
                     self.info_frame_clock.start()
 
-            if keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
+            if not self.inputs_blocked:
+                if keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
 
-                if not (self.rotating_left or self.rotating_right):
+                    if not (self.rotating_left or self.rotating_right):
 
-                    self.rotating_left = True
-                    self.initialize_rotation()
+                        self.rotating_left = True
+                        self.initialize_rotation()
 
-                    self.rotation_clock.start()
-                    self.key_clock.start()
+                        self.rotation_clock.start()
+                        self.key_clock.start()
 
-            if keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
+                if keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
 
-                if not (self.rotating_left or self.rotating_right):
+                    if not (self.rotating_left or self.rotating_right):
 
-                    self.rotating_right = True
-                    self.initialize_rotation()
+                        self.rotating_right = True
+                        self.initialize_rotation()
 
-                    self.rotation_clock.start()
-                    self.key_clock.start()
+                        self.rotation_clock.start()
+                        self.key_clock.start()
 
 
 
