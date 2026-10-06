@@ -10,6 +10,7 @@ from clock import Clock
 from modules import Modules
 import constants
 from widgets.textbox import Textbox
+from widgets.image_slider import ImageSlider
 
 class ExplorerInfoFrame(Frame):
 
@@ -26,6 +27,10 @@ class ExplorerInfoFrame(Frame):
         self.headline_area = pygame.Rect(0, 0, self.width, self.height // 8)
         self.explorer_image_area = pygame.Rect(0, self.headline_area.height + self.headline_area.y, self.width, self.height // 8 * 3)
         self.textbox_area = pygame.Rect(0, self.explorer_image_area.y + self.explorer_image_area.height, self.width, self.height // 8 * 2)
+        menu_slider_wmargin = self.width//5
+        menu_slider_hmargin = self.height // 32
+        self.menu_slider_area = pygame.Rect(menu_slider_wmargin, self.textbox_area.y + self.textbox_area.height + menu_slider_hmargin,
+                                            self.width - 2*menu_slider_wmargin, self.height // 8 * 2 - 2*menu_slider_hmargin)
 
         self.surface = pygame.Surface((self.width, self.height))
         self.surface.set_alpha(Alpha.LEVEL_5)
@@ -86,6 +91,16 @@ class ExplorerInfoFrame(Frame):
         if self.state == self.DESCRIPTION_FOCUSED:
             self.textbox.set_outline_size(5)
 
+    def render_slider_menu(self):
+
+        self.slider_menu = ImageSlider(
+                                        constants.INTRO_IMAGES*2,
+                                        self.menu_slider_area.width, self.menu_slider_area.height, images_span=1
+                                        )
+
+        self.slider_pos = (self.menu_slider_area.x, self.menu_slider_area.y)
+
+
     def rerender(self):
 
         self.explorer_enum = self.data["ExplorerEnum"]
@@ -96,12 +111,15 @@ class ExplorerInfoFrame(Frame):
         self.render_headline()
         self.render_explorer()
         self.render_textbox()
+        self.render_slider_menu()
 
     def tick(self):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return (None, None)
+
+        self.slider_menu.tick()
 
         keys = pygame.key.get_pressed()
 
@@ -161,6 +179,7 @@ class ExplorerInfoFrame(Frame):
             self.top_surface.blit(self.headline_surface, (self.headline_area.x, self.headline_area.y))
             self.top_surface.blit(self.explorer_image, self.explorer_image_pos)
             self.top_surface.blit(self.textbox.get_surface(), self.textbox_pos)
+            self.top_surface.blit(self.slider_menu.get_surface(), self.slider_pos)
 
             screen.blit(self.surface, (self.x, self.y))
             screen.blit(self.top_surface, (self.x, self.y))

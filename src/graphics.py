@@ -189,6 +189,13 @@ def get_center_with_surface(surface, rect):
 
     return (x - w//2, y - h//2)
 
+def get_center_with_rect(outer_rect, inner_rect):
+
+    x, y = get_center(outer_rect)
+    w, h = inner_rect.width, inner_rect.height
+
+    return (x - w//2, y - h//2)
+
 def apply_margins(rect, h_margin_percentage=0.0, v_margin_percentage=0.0):
 
     margin_rect = pygame.Rect(int(rect.width * h_margin_percentage / 2 + rect.x),
