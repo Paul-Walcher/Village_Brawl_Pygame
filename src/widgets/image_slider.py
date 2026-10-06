@@ -63,6 +63,8 @@ class ImageSlider:
         self.extra_image = None
 
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self.top_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self.bottom_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
         self.state = ImageSlider.NOT_SLIDING
 
@@ -71,6 +73,16 @@ class ImageSlider:
 
         self.sliding_clock = Clock()
 
+    def set_background_color(self, color):
+
+        self.background_color = color
+        self.render()
+
+    def get_focus_index(self):
+        return self.image_index
+
+    def get_focus_image(self):
+        return self.images[self.image_index]
 
     def slide_left(self):
         self.slides -= 1
@@ -166,10 +178,16 @@ class ImageSlider:
 
     def render(self):
 
-        self.surface.fill(self.background_color)
+        self.surface.fill(Colors.TRANSPARENT)
+        self.bottom_surface.fill(self.background_color)
+        self.top_surface.fill(Colors.TRANSPARENT)
 
         for img, x, y in self.rendered_images:
-            self.surface.blit(img, (x, y))
+
+            self.top_surface.blit(img, (x, y))
+
+        self.surface.blit(self.bottom_surface, (0, 0))
+        self.surface.blit(self.top_surface, (0, 0))
 
     def get_scale_fraction(self, img, rect):
         #rescaling
