@@ -93,6 +93,7 @@ class ImageSlider:
     def rerender_images(self):
 
         self.rendered_images = []
+        self.rects = []
 
         indices = [(self.image_index - i - 1)%len(self.images) for i in range(self.images_span)] +\
                     [self.image_index] + [(self.image_index + i + 1)%len(self.images) for i in range(self.images_span)]
@@ -102,7 +103,7 @@ class ImageSlider:
         for i in range(1 + 2*self.images_span):
 
             pixel_pos = self.fixed_image_positions[i]
-            self.rects = (pygame.Rect(pixel_pos[0], 0, pixel_pos[1], self.height) if self.horizontal else pygame.Rect(0, pixel_pos[0], self.width, pixel_pos[1]))
+            rect = (pygame.Rect(pixel_pos[0], 0, pixel_pos[1], self.height) if self.horizontal else pygame.Rect(0, pixel_pos[0], self.width, pixel_pos[1]))
 
             img = graphics.render_image(self.images[indices[i]])
             #rescaling
@@ -119,10 +120,12 @@ class ImageSlider:
             img = pygame.transform.scale(img, (int(img.get_width()*scale_factor), int(img.get_height() * scale_factor)))
             img.set_alpha(self.images_alphas[i])
 
-            img_pos = graphics.get_center_with_surface(img, self.rects)
+            img_pos = graphics.get_center_with_surface(img, rect)
 
             self.rendered_images.append([img, img_pos[0], img_pos[1]])
-            self.render()
+            self.rects.append(rect)
+
+        self.render()
 
 
 
@@ -168,9 +171,20 @@ class ImageSlider:
         for img, x, y in self.rendered_images:
             self.surface.blit(img, (x, y))
 
+    def get_scale_fraction(self, img, rect):
+        #rescaling
+        iw, ih = img.get_size()
+        scale_factor = 1
+        if iw > ih:
+            scale_factor = (rect.width / iw if self.horizontal else self.width / iw)
+        else:
+            scale_factor = (rect.height / ih if not self.horizontal else self.height / ih)
+
+        return scale_factor
+
     def initialize_slide_left(self):
 
-        img_index = ((self.image_index + self.images_span + 1)%len(self.images) if self.state == ImageSlider.SLIDING_LEFT else (self.image_index - self.images_span - 1)%len(self.images))
+        img_index = (self.image_index + self.images_span + 1)%len(self.images)
         self.extra_image = graphics.render_image(self.images[img_index])
 
         pixel_pos = self.fixed_image_positions[-1]
@@ -190,13 +204,15 @@ class ImageSlider:
 
         self.indices.append(img_index)
         #setting targets
-        self.target_scale_mults_diff = [self.scale_mults[0]] + [self.scale_mults[i+1] - self.scale_mults[i] for i in range(2*self.images_span)] + [self.scale_mults[-1]]
+        self.target_scale_mults_diff = [self.scale_mults[0]] + [self.scale_mults[i+1] - self.scale_mults[i] for i in range(2*self.images_span)] + [-self.scale_mults[-1]]
         self.target_scale_mults = [0] + self.scale_mults[:]
-        self.target_alphas_diff = [self.images_alphas[0]] + [self.images_alphas[i+1] - self.images_alphas[i] for i in range(2*self.images_span)] + [self.images_alphas[-1]]
+        self.target_alphas_diff = [self.images_alphas[0]] + [self.images_alphas[i+1] - self.images_alphas[i] for i in range(2*self.images_span)] + [-self.images_alphas[-1]]
         self.target_alphas = [0] + self.images_alphas[:]
 
         self.target_positions = []
         self.target_position_diffs = []
+
+        self.scale_factors = [self.scale_factors[0]]
 
         cx, cy = graphics.get_center(self.rects[0])
         self.target_positions.append([cx, cy])
@@ -206,23 +222,27 @@ class ImageSlider:
 
             img, x, y = self.rendered_images[i][0], self.rendered_images[i][1], self.rendered_images[i][2]
 
-            rimg = graphics.render_image(self.indices[i])
-            rimg = graphics.scale_image(rimg, self.scale_factors[i] * self.scale_mults[i-1])
+            rimg = graphics.render_image(self.images[self.indices[i]])
 
             w, h = rimg.get_size()
 
-            nx, ny = graphics.get_center_with_rect(self.rects[i-1], pygame.Rect(0, 0, w, h))
+            self.scale_factors.append(self.get_scale_fraction(rimg, self.rects[i-1]))
+            rimg = graphics.scale_image(rimg, self.scale_factors[i] * self.target_scale_mults[i])
+
+            nx, ny = graphics.get_center_with_surface(rimg, self.rects[i-1])
             self.target_positions.append([nx, ny])
             self.target_position_diffs.append([x - nx, y - ny])
 
-        ew, eh = graphics.scale_image(self.extra_image, self.extra_scale_factor * self.scale_mults[-1]).get_size()
-        extra_rect = pygame.Rect(0, 0, ew, eh)
-        nx, ny = graphics.get_center_with_rect(self.rects[-1], extra_rect)
-        self.target_positions.append[[nx, ny]]
-        ew, eh = graphics.scale_image(self.extra_image, 0.001).get_size()
-        extra_rect = pygame.Rect(ew, eh)
-        sx, sy = graphics.get_center_with_rect(self.rects[-1], extra_rect)
+        sf = self.get_scale_fraction(self.extra_image, self.rects[-1])
+        self.scale_factors.append(sf)
+        extra_scaled = graphics.scale_image(self.extra_image, sf * self.target_scale_mults[-1])
+        nx, ny = graphics.get_center_with_surface(extra_scaled, self.rects[-1])
+        self.target_positions.append([nx, ny])
+        dscale = graphics.scale_image(self.extra_image, 0.001)
+        ew, eh = dscale.get_size()
+        sx, sy = graphics.get_center_with_surface(dscale, self.rects[-1])
         self.target_position_diffs.append([sx - nx, sy - ny])
+
 
 
         #getting target positions
@@ -241,15 +261,16 @@ class ImageSlider:
 
             img = graphics.render_image(self.images[self.indices[i]])
 
-            new_mult = self.target_scale_mults[i] + slide_percentage * self.target_scale_mults_diff[i]
-            new_alpha = self.target_alphas[i] + slide_percentage * self.target_alphas_diff[i]
-            new_x = self.target_positions[i][0] + int(slide_percentage * self.target_position_diffs[i][0])
-            new_y = self.target_positions[i][1] + int(slide_percentage * self.target_position_diffs[i][1])
+            new_mult = self.target_scale_mults[i] + (1.0 - slide_percentage) * self.target_scale_mults_diff[i]
+            new_alpha = self.target_alphas[i] + (1.0 - slide_percentage) * self.target_alphas_diff[i]
+            new_x = self.target_positions[i][0] + int((1.0 - slide_percentage) * self.target_position_diffs[i][0])
+            new_y = self.target_positions[i][1] + int((1.0 - slide_percentage) * self.target_position_diffs[i][1])
 
-            img = graphics.scale_image(img, self.scale_factors*new_mult)
+            img = graphics.scale_image(img, self.scale_factors[i]*new_mult)
             img.set_alpha(new_alpha)
 
             rimages.append([img, new_x, new_y])
+
 
         self.rendered_images = rimages
         self.render()
@@ -257,19 +278,21 @@ class ImageSlider:
     def finalize_slide_left(self):
 
         rimages = []
+        self.scale_factors = self.scale_factors[1:]
+        self.indices = self.indices[1:]
+        self.scale_mults = self.target_scale_mults[1:]
+        self.target_positions = self.target_positions[1:]
+        self.alphas = self.target_alphas[1:]
 
-        for i in range(1, 2 + 2*self.images_span):
+        for i in range(1 + 2*self.images_span):
 
             img = graphics.render_image(self.images[self.indices[i]])
-            img = graphics.scale_image(img, self.scale_factors[i] * self.target_scale_mults[i])
-            img.set_alpha(self.target_alphas[i])
+            img = graphics.scale_image(img, self.scale_factors[i] * self.scale_mults[i])
+            img.set_alpha(self.alphas[i])
 
             rimages.append([img, self.target_positions[i][0], self.target_positions[i][1]])
 
-        self.scale_factors = self.scale_factors[1:]
-        self.indices = self.indices[1:]
-        self.image_index += 1
-        self.image_index %= (1 + 2*self.images_span)
+        self.image_index = self.indices[self.images_span]
 
         self.state = ImageSlider.NOT_SLIDING
         self.slides += 1
@@ -277,10 +300,107 @@ class ImageSlider:
         self.rendered_images = rimages
         self.render()
 
+    def initialize_slide_right(self):
 
+        img_index = (self.image_index - self.images_span - 1)%len(self.images)
+        self.extra_image = graphics.render_image(self.images[img_index])
+
+        self.indices.insert(0, img_index)
+        #setting targets
+        self.target_scale_mults_diff = [-self.scale_mults[0]] + [self.scale_mults[i] - self.scale_mults[i + 1] for i in range(2*self.images_span)] + [self.scale_mults[-1]]
+        self.target_scale_mults = self.scale_mults[:] + [0]
+        self.target_alphas_diff = [-self.images_alphas[0]] + [self.images_alphas[i] - self.images_alphas[i + 1] for i in range(2*self.images_span)] + [self.images_alphas[-1]]
+        self.target_alphas = self.images_alphas[:] + [0]
+
+        self.target_positions = []
+        self.target_position_diffs = []
+
+        scale_save = self.scale_factors[-1]
+        self.scale_factors = []
+
+        sf = self.get_scale_fraction(self.extra_image, self.rects[0])
+        self.scale_factors.append(sf)
+        extra_scaled = graphics.scale_image(self.extra_image, sf * self.target_scale_mults[0])
+        nx, ny = graphics.get_center_with_surface(extra_scaled, self.rects[0])
+        self.target_positions.append([nx, ny])
+        dscale = graphics.scale_image(self.extra_image, 0.001)
+        ew, eh = dscale.get_size()
+        sx, sy = graphics.get_center_with_surface(dscale, self.rects[0])
+        self.target_position_diffs.append([sx - nx, sy - ny])
+
+        for i in range(2*self.images_span):
+
+            img, x, y = self.rendered_images[i][0], self.rendered_images[i][1], self.rendered_images[i][2]
+
+            rimg = graphics.render_image(self.images[self.indices[i+1]])
+
+            w, h = rimg.get_size()
+
+            self.scale_factors.append(self.get_scale_fraction(rimg, self.rects[i+1]))
+            rimg = graphics.scale_image(rimg, self.scale_factors[i+1] * self.target_scale_mults[i+1])
+
+            nx, ny = graphics.get_center_with_surface(rimg, self.rects[i+1])
+            self.target_positions.append([nx, ny])
+            self.target_position_diffs.append([x - nx, y - ny])
+
+        cx, cy = graphics.get_center(self.rects[-1])
+        self.target_positions.append([cx, cy])
+        self.target_position_diffs.append([self.rendered_images[-1][1] - cx, self.rendered_images[-1][2] - cy])
+        self.scale_factors.append(scale_save)
+        #getting target positions
+
+        self.sliding_clock.start()
 
     def render_slide_right(self):
-        pass
+
+        slide_percentage = self.sliding_clock.elapsed() / self.sliding_duration
+
+        slide_percentage = min(1.0, slide_percentage)
+
+        rimages = []
+
+        for i in range(2 + 2*self.images_span):
+
+            img = graphics.render_image(self.images[self.indices[i]])
+
+            new_mult = self.target_scale_mults[i] + (1.0 - slide_percentage) * self.target_scale_mults_diff[i]
+            new_alpha = self.target_alphas[i] + (1.0 - slide_percentage) * self.target_alphas_diff[i]
+            new_x = self.target_positions[i][0] + int((1.0 - slide_percentage) * self.target_position_diffs[i][0])
+            new_y = self.target_positions[i][1] + int((1.0 - slide_percentage) * self.target_position_diffs[i][1])
+
+            img = graphics.scale_image(img, self.scale_factors[i]*new_mult)
+            img.set_alpha(new_alpha)
+
+            rimages.append([img, new_x, new_y])
+
+
+        self.rendered_images = rimages
+        self.render()
+
+    def finalize_slide_right(self):
+
+        rimages = []
+        self.scale_factors = self.scale_factors[:-1]
+        self.indices = self.indices[:-1]
+        self.scale_mults = self.target_scale_mults[:-1]
+        self.target_positions = self.target_positions[:-1]
+        self.alphas = self.target_alphas[:-1]
+
+        for i in range(1 + 2*self.images_span):
+
+            img = graphics.render_image(self.images[self.indices[i]])
+            img = graphics.scale_image(img, self.scale_factors[i] * self.scale_mults[i])
+            img.set_alpha(self.alphas[i])
+
+            rimages.append([img, self.target_positions[i][0], self.target_positions[i][1]])
+
+        self.image_index = self.indices[self.images_span]
+
+        self.state = ImageSlider.NOT_SLIDING
+        self.slides -= 1
+
+        self.rendered_images = rimages
+        self.render()
 
     def tick(self):
 
@@ -290,7 +410,10 @@ class ImageSlider:
             else:
                 self.render_slide_left()
         elif self.state == ImageSlider.SLIDING_RIGHT:
-            self.render_slide_right()
+            if self.sliding_clock.elapsed() >= self.sliding_duration:
+                self.finalize_slide_right()
+            else:
+                self.render_slide_right()
 
         if self.state == ImageSlider.NOT_SLIDING:
             if self.slides != 0:

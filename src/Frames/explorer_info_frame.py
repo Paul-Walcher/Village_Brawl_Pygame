@@ -148,6 +148,9 @@ class ExplorerInfoFrame(Frame):
                 elif self.state == self.DESCRIPTION_FOCUSED:
                     self.textbox.next_page()
                     self.key_clock.start()
+                elif self.state == self.MENU_FOCUSED:
+                    self.slider_menu.slide_right()
+                    self.key_clock.start()
 
             if keys[pygame.K_UP] or keys[KeyAlternatives.UP_ALTERNATIVE]:
 
