@@ -22,22 +22,13 @@ class ExplorerInfoFrame(Frame):
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
 
+        self.headline_area = pygame.Rect(0, 0, self.width, self.height // 8)
+        self.explorer_image_area = pygame.Rect(0, self.headline_area.height + self.headline_area.y, self.width, self.height // 8 * 3)
+
         self.surface = pygame.Surface((self.width, self.height))
         self.surface.set_alpha(Alpha.LEVEL_5)
 
         self.top_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-
-        self.headline_surface = None
-        self.headline_area = None
-        self.margin_percentage = None
-
-        self.headline_frame_dim = None
-        self.headline_font = None
-        self.headline_fontsize = None
-
-        self.headline = None
-        self.headline_pos = None
-
 
         self.key_delay = 200#ms
         self.key_clock = Clock()
@@ -48,7 +39,6 @@ class ExplorerInfoFrame(Frame):
         self.key_clock.start()
 
     def render_headline(self):
-        self.headline_area = pygame.Rect(0, 0, self.width, self.height // 5)
 
         self.headline_surface = pygame.Surface((self.headline_area.w, self.headline_area.h), pygame.SRCALPHA)
         self.margin_percentage = 0.2
@@ -62,6 +52,16 @@ class ExplorerInfoFrame(Frame):
         self.headline = graphics.render_text(self.headline_font, self.headline_fontsize, self.explorer_info.name, self.explorer_info.name_color)
         self.headline_pos = graphics.get_center_with_surface(self.headline, self.headline_frame_dim)
 
+    def render_explorer(self):
+
+        self.explorer_image_path = self.explorer_info.standard_image_path
+        self.explorer_image = graphics.render_image(self.explorer_image_path)
+
+        wh_ratio = self.explorer_image.get_width() / self.explorer_image.get_height()
+
+        self.explorer_image = pygame.transform.scale(self.explorer_image, (int(self.explorer_image_area.height * wh_ratio), self.explorer_image_area.height))
+        self.explorer_image_pos = graphics.get_center_with_surface(self.explorer_image, self.explorer_image_area)
+
 
     def rerender(self):
 
@@ -71,7 +71,7 @@ class ExplorerInfoFrame(Frame):
         self.explorer_info = self.explorer_ref.info()
 
         self.render_headline()
-
+        self.render_explorer()
 
     def tick(self):
 
@@ -98,10 +98,10 @@ class ExplorerInfoFrame(Frame):
             if self.headline_surface is not None:
 
                 self.headline_surface.fill((*Colors.BLACK, Alpha.LEVEL_4))
-
                 self.headline_surface.blit(self.headline, self.headline_pos)
 
             self.top_surface.blit(self.headline_surface, (self.headline_area.x, self.headline_area.y))
+            self.top_surface.blit(self.explorer_image, self.explorer_image_pos)
 
             screen.blit(self.surface, (self.x, self.y))
             screen.blit(self.top_surface, (self.x, self.y))
