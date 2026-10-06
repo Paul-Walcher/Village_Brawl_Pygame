@@ -95,7 +95,8 @@ class ExplorerInfoFrame(Frame):
 
         self.slider_menu = ImageSlider(
                                         constants.INTRO_IMAGES*2,
-                                        self.menu_slider_area.width, self.menu_slider_area.height, images_span=1
+                                        self.menu_slider_area.width, self.menu_slider_area.height, images_span=2,
+                                        size_distribution=0.4
                                         )
 
         self.slider_pos = (self.menu_slider_area.x, self.menu_slider_area.y)

@@ -184,7 +184,7 @@ class ImageSlider:
 
     def initialize_slide_left(self):
 
-        img_index = (self.image_index + self.images_span + 1)%len(self.images)
+        img_index = (self.indices[-1]+1) % (len(self.images))
         self.extra_image = graphics.render_image(self.images[img_index])
 
         pixel_pos = self.fixed_image_positions[-1]
@@ -302,7 +302,7 @@ class ImageSlider:
 
     def initialize_slide_right(self):
 
-        img_index = (self.image_index - self.images_span - 1)%len(self.images)
+        img_index = (self.indices[0]-1) % (len(self.images))
         self.extra_image = graphics.render_image(self.images[img_index])
 
         self.indices.insert(0, img_index)
@@ -337,7 +337,7 @@ class ImageSlider:
             w, h = rimg.get_size()
 
             self.scale_factors.append(self.get_scale_fraction(rimg, self.rects[i+1]))
-            rimg = graphics.scale_image(rimg, self.scale_factors[i+1] * self.target_scale_mults[i+1])
+            rimg = graphics.scale_image(rimg, self.scale_factors[-1] * self.target_scale_mults[i+1])
 
             nx, ny = graphics.get_center_with_surface(rimg, self.rects[i+1])
             self.target_positions.append([nx, ny])
