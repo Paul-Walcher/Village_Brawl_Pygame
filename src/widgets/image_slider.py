@@ -44,6 +44,14 @@ class ImageSlider:
                 self.images_alphas.insert(0, aval)
                 self.images_alphas.append(aval)
 
+        self.scale_mults = [1.0]
+        last_scale = 1.0
+
+        for i in range(self.images_span):
+            last_scale *= size_decrease_scale
+            self.scale_mults.insert(0, last_scale)
+            self.scale_mults.append(last_scale)
+
         self.background_color = background_color
         self.size_distribution = size_distribution
         self.size_decrease_scale = size_decrease_scale
@@ -87,13 +95,6 @@ class ImageSlider:
         indices = [(self.image_index - i - 1)%len(self.images) for i in range(self.images_span)] +\
                     [self.image_index] + [(self.image_index + i + 1)%len(self.images) for i in range(self.images_span)]
 
-        scale_mults = [1.0]
-        last_scale = 1.0
-
-        for i in range(self.images_span):
-            last_scale *= self.size_decrease_scale
-            scale_mults.insert(0, last_scale)
-            scale_mults.append(last_scale)
 
         for i in range(1 + 2*self.images_span):
 
@@ -109,7 +110,7 @@ class ImageSlider:
             else:
                 scale_factor = (pixel_pos[1] / ih if not self.horizontal else self.height / ih)
 
-            scale_factor *= scale_mults[i]
+            scale_factor *= self.scale_mults[i]
 
             img = pygame.transform.scale(img, (int(img.get_width()*scale_factor), int(img.get_height() * scale_factor)))
             img.set_alpha(self.images_alphas[i])
@@ -118,6 +119,7 @@ class ImageSlider:
 
             self.rendered_images.append([img, img_pos[0], img_pos[1]])
             self.render()
+
 
 
 
