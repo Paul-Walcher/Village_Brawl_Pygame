@@ -1,5 +1,7 @@
 import pygame
 import constants
+from collections import deque
+import re
 
 def render_text(font, fontsize, text, color=constants.Colors.WHITE):
 
@@ -13,69 +15,122 @@ def text_size(font, fontsize, text):
     f = pygame.font.Font(font, fontsize)
     return f.size(text)
 
-def get_fontsize(font, text, frame_dim, max_font=500):
+
+
+def get_fontsize(font, lines, frame, line_margin=5, min_size=1, max_size=1024):
     """
-    finds the font that fits into the frame
+    Returns the largest font size for which all lines fit inside frame.
+
+    `font`      : Pygame font path / filename
+    `lines`     : list of strings representing the current page
+    `frame`     : pygame.Rect
+    `line_margin`: vertical distance added between lines
     """
 
-    last_fontsize = 1
-    width, height = frame_dim.width, frame_dim.height
+    def fits(fontsize):
+        f = pygame.font.Font(font, fontsize)
 
-    while (last_fontsize < max_font):
+        total_height = 0
 
-        w, h = text_size(font, last_fontsize + 1, text)
-        if w > width or h > height:
-            break
+        for i, line in enumerate(lines):
+            width, height = f.size(line)
 
-        last_fontsize += 1
+            # Line is too wide
+            if width > frame.width:
+                return False
 
-    return last_fontsize
+            total_height += height
 
+            if i < len(lines) - 1:
+                total_height += line_margin
 
-def to_pages(font, fontsize, frame, text, color=constants.Colors.WHITE, wmargin=0, hmargin=0, line_margin=5):
+            # Already too tall
+            if total_height > frame.height:
+                return False
 
-    f = pygame.font.Font(font, fontsize)
-    x, y, width, height = frame.x, frame.y, frame.w, frame.h
+        return True
 
-    lines = text.splitlines()
+    # Make sure max_size is actually large enough to contain
+    # the failure boundary.
+    while fits(max_size):
+        max_size *= 2
+
+    # No size fits
+    if not fits(min_size):
+        return 0
+
+    # Binary search for largest fitting size
+    low = min_size
+    high = max_size
+
+    while low <= high:
+        mid = (low + high) // 2
+
+        if fits(mid):
+            low = mid + 1
+        else:
+            high = mid - 1
+
+    return high
+
+def page_by_chars(text, line_length=40, paragraph_length=5):
+
+    tsplit = [x.split(" ") for x in text.splitlines()]
+
     pages = []
-    #a page consists of a list of (fontsurface, position)
-
     cpage = []
-    cy = 0
+    cline = ""
 
-    while lines:
 
-        cline = lines.pop(0)
-        split_index = len(cline)
+    for textline in tsplit:
+        for word in textline:
 
-        rsize = f.size(cline[:split_index])
-        rw, rh = rsize
+            if len(cline) + len(word) <= line_length:
+                cline += word + " "
+            else:
+                if len(cpage) < paragraph_length:
+                    cpage.append(cline)
+                    cline = word
+                else:
+                    pages.append(cpage)
+                    cpage = []
+                    cpage.append(cline)
+                    cline = word
 
-        if (cy + rh) > (height - 2*hmargin):
+    if cline:
+
+        if len(cpage) < paragraph_length:
+            cpage.append(cline)
+            cline = ""
+        else:
             pages.append(cpage)
             cpage = []
-            cy = 0
-            continue
+            cpage.append(cline)
+            cline = ""
 
-        while rw > (width - 2*wmargin)  and split_index > 0:
-
-            split_index -= 1
-            rsize = f.size(cline[:split_index])
-            rw, rh = rsize
-
-        s1, s2 = cline[:split_index], cline[split_index:]
-
-        frend = f.render(s1, False, color)
-        pos = (x + wmargin, y+cy+hmargin)
-
-        cpage.append((frend, pos))
-        if len(s2) > 0:
-            lines.insert(0, s2)
-
-        cy += rh + line_margin
+    if cpage:
+        pages.append(cpage)
 
     return pages
+
+def render_page_from_chars(font, page, frame, text_color=constants.Colors.BLACK, centered=False, line_margin=5):
+
+    fsize = get_fontsize(font, page, frame, line_margin=line_margin)
+    trend = []
+    cy = 0
+
+    for line in page:
+
+        rend = render_text(font, fsize, line, text_color)
+        pos = (frame.x, frame.y + cy)
+        if centered:
+            pos = (int(frame.x + (frame.width - rend.get_width())//2), frame.y+cy)
+        trend.append((rend, pos))
+        cy += rend.get_height() + line_margin
+
+    return trend
+
+
 
 def render_image(img_path, dimensions=None):
 
@@ -136,8 +191,8 @@ def get_center_with_surface(surface, rect):
 
 def apply_margins(rect, h_margin_percentage=0.0, v_margin_percentage=0.0):
 
-    margin_rect = pygame.Rect(int(rect.width * h_margin_percentage / 2),
-                                            int(rect.height * v_margin_percentage / 2),
+    margin_rect = pygame.Rect(int(rect.width * h_margin_percentage / 2 + rect.x),
+                                            int(rect.height * v_margin_percentage / 2 + rect.y),
                                             int(rect.width * (1.0 - h_margin_percentage)),
                                             int(rect.height * (1.0 - v_margin_percentage))
                                         )

@@ -9,6 +9,7 @@ import graphics
 from clock import Clock
 from modules import Modules
 import constants
+from widgets.textbox import Textbox
 
 class ExplorerInfoFrame(Frame):
 
@@ -24,6 +25,7 @@ class ExplorerInfoFrame(Frame):
 
         self.headline_area = pygame.Rect(0, 0, self.width, self.height // 8)
         self.explorer_image_area = pygame.Rect(0, self.headline_area.height + self.headline_area.y, self.width, self.height // 8 * 3)
+        self.textbox_area = pygame.Rect(0, self.explorer_image_area.y + self.explorer_image_area.height, self.width, self.height // 8 * 2)
 
         self.surface = pygame.Surface((self.width, self.height))
         self.surface.set_alpha(Alpha.LEVEL_5)
@@ -47,7 +49,7 @@ class ExplorerInfoFrame(Frame):
 
         self.headline_frame_dim = graphics.apply_margins(self.headline_area, self.margin_percentage, self.margin_percentage)
         self.headline_font = Fonts.MINECRAFT
-        self.headline_fontsize = graphics.get_fontsize(self.headline_font, self.explorer_info.name, self.headline_frame_dim)
+        self.headline_fontsize = graphics.get_fontsize(self.headline_font, [self.explorer_info.name], self.headline_frame_dim)
 
         self.headline = graphics.render_text(self.headline_font, self.headline_fontsize, self.explorer_info.name, self.explorer_info.name_color)
         self.headline_pos = graphics.get_center_with_surface(self.headline, self.headline_frame_dim)
@@ -62,6 +64,17 @@ class ExplorerInfoFrame(Frame):
         self.explorer_image = pygame.transform.scale(self.explorer_image, (int(self.explorer_image_area.height * wh_ratio), self.explorer_image_area.height))
         self.explorer_image_pos = graphics.get_center_with_surface(self.explorer_image, self.explorer_image_area)
 
+    def render_textbox(self):
+
+        self.textbox_hmargin = 0.2
+        self.textbox_vmargin = 0.4
+        self.textbox_dim = graphics.apply_margins(self.textbox_area, self.textbox_hmargin, self.textbox_vmargin)
+
+        text = self.explorer_info.description + "E " * 1000
+
+        self.textbox = Textbox(Fonts.MINECRAFT, Fontsizes.SMALL, text, self.textbox_dim.width, self.textbox_dim.height, text_color=(*Colors.GREEN, 255), outline_size=2, centered=True)
+        self.textbox_pos = graphics.get_center_with_surface(self.textbox.get_surface(), self.textbox_dim)
+
 
     def rerender(self):
 
@@ -72,6 +85,7 @@ class ExplorerInfoFrame(Frame):
 
         self.render_headline()
         self.render_explorer()
+        self.render_textbox()
 
     def tick(self):
 
@@ -83,6 +97,12 @@ class ExplorerInfoFrame(Frame):
 
         if (keys[pygame.K_ESCAPE]):
             return (None, None)
+
+        if self.key_clock.elapsed() > self.key_delay:
+
+            if keys[pygame.K_h]:
+                self.textbox.next_page()
+                self.key_clock.start()
 
 
 
@@ -102,6 +122,7 @@ class ExplorerInfoFrame(Frame):
 
             self.top_surface.blit(self.headline_surface, (self.headline_area.x, self.headline_area.y))
             self.top_surface.blit(self.explorer_image, self.explorer_image_pos)
+            self.top_surface.blit(self.textbox.get_surface(), self.textbox_pos)
 
             screen.blit(self.surface, (self.x, self.y))
             screen.blit(self.top_surface, (self.x, self.y))

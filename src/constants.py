@@ -70,6 +70,7 @@ class Fontsizes:
 
     fscale = lambda x: int(x * HEIGHT * (1/1080))
 
+    TINY = fscale(10)
     SMALL = fscale(20)
     AVERAGE = fscale(50)
     BIG = fscale(80)
