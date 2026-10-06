@@ -48,6 +48,8 @@ class FrameDataID:
 
 class Colors:
 
+    TRANSPARENT = (0, 0, 0, 0)
+
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     RED = (255, 0, 0)
@@ -59,20 +61,22 @@ class Colors:
     GRAY = (127, 127, 127)
     DARK_GRAY = (109, 109, 109)
 
+
 class Fonts:
 
     MINECRAFT = os.path.join(FONT_PATH, "Minecraft.ttf")
 
 class Fontsizes:
 
-    scale = lambda x: int(x * HEIGHT * (1/1080))
+    fscale = lambda x: int(x * HEIGHT * (1/1080))
 
-    SMALL = scale(20)
-    AVERAGE = scale(50)
-    BIG = scale(80)
-    HUGE = scale(120)
+    SMALL = fscale(20)
+    AVERAGE = fscale(50)
+    BIG = fscale(80)
+    HUGE = fscale(120)
 
-    BIG_HEADLINE = scale(200)
+    SMALL_HEADLINE = fscale(140)
+    BIG_HEADLINE = fscale(200)
 
 class KeyAlternatives:
 

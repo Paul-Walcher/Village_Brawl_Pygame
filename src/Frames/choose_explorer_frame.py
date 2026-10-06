@@ -140,21 +140,16 @@ class ChooseExplorerFrame(Frame):
         self.second_headline = None
         self.second_headline_pos = (0, 0)
 
+        #if we have an info frame, set the explorer and rerender it
+        if self.info_frame is not None:
+            self.info_frame.data["ExplorerEnum"] = self.explorer_enums[self.explorer_index]
+            self.info_frame.rerender()
 
 
     def tick(self):
 
-        frames_to_delete = []
-        for subframe in self.subframes:
 
-            fenum, data = subframe.tick()
-            if (fenum is None):
-                frames_to_delete.append(subframe)
-
-        for subframe in frames_to_delete:
-
-            self.remove_subframe(subframe)
-
+        subframe_data = self.subframes_tick()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -242,8 +237,6 @@ class ChooseExplorerFrame(Frame):
             screen.blit(self.second_explorer_image, (sex + self.shift, sey))
         screen.blit(self.info_text, self.info_text_pos)
 
-        for subframe in self.subframes[::-1]:
-
-            subframe.draw(screen)
+        self.render_subframes(screen)
 
         pygame.display.flip()

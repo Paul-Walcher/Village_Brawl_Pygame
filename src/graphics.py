@@ -8,6 +8,30 @@ def render_text(font, fontsize, text, color=constants.Colors.WHITE):
 
     return surface
 
+def text_size(font, fontsize, text):
+
+    f = pygame.font.Font(font, fontsize)
+    return f.size(text)
+
+def get_fontsize(font, text, frame_dim, max_font=500):
+    """
+    finds the font that fits into the frame
+    """
+
+    last_fontsize = 1
+    width, height = frame_dim.width, frame_dim.height
+
+    while (last_fontsize < max_font):
+
+        w, h = text_size(font, last_fontsize + 1, text)
+        if w > width or h > height:
+            break
+
+        last_fontsize += 1
+
+    return last_fontsize
+
+
 def to_pages(font, fontsize, frame, text, color=constants.Colors.WHITE, wmargin=0, hmargin=0, line_margin=5):
 
     f = pygame.font.Font(font, fontsize)
@@ -52,11 +76,6 @@ def to_pages(font, fontsize, frame, text, color=constants.Colors.WHITE, wmargin=
         cy += rh + line_margin
 
     return pages
-
-
-
-
-
 
 def render_image(img_path, dimensions=None):
 
@@ -114,3 +133,12 @@ def get_center_with_surface(surface, rect):
     w, h = surface.get_size()
 
     return (x - w//2, y - h//2)
+
+def apply_margins(rect, h_margin_percentage=0.0, v_margin_percentage=0.0):
+
+    margin_rect = pygame.Rect(int(rect.width * h_margin_percentage / 2),
+                                            int(rect.height * v_margin_percentage / 2),
+                                            int(rect.width * (1.0 - h_margin_percentage)),
+                                            int(rect.height * (1.0 - v_margin_percentage))
+                                        )
+    return margin_rect

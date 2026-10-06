@@ -13,6 +13,7 @@ class Frame(ABC):
         self.frame_dim = (frame_dim if frame_dim is not None else pygame.Rect(0, 0, 0, 0))
         self.parent_frame = None
         self.input_blocked = False
+        self.shown = True
 
         self.x, self.y, self.width, self.height = 0, 0, 0, 0
         self.recalculate_dimensions()
@@ -25,6 +26,12 @@ class Frame(ABC):
     """
     Use the following functions when changing the frame.
     """
+
+    def hide(self):
+        self.shown = False
+
+    def show(self):
+        self.shown = True
 
     def recalculate_dimensions(self):
 
@@ -89,6 +96,27 @@ class Frame(ABC):
 
         self.subframes.insert(0, subframe)
 
+
+    def subframes_tick(self):
+        frames_to_delete = []
+        return_data = {}
+        for subframe in self.subframes:
+
+            fenum, data = subframe.tick()
+            return_data[subframe] = data
+            if (fenum is None):
+                frames_to_delete.append(subframe)
+
+        for subframe in frames_to_delete:
+
+            self.remove_subframe(subframe)
+
+        return return_data
+
+    def render_subframes(self, screen):
+        for subframe in self.subframes[::-1]:
+            if subframe.shown:
+                subframe.draw(screen)
 
     @abstractmethod
     def tick(self):
