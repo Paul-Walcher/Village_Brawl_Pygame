@@ -151,6 +151,10 @@ def render_image_scale(img_path, scale):
     )
     return img
 
+def scale_image(img, scale):
+
+    return pygame.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
+
 
 def center_horizontally(surface, frame_rect):
 
