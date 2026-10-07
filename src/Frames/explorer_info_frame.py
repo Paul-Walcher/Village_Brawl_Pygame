@@ -32,10 +32,7 @@ class ExplorerInfoFrame(Frame):
         self.menu_slider_area = pygame.Rect(menu_slider_wmargin, self.textbox_area.y + self.textbox_area.height + menu_slider_hmargin,
                                             self.width - 2*menu_slider_wmargin, self.height // 8 * 2 - 2*menu_slider_hmargin)
 
-        self.surface = pygame.Surface((self.width, self.height))
-        self.surface.set_alpha(Alpha.LEVEL_5)
-
-        self.top_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
         self.key_delay = 200#ms
         self.key_clock = Clock()
@@ -84,7 +81,7 @@ class ExplorerInfoFrame(Frame):
         text = self.explorer_info.description
 
         self.textbox = Textbox(Fonts.MINECRAFT, Fontsizes.SMALL, text, self.textbox_dim.width, self.textbox_dim.height, text_color=(*Colors.GREEN, 255), centered=True)
-        self.textbox_pos = graphics.get_center_with_surface(self.textbox.get_surface(), self.textbox_dim)
+        self.textbox_pos = (self.textbox_dim.x, self.textbox_dim.y)
 
         self.textbox.show_pagenumber()
 
@@ -158,12 +155,14 @@ class ExplorerInfoFrame(Frame):
                 if self.state == self.NO_FOCUS or self.state == self.MENU_FOCUSED:
                     self.state = self.DESCRIPTION_FOCUSED
                     self.textbox.set_outline_size(5)
+                    self.slider_menu.set_background_color(Colors.TRANSPARENT)
 
             if keys[pygame.K_DOWN] or keys[KeyAlternatives.DOWN_ALTERNATIVE]:
 
                 if self.state == self.NO_FOCUS or self.state == self.DESCRIPTION_FOCUSED:
                     self.state = self.MENU_FOCUSED
                     self.textbox.set_outline_size(0)
+                    self.slider_menu.set_background_color((*Colors.WHITE, Alpha.LEVEL_1))
 
 
 
@@ -175,20 +174,20 @@ class ExplorerInfoFrame(Frame):
     def draw(self, screen):
 
         if self.surface is not None:
-            self.surface.fill(Colors.DARK_GRAY)
-            self.top_surface.fill(Colors.TRANSPARENT)
+            self.surface.fill((*Colors.DARK_GRAY, Alpha.LEVEL_6))
 
             if self.headline_surface is not None:
 
                 self.headline_surface.fill((*Colors.BLACK, Alpha.LEVEL_4))
                 self.headline_surface.blit(self.headline, self.headline_pos)
 
-            self.top_surface.blit(self.headline_surface, (self.headline_area.x, self.headline_area.y))
-            self.top_surface.blit(self.explorer_image, self.explorer_image_pos)
-            self.top_surface.blit(self.textbox.get_surface(), self.textbox_pos)
-            self.top_surface.blit(self.slider_menu.get_surface(), self.slider_pos)
+            self.surface.blit(self.headline_surface, (self.headline_area.x, self.headline_area.y))
+            self.surface.blit(self.explorer_image, self.explorer_image_pos)
+            for surf in self.textbox.get_surfaces():
+                self.surface.blit(surf, self.textbox_pos)
+            for surf in self.slider_menu.get_surfaces():
+                self.surface.blit(surf, self.slider_pos)
 
             screen.blit(self.surface, (self.x, self.y))
-            screen.blit(self.top_surface, (self.x, self.y))
 
         pygame.display.flip()

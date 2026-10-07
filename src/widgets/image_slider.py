@@ -65,7 +65,6 @@ class ImageSlider:
         self.rendered_images = [] #lists like: [image, x, y]
         self.extra_image = None
 
-        self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.top_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.bottom_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
@@ -106,8 +105,8 @@ class ImageSlider:
         elif self.state == ImageSlider.NOT_SLIDING:
             self.slides = 0
 
-    def get_surface(self):
-        return self.surface
+    def get_surfaces(self):
+        return [self.bottom_surface, self.top_surface]
 
     def rerender_images(self):
 
@@ -190,7 +189,6 @@ class ImageSlider:
 
     def render(self):
 
-        self.surface.fill(Colors.TRANSPARENT)
         self.bottom_surface.fill(self.background_color)
         self.top_surface.fill(Colors.TRANSPARENT)
 
@@ -199,8 +197,6 @@ class ImageSlider:
             if rendered:
                 self.top_surface.blit(img, (x, y))
 
-        self.surface.blit(self.bottom_surface, (0, 0))
-        self.surface.blit(self.top_surface, (0, 0))
 
     def get_scale_fraction(self, img, rect):
         #rescaling

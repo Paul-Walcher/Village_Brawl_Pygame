@@ -120,5 +120,5 @@ class Textbox:
 
             self.surface.blit(rfont, pos)
 
-    def get_surface(self):
-        return self.surface
+    def get_surfaces(self):
+        return [self.surface]
