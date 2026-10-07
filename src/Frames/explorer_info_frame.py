@@ -4,7 +4,7 @@ import threading
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, Alpha
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, Alpha, IIMAGE
 import graphics
 from clock import Clock
 from modules import Modules
@@ -26,11 +26,11 @@ class ExplorerInfoFrame(Frame):
 
         self.headline_area = pygame.Rect(0, 0, self.width, self.height // 8)
         self.explorer_image_area = pygame.Rect(0, self.headline_area.height + self.headline_area.y, self.width, self.height // 8 * 3)
-        self.textbox_area = pygame.Rect(0, self.explorer_image_area.y + self.explorer_image_area.height, self.width, self.height // 8 * 2)
+        self.textbox_area = pygame.Rect(0, self.explorer_image_area.y + self.explorer_image_area.height, self.width, self.height // 16 * 3)
         menu_slider_wmargin = self.width//5
-        menu_slider_hmargin = self.height // 32
+        menu_slider_hmargin = self.height // 16
         self.menu_slider_area = pygame.Rect(menu_slider_wmargin, self.textbox_area.y + self.textbox_area.height + menu_slider_hmargin,
-                                            self.width - 2*menu_slider_wmargin, self.height // 8 * 2 - 2*menu_slider_hmargin)
+                                            self.width - 2*menu_slider_wmargin, self.height // 16 * 5 - 2*menu_slider_hmargin)
 
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
@@ -90,10 +90,13 @@ class ExplorerInfoFrame(Frame):
 
     def render_slider_menu(self):
 
-        self.slider_menu = ImageSlider(
-                                        constants.INTRO_IMAGES,
+        self.icon_imgs = [IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
+                        IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"), IIMAGE("Pack_Icon.png")
+                        ]
+        self.slider_menu = ImageSlider(self.icon_imgs,
                                         self.menu_slider_area.width, self.menu_slider_area.height, images_span=1,
-                                        size_distribution=0.4, cutoff=True
+                                        size_distribution=0.4, start_index = len(self.icon_imgs)//2,
+                                        max_slides=1
                                         )
 
         self.slider_pos = (self.menu_slider_area.x, self.menu_slider_area.y)

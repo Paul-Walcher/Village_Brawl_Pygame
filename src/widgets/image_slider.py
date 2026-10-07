@@ -25,7 +25,8 @@ class ImageSlider:
                         size_decrease_scale=0.5,#means every image to the left or right will decrease by this size
                         horizontal=True,#if it is sliding horizontally or vertically
                         start_index=0,
-                        cutoff=False #if cutoff == False, it loops around
+                        cutoff=False, #if cutoff == False, it loops around
+                        max_slides=10
                 ):
 
         if len(images) < (1 + 2*images_span):
@@ -34,6 +35,7 @@ class ImageSlider:
         self.images = images
         self.image_index = start_index
         self.cutoff = cutoff
+        self.max_slides = max_slides
         self.width, self.height = width, height
         self.sliding_duration = sliding_duration
         self.images_span = images_span
@@ -75,6 +77,11 @@ class ImageSlider:
 
         self.sliding_clock = Clock()
 
+
+    def get_selected_index(self):
+
+        return self.image_index - self.slides
+
     def set_background_color(self, color):
 
         self.background_color = color
@@ -89,12 +96,14 @@ class ImageSlider:
     def slide_left(self):
         if self.cutoff and (self.image_index - self.slides) >= (len(self.images)-1):
             return
-        self.slides -= 1
+        if self.slides > - self.max_slides:
+            self.slides -= 1
 
     def slide_right(self):
         if self.cutoff and (self.image_index - self.slides) <= 0:
             return
-        self.slides += 1
+        if self.slides < self.max_slides:
+            self.slides += 1
 
     def reset_slides(self):
 

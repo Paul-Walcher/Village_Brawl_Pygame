@@ -12,10 +12,12 @@ __ADDITIONAL_LOAD_TIME__ = 500#ms
 BASE_ASSET_PATH = "BaseAssets"
 STANDARD_IMAGE_PATH = os.path.join(BASE_ASSET_PATH, "StandardImages")
 CARD_IMAGE_PATH = os.path.join(BASE_ASSET_PATH, "CardImages")
+ICON_IMAGE_PATH = os.path.join(BASE_ASSET_PATH, "Icons")
 FONT_PATH = os.path.join(BASE_ASSET_PATH, "Fonts")
 
 SIMAGE = lambda x: os.path.join(STANDARD_IMAGE_PATH, x)
 CIMAGE = lambda x: os.path.join(CARD_IMAGE_PATH, x)
+IIMAGE = lambda x: os.path.join(ICON_IMAGE_PATH, x)
 
 PLAYSETS_FOLDER = "playsets"
 
