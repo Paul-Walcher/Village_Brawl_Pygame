@@ -23,14 +23,17 @@ class ImageSlider:
                         background_color=Colors.TRANSPARENT,
                         size_distribution=0.6,#means the image in focus will occupy the middle 60 percent of space,
                         size_decrease_scale=0.5,#means every image to the left or right will decrease by this size
-                        horizontal=True#if it is sliding horizontally or vertically
+                        horizontal=True,#if it is sliding horizontally or vertically
+                        start_index=0,
+                        cutoff=False #if cutoff == False, it loops around
                 ):
 
         if len(images) < (1 + 2*images_span):
             raise RuntimeError("You need more images for this image span.")
 
         self.images = images
-        self.image_index = 0
+        self.image_index = start_index
+        self.cutoff = cutoff
         self.width, self.height = width, height
         self.sliding_duration = sliding_duration
         self.images_span = images_span
@@ -85,9 +88,13 @@ class ImageSlider:
         return self.images[self.image_index]
 
     def slide_left(self):
+        if self.cutoff and (self.image_index - self.slides) >= (len(self.images)-1):
+            return
         self.slides -= 1
 
     def slide_right(self):
+        if self.cutoff and (self.image_index - self.slides) <= 0:
+            return
         self.slides += 1
 
     def reset_slides(self):
@@ -109,6 +116,9 @@ class ImageSlider:
 
         indices = [(self.image_index - i - 1)%len(self.images) for i in range(self.images_span)] +\
                     [self.image_index] + [(self.image_index + i + 1)%len(self.images) for i in range(self.images_span)]
+
+        self.original_indices = [(self.image_index - i - 1) for i in range(self.images_span)] +\
+                                [self.image_index] + [(self.image_index + i + 1) for i in range(self.images_span)]
 
         self.indices = indices
 
@@ -134,7 +144,9 @@ class ImageSlider:
 
             img_pos = graphics.get_center_with_surface(img, rect)
 
-            self.rendered_images.append([img, img_pos[0], img_pos[1]])
+            rendered = (False if self.cutoff and (self.original_indices[i] < 0 or self.original_indices[i] >= len(self.images)) else True)
+
+            self.rendered_images.append([img, img_pos[0], img_pos[1], rendered])
             self.rects.append(rect)
 
         self.render()
@@ -182,9 +194,10 @@ class ImageSlider:
         self.bottom_surface.fill(self.background_color)
         self.top_surface.fill(Colors.TRANSPARENT)
 
-        for img, x, y in self.rendered_images:
+        for img, x, y, rendered in self.rendered_images:
 
-            self.top_surface.blit(img, (x, y))
+            if rendered:
+                self.top_surface.blit(img, (x, y))
 
         self.surface.blit(self.bottom_surface, (0, 0))
         self.surface.blit(self.top_surface, (0, 0))
@@ -203,6 +216,7 @@ class ImageSlider:
     def initialize_slide_left(self):
 
         img_index = (self.indices[-1]+1) % (len(self.images))
+        self.original_indices.append(self.indices[-1]+1)
         self.extra_image = graphics.render_image(self.images[img_index])
 
         pixel_pos = self.fixed_image_positions[-1]
@@ -287,7 +301,9 @@ class ImageSlider:
             img = graphics.scale_image(img, self.scale_factors[i]*new_mult)
             img.set_alpha(new_alpha)
 
-            rimages.append([img, new_x, new_y])
+            rendered = (False if self.cutoff and (self.original_indices[i] < 0 or self.original_indices[i] >= len(self.images)) else True)
+
+            rimages.append([img, new_x, new_y, rendered])
 
 
         self.rendered_images = rimages
@@ -301,6 +317,7 @@ class ImageSlider:
         self.scale_mults = self.target_scale_mults[1:]
         self.target_positions = self.target_positions[1:]
         self.alphas = self.target_alphas[1:]
+        self.original_indices = self.original_indices[1:]
 
         for i in range(1 + 2*self.images_span):
 
@@ -308,7 +325,9 @@ class ImageSlider:
             img = graphics.scale_image(img, self.scale_factors[i] * self.scale_mults[i])
             img.set_alpha(self.alphas[i])
 
-            rimages.append([img, self.target_positions[i][0], self.target_positions[i][1]])
+            rendered = (False if self.cutoff and (self.original_indices[i] < 0 or self.original_indices[i] >= len(self.images)) else True)
+
+            rimages.append([img, self.target_positions[i][0], self.target_positions[i][1], rendered])
 
         self.image_index = self.indices[self.images_span]
 
@@ -321,6 +340,7 @@ class ImageSlider:
     def initialize_slide_right(self):
 
         img_index = (self.indices[0]-1) % (len(self.images))
+        self.original_indices.insert(0, self.indices[0]-1)
         self.extra_image = graphics.render_image(self.images[img_index])
 
         self.indices.insert(0, img_index)
@@ -389,7 +409,9 @@ class ImageSlider:
             img = graphics.scale_image(img, self.scale_factors[i]*new_mult)
             img.set_alpha(new_alpha)
 
-            rimages.append([img, new_x, new_y])
+            rendered = (False if self.cutoff and (self.original_indices[i] < 0 or self.original_indices[i] >= len(self.images)) else True)
+
+            rimages.append([img, new_x, new_y, rendered])
 
 
         self.rendered_images = rimages
@@ -403,6 +425,7 @@ class ImageSlider:
         self.scale_mults = self.target_scale_mults[:-1]
         self.target_positions = self.target_positions[:-1]
         self.alphas = self.target_alphas[:-1]
+        self.original_indices = self.original_indices[:-1]
 
         for i in range(1 + 2*self.images_span):
 
@@ -410,7 +433,9 @@ class ImageSlider:
             img = graphics.scale_image(img, self.scale_factors[i] * self.scale_mults[i])
             img.set_alpha(self.alphas[i])
 
-            rimages.append([img, self.target_positions[i][0], self.target_positions[i][1]])
+            rendered = (False if self.cutoff and (self.original_indices[i] < 0 or self.original_indices[i] >= len(self.images)) else True)
+
+            rimages.append([img, self.target_positions[i][0], self.target_positions[i][1], rendered])
 
         self.image_index = self.indices[self.images_span]
 

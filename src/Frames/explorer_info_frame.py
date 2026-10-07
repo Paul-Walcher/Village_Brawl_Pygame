@@ -94,9 +94,9 @@ class ExplorerInfoFrame(Frame):
     def render_slider_menu(self):
 
         self.slider_menu = ImageSlider(
-                                        constants.INTRO_IMAGES*2,
-                                        self.menu_slider_area.width, self.menu_slider_area.height, images_span=2,
-                                        size_distribution=0.4
+                                        constants.INTRO_IMAGES,
+                                        self.menu_slider_area.width, self.menu_slider_area.height, images_span=1,
+                                        size_distribution=0.4, cutoff=True
                                         )
 
         self.slider_pos = (self.menu_slider_area.x, self.menu_slider_area.y)
@@ -158,14 +158,12 @@ class ExplorerInfoFrame(Frame):
                 if self.state == self.NO_FOCUS or self.state == self.MENU_FOCUSED:
                     self.state = self.DESCRIPTION_FOCUSED
                     self.textbox.set_outline_size(5)
-                    self.slider_menu.set_background_color(Colors.TRANSPARENT)
 
             if keys[pygame.K_DOWN] or keys[KeyAlternatives.DOWN_ALTERNATIVE]:
 
                 if self.state == self.NO_FOCUS or self.state == self.DESCRIPTION_FOCUSED:
                     self.state = self.MENU_FOCUSED
                     self.textbox.set_outline_size(0)
-                    self.slider_menu.set_background_color((*Colors.WHITE, Alpha.LEVEL_1))
 
 
 
