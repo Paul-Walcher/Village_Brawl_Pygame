@@ -18,19 +18,21 @@ from modules import Modules
 import constants
 
 
-class ImageSlider:
+class TextSlider:
 
     SLIDING_LEFT = 0
     SLIDING_RIGHT = 1
     NOT_SLIDING = 2
 
+    # pygame.transform.scale() should not receive a zero scale.
     MIN_SCALE = 0.001
 
     def __init__(
         self,
-        images,
+        text,
         width,
         height,
+        font=Fonts.MINECRAFT,
         sliding_duration=500,  # ms
         images_alphas=None,
         images_span=1,
@@ -40,45 +42,47 @@ class ImageSlider:
         horizontal=True,
         start_index=0,
         cutoff=False,
-        max_slides=10
+        max_slides=10,
+        font_startsize=30,
+        line_margin=5,
+        text_color=Colors.BLACK
     ):
 
-        if len(images) < (1 + 2 * images_span):
+        if len(text) < (1 + 2 * images_span):
             raise RuntimeError(
                 "You need more images for this image span."
             )
 
-        self.images = images
+        self.text = text
+        self.font = font
+        self.font_startsize = font_startsize
+        self.text_color = text_color
+
         self.image_index = start_index
+        self.line_margin = line_margin
         self.cutoff = cutoff
         self.max_slides = max_slides
 
         self.width = width
         self.height = height
-
         self.sliding_duration = sliding_duration
         self.images_span = images_span
+
+        # ---------------------------------------------------------
+        # Alpha values
+        # ---------------------------------------------------------
 
         self.images_alphas = images_alphas
 
         if self.images_alphas is None:
 
             self.images_alphas = [255]
-
             aval = 255
 
             for _ in range(self.images_span):
-
                 aval >>= 1
-
-                self.images_alphas.insert(
-                    0,
-                    aval
-                )
-
-                self.images_alphas.append(
-                    aval
-                )
+                self.images_alphas.insert(0, aval)
+                self.images_alphas.append(aval)
 
         if len(self.images_alphas) != 1 + 2 * self.images_span:
             raise ValueError(
@@ -86,18 +90,14 @@ class ImageSlider:
                 f"{1 + 2 * self.images_span} values."
             )
 
-        # Scale multiplier of each visible slot.
-        #
-        # Example with images_span = 1:
-        #
-        # [0.5, 1.0, 0.5]
-        #
-        self.scale_mults = [1.0]
+        # ---------------------------------------------------------
+        # Slot scale multipliers
+        # ---------------------------------------------------------
 
+        self.scale_mults = [1.0]
         last_scale = 1.0
 
         for _ in range(self.images_span):
-
             last_scale *= size_decrease_scale
 
             self.scale_mults.insert(
@@ -109,7 +109,6 @@ class ImageSlider:
                 last_scale
             )
 
-        # Base scale factor for the currently rendered images.
         self.scale_factors = []
 
         self.background_color = background_color
@@ -117,8 +116,8 @@ class ImageSlider:
         self.size_decrease_scale = size_decrease_scale
         self.horizontal = horizontal
 
-        # -1 = left
-        # +1 = right
+        # -1 = slide left
+        # +1 = slide right
         self.slides = 0
 
         self.rendered_images = []
@@ -134,11 +133,13 @@ class ImageSlider:
             pygame.SRCALPHA
         )
 
-        self.state = ImageSlider.NOT_SLIDING
+        self.state = TextSlider.NOT_SLIDING
 
         self.fixed_image_positions = (
             self.get_fixed_image_positions()
         )
+
+        self.alphas = self.images_alphas[:]
 
         self.rerender_images()
 
@@ -152,7 +153,6 @@ class ImageSlider:
         return self.image_index - self.slides
 
     def set_background_color(self, color):
-
         self.background_color = color
         self.render()
 
@@ -160,13 +160,13 @@ class ImageSlider:
         return self.image_index
 
     def get_focus_image(self):
-        return self.images[self.image_index]
+        return self.text[self.image_index]
 
     def slide_left(self):
 
         if self.cutoff and (
             self.image_index - self.slides
-            >= len(self.images) - 1
+            >= len(self.text) - 1
         ):
             return
 
@@ -185,13 +185,13 @@ class ImageSlider:
 
     def reset_slides(self):
 
-        if self.state == ImageSlider.SLIDING_LEFT:
+        if self.state == TextSlider.SLIDING_LEFT:
             self.slides = -1
 
-        elif self.state == ImageSlider.SLIDING_RIGHT:
+        elif self.state == TextSlider.SLIDING_RIGHT:
             self.slides = 1
 
-        elif self.state == ImageSlider.NOT_SLIDING:
+        elif self.state == TextSlider.NOT_SLIDING:
             self.slides = 0
 
     def get_surfaces(self):
@@ -201,7 +201,66 @@ class ImageSlider:
         ]
 
     # =============================================================
-    # Rendering / scaling helpers
+    # Text rendering
+    # =============================================================
+
+    def render_text_as_surface(self, text):
+
+        # text is a list of lines
+
+        imgs = []
+
+        for line in text:
+
+            imgs.append(
+                graphics.render_text(
+                    self.font,
+                    self.font_startsize,
+                    line,
+                    color=self.text_color
+                )
+            )
+
+        rwidth = max(
+            img.get_width()
+            for img in imgs
+        )
+
+        rheight = (
+            sum(
+                img.get_height()
+                for img in imgs
+            )
+            + (len(imgs) - 1) * self.line_margin
+        )
+
+        img = pygame.Surface(
+            (rwidth, rheight),
+            pygame.SRCALPHA
+        )
+
+        img.fill(
+            Colors.TRANSPARENT
+        )
+
+        cy = 0
+
+        for surf in imgs:
+
+            img.blit(
+                surf,
+                (0, cy)
+            )
+
+            cy += (
+                surf.get_height()
+                + self.line_margin
+            )
+
+        return img
+
+    # =============================================================
+    # Scaling
     # =============================================================
 
     def get_scale_fraction(self, img, rect):
@@ -232,51 +291,50 @@ class ImageSlider:
             * self.scale_mults[slot_index]
         )
 
-    def is_rendered(self, original_index):
-
-        return not (
-            self.cutoff
-            and (
-                original_index < 0
-                or original_index >= len(self.images)
-            )
-        )
-
     # =============================================================
     # Initial rendering
     # =============================================================
 
     def rerender_images(self):
 
-
         self.rendered_images = []
         self.rects = []
         self.scale_factors = []
 
-        indices = (
+        self.alphas = (
+            self.images_alphas[:]
+        )
+
+        self.indices = (
             [
                 (
-                    self.image_index - i - 1
-                ) % len(self.images)
+                    self.image_index
+                    - i
+                    - 1
+                ) % len(self.text)
                 for i in range(self.images_span)
             ]
-            + [self.image_index]
+            + [
+                self.image_index
+            ]
             + [
                 (
-                    self.image_index + i + 1
-                ) % len(self.images)
+                    self.image_index
+                    + i
+                    + 1
+                ) % len(self.text)
                 for i in range(self.images_span)
             ]
         )
-
-        self.indices = indices
 
         self.original_indices = (
             [
                 self.image_index - i - 1
                 for i in range(self.images_span)
             ]
-            + [self.image_index]
+            + [
+                self.image_index
+            ]
             + [
                 self.image_index + i + 1
                 for i in range(self.images_span)
@@ -287,7 +345,9 @@ class ImageSlider:
             1 + 2 * self.images_span
         ):
 
-            pixel_pos = self.fixed_image_positions[i]
+            pixel_pos = (
+                self.fixed_image_positions[i]
+            )
 
             if self.horizontal:
 
@@ -307,12 +367,10 @@ class ImageSlider:
                     pixel_pos[1]
                 )
 
-            img = graphics.render_image(
-                self.images[self.indices[i]]
+            img = self.render_text_as_surface(
+                self.text[self.indices[i]]
             )
 
-            # Base scale needed to fit this particular image
-            # into this particular slot.
             base_scale = (
                 self.get_scale_fraction(
                     img,
@@ -324,7 +382,6 @@ class ImageSlider:
                 base_scale
             )
 
-            # Apply the slot's visual size multiplier.
             scale = (
                 base_scale
                 * self.scale_mults[i]
@@ -346,8 +403,13 @@ class ImageSlider:
                 )
             )
 
-            rendered = self.is_rendered(
-                self.original_indices[i]
+            rendered = not (
+                self.cutoff
+                and (
+                    self.original_indices[i] < 0
+                    or self.original_indices[i]
+                    >= len(self.text)
+                )
             )
 
             self.rendered_images.append(
@@ -386,7 +448,8 @@ class ImageSlider:
         else:
 
             frontspace = int(
-                self.size_distribution * dpixels
+                self.size_distribution
+                * dpixels
             )
 
             frontstart = (
@@ -408,7 +471,8 @@ class ImageSlider:
             ):
 
                 space = int(
-                    self.size_distribution * dpixels
+                    self.size_distribution
+                    * dpixels
                 )
 
                 dspaces.insert(
@@ -488,15 +552,17 @@ class ImageSlider:
         )
 
         # ---------------------------------------------------------
-        # Add the new image entering from the right.
+        # New image entering from the right
         # ---------------------------------------------------------
 
         img_index = (
             self.indices[-1] + 1
-        ) % len(self.images)
+        ) % len(self.text)
 
-        self.extra_image = graphics.render_image(
-            self.images[img_index]
+        self.extra_image = (
+            self.render_text_as_surface(
+                self.text[img_index]
+            )
         )
 
         self.indices.append(
@@ -504,17 +570,19 @@ class ImageSlider:
         )
 
         self.original_indices.append(
-            self.original_indices[-1] + 1
+            self.indices[-2] + 1
         )
 
         # ---------------------------------------------------------
-        # Build absolute start/target scales.
+        # Absolute scale at start and end.
         #
-        # old[0] -> disappears
-        # old[1] -> slot 0
-        # old[2] -> slot 1
+        # There are visible_count + 1 images:
+        #
+        # old[0]   -> disappears
+        # old[1]   -> slot 0
+        # old[2]   -> slot 1
         # ...
-        # new    -> last slot
+        # extra    -> last slot
         # ---------------------------------------------------------
 
         self.start_scales = []
@@ -530,11 +598,11 @@ class ImageSlider:
             + self.images_alphas[:]
         )
 
-        self.start_positions = []
         self.target_positions = []
+        self.start_positions = []
 
         # ---------------------------------------------------------
-        # First image disappearing.
+        # Old first image disappearing
         # ---------------------------------------------------------
 
         self.start_scales.append(
@@ -562,30 +630,23 @@ class ImageSlider:
         )
 
         # ---------------------------------------------------------
-        # Existing images move one slot to the left.
+        # Existing images moving left
         # ---------------------------------------------------------
 
-        for old_index in range(
+        for old_i in range(
             1,
             visible_count
         ):
 
-            new_slot = old_index - 1
+            new_slot = old_i - 1
 
-            # ALWAYS render the original image again.
-            #
-            # Do not use self.rendered_images[old_index][0]
-            # for scale calculations, because that surface is
-            # already scaled.
-            img = graphics.render_image(
-                self.images[self.indices[old_index]]
+            img = self.render_text_as_surface(
+                self.text[self.indices[old_i]]
             )
 
-            start_scale = (
-                self.scale_factors[old_index]
-                * self.scale_mults[old_index]
-            )
-
+            # IMPORTANT:
+            # Calculate the destination scale using the
+            # ORIGINAL unscaled image.
             target_base_scale = (
                 self.get_scale_fraction(
                     img,
@@ -598,6 +659,11 @@ class ImageSlider:
                 * self.scale_mults[new_slot]
             )
 
+            start_scale = (
+                self.scale_factors[old_i]
+                * self.scale_mults[old_i]
+            )
+
             self.start_scales.append(
                 start_scale
             )
@@ -606,13 +672,24 @@ class ImageSlider:
                 target_scale
             )
 
-            x = self.rendered_images[old_index][1]
-            y = self.rendered_images[old_index][2]
+            x = self.rendered_images[old_i][1]
+            y = self.rendered_images[old_i][2]
+
+            start_img = graphics.scale_image(
+                img,
+                start_scale
+            )
 
             target_img = graphics.scale_image(
                 img,
                 target_scale
             )
+
+            # start_img isn't strictly necessary for position,
+            # because rendered_images already contains its
+            # current position, but keeping the calculation
+            # conceptually explicit is useful.
+            _ = start_img
 
             nx, ny = (
                 graphics.get_center_with_surface(
@@ -630,10 +707,12 @@ class ImageSlider:
             )
 
         # ---------------------------------------------------------
-        # New image entering from the right.
+        # Extra image entering from the right
         # ---------------------------------------------------------
 
-        last_slot = visible_count - 1
+        last_slot = (
+            visible_count - 1
+        )
 
         target_base_scale = (
             self.get_scale_fraction(
@@ -667,6 +746,7 @@ class ImageSlider:
             )
         )
 
+        # Zero-size image is naturally centered at the same point.
         self.start_positions.append(
             [nx, ny]
         )
@@ -695,17 +775,17 @@ class ImageSlider:
             len(self.indices)
         ):
 
-            img = graphics.render_image(
-                self.images[self.indices[i]]
+            img = self.render_text_as_surface(
+                self.text[self.indices[i]]
             )
 
-            # Interpolate the COMPLETE scale.
             scale = (
                 self.start_scales[i]
                 + (
                     self.target_scales[i]
                     - self.start_scales[i]
-                ) * progress
+                )
+                * progress
             )
 
             alpha = (
@@ -713,7 +793,8 @@ class ImageSlider:
                 + (
                     self.target_alphas[i]
                     - self.start_alphas[i]
-                ) * progress
+                )
+                * progress
             )
 
             x = (
@@ -721,7 +802,8 @@ class ImageSlider:
                 + (
                     self.target_positions[i][0]
                     - self.start_positions[i][0]
-                ) * progress
+                )
+                * progress
             )
 
             y = (
@@ -729,7 +811,8 @@ class ImageSlider:
                 + (
                     self.target_positions[i][1]
                     - self.start_positions[i][1]
-                ) * progress
+                )
+                * progress
             )
 
             img = graphics.scale_image(
@@ -744,8 +827,13 @@ class ImageSlider:
                 int(alpha)
             )
 
-            rendered = self.is_rendered(
-                self.original_indices[i]
+            rendered = not (
+                self.cutoff
+                and (
+                    self.original_indices[i] < 0
+                    or self.original_indices[i]
+                    >= len(self.text)
+                )
             )
 
             rimages.append(
@@ -763,18 +851,17 @@ class ImageSlider:
 
     def finalize_slide_left(self):
 
-        # Moving left means moving to the next image.
-        self.image_index = (
-            self.image_index + 1
-        ) % len(self.images)
+        # The second image becomes the new first image,
+        # so just update image_index and reconstruct the
+        # ordinary state from scratch.
+        self.image_index = (self.image_index + 1) % len(self.text)
 
         self.slides += 1
 
         self.state = (
-            ImageSlider.NOT_SLIDING
+            TextSlider.NOT_SLIDING
         )
 
-        # Rebuild everything from the actual logical state.
         self.rerender_images()
 
     # =============================================================
@@ -788,15 +875,17 @@ class ImageSlider:
         )
 
         # ---------------------------------------------------------
-        # Add the new image entering from the left.
+        # New image entering from the left
         # ---------------------------------------------------------
 
         img_index = (
             self.indices[0] - 1
-        ) % len(self.images)
+        ) % len(self.text)
 
-        self.extra_image = graphics.render_image(
-            self.images[img_index]
+        self.extra_image = (
+            self.render_text_as_surface(
+                self.text[img_index]
+            )
         )
 
         self.indices.insert(
@@ -810,11 +899,13 @@ class ImageSlider:
         )
 
         # ---------------------------------------------------------
-        # New image -> slot 0
-        # old[0]    -> slot 1
-        # old[1]    -> slot 2
+        # New ordering:
+        #
+        # extra    -> slot 0
+        # old[0]   -> slot 1
+        # old[1]   -> slot 2
         # ...
-        # old[-1]   -> disappears
+        # old[-1]  -> disappears
         # ---------------------------------------------------------
 
         self.start_scales = []
@@ -834,7 +925,7 @@ class ImageSlider:
         self.target_positions = []
 
         # ---------------------------------------------------------
-        # Extra image entering from the left.
+        # Extra image entering from the left
         # ---------------------------------------------------------
 
         target_base_scale = (
@@ -878,27 +969,17 @@ class ImageSlider:
         )
 
         # ---------------------------------------------------------
-        # Existing images move one slot to the right.
+        # Existing images moving right
         # ---------------------------------------------------------
 
-        for old_index in range(
+        for old_i in range(
             visible_count - 1
         ):
 
-            old_list_index = old_index + 1
-            new_slot = old_index + 1
+            new_slot = old_i + 1
 
-            # Again, render the original image instead of using
-            # the already-scaled rendered surface.
-            img = graphics.render_image(
-                self.images[
-                    self.indices[old_list_index]
-                ]
-            )
-
-            start_scale = (
-                self.scale_factors[old_index]
-                * self.scale_mults[old_index]
+            img = self.render_text_as_surface(
+                self.text[self.indices[old_i + 1]]
             )
 
             target_base_scale = (
@@ -913,6 +994,12 @@ class ImageSlider:
                 * self.scale_mults[new_slot]
             )
 
+            # Old image's current absolute scale.
+            start_scale = (
+                self.scale_factors[old_i]
+                * self.scale_mults[old_i]
+            )
+
             self.start_scales.append(
                 start_scale
             )
@@ -921,13 +1008,8 @@ class ImageSlider:
                 target_scale
             )
 
-            x = self.rendered_images[
-                old_index
-            ][1]
-
-            y = self.rendered_images[
-                old_index
-            ][2]
+            x = self.rendered_images[old_i][1]
+            y = self.rendered_images[old_i][2]
 
             target_img = graphics.scale_image(
                 img,
@@ -950,33 +1032,29 @@ class ImageSlider:
             )
 
         # ---------------------------------------------------------
-        # Rightmost image disappears.
+        # Rightmost old image disappearing
         # ---------------------------------------------------------
 
-        disappearing_index = (
+        disappearing_old_i = (
             visible_count - 1
         )
 
-        start_scale = (
-            self.scale_factors[-1]
-            * self.scale_mults[-1]
-        )
+        x = self.rendered_images[
+            disappearing_old_i
+        ][1]
+
+        y = self.rendered_images[
+            disappearing_old_i
+        ][2]
 
         self.start_scales.append(
-            start_scale
+            self.scale_factors[-1]
+            * self.scale_mults[-1]
         )
 
         self.target_scales.append(
             self.MIN_SCALE
         )
-
-        x = self.rendered_images[
-            disappearing_index
-        ][1]
-
-        y = self.rendered_images[
-            disappearing_index
-        ][2]
 
         cx, cy = graphics.get_center(
             self.rects[-1]
@@ -1010,17 +1088,17 @@ class ImageSlider:
             len(self.indices)
         ):
 
-            img = graphics.render_image(
-                self.images[self.indices[i]]
+            img = self.render_text_as_surface(
+                self.text[self.indices[i]]
             )
 
-            # Interpolate the COMPLETE scale.
             scale = (
                 self.start_scales[i]
                 + (
                     self.target_scales[i]
                     - self.start_scales[i]
-                ) * progress
+                )
+                * progress
             )
 
             alpha = (
@@ -1028,7 +1106,8 @@ class ImageSlider:
                 + (
                     self.target_alphas[i]
                     - self.start_alphas[i]
-                ) * progress
+                )
+                * progress
             )
 
             x = (
@@ -1036,7 +1115,8 @@ class ImageSlider:
                 + (
                     self.target_positions[i][0]
                     - self.start_positions[i][0]
-                ) * progress
+                )
+                * progress
             )
 
             y = (
@@ -1044,7 +1124,8 @@ class ImageSlider:
                 + (
                     self.target_positions[i][1]
                     - self.start_positions[i][1]
-                ) * progress
+                )
+                * progress
             )
 
             img = graphics.scale_image(
@@ -1059,8 +1140,13 @@ class ImageSlider:
                 int(alpha)
             )
 
-            rendered = self.is_rendered(
-                self.original_indices[i]
+            rendered = not (
+                self.cutoff
+                and (
+                    self.original_indices[i] < 0
+                    or self.original_indices[i]
+                    >= len(self.text)
+                )
             )
 
             rimages.append(
@@ -1078,27 +1164,23 @@ class ImageSlider:
 
     def finalize_slide_right(self):
 
-        # Moving right means moving to the previous image.
-        self.image_index = (
-            self.image_index - 1
-        ) % len(self.images)
+        self.image_index = ((self.image_index - 1) % len(self.text))
 
         self.slides -= 1
 
         self.state = (
-            ImageSlider.NOT_SLIDING
+            TextSlider.NOT_SLIDING
         )
 
-        # Rebuild everything from the actual logical state.
         self.rerender_images()
 
     # =============================================================
-    # Tick
+    # Update
     # =============================================================
 
     def tick(self):
 
-        if self.state == ImageSlider.SLIDING_LEFT:
+        if self.state == TextSlider.SLIDING_LEFT:
 
             if (
                 self.sliding_clock.elapsed()
@@ -1111,7 +1193,7 @@ class ImageSlider:
 
                 self.render_slide_left()
 
-        elif self.state == ImageSlider.SLIDING_RIGHT:
+        elif self.state == TextSlider.SLIDING_RIGHT:
 
             if (
                 self.sliding_clock.elapsed()
@@ -1124,14 +1206,14 @@ class ImageSlider:
 
                 self.render_slide_right()
 
-        if self.state == ImageSlider.NOT_SLIDING:
+        if self.state == TextSlider.NOT_SLIDING:
 
             if self.slides != 0:
 
                 if self.slides > 0:
 
                     self.state = (
-                        ImageSlider.SLIDING_RIGHT
+                        TextSlider.SLIDING_RIGHT
                     )
 
                     self.initialize_slide_right()
@@ -1139,7 +1221,7 @@ class ImageSlider:
                 else:
 
                     self.state = (
-                        ImageSlider.SLIDING_LEFT
+                        TextSlider.SLIDING_LEFT
                     )
 
                     self.initialize_slide_left()

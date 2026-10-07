@@ -11,6 +11,7 @@ from modules import Modules
 import constants
 from widgets.textbox import Textbox
 from widgets.image_slider import ImageSlider
+from widgets.text_slider import TextSlider
 
 class ExplorerInfoFrame(Frame):
 
@@ -92,7 +93,7 @@ class ExplorerInfoFrame(Frame):
 
         self.icon_imgs = [IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
                         IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"), IIMAGE("Pack_Icon.png")
-                        ]
+                ]
         self.slider_menu = ImageSlider(self.icon_imgs,
                                         self.menu_slider_area.width, self.menu_slider_area.height, images_span=1,
                                         size_distribution=0.4, start_index = len(self.icon_imgs)//2,
