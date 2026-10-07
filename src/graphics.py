@@ -73,7 +73,11 @@ def get_fontsize(font, lines, frame, line_margin=5, min_size=1, max_size=1024):
 
     return high
 
-def page_by_chars(text, line_length=40, paragraph_length=5):
+def page_by_chars(text, line_length=40, paragraph_length=5, one_page=False):
+
+
+    if one_page:
+        paragraph_length = constants.INFINITE
 
     tsplit = [x.split(" ") for x in text.splitlines()]
 

@@ -120,6 +120,7 @@ class ImageSlider:
     def rerender_images(self):
 
         self.rendered_images = []
+        self.rendered_texts = []
         self.rects = []
 
         indices = [(self.image_index - i - 1)%len(self.images) for i in range(self.images_span)] +\
@@ -155,6 +156,8 @@ class ImageSlider:
             rendered = (False if self.cutoff and (self.original_indices[i] < 0 or self.original_indices[i] >= len(self.images)) else True)
 
             self.rendered_images.append([img, img_pos[0], img_pos[1], rendered])
+
+
             self.rects.append(rect)
 
         self.render()
