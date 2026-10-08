@@ -51,6 +51,7 @@ class LabeledImageSlider:
         text_color=Colors.BLACK
     ):
 
+        self.frame = frame
         self.images = images
         self.text = text
         self.width = frame.width
@@ -80,6 +81,9 @@ class LabeledImageSlider:
 
         if not self.horizontal and self.text_location not in [LabeledImageSlider.LEFT, LabeledImageSlider.RIGHT]:
             raise RuntimeError("Text Location not appropriate")
+
+        self.image_slider = None
+        self.text_slider = None
 
         self.rerender()
 
@@ -171,15 +175,24 @@ class LabeledImageSlider:
                                         self.text_color
                                         )
 
-        self.background_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self.background_surface = pygame.Surface((self.get_frame().width , self.get_frame().height), pygame.SRCALPHA)
         self.background_surface.fill(self.background_color)
 
+
+
+    def get_frame(self):
+
+        return self.frame.copy()
+
     def set_frame(self, frame):
+
 
         self.x = frame.x
         self.y = frame.y
         self.width = frame.width
         self.height = frame.height
+
+        self.frame = frame.copy()
 
         self.rerender()
 
@@ -197,6 +210,8 @@ class LabeledImageSlider:
 
         #returns a list of [(surface, (x, y))]
         back = [(self.background_surface, (self.x, self.y))]
+        ix, iy = self.imagepos
+        tx, ty = self.textpos
         back.append((self.image_slider.top_surface, self.imagepos))
         back.append((self.text_slider.top_surface, self.textpos))
 
@@ -224,7 +239,8 @@ class LabeledImageSlider:
 
 
     def get_selected_index(self):
-        return self.image_slider.get_selected_index()
+        self.image_slider.get_selected_index()
+
 
     def set_background_color(self, color):
         self.image_slider.set_background_color(color)

@@ -26,6 +26,11 @@ class ExplorerInfoFrame(Frame):
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
 
+        self.focused_outline_size = 5
+        self.f_outline_d = 0.1
+
+
+
         self.headline_area = pygame.Rect(0, 0, self.width, self.height // 8)
         self.explorer_image_area = pygame.Rect(0, self.headline_area.height + self.headline_area.y, self.width, self.height // 8 * 3)
         self.textbox_area = pygame.Rect(0, self.explorer_image_area.y + self.explorer_image_area.height, self.width, self.height // 16 * 3)
@@ -33,6 +38,12 @@ class ExplorerInfoFrame(Frame):
         menu_slider_hmargin = self.height // 16
         self.menu_slider_area = pygame.Rect(menu_slider_wmargin, self.textbox_area.y + self.textbox_area.height + menu_slider_hmargin,
                                             self.width - 2*menu_slider_wmargin, self.height // 16 * 5 - 2*menu_slider_hmargin)
+
+        self.f_outline_sp = self.focused_outline_size / self.menu_slider_area.width
+
+        self.actual_slider_area = graphics.apply_margins(self.menu_slider_area, self.f_outline_sp + self.f_outline_d, self.f_outline_sp + self.f_outline_d)
+
+
 
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
@@ -95,25 +106,11 @@ class ExplorerInfoFrame(Frame):
         self.icon_imgs = [IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
                         IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"), IIMAGE("Pack_Icon.png")
                 ]
-        """
-        self.slider_menu = ImageSlider(self.icon_imgs,
-                                        self.menu_slider_area.width, self.menu_slider_area.height, images_span=1,
-                                        size_distribution=0.4, start_index = len(self.icon_imgs)//2,
-                                        max_slides=1
-                                        )
 
-        self.slider_menu = TextSlider(
-                                        [["line1", "line2"], ["ABC", "DCV", "WER"], ["HEEEEE"], ["OOP", "GAFSVGTSHZAHZTG"],
-                                        ["w"], ["H"]],
-                                        self.menu_slider_area.width, self.menu_slider_area.height, images_span=1,
-                                        size_distribution=0.4, start_index = len(self.icon_imgs)//2,
-                                        max_slides=1
-                                        )
-        """
 
         self.slider_menu = LabeledImageSlider(self.icon_imgs,
                                                 [["Deck"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"]],
-                                                self.menu_slider_area, text_location=LabeledImageSlider.TOP
+                                                self.actual_slider_area, text_location=LabeledImageSlider.BOTTOM
                                                 )
 
 
@@ -148,7 +145,7 @@ class ExplorerInfoFrame(Frame):
 
                 if self.state == self.NO_FOCUS:
                     self.state = self.DESCRIPTION_FOCUSED
-                    self.textbox.set_outline_size(5)
+                    self.textbox.set_outline_size(self.focused_outline_size)
                 elif self.state == self.DESCRIPTION_FOCUSED:
                     self.textbox.prev_page()
                     self.key_clock.start()
@@ -160,7 +157,7 @@ class ExplorerInfoFrame(Frame):
 
                 if self.state == self.NO_FOCUS:
                     self.state = self.DESCRIPTION_FOCUSED
-                    self.textbox.set_outline_size(5)
+                    self.textbox.set_outline_size(self.focused_outline_size)
                 elif self.state == self.DESCRIPTION_FOCUSED:
                     self.textbox.next_page()
                     self.key_clock.start()
@@ -172,17 +169,13 @@ class ExplorerInfoFrame(Frame):
 
                 if self.state == self.NO_FOCUS or self.state == self.MENU_FOCUSED:
                     self.state = self.DESCRIPTION_FOCUSED
-                    self.textbox.set_outline_size(5)
+                    self.textbox.set_outline_size(self.focused_outline_size)
 
             if keys[pygame.K_DOWN] or keys[KeyAlternatives.DOWN_ALTERNATIVE]:
 
                 if self.state == self.NO_FOCUS or self.state == self.DESCRIPTION_FOCUSED:
                     self.state = self.MENU_FOCUSED
                     self.textbox.set_outline_size(0)
-
-
-
-
 
         return (FrameEnums.EXPLORER_INFO_FRAME, self.data)
 
@@ -203,6 +196,9 @@ class ExplorerInfoFrame(Frame):
                 self.surface.blit(surf, self.textbox_pos)
             for surf, pos in self.slider_menu.get_surfaces_with_position():
                 self.surface.blit(surf, pos)
+
+            if self.state == self.MENU_FOCUSED:
+                pygame.draw.rect(self.surface, (*Colors.BLACK, 255), self.menu_slider_area, width=self.focused_outline_size)
 
 
             screen.blit(self.surface, (self.x, self.y))

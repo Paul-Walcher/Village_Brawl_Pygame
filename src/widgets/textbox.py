@@ -14,7 +14,7 @@ class Textbox:
 
     def __init__(self, font, fontsize, text, width, height, outline_size=0, outline_color=Colors.BLACK, text_color=Colors.BLACK,
                 background_color=Colors.TRANSPARENT, wmargin=5, hmargin=5, line_margin=2, centered=False,
-                pagenumber_color=Colors.WHITE
+                pagenumber_color=Colors.WHITE, startpage=0
 
                 ):
 
@@ -33,7 +33,7 @@ class Textbox:
 
         self.surface = pygame.Surface((width, height), pygame.SRCALPHA)
 
-        self.page_index = 0
+        self.page_index = startpage
         self.rpage = []
         self.n_pages = 0
 
@@ -53,6 +53,8 @@ class Textbox:
     def calculate_pages(self):
         self.pages = graphics.page_by_chars(self.text)
         self.n_pages = len(self.pages)
+
+        self.page_index %= self.n_pages
 
     def render_page(self):
         if self.pagenumber_shown:
