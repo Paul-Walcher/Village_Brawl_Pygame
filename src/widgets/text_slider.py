@@ -44,7 +44,7 @@ class TextSlider:
         cutoff=False,
         max_slides=10,
         font_startsize=30,
-        line_margin=5,
+        line_margin_percentage=0.05,
         text_color=Colors.BLACK
     ):
 
@@ -59,7 +59,8 @@ class TextSlider:
         self.text_color = text_color
 
         self.image_index = start_index
-        self.line_margin = line_margin
+        self.line_margin_percentage = line_margin_percentage
+        self.line_margin = int(self.line_margin_percentage * height)
         self.cutoff = cutoff
         self.max_slides = max_slides
 
@@ -267,19 +268,10 @@ class TextSlider:
 
         iw, ih = img.get_size()
 
-        if iw > ih:
+        width_scale = rect.width / iw
+        height_scale = rect.height / ih
 
-            if self.horizontal:
-                return rect.width / iw
-
-            return self.width / iw
-
-        else:
-
-            if self.horizontal:
-                return self.height / ih
-
-            return rect.height / ih
+        return min(width_scale, height_scale)
 
     def get_absolute_scale(self, img, rect, slot_index):
 
