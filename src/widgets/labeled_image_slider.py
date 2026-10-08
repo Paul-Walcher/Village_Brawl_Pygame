@@ -35,6 +35,7 @@ class LabeledImageSlider:
         font=Fonts.MINECRAFT,
         text_location=None,
         sliding_duration=500,  # ms
+        select_animation_duration=800,#ms
         alphas=None,
         span=1,
         background_color=Colors.TRANSPARENT,
@@ -61,6 +62,7 @@ class LabeledImageSlider:
         self.font = font
         self.text_location = (text_location if text_location is not None else LabeledImageSlider.BOTTOM)
         self.sliding_duration = sliding_duration
+        self.select_animation_duration = select_animation_duration
         self.alphas = alphas
         self.span = span
         self.background_color = background_color
@@ -86,6 +88,16 @@ class LabeledImageSlider:
         self.text_slider = None
 
         self.rerender()
+
+    def poll_events(self):
+
+        return self.image_slider.poll_events().extend(self.text_slider.poll_events())
+
+    def play_select_animation(self):
+        self.image_slider.play_select_animation()
+
+    def select_animation_playing(self):
+        return self.image_slider.select_animation_playing()
 
     def rerender(self):
 
@@ -145,6 +157,7 @@ class LabeledImageSlider:
                                         self.images_width,
                                         self.images_height,
                                         self.sliding_duration,  # ms
+                                        self.select_animation_duration,
                                         self.alphas,
                                         self.span,
                                         self.background_color,

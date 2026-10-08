@@ -110,7 +110,8 @@ class ExplorerInfoFrame(Frame):
 
         self.slider_menu = LabeledImageSlider(self.icon_imgs,
                                                 [["Deck"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"]],
-                                                self.actual_slider_area, text_location=LabeledImageSlider.BOTTOM
+                                                self.actual_slider_area, text_location=LabeledImageSlider.BOTTOM,
+                                                max_slides=2
                                                 )
 
 
@@ -176,6 +177,9 @@ class ExplorerInfoFrame(Frame):
                 if self.state == self.NO_FOCUS or self.state == self.DESCRIPTION_FOCUSED:
                     self.state = self.MENU_FOCUSED
                     self.textbox.set_outline_size(0)
+
+            if keys[pygame.K_l]:
+                self.slider_menu.play_select_animation()
 
         return (FrameEnums.EXPLORER_INFO_FRAME, self.data)
 

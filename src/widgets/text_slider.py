@@ -68,6 +68,7 @@ class TextSlider:
         self.height = height
         self.sliding_duration = sliding_duration
         self.images_span = images_span
+        self.event_queue = []
 
         # ---------------------------------------------------------
         # Alpha values
@@ -149,6 +150,12 @@ class TextSlider:
     # =============================================================
     # General
     # =============================================================
+
+    def poll_events(self):
+
+        back = self.event_queue
+        self.event_queue = []
+        return back
 
     def get_selected_index(self):
         return self.image_index - self.slides

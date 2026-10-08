@@ -12,6 +12,7 @@ from constants import (
     KeyAlternatives,
     FrameDataID
 )
+from enum import Enum, auto
 import graphics
 from clock import Clock
 from modules import Modules
@@ -20,9 +21,19 @@ import constants
 
 class ImageSlider:
 
+    class Event:
+
+        SELECT_ANIMATION_ENDED = 0
+
+        def __init__(self, type, data):
+            self.type = type
+            self.data = data
+
+
     SLIDING_LEFT = 0
     SLIDING_RIGHT = 1
     NOT_SLIDING = 2
+    SELECT_ANIMATION_PLAYING = 3
 
     MIN_SCALE = 0.001
 
@@ -32,6 +43,7 @@ class ImageSlider:
         width,
         height,
         sliding_duration=500,  # ms
+        select_animation_duration=800,#ms
         images_alphas=None,
         images_span=1,
         background_color=Colors.TRANSPARENT,
@@ -57,9 +69,13 @@ class ImageSlider:
         self.height = height
 
         self.sliding_duration = sliding_duration
+        self.select_animation_duration = select_animation_duration
         self.images_span = images_span
 
         self.images_alphas = images_alphas
+        self.select_animation_queued = False
+
+        self.event_queue = []
 
         if self.images_alphas is None:
 
@@ -143,6 +159,7 @@ class ImageSlider:
         self.rerender_images()
 
         self.sliding_clock = Clock()
+        self.select_animation_clock = Clock()
 
     # =============================================================
     # General
@@ -170,7 +187,7 @@ class ImageSlider:
         ):
             return
 
-        if self.slides > -self.max_slides:
+        if self.slides > -self.max_slides and not self.select_animation_queued:
             self.slides -= 1
 
     def slide_right(self):
@@ -180,7 +197,7 @@ class ImageSlider:
         ):
             return
 
-        if self.slides < self.max_slides:
+        if self.slides < self.max_slides and not self.select_animation_queued:
             self.slides += 1
 
     def reset_slides(self):
@@ -236,6 +253,13 @@ class ImageSlider:
     # =============================================================
     # Initial rendering
     # =============================================================
+
+    def play_select_animation(self):
+        if not self.state == ImageSlider.SELECT_ANIMATION_PLAYING:
+            self.select_animation_queued = True
+            return True
+        else:
+            return False
 
     def rerender_images(self):
 
@@ -454,6 +478,8 @@ class ImageSlider:
             Colors.TRANSPARENT
         )
 
+        mid_img = self.rendered_images[self.images_span]
+
         for (
             img,
             x,
@@ -461,12 +487,18 @@ class ImageSlider:
             rendered
         ) in self.rendered_images:
 
-            if rendered:
+            if rendered and img is not mid_img:
 
                 self.top_surface.blit(
                     img,
                     (x, y)
                 )
+
+        img, x, y, rendered = self.rendered_images[self.images_span]
+
+        if rendered:
+
+            self.top_surface.blit(img, (x, y))
 
     # =============================================================
     # LEFT SLIDE
@@ -1086,6 +1118,61 @@ class ImageSlider:
     # =============================================================
     # Tick
     # =============================================================
+    def render_select_animation(self):
+
+        percentage = self.select_animation_clock.elapsed() / self.select_animation_duration
+
+        scale_increase = 0.5
+
+        halfsize = (int(self.selected_image_startsize[0] * scale_increase) // 2, int(self.selected_image_startsize[1] * scale_increase) // 2)
+
+        if percentage >= 1.0:
+            self.state = ImageSlider.NOT_SLIDING
+            self.event_queue.append(ImageSlider.Event(ImageSlider.Event.SELECT_ANIMATION_ENDED, None))
+            self.rerender_images()
+        else:
+
+            npos = None
+            nscale = None
+
+            if percentage <= 0.5:
+
+                nscale = (int(self.selected_image_startsize[0] * (1.0 -  scale_increase * 2 * percentage)),
+                            int(self.selected_image_startsize[1] * (1.0 -  scale_increase * 2 *  percentage))
+                            )
+                npos = (int(self.selected_image_startpos[0] + halfsize[0] * 2 * percentage),
+                            int(self.selected_image_startpos[1] + halfsize[1] * 2* percentage)
+                            )
+
+            else:
+
+                nscale = (int(self.selected_image_startsize[0] * ((1.0 -  scale_increase) + scale_increase * (percentage - 0.5)*2)),
+                            int(self.selected_image_startsize[1] * ((1.0 -  scale_increase) + scale_increase * (percentage - 0.5)*2))
+                            )
+                npos = (int(self.selected_image_startpos[0] + halfsize[0] * (1.0 - 2 * (percentage - 0.5))),
+                            int(self.selected_image_startpos[1] + halfsize[1] * (1.0 - 2* (percentage - 0.5)))
+                            )
+
+
+            new_img = pygame.transform.smoothscale(self.selected_image_copy, nscale)
+
+            print(npos)
+
+            self.rendered_images[self.images_span][0] = new_img
+            self.rendered_images[self.images_span][1], self.rendered_images[self.images_span][2] = npos
+
+
+            self.render()
+
+    def select_animation_playing(self):
+
+        return self.state == ImageSlider.SELECT_ANIMATION_PLAYING
+
+    def poll_events(self):
+
+        back = self.event_queue
+        self.event_queue = []
+        return back
 
     def tick(self):
 
@@ -1115,7 +1202,11 @@ class ImageSlider:
 
                 self.render_slide_right()
 
-        if self.state == ImageSlider.NOT_SLIDING:
+        elif self.state == ImageSlider.SELECT_ANIMATION_PLAYING:
+
+            self.render_select_animation()
+
+        elif self.state == ImageSlider.NOT_SLIDING:
 
             if self.slides != 0:
 
@@ -1134,3 +1225,12 @@ class ImageSlider:
                     )
 
                     self.initialize_slide_left()
+
+            elif self.slides == 0 and self.select_animation_queued:
+
+                self.select_animation_queued = False
+                self.state = ImageSlider.SELECT_ANIMATION_PLAYING
+                self.selected_image_startsize = self.rendered_images[self.images_span][0].get_size()
+                self.selected_image_startpos = (self.rendered_images[self.images_span][1], self.rendered_images[self.images_span][2])
+                self.selected_image_copy = self.rendered_images[self.images_span][0].copy()
+                self.select_animation_clock.start()
