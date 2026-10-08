@@ -1156,7 +1156,6 @@ class ImageSlider:
 
             new_img = pygame.transform.smoothscale(self.selected_image_copy, nscale)
 
-            print(npos)
 
             self.rendered_images[self.images_span][0] = new_img
             self.rendered_images[self.images_span][1], self.rendered_images[self.images_span][2] = npos

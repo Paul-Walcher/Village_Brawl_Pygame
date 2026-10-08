@@ -178,7 +178,7 @@ class ExplorerInfoFrame(Frame):
                     self.state = self.MENU_FOCUSED
                     self.textbox.set_outline_size(0)
 
-            if keys[pygame.K_l]:
+            if keys[pygame.K_l] and self.state == self.MENU_FOCUSED:
                 self.slider_menu.play_select_animation()
 
         return (FrameEnums.EXPLORER_INFO_FRAME, self.data)
