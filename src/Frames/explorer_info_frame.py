@@ -4,7 +4,7 @@ import threading
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, Alpha, IIMAGE
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, Alpha, IIMAGE, STANDARD_BACKSIDES
 import graphics
 from clock import Clock
 from modules import Modules
@@ -154,7 +154,7 @@ class ExplorerInfoFrame(Frame):
                     self.textbox.prev_page()
                     self.key_clock.start()
                 elif self.state == self.MENU_FOCUSED:
-                    self.slider_menu.slide_left()
+                    self.slider_menu.slide_right()
                     self.key_clock.start()
 
             if keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
@@ -166,7 +166,7 @@ class ExplorerInfoFrame(Frame):
                     self.textbox.next_page()
                     self.key_clock.start()
                 elif self.state == self.MENU_FOCUSED:
-                    self.slider_menu.slide_right()
+                    self.slider_menu.slide_left()
                     self.key_clock.start()
 
             if keys[pygame.K_UP] or keys[KeyAlternatives.UP_ALTERNATIVE]:
@@ -182,8 +182,7 @@ class ExplorerInfoFrame(Frame):
                     self.textbox.set_outline_size(0)
 
             if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
-                if not self.slider_menu.flipping_animation_playing():
-                    self.slider_menu.flip_card()
+                self.slider_menu.play_select_animation()
 
         slider_events = self.slider_menu.poll_events()
 

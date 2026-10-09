@@ -25,7 +25,7 @@ INFINITE = sys.maxsize
 PLAYSETS_FOLDER = "playsets"
 
 INTRO_IMAGES = [SIMAGE(x) for x in ["Wood.png", "Stone.png", "Pebble.png", "Twig.png"]]
-
+STANDARD_BACKSIDES = lambda x: [CIMAGE("standard_backside.png") for i in range(x)]
 
 
 class Alpha:

@@ -114,6 +114,7 @@ class LabeledImageSlider:
         self.select_animation_queued = False
 
         self.cardflip_queued = False
+        self.cardflips_queued = False
 
         self.rerender()
 
@@ -286,9 +287,12 @@ class LabeledImageSlider:
                 self.text_slider.slide_right()
                 self.queued_slides -= 1
 
-        if not self.is_sliding and self.select_animation_queued and not self.cardflip_queued:
+        if not self.is_sliding and self.select_animation_queued and not self.cardflip_queued and not self.cardflips_queued:
             self.select_animation_queued = False
             self.image_slider.play_select_animation()
+        elif not self.is_sliding and self.cardflips_queued:
+            self.cardflips_queued = False
+            self.image_slider.flip_all_cards()
         elif not self.is_sliding and self.cardflip_queued:
             self.cardflip_queued = False
             self.image_slider.flip_card()
@@ -318,8 +322,11 @@ class LabeledImageSlider:
         self.text_slider.tick()
 
     def flip_card(self):
-
         self.cardflip_queued = True
+
+    def flip_all_cards(self):
+
+        self.cardflips_queued = True
 
     def slide_left(self):
 
