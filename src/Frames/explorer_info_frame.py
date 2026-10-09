@@ -114,7 +114,7 @@ class ExplorerInfoFrame(Frame):
         self.slider_menu = LabeledImageSlider(self.icon_imgs,
                                                 [["Deck"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"]],
                                                 self.actual_slider_area, text_location=LabeledImageSlider.BOTTOM,
-                                                max_slides=2, back_images=[self.icon_imgs[3] for i in range(len(self.icon_imgs))]
+                                                max_slides=2
                                                 )
 
 
