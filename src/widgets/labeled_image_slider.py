@@ -91,7 +91,9 @@ class LabeledImageSlider:
 
     def poll_events(self):
 
-        return self.image_slider.poll_events().extend(self.text_slider.poll_events())
+        back = self.image_slider.poll_events()
+        back.extend(self.text_slider.poll_events())
+        return back
 
     def play_select_animation(self):
         self.image_slider.play_select_animation()
@@ -217,7 +219,9 @@ class LabeledImageSlider:
         return self.text_slider.get_surfaces()
 
     def get_surfaces(self):
-        return self.image_slider.get_surfaces().extend(self.text_slider.get_surfaces()).extend([self.background_surface])
+        ims = self.image_slider.get_surfaces()
+        ims.extend(self.text_slider.get_surfaces()).extend([self.background_surface])
+        return ims
 
     def get_surfaces_with_position(self):
 
@@ -252,7 +256,7 @@ class LabeledImageSlider:
 
 
     def get_selected_index(self):
-        self.image_slider.get_selected_index()
+        return self.image_slider.get_selected_index()
 
 
     def set_background_color(self, color):

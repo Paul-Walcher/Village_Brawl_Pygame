@@ -155,6 +155,19 @@ class ChooseExplorerFrame(Frame):
 
         subframe_data = self.subframes_tick()
 
+        if self.info_frame is not None:
+
+            events = self.info_frame.poll_events()
+
+            for event in events:
+                 if event.type == Frame.Event.EXIT_PARENT_FRAME:
+
+                     idx = self.info_frame.get_selected_index()
+                     print(idx)
+                     return (None, None)
+
+
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return (None, None)

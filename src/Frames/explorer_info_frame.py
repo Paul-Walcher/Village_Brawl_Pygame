@@ -75,6 +75,9 @@ class ExplorerInfoFrame(Frame):
         self.headline = graphics.render_text(self.headline_font, self.headline_fontsize, self.explorer_info.name, self.explorer_info.name_color)
         self.headline_pos = graphics.get_center_with_surface(self.headline, self.headline_frame_dim)
 
+    def get_selected_index(self):
+        return self.slider_menu.get_selected_index()
+
     def render_explorer(self):
 
         self.explorer_image_path = self.explorer_info.standard_image_path
@@ -178,8 +181,16 @@ class ExplorerInfoFrame(Frame):
                     self.state = self.MENU_FOCUSED
                     self.textbox.set_outline_size(0)
 
-            if keys[pygame.K_l] and self.state == self.MENU_FOCUSED:
-                self.slider_menu.play_select_animation()
+            if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
+                if not self.slider_menu.select_animation_playing():
+                    self.slider_menu.play_select_animation()
+
+        slider_events = self.slider_menu.poll_events()
+
+        for event in slider_events:
+
+            if event.type == ImageSlider.Event.SELECT_ANIMATION_ENDED:
+                self.push_parent_exit_event()
 
         return (FrameEnums.EXPLORER_INFO_FRAME, self.data)
 

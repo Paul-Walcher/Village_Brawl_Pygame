@@ -4,6 +4,21 @@ from constants import FrameDataID
 
 class Frame(ABC):
 
+    class Event:
+
+        #event types
+        EXIT_FRAME = 0 #signal to exit the current frame
+        EXIT_PARENT_FRAME = 1
+
+        def __init__(self, type, src_frame):
+            self.type = type
+            self.src_frame = src_frame
+
+        def copy(self):
+
+            event = Frame.Event(self.type, self.src_frame)
+            return event
+
     def __init__(self, frame_enum, data=None, frame_dim=None):
 
         self.frame_enum = frame_enum
@@ -14,6 +29,7 @@ class Frame(ABC):
         self.parent_frame = None
         self.input_blocked = False
         self.shown = True
+        self.event_queue = []
 
         self.x, self.y, self.width, self.height = 0, 0, 0, 0
         self.recalculate_dimensions()
@@ -26,6 +42,38 @@ class Frame(ABC):
     """
     Use the following functions when changing the frame.
     """
+
+    #event adding functions
+    def push_exit_event(self):
+
+        exit_event = Frame.Event(
+                                    Frame.Event.EXIT_FRAME,
+                                    self
+                                )
+        self.event_queue.append(exit_event)
+
+    def push_parent_exit_event(self):
+
+        exit_event = Frame.Event(
+                                    Frame.Event.EXIT_PARENT_FRAME,
+                                    self
+                                )
+        self.event_queue.append(exit_event)
+
+    def poll_events(self):
+
+        back = self.event_queue
+        self.event_queue = []
+        return back
+
+    def poll_events_with_putback(self):
+        return [event.copy() for event in self.event_queue]
+
+    def poll_events_subframes(self):
+        return {sframe: sframe.poll_events() for sframe in self.subframes}
+
+    def poll_events_subframes_with_putback(self):
+        return {sframe: sframe.poll_events_with_putback() for sframe in self.subframes}
 
     def hide(self):
         self.shown = False
@@ -49,6 +97,30 @@ class Frame(ABC):
 
     def unblock_input(self):
         self.input_blocked = False
+
+    def block_input_all_frames(self, exceptions=None):
+
+        if exceptions is None:
+            exceptions = []
+
+        if self not in exceptions:
+            self.block_input()
+
+        for sframe in self.subframes:
+            if sframe not in exceptions:
+                sframe.block_input()
+
+    def unblock_input_all_frames(self, exceptions=None):
+
+        if exceptions is None:
+            exceptions = []
+
+        if self not in exceptions:
+            self.unblock_input()
+
+        for sframe in self.subframes:
+            if sframe not in exceptions:
+                sframe.unblock_input()
 
     def set_frame(self, new_frame_dim):
 
