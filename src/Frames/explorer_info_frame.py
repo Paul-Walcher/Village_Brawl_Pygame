@@ -114,7 +114,7 @@ class ExplorerInfoFrame(Frame):
         self.slider_menu = LabeledImageSlider(self.icon_imgs,
                                                 [["Deck"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"]],
                                                 self.actual_slider_area, text_location=LabeledImageSlider.BOTTOM,
-                                                max_slides=2
+                                                max_slides=2, back_images=[self.icon_imgs[3] for i in range(len(self.icon_imgs))]
                                                 )
 
 
@@ -182,15 +182,16 @@ class ExplorerInfoFrame(Frame):
                     self.textbox.set_outline_size(0)
 
             if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
-                if not self.slider_menu.select_animation_playing():
-                    self.slider_menu.play_select_animation()
+                if not self.slider_menu.flipping_animation_playing():
+                    self.slider_menu.flip_card()
 
         slider_events = self.slider_menu.poll_events()
 
         for event in slider_events:
 
             if event.type == ImageSlider.Event.SELECT_ANIMATION_ENDED:
-                self.push_parent_exit_event()
+                #self.push_parent_exit_event()
+                pass
 
         return (FrameEnums.EXPLORER_INFO_FRAME, self.data)
 

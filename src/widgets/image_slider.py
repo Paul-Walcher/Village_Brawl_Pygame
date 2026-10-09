@@ -24,6 +24,8 @@ class ImageSlider:
     class Event:
 
         SELECT_ANIMATION_ENDED = 0
+        FLIPPING_ANIMATION_ENDED = 1
+        SLIDING_ANIMATION_ENDED = 2
 
         def __init__(self, type, data):
             self.type = type
@@ -34,6 +36,7 @@ class ImageSlider:
     SLIDING_RIGHT = 1
     NOT_SLIDING = 2
     SELECT_ANIMATION_PLAYING = 3
+    FLIPPING_ANIMATION_PLAYING = 4
 
     MIN_SCALE = 0.001
 
@@ -52,7 +55,9 @@ class ImageSlider:
         horizontal=True,
         start_index=0,
         cutoff=False,
-        max_slides=10
+        max_slides=10,
+        back_images=None,
+        flip_duration=400#ms
     ):
 
         if len(images) < (1 + 2 * images_span):
@@ -61,6 +66,9 @@ class ImageSlider:
             )
 
         self.images = images
+        self.back_images = (back_images if back_images is not None else self.images.copy())
+        self.flip_duration = flip_duration
+        self.flipping_animation_queued = False
         self.image_index = start_index
         self.cutoff = cutoff
         self.max_slides = max_slides
@@ -160,6 +168,7 @@ class ImageSlider:
 
         self.sliding_clock = Clock()
         self.select_animation_clock = Clock()
+        self.flipping_animation_clock = Clock()
 
     # =============================================================
     # General
@@ -257,6 +266,13 @@ class ImageSlider:
     def play_select_animation(self):
         if not self.state == ImageSlider.SELECT_ANIMATION_PLAYING:
             self.select_animation_queued = True
+            return True
+        else:
+            return False
+
+    def flip_card(self):
+        if not self.state == ImageSlider.FLIPPING_ANIMATION_PLAYING:
+            self.flipping_animation_queued = True
             return True
         else:
             return False
@@ -797,6 +813,8 @@ class ImageSlider:
             ImageSlider.NOT_SLIDING
         )
 
+        self.event_queue.append(ImageSlider.Event(ImageSlider.Event.SLIDING_ANIMATION_ENDED, None))
+
         # Rebuild everything from the actual logical state.
         self.rerender_images()
 
@@ -1112,6 +1130,8 @@ class ImageSlider:
             ImageSlider.NOT_SLIDING
         )
 
+        self.event_queue.append(ImageSlider.Event(ImageSlider.Event.SLIDING_ANIMATION_ENDED, None))
+
         # Rebuild everything from the actual logical state.
         self.rerender_images()
 
@@ -1163,9 +1183,51 @@ class ImageSlider:
 
             self.render()
 
+    def render_flipping_animation(self):
+
+        percentage = self.flipping_animation_clock.elapsed() / self.flip_duration
+
+        if percentage >= 1.0:
+            self.state = ImageSlider.NOT_SLIDING
+            self.event_queue.append(ImageSlider.Event(ImageSlider.Event.FLIPPING_ANIMATION_ENDED, None))
+            #changing images
+            save = self.images[self.image_index]
+            self.images[self.image_index] = self.back_images[self.image_index]
+            self.back_images[self.image_index] = save
+            self.rerender_images()
+
+        else:
+
+            if percentage <= 0.5:
+
+                fullp = 2 * percentage
+
+                new_width = int((1.0 - fullp) * self.selected_image_startsize[0])
+
+                new_img = pygame.transform.smoothscale(self.selected_image_copy, (new_width, self.selected_image_startsize[1]))
+                new_pos = (self.selected_image_startpos[0] + (self.selected_image_startsize[0] - new_width) // 2, self.selected_image_startpos[1])
+
+                self.rendered_images[self.images_span] = [new_img, new_pos[0], new_pos[1], self.rendered_images[self.images_span][3]]
+
+            else:
+
+                fullp = 1.0 - (2* percentage - 1.0)
+
+                new_width = int((1.0 - fullp) * self.selected_image_startsize[0])
+
+                new_img = pygame.transform.smoothscale(self.back_image_rendered, (new_width, self.selected_image_startsize[1]))
+                new_pos = (self.selected_image_startpos[0] + (self.selected_image_startsize[0] - new_width) // 2, self.selected_image_startpos[1])
+
+                self.rendered_images[self.images_span] = [new_img, new_pos[0], new_pos[1], self.rendered_images[self.images_span][3]]
+
+            self.render()
+
     def select_animation_playing(self):
 
         return self.state == ImageSlider.SELECT_ANIMATION_PLAYING
+
+    def flipping_animation_playing(self):
+        return self.state == ImageSlider.FLIPPING_ANIMATION_PLAYING
 
     def poll_events(self):
 
@@ -1205,6 +1267,10 @@ class ImageSlider:
 
             self.render_select_animation()
 
+        elif self.state == ImageSlider.FLIPPING_ANIMATION_PLAYING:
+
+            self.render_flipping_animation()
+
         elif self.state == ImageSlider.NOT_SLIDING:
 
             if self.slides != 0:
@@ -1224,6 +1290,16 @@ class ImageSlider:
                     )
 
                     self.initialize_slide_left()
+
+            elif self.slides == 0 and self.flipping_animation_queued:
+
+                self.flipping_animation_queued = False
+                self.state = ImageSlider.FLIPPING_ANIMATION_PLAYING
+                self.selected_image_startsize = self.rendered_images[self.images_span][0].get_size()
+                self.selected_image_startpos = (self.rendered_images[self.images_span][1], self.rendered_images[self.images_span][2])
+                self.selected_image_copy = self.rendered_images[self.images_span][0].copy()
+                self.back_image_rendered = graphics.render_image(self.back_images[self.image_index])
+                self.flipping_animation_clock.start()
 
             elif self.slides == 0 and self.select_animation_queued:
 

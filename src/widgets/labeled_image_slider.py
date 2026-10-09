@@ -27,6 +27,20 @@ class LabeledImageSlider:
     TOP = 2
     BOTTOM = 3
 
+    class Event:
+
+        SELECT_ANIMATION_ENDED = 0
+        FLIPPING_ANIMATION_ENDED = 1
+        SLIDING_ANIMATION_ENDED = 2
+
+        def __init__(self, type, data):
+            self.type = type
+            self.data = data
+
+        def copy(self):
+
+            return LabeledImageSlider.Event(self.type, self.data)
+
     def __init__(
         self,
         images,
@@ -49,11 +63,14 @@ class LabeledImageSlider:
         max_slides=10,
         font_startsize=30,
         line_margin_percentage=0.05,
-        text_color=Colors.BLACK
+        text_color=Colors.BLACK,
+        back_images = None,
+        flipping_animation_duration = 500#ms
     ):
 
         self.frame = frame
         self.images = images
+        self.back_images = (back_images if back_images is not None else self.images.copy())
         self.text = text
         self.width = frame.width
         self.height = frame.height
@@ -77,6 +94,7 @@ class LabeledImageSlider:
         self.text_color = text_color
         self.image_to_text_distribution = image_to_text_distribution
         self.image_text_distance_percentage = image_text_distance_percentage
+        self.flipping_animation_duration = flipping_animation_duration
 
         if self.horizontal and self.text_location not in [LabeledImageSlider.BOTTOM, LabeledImageSlider.TOP]:
             raise RuntimeError("Text Location not appropriate")
@@ -87,19 +105,36 @@ class LabeledImageSlider:
         self.image_slider = None
         self.text_slider = None
 
+        self.event_queue = []
+        self.queued_slides = 0
+        self.is_sliding = False
+
+        self.isliding_finished = False
+        self.tsliding_finished = False
+        self.select_animation_queued = False
+
+        self.cardflip_queued = False
+
         self.rerender()
 
     def poll_events(self):
 
-        back = self.image_slider.poll_events()
-        back.extend(self.text_slider.poll_events())
+        back = self.event_queue
+        self.event_queue = []
         return back
 
+    def poll_events_with_putback(self):
+
+        return [x.copy() for x in self.event_queue]
+
     def play_select_animation(self):
-        self.image_slider.play_select_animation()
+        self.select_animation_queued = True
 
     def select_animation_playing(self):
         return self.image_slider.select_animation_playing()
+
+    def flipping_animation_playing(self):
+        self.image_slider.flipping_animation_playing()
 
     def rerender(self):
 
@@ -168,7 +203,9 @@ class LabeledImageSlider:
                                         self.horizontal,
                                         self.start_index,
                                         self.cutoff,
-                                        self.max_slides
+                                        self.max_slides,
+                                        self.back_images,
+                                        self.flipping_animation_duration
                                         )
         self.text_slider = TextSlider(
                                         self.text,
@@ -236,23 +273,67 @@ class LabeledImageSlider:
 
     def tick(self):
 
+        if self.queued_slides != 0 and not self.is_sliding and not self.image_slider.select_animation_playing() and not self.image_slider.flipping_animation_playing():
+            self.is_sliding = True
+            self.isliding_finished = False
+            self.tsliding_finished = False
+            if self.queued_slides < 0:
+                self.image_slider.slide_left()
+                self.text_slider.slide_left()
+                self.queued_slides += 1
+            else:
+                self.image_slider.slide_right()
+                self.text_slider.slide_right()
+                self.queued_slides -= 1
+
+        if not self.is_sliding and self.select_animation_queued and not self.cardflip_queued:
+            self.select_animation_queued = False
+            self.image_slider.play_select_animation()
+        elif not self.is_sliding and self.cardflip_queued:
+            self.cardflip_queued = False
+            self.image_slider.flip_card()
+
+        if self.is_sliding and self.isliding_finished and self.tsliding_finished:
+            self.is_sliding = False
+            self.isliding_finished = False
+            self.tsliding_finished = False
+
+        ievents = self.image_slider.poll_events()
+        tevents = self.text_slider.poll_events()
+
+        for event in ievents:
+            if event.type == ImageSlider.Event.SLIDING_ANIMATION_ENDED:
+                self.isliding_finished = True
+            elif event.type == ImageSlider.Event.SELECT_ANIMATION_ENDED:
+                self.event_queue.append(LabeledImageSlider.Event(LabeledImageSlider.Event.SELECT_ANIMATION_ENDED, None))
+            elif event.type == ImageSlider.Event.FLIPPING_ANIMATION_ENDED:
+                self.event_queue.append(LabeledImageSlider.Event(LabeledImageSlider.Event.FLIPPING_ANIMATION_ENDED, None))
+
+        for event in tevents:
+            if event.type == TextSlider.Event.SLIDING_ANIMATION_ENDED:
+                self.tsliding_finished = True
+
+
         self.image_slider.tick()
         self.text_slider.tick()
 
+    def flip_card(self):
+
+        self.cardflip_queued = True
+
     def slide_left(self):
 
-        self.image_slider.slide_left()
-        self.text_slider.slide_left()
+        self.queued_slides -= 1
 
     def slide_right(self):
 
-        self.image_slider.slide_right()
-        self.text_slider.slide_right()
+        self.queued_slides += 1
 
     def reset_slides(self):
 
         self.image_slider-reset_slides()
         self.text_slider.reset_slides()
+        self.queued_slides = 0
 
 
     def get_selected_index(self):

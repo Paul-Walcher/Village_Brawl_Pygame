@@ -27,6 +27,16 @@ class TextSlider:
     # pygame.transform.scale() should not receive a zero scale.
     MIN_SCALE = 0.001
 
+    class Event:
+
+        SELECT_ANIMATION_ENDED = 0
+        FLIPPING_ANIMATION_ENDED = 1
+        SLIDING_ANIMATION_ENDED = 2
+
+        def __init__(self, type, data):
+            self.type = type
+            self.data = data
+
     def __init__(
         self,
         text,
@@ -861,6 +871,8 @@ class TextSlider:
             TextSlider.NOT_SLIDING
         )
 
+        self.event_queue.append(TextSlider.Event(TextSlider.Event.SLIDING_ANIMATION_ENDED, None))
+
         self.rerender_images()
 
     # =============================================================
@@ -1170,6 +1182,8 @@ class TextSlider:
         self.state = (
             TextSlider.NOT_SLIDING
         )
+
+        self.event_queue.append(TextSlider.Event(TextSlider.Event.SLIDING_ANIMATION_ENDED, None))
 
         self.rerender_images()
 
