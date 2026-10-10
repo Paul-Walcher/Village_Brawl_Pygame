@@ -16,9 +16,10 @@ import graphics
 from clock import Clock
 from modules import Modules
 import constants
+from widgets.widget import Widget
+from event_queue_manager import Event
 
-
-class TextSlider:
+class TextSlider(Widget):
 
     SLIDING_LEFT = 0
     SLIDING_RIGHT = 1
@@ -27,15 +28,12 @@ class TextSlider:
     # pygame.transform.scale() should not receive a zero scale.
     MIN_SCALE = 0.001
 
-    class Event:
+    class EventTypes:
 
         SELECT_ANIMATION_ENDED = 0
         FLIPPING_ANIMATION_ENDED = 1
         SLIDING_ANIMATION_ENDED = 2
 
-        def __init__(self, type, data):
-            self.type = type
-            self.data = data
 
     def __init__(
         self,
@@ -62,6 +60,8 @@ class TextSlider:
             raise RuntimeError(
                 "You need more images for this image span."
             )
+
+        super().__init__(pygame.Rect(0, 0, width, height))
 
         self.text = text
         self.font = font
@@ -161,11 +161,6 @@ class TextSlider:
     # General
     # =============================================================
 
-    def poll_events(self):
-
-        back = self.event_queue
-        self.event_queue = []
-        return back
 
     def get_selected_index(self):
         return self.image_index - self.slides
@@ -217,6 +212,9 @@ class TextSlider:
             self.bottom_surface,
             self.top_surface
         ]
+
+    def get_surfaces_with_position(self):
+        return [(surf, (0, 0)) for surf in self.get_surfaces()]
 
     # =============================================================
     # Text rendering
@@ -437,6 +435,7 @@ class TextSlider:
     # =============================================================
     # Layout
     # =============================================================
+
 
     def get_fixed_image_positions(self):
 
@@ -871,7 +870,7 @@ class TextSlider:
             TextSlider.NOT_SLIDING
         )
 
-        self.event_queue.append(TextSlider.Event(TextSlider.Event.SLIDING_ANIMATION_ENDED, None))
+        self.event_queue.append(Event(TextSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
 
         self.rerender_images()
 
@@ -1183,13 +1182,16 @@ class TextSlider:
             TextSlider.NOT_SLIDING
         )
 
-        self.event_queue.append(TextSlider.Event(TextSlider.Event.SLIDING_ANIMATION_ENDED, None))
+        self.event_queue.append(Event(TextSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
 
         self.rerender_images()
 
     # =============================================================
     # Update
     # =============================================================
+
+    def rerender(self):
+        self.rerender_images()
 
     def tick(self):
 

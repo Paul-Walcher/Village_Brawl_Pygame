@@ -1,23 +1,15 @@
 import pygame
 from abc import ABC, abstractmethod
 from constants import FrameDataID
+from event_queue_manager import EventQueueManager, Event
+from widgets.widget import Widget
 
-class Frame(ABC):
+class Frame(EventQueueManager):
 
-    class Event:
-
+    class EventTypes:
         #event types
         EXIT_FRAME = 0 #signal to exit the current frame
         EXIT_PARENT_FRAME = 1
-
-        def __init__(self, type, src_frame):
-            self.type = type
-            self.src_frame = src_frame
-
-        def copy(self):
-
-            event = Frame.Event(self.type, self.src_frame)
-            return event
 
     def __init__(self, frame_enum, data=None, frame_dim=None):
 
@@ -30,6 +22,7 @@ class Frame(ABC):
         self.input_blocked = False
         self.shown = True
         self.event_queue = []
+        self.subframes_tick_data = {}
 
         self.x, self.y, self.width, self.height = 0, 0, 0, 0
         self.recalculate_dimensions()
@@ -38,6 +31,7 @@ class Frame(ABC):
                         self.frame_dim.y + self.frame_dim.h // 2
                         )
         self.subframes = []# first subframe has the focus, and is drawn above the others
+        self.widgets = [] #own widgets
 
     """
     Use the following functions when changing the frame.
@@ -46,34 +40,31 @@ class Frame(ABC):
     #event adding functions
     def push_exit_event(self):
 
-        exit_event = Frame.Event(
-                                    Frame.Event.EXIT_FRAME,
+        exit_event = Event(
+                                    Frame.EventTypes.EXIT_FRAME,
                                     self
                                 )
         self.event_queue.append(exit_event)
 
     def push_parent_exit_event(self):
 
-        exit_event = Frame.Event(
-                                    Frame.Event.EXIT_PARENT_FRAME,
+        exit_event = Event(
+                                    Frame.EventTypes.EXIT_PARENT_FRAME,
                                     self
                                 )
         self.event_queue.append(exit_event)
-
-    def poll_events(self):
-
-        back = self.event_queue
-        self.event_queue = []
-        return back
-
-    def poll_events_with_putback(self):
-        return [event.copy() for event in self.event_queue]
 
     def poll_events_subframes(self):
         return {sframe: sframe.poll_events() for sframe in self.subframes}
 
     def poll_events_subframes_with_putback(self):
         return {sframe: sframe.poll_events_with_putback() for sframe in self.subframes}
+
+    def poll_events_widgets(self):
+        return {w: w.poll_events() for w in self.widgets}
+
+    def poll_events_widgets_with_putback(self):
+        return {w: w.poll_events_with_putback() for w in self.widgets}
 
     def hide(self):
         self.shown = False
@@ -185,16 +176,24 @@ class Frame(ABC):
 
         return return_data
 
+    def widgets_tick(self):
+        for w in self.widgets:
+            w.tick()
+
     def render_subframes(self, screen):
         for subframe in self.subframes[::-1]:
             if subframe.shown:
                 subframe.draw(screen)
 
-    @abstractmethod
+    def render_widgets(self, screen):
+        for w, pos in self.widgets.get_surfaces_with_position():
+            screen.blit(w, pos)
+
     def tick(self):
         #returns the next frame
-        pass
+        self.widgets_tick()
+        self.subframes_tick_data = self.subframes_tick()
 
-    @abstractmethod
     def draw(self, screen):
-        pass
+        self.render_widgets()
+        self.render_subframes()

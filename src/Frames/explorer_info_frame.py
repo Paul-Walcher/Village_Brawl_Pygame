@@ -104,6 +104,9 @@ class ExplorerInfoFrame(Frame):
         if self.state == self.DESCRIPTION_FOCUSED:
             self.textbox.set_outline_size(5)
 
+        self.widgets.append(self.textbox)
+
+
     def render_slider_menu(self):
 
         self.icon_imgs = [IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
@@ -116,6 +119,7 @@ class ExplorerInfoFrame(Frame):
                                                 self.actual_slider_area, text_location=LabeledImageSlider.BOTTOM,
                                                 max_slides=2
                                                 )
+        self.widgets.append(self.slider_menu)
 
 
     def rerender(self):
@@ -125,6 +129,7 @@ class ExplorerInfoFrame(Frame):
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
 
+        self.widgets = []
         self.render_headline()
         self.render_explorer()
         self.render_textbox()
@@ -136,7 +141,7 @@ class ExplorerInfoFrame(Frame):
             if event.type == pygame.QUIT:
                 return (None, None)
 
-        self.slider_menu.tick()
+        super().tick()
 
         keys = pygame.key.get_pressed()
 
@@ -188,7 +193,7 @@ class ExplorerInfoFrame(Frame):
 
         for event in slider_events:
 
-            if event.type == ImageSlider.Event.SELECT_ANIMATION_ENDED:
+            if event.type == ImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
                 #self.push_parent_exit_event()
                 pass
 

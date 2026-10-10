@@ -9,14 +9,17 @@ import graphics
 from clock import Clock
 from modules import Modules
 import constants
+from widgets.widget import Widget
 
-class Textbox:
+class Textbox(Widget):
 
     def __init__(self, font, fontsize, text, width, height, outline_size=0, outline_color=Colors.BLACK, text_color=Colors.BLACK,
                 background_color=Colors.TRANSPARENT, wmargin=5, hmargin=5, line_margin=2, centered=False,
                 pagenumber_color=Colors.WHITE, startpage=0
 
                 ):
+
+        super().__init__(pygame.Rect(0, 0, width, height))
 
         self.text = text
         self.width, self.height = width, height
@@ -55,6 +58,9 @@ class Textbox:
         self.n_pages = len(self.pages)
 
         self.page_index %= self.n_pages
+
+    def rerender(self):
+        self.render()
 
     def render_page(self):
         if self.pagenumber_shown:
@@ -122,5 +128,11 @@ class Textbox:
 
             self.surface.blit(rfont, pos)
 
+    def tick(self):
+        pass
+
     def get_surfaces(self):
         return [self.surface]
+
+    def get_surfaces_with_position(self):
+        return  [(self.surface, self.frame_rect)]

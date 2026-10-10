@@ -19,27 +19,21 @@ import constants
 
 from widgets.image_slider import ImageSlider
 from widgets.text_slider import TextSlider
+from widgets.widget import Widget
+from event_queue_manager import Event
 
-class LabeledImageSlider:
+class LabeledImageSlider(Widget):
 
     LEFT = 0
     RIGHT = 1
     TOP = 2
     BOTTOM = 3
 
-    class Event:
+    class EventTypes:
 
         SELECT_ANIMATION_ENDED = 0
         FLIPPING_ANIMATION_ENDED = 1
         SLIDING_ANIMATION_ENDED = 2
-
-        def __init__(self, type, data):
-            self.type = type
-            self.data = data
-
-        def copy(self):
-
-            return LabeledImageSlider.Event(self.type, self.data)
 
     def __init__(
         self,
@@ -68,6 +62,7 @@ class LabeledImageSlider:
         flipping_animation_duration = 500#ms
     ):
 
+        super().__init__(frame)
         self.frame = frame
         self.images = images
         self.back_images = (back_images if back_images is not None else self.images.copy())
@@ -117,16 +112,6 @@ class LabeledImageSlider:
         self.cardflips_queued = False
 
         self.rerender()
-
-    def poll_events(self):
-
-        back = self.event_queue
-        self.event_queue = []
-        return back
-
-    def poll_events_with_putback(self):
-
-        return [x.copy() for x in self.event_queue]
 
     def play_select_animation(self):
         self.select_animation_queued = True
@@ -272,6 +257,9 @@ class LabeledImageSlider:
 
         return back
 
+    def render(self):
+        pass
+
     def tick(self):
 
         if self.queued_slides != 0 and not self.is_sliding and not self.image_slider.select_animation_playing() and not self.image_slider.flipping_animation_playing():
@@ -306,15 +294,16 @@ class LabeledImageSlider:
         tevents = self.text_slider.poll_events()
 
         for event in ievents:
-            if event.type == ImageSlider.Event.SLIDING_ANIMATION_ENDED:
+            if event.type == ImageSlider.EventTypes.SLIDING_ANIMATION_ENDED:
                 self.isliding_finished = True
-            elif event.type == ImageSlider.Event.SELECT_ANIMATION_ENDED:
-                self.event_queue.append(LabeledImageSlider.Event(LabeledImageSlider.Event.SELECT_ANIMATION_ENDED, None))
-            elif event.type == ImageSlider.Event.FLIPPING_ANIMATION_ENDED:
-                self.event_queue.append(LabeledImageSlider.Event(LabeledImageSlider.Event.FLIPPING_ANIMATION_ENDED, None))
+                self.event_queue.append(Event(LabeledImageSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
+            elif event.type == ImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
+                self.event_queue.append(Event(LabeledImageSlider.EventTypes.SELECT_ANIMATION_ENDED, None))
+            elif event.type == ImageSlider.EventTypes.FLIPPING_ANIMATION_ENDED:
+                self.event_queue.append(Event(LabeledImageSlider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
 
         for event in tevents:
-            if event.type == TextSlider.Event.SLIDING_ANIMATION_ENDED:
+            if event.type == TextSlider.EventTypes.SLIDING_ANIMATION_ENDED:
                 self.tsliding_finished = True
 
 

@@ -17,19 +17,17 @@ import graphics
 from clock import Clock
 from modules import Modules
 import constants
+from widgets.widget import Widget
+from event_queue_manager import Event
 
 
-class ImageSlider:
+class ImageSlider(Widget):
 
-    class Event:
+    class EventTypes:
 
         SELECT_ANIMATION_ENDED = 0
         FLIPPING_ANIMATION_ENDED = 1
         SLIDING_ANIMATION_ENDED = 2
-
-        def __init__(self, type, data):
-            self.type = type
-            self.data = data
 
 
     SLIDING_LEFT = 0
@@ -65,6 +63,8 @@ class ImageSlider:
             raise RuntimeError(
                 "You need more images for this image span."
             )
+
+        super().__init__(pygame.Rect(0,0, width, height))
 
         self.images = images
         self.back_images = (back_images if back_images is not None else self.images.copy())
@@ -228,6 +228,8 @@ class ImageSlider:
             self.top_surface
         ]
 
+    def get_surfaces_with_position(self):
+        return [(s, (0, 0)) for s in self.get_surfaces()]
     # =============================================================
     # Rendering / scaling helpers
     # =============================================================
@@ -815,7 +817,7 @@ class ImageSlider:
             ImageSlider.NOT_SLIDING
         )
 
-        self.event_queue.append(ImageSlider.Event(ImageSlider.Event.SLIDING_ANIMATION_ENDED, None))
+        self.event_queue.append(Event(ImageSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
 
         # Rebuild everything from the actual logical state.
         self.rerender_images()
@@ -823,6 +825,8 @@ class ImageSlider:
     # =============================================================
     # RIGHT SLIDE
     # =============================================================
+    def rerender(self):
+        self.rerender_images()
 
     def initialize_slide_right(self):
 
@@ -1132,7 +1136,7 @@ class ImageSlider:
             ImageSlider.NOT_SLIDING
         )
 
-        self.event_queue.append(ImageSlider.Event(ImageSlider.Event.SLIDING_ANIMATION_ENDED, None))
+        self.event_queue.append(Event(ImageSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
 
         # Rebuild everything from the actual logical state.
         self.rerender_images()
@@ -1150,7 +1154,7 @@ class ImageSlider:
 
         if percentage >= 1.0:
             self.state = ImageSlider.NOT_SLIDING
-            self.event_queue.append(ImageSlider.Event(ImageSlider.Event.SELECT_ANIMATION_ENDED, None))
+            self.event_queue.append(Event(ImageSlider.EventTypes.SELECT_ANIMATION_ENDED, None))
             self.rerender_images()
         else:
 
@@ -1191,7 +1195,7 @@ class ImageSlider:
 
         if percentage >= 1.0:
             self.state = ImageSlider.NOT_SLIDING
-            self.event_queue.append(ImageSlider.Event(ImageSlider.Event.FLIPPING_ANIMATION_ENDED, None))
+            self.event_queue.append(Event(ImageSlider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
             #changing images
             save = self.images[self.image_index]
             self.images[self.image_index] = self.back_images[self.image_index]
@@ -1230,7 +1234,7 @@ class ImageSlider:
 
         if percentage >= 1.0:
             self.state = ImageSlider.NOT_SLIDING
-            self.event_queue.append(ImageSlider.Event(ImageSlider.Event.FLIPPING_ANIMATION_ENDED, None))
+            self.event_queue.append(Event(ImageSlider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
             #changing images
             save = self.images
             self.images = self.back_images
