@@ -199,7 +199,7 @@ class ExplorerInfoFrame(Frame):
 
             if event.type == ImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
                 eframe = EmptyFrame(None, pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT))
-                self.add_subframe(eframe)
+                self.parent_frame.add_subframe(eframe)
 
         return (FrameEnums.EXPLORER_INFO_FRAME, self.data)
 
@@ -225,5 +225,3 @@ class ExplorerInfoFrame(Frame):
 
             super().draw(self.surface)
             screen.blit(self.surface, (self.x, self.y))
-
-        pygame.display.flip()

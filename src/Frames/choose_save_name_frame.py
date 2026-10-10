@@ -168,5 +168,3 @@ class ChooseSaveNameFrame(Frame):
         screen.blit(self.savefile_name_font, self.savefile_name_font_pos)
         screen.blit(self.back_text, self.back_pos)
         screen.blit(self.enter_text, self.enter_pos)
-
-        pygame.display.flip()

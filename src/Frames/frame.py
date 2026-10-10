@@ -17,21 +17,38 @@ class Frame(EventQueueManager):
         self.data = (data if data is not None else {})
         if self.data is not None:
             self.data[FrameDataID.CURRENT_FRAME] = self
-        self.frame_dim = (frame_dim if frame_dim is not None else pygame.Rect(0, 0, 0, 0))
+        self._frame_dim = (frame_dim if frame_dim is not None else pygame.Rect(0, 0, 0, 0))
+        self.x = self.frame_dim.x
+        self.y = self.frame_dim.y
+        self.width = self.frame_dim.width
+        self.height = self.frame_dim.height
         self.parent_frame = None
         self.input_blocked = False
         self.shown = True
         self.event_queue = []
         self.subframes_tick_data = {}
 
-        self.x, self.y, self.width, self.height = 0, 0, 0, 0
-        self.recalculate_dimensions()
-
         self.center = (self.frame_dim.x + self.frame_dim.w // 2,
                         self.frame_dim.y + self.frame_dim.h // 2
                         )
         self.subframes = []# first subframe has the focus, and is drawn above the others
         self.widgets = [] #own widgets
+
+    @property
+    def frame_dim(self):
+        return self._frame_dim
+
+    @frame_dim.setter
+    def frame_dim(self, oframe):
+
+        self.x = oframe.x
+        self.y = oframe.y
+        self.width = oframe.width
+        self.height = oframe.height
+        self.center = (self.x + self.width // 2,
+                        self.y + self.height // 2
+                        )
+        self._frame_dim = oframe
 
     """
     Use the following functions when changing the frame.
@@ -71,14 +88,6 @@ class Frame(EventQueueManager):
 
     def show(self):
         self.shown = True
-
-    def recalculate_dimensions(self):
-
-        self.x = self.frame_dim.x
-        self.y = self.frame_dim.y
-        self.width = self.frame_dim.width
-        self.height = self.frame_dim.height
-
 
     def set_parent_frame(self, pframe):
         self.parent_frame = pframe

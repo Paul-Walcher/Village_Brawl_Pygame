@@ -127,6 +127,3 @@ class IntroMenuFrame(Frame):
         screen.blit(self.new_game_text, self.new_game_pos)
         screen.blit(self.load_game_text, self.load_game_pos)
         screen.blit(self.back_text, self.back_pos)
-
-
-        pygame.display.flip()

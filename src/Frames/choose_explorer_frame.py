@@ -255,6 +255,4 @@ class ChooseExplorerFrame(Frame):
             screen.blit(self.second_explorer_image, (sex + self.shift, sey))
         screen.blit(self.info_text, self.info_text_pos)
 
-        self.render_subframes(screen)
-
-        pygame.display.flip()
+        super().draw(screen)

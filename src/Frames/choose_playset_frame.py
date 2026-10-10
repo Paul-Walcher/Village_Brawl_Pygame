@@ -186,5 +186,3 @@ class ChoosePlaysetFrame(Frame):
             screen.blit(text, pos)
 
         screen.blit(self.back_text, self.back_pos)
-
-        pygame.display.flip()

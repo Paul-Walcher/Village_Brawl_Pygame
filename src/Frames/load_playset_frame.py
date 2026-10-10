@@ -95,5 +95,3 @@ class LoadPlaysetFrame(Frame):
         screen.fill(Colors.BLACK)
 
         screen.blit(self.loading_text, self.loading_text_pos)
-
-        pygame.display.flip()

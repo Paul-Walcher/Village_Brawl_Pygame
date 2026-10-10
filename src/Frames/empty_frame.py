@@ -7,7 +7,7 @@ from constants import Colors
 
 class EmptyFrame(Frame):
 
-    def __init__(self, data, frame__dim, background_color=(*Colors.BLACK, 255)):
+    def __init__(self, data, frame_dim, background_color=(*Colors.BLACK, 255)):
         super().__init__(FrameEnums.EMPTY_FRAME, data, frame_dim)
         self.background_color = background_color
 

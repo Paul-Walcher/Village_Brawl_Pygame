@@ -35,3 +35,4 @@ class Gamehandler:
 
 
             self.current_frame.draw(self.screen)
+            pygame.display.flip()

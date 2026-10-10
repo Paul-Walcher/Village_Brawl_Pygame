@@ -122,5 +122,3 @@ class IntroFrame(Frame):
         screen.blit(self.village_brawl_headlines[self.headline_index], self.village_brawl_pos[self.headline_index])
         screen.blit(self.center_image, self.center_image_pos)
         screen.blit(self.press_text, self.press_text_pos)
-
-        pygame.display.flip()
