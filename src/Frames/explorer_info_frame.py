@@ -4,6 +4,7 @@ import threading
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
+from Frames.empty_frame import EmptyFrame
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, Alpha, IIMAGE, STANDARD_BACKSIDES
 import graphics
 from clock import Clock
@@ -96,7 +97,9 @@ class ExplorerInfoFrame(Frame):
 
         text = self.explorer_info.description
 
-        self.textbox = Textbox(Fonts.MINECRAFT, Fontsizes.SMALL, text, self.textbox_dim.width, self.textbox_dim.height, text_color=(*Colors.GREEN, 255), centered=True)
+        trect = self.textbox_dim.copy()
+
+        self.textbox = Textbox(Fonts.MINECRAFT, Fontsizes.SMALL, text, trect, text_color=(*Colors.GREEN, 255), centered=True)
         self.textbox_pos = (self.textbox_dim.x, self.textbox_dim.y)
 
         self.textbox.show_pagenumber()
@@ -113,10 +116,11 @@ class ExplorerInfoFrame(Frame):
                         IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"), IIMAGE("Pack_Icon.png")
                 ]
 
+        srect = graphics.apply_margins(self.menu_slider_area, 0.1, 0.1)
 
         self.slider_menu = LabeledImageSlider(self.icon_imgs,
                                                 [["Deck"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"]],
-                                                self.actual_slider_area, text_location=LabeledImageSlider.BOTTOM,
+                                                srect, text_location=LabeledImageSlider.BOTTOM,
                                                 max_slides=2
                                                 )
         self.widgets.append(self.slider_menu)
@@ -194,8 +198,8 @@ class ExplorerInfoFrame(Frame):
         for event in slider_events:
 
             if event.type == ImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
-                #self.push_parent_exit_event()
-                pass
+                eframe = EmptyFrame(None, pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT))
+                self.add_subframe(eframe)
 
         return (FrameEnums.EXPLORER_INFO_FRAME, self.data)
 
@@ -212,15 +216,14 @@ class ExplorerInfoFrame(Frame):
 
             self.surface.blit(self.headline_surface, (self.headline_area.x, self.headline_area.y))
             self.surface.blit(self.explorer_image, self.explorer_image_pos)
-            for surf in self.textbox.get_surfaces():
-                self.surface.blit(surf, self.textbox_pos)
-            for surf, pos in self.slider_menu.get_surfaces_with_position():
-                self.surface.blit(surf, pos)
 
             if self.state == self.MENU_FOCUSED:
                 pygame.draw.rect(self.surface, (*Colors.BLACK, 255), self.menu_slider_area, width=self.focused_outline_size)
 
 
+
+
+            super().draw(self.surface)
             screen.blit(self.surface, (self.x, self.y))
 
         pygame.display.flip()

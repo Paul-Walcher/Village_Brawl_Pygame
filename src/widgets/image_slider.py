@@ -42,8 +42,7 @@ class ImageSlider(Widget):
     def __init__(
         self,
         images,
-        width,
-        height,
+        frame_dim,
         sliding_duration=500,  # ms
         select_animation_duration=800,#ms
         images_alphas=None,
@@ -64,7 +63,7 @@ class ImageSlider(Widget):
                 "You need more images for this image span."
             )
 
-        super().__init__(pygame.Rect(0,0, width, height))
+        super().__init__(frame_dim)
 
         self.images = images
         self.back_images = (back_images if back_images is not None else self.images.copy())
@@ -74,9 +73,6 @@ class ImageSlider(Widget):
         self.image_index = start_index
         self.cutoff = cutoff
         self.max_slides = max_slides
-
-        self.width = width
-        self.height = height
 
         self.sliding_duration = sliding_duration
         self.select_animation_duration = select_animation_duration
@@ -150,15 +146,6 @@ class ImageSlider(Widget):
         self.rendered_images = []
         self.extra_image = None
 
-        self.top_surface = pygame.Surface(
-            (self.width, self.height),
-            pygame.SRCALPHA
-        )
-
-        self.bottom_surface = pygame.Surface(
-            (self.width, self.height),
-            pygame.SRCALPHA
-        )
 
         self.state = ImageSlider.NOT_SLIDING
 
@@ -175,6 +162,14 @@ class ImageSlider(Widget):
     # =============================================================
     # General
     # =============================================================
+
+    @Widget.frame_dim.setter
+    def frame_dim(self, oframe):
+
+        Widget.frame_dim.fset(self, oframe)
+
+        self.state = ImageSlider.NOT_SLIDING
+        self.rerender()
 
     def get_selected_index(self):
         return self.image_index - self.slides
@@ -229,7 +224,7 @@ class ImageSlider(Widget):
         ]
 
     def get_surfaces_with_position(self):
-        return [(s, (0, 0)) for s in self.get_surfaces()]
+        return [(s, (self.frame_dim.x, self.frame_dim.y)) for s in self.get_surfaces()]
     # =============================================================
     # Rendering / scaling helpers
     # =============================================================
@@ -282,6 +277,16 @@ class ImageSlider(Widget):
             return False
 
     def rerender_images(self):
+
+        self.top_surface = pygame.Surface(
+            (self.width, self.height),
+            pygame.SRCALPHA
+        )
+
+        self.bottom_surface = pygame.Surface(
+            (self.width, self.height),
+            pygame.SRCALPHA
+        )
 
 
         self.rendered_images = []

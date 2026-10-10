@@ -39,7 +39,7 @@ class LabeledImageSlider(Widget):
         self,
         images,
         text,
-        frame,
+        frame_dim,
         font=Fonts.MINECRAFT,
         text_location=None,
         sliding_duration=500,  # ms
@@ -62,15 +62,10 @@ class LabeledImageSlider(Widget):
         flipping_animation_duration = 500#ms
     ):
 
-        super().__init__(frame)
-        self.frame = frame
+        super().__init__(frame_dim)
         self.images = images
         self.back_images = (back_images if back_images is not None else self.images.copy())
         self.text = text
-        self.width = frame.width
-        self.height = frame.height
-        self.x = frame.x
-        self.y = frame.y
         self.font = font
         self.text_location = (text_location if text_location is not None else LabeledImageSlider.BOTTOM)
         self.sliding_duration = sliding_duration
@@ -110,6 +105,18 @@ class LabeledImageSlider(Widget):
 
         self.cardflip_queued = False
         self.cardflips_queued = False
+
+        self.rerender()
+
+    @Widget.frame_dim.setter
+    def frame_dim(self, oframe):
+
+        self.is_sliding = False
+
+        Widget.frame_dim.fset(self, oframe)
+
+        self.image_slider.dim_frame = oframe
+        self.text_slider.dim_frame = oframe
 
         self.rerender()
 
@@ -174,11 +181,12 @@ class LabeledImageSlider(Widget):
                 self.imagepos = (self.x, self.y)
                 self.textpos = (self.x + self.images_width + self.image_text_distance, self.y)
 
+        irect = pygame.Rect(*self.imagepos, self.images_width, self.images_height)
+        trect = pygame.Rect(*self.textpos, self.text_width, self.text_height)
 
         self.image_slider = ImageSlider(
                                         self.images,
-                                        self.images_width,
-                                        self.images_height,
+                                        irect,
                                         self.sliding_duration,  # ms
                                         self.select_animation_duration,
                                         self.alphas,
@@ -195,8 +203,7 @@ class LabeledImageSlider(Widget):
                                         )
         self.text_slider = TextSlider(
                                         self.text,
-                                        self.text_width,
-                                        self.text_height,
+                                        trect,
                                         self.font,
                                         self.sliding_duration,  # ms
                                         self.alphas,
@@ -213,26 +220,10 @@ class LabeledImageSlider(Widget):
                                         self.text_color
                                         )
 
-        self.background_surface = pygame.Surface((self.get_frame().width , self.get_frame().height), pygame.SRCALPHA)
+        self.background_surface = pygame.Surface((self.frame_dim.width , self.frame_dim.height), pygame.SRCALPHA)
         self.background_surface.fill(self.background_color)
 
 
-
-    def get_frame(self):
-
-        return self.frame.copy()
-
-    def set_frame(self, frame):
-
-
-        self.x = frame.x
-        self.y = frame.y
-        self.width = frame.width
-        self.height = frame.height
-
-        self.frame = frame.copy()
-
-        self.rerender()
 
 
     def get_image_surfaces(self):

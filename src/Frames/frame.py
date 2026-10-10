@@ -157,6 +157,7 @@ class Frame(EventQueueManager):
 
     def add_subframe(self, subframe):
 
+        subframe.set_parent_frame(self)
         self.subframes.insert(0, subframe)
 
 
@@ -186,8 +187,10 @@ class Frame(EventQueueManager):
                 subframe.draw(screen)
 
     def render_widgets(self, screen):
-        for w, pos in self.widgets.get_surfaces_with_position():
-            screen.blit(w, pos)
+        for widget in self.widgets:
+            for w, pos in widget.get_surfaces_with_position():
+                screen.blit(w, pos)
+
 
     def tick(self):
         #returns the next frame
@@ -195,5 +198,5 @@ class Frame(EventQueueManager):
         self.subframes_tick_data = self.subframes_tick()
 
     def draw(self, screen):
-        self.render_widgets()
-        self.render_subframes()
+        self.render_widgets(screen)
+        self.render_subframes(screen)

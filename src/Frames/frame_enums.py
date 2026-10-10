@@ -2,6 +2,8 @@ from enum import Enum, auto
 
 class FrameEnums(Enum):
 
+    EMPTY_FRAME = auto()
+
     INTRO_FRAME = auto()
     INTRO_MENU_FRAME = auto()
     CHOOSE_PLAYSET_FRAME = auto()

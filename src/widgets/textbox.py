@@ -13,16 +13,15 @@ from widgets.widget import Widget
 
 class Textbox(Widget):
 
-    def __init__(self, font, fontsize, text, width, height, outline_size=0, outline_color=Colors.BLACK, text_color=Colors.BLACK,
+    def __init__(self, font, fontsize, text, frame_dim, outline_size=0, outline_color=Colors.BLACK, text_color=Colors.BLACK,
                 background_color=Colors.TRANSPARENT, wmargin=5, hmargin=5, line_margin=2, centered=False,
                 pagenumber_color=Colors.WHITE, startpage=0
 
                 ):
 
-        super().__init__(pygame.Rect(0, 0, width, height))
+        super().__init__(frame_dim)
 
         self.text = text
-        self.width, self.height = width, height
         self.outline_size = outline_size
         self.outline_color = outline_color
         self.text_color = text_color
@@ -33,8 +32,6 @@ class Textbox(Widget):
         self.hmargin = hmargin
         self.line_margin = line_margin
         self.centered = centered
-
-        self.surface = pygame.Surface((width, height), pygame.SRCALPHA)
 
         self.page_index = startpage
         self.rpage = []
@@ -47,6 +44,13 @@ class Textbox(Widget):
 
         self.calculate_pages()
         self.render()
+
+    @Widget.frame_dim.setter
+    def frame_dim(self, oframe):
+
+        Widget.frame_dim.fset(self, oframe)
+
+        self.rerender()
 
     def set_outline_size(self, size):
 
@@ -117,6 +121,7 @@ class Textbox(Widget):
         self.render()
 
     def render(self):
+        self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.render_page()
         self.surface.fill(self.background_color)
 
@@ -135,4 +140,4 @@ class Textbox(Widget):
         return [self.surface]
 
     def get_surfaces_with_position(self):
-        return  [(self.surface, self.frame_rect)]
+        return  [(self.surface, (self.frame_dim.x, self.frame_dim.y))]

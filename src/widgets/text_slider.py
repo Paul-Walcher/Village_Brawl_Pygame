@@ -38,8 +38,7 @@ class TextSlider(Widget):
     def __init__(
         self,
         text,
-        width,
-        height,
+        frame_dim,
         font=Fonts.MINECRAFT,
         sliding_duration=500,  # ms
         images_alphas=None,
@@ -61,7 +60,7 @@ class TextSlider(Widget):
                 "You need more images for this image span."
             )
 
-        super().__init__(pygame.Rect(0, 0, width, height))
+        super().__init__(frame_dim)
 
         self.text = text
         self.font = font
@@ -70,12 +69,10 @@ class TextSlider(Widget):
 
         self.image_index = start_index
         self.line_margin_percentage = line_margin_percentage
-        self.line_margin = int(self.line_margin_percentage * height)
+        self.line_margin = int(self.line_margin_percentage * self.height)
         self.cutoff = cutoff
         self.max_slides = max_slides
 
-        self.width = width
-        self.height = height
         self.sliding_duration = sliding_duration
         self.images_span = images_span
         self.event_queue = []
@@ -135,16 +132,6 @@ class TextSlider(Widget):
         self.rendered_images = []
         self.extra_image = None
 
-        self.top_surface = pygame.Surface(
-            (self.width, self.height),
-            pygame.SRCALPHA
-        )
-
-        self.bottom_surface = pygame.Surface(
-            (self.width, self.height),
-            pygame.SRCALPHA
-        )
-
         self.state = TextSlider.NOT_SLIDING
 
         self.fixed_image_positions = (
@@ -160,6 +147,14 @@ class TextSlider(Widget):
     # =============================================================
     # General
     # =============================================================
+
+    @Widget.frame_dim.setter
+    def frame_dim(self, oframe):
+
+        Widget.frame_dim.fset(self, oframe)
+        self.state = TextSlider.NOT_SLIDING
+
+        self.rerender()
 
 
     def get_selected_index(self):
@@ -214,7 +209,7 @@ class TextSlider(Widget):
         ]
 
     def get_surfaces_with_position(self):
-        return [(surf, (0, 0)) for surf in self.get_surfaces()]
+        return [(surf, (self.frame_dim.x, self.frame_dim.y)) for surf in self.get_surfaces()]
 
     # =============================================================
     # Text rendering
@@ -303,6 +298,16 @@ class TextSlider(Widget):
     # =============================================================
 
     def rerender_images(self):
+
+        self.top_surface = pygame.Surface(
+            (self.width, self.height),
+            pygame.SRCALPHA
+        )
+
+        self.bottom_surface = pygame.Surface(
+            (self.width, self.height),
+            pygame.SRCALPHA
+        )
 
         self.rendered_images = []
         self.rects = []

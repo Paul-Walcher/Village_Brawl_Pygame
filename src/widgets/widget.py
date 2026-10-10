@@ -4,10 +4,27 @@ from event_queue_manager import EventQueueManager, Event
 
 class Widget(EventQueueManager):
 
-    def __init__(self, frame_rect):
+    def __init__(self, frame_dim):
         super().__init__()
 
-        self.frame_rect = frame_rect
+        self.x = frame_dim.x
+        self.y = frame_dim.y
+        self.width = frame_dim.width
+        self.height = frame_dim.height
+        self._frame_dim = frame_dim
+
+    @property
+    def frame_dim(self):
+        return self._frame_dim
+    @frame_dim.setter
+    def frame_dim(self, oframe):
+
+        self.x = oframe.x
+        self.y = oframe.y
+        self.width = oframe.width
+        self.height = oframe.height
+        self_frame_dim = oframe
+
 
 
     @abstractmethod
@@ -35,8 +52,8 @@ class Widget(EventQueueManager):
         #returns a list of [(surface, (x, y))]
         pass
 
-    def get_frame_rect(self):
-        return self.frame_rect
+    def get_frame_dim(self):
+        return self.frame_dim
 
-    def set_frame_rect(self, frame_rect):
-        self.frame_rect = frame_rect
+    def set_frame_dim(self, frame_dim):
+        self.frame_rect = frame_dim
