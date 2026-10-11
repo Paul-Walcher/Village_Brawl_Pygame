@@ -5,6 +5,7 @@ import threading
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.empty_frame import EmptyFrame
+from Frames.test_frame import TestFrame
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, Alpha, IIMAGE, STANDARD_BACKSIDES
 import graphics
 from clock import Clock
@@ -198,7 +199,7 @@ class ExplorerInfoFrame(Frame):
         for event in slider_events:
 
             if event.type == ImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
-                eframe = EmptyFrame(None, pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT))
+                eframe = TestFrame(None, pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT))
                 self.parent_frame.add_subframe(eframe)
 
         return (FrameEnums.EXPLORER_INFO_FRAME, self.data)

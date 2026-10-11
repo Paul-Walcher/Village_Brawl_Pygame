@@ -30,8 +30,6 @@ class EmptyFrame(Frame):
 
 
     def draw(self, screen):
-
-
         self.surface.fill(self.background_color)
         screen.blit(self.surface, (self.frame_dim.x, self.frame_dim.y))
         super().draw(screen)

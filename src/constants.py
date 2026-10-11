@@ -53,6 +53,8 @@ class FrameDataID:
 
 class Colors:
 
+    T = lambda c: (*c, 255)
+
     TRANSPARENT = (0, 0, 0, 0)
 
     BLACK = (0, 0, 0)
@@ -65,6 +67,7 @@ class Colors:
     LIGHT_ORANGE = (255, 144, 0)
     GRAY = (127, 127, 127)
     DARK_GRAY = (109, 109, 109)
+    DARK_SLATE_GRAY = (47, 79, 79)
 
 
 class Fonts:
