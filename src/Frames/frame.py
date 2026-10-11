@@ -123,9 +123,13 @@ class Frame(EventQueueManager):
         for event in putback_events:
             pygame.event.post(event)
 
+
+    def clear_event_callbacks(self):
+        self.__event_callbacks = []
+        
     def add_pygame_event_callback(self, type, data, putback, func):
 
-        cb = Frames.CallbackEvent(type, data, putback, func)
+        cb = Frame.CallbackEvent(type, data, putback, func)
         self.__event_callbacks.append(cb)
         return cb
 

@@ -50,11 +50,11 @@ class ChooseSaveNameFrame(Frame):
         self.typing_selected_frame.fill(Colors.WHITE)
         self.typing_selected_frame_pos = graphics.center_at(self.typing_selected_frame, center_pos)
 
-        self.key_delay_clock = Clock()
-        self.key_delay = 200#ms
+        self.go_back_flag = False
+        self.load_playset_flag = False
 
+        self.bind_events()
         self.render_text()
-        self.key_delay_clock.start()
 
 
     def render_text(self):
@@ -83,79 +83,115 @@ class ChooseSaveNameFrame(Frame):
         self.enter_pos = (self.width - self.width//20 - self.enter_text.get_width(),
                             self.height - self.enter_text.get_height() - self.height // 20)
 
+    def bind_events(self):
+
+        cdata = {"frame_ref": self}
+
+        self.clear_event_callbacks()
+
+        self.add_pygame_key_callback(pygame.K_ESCAPE, cdata, putback=False, func=self.escape_pressed)
+
+        self.add_pygame_key_callback(pygame.K_LEFT, cdata, putback=False, func=self.left_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, cdata, putback=False, func=self.left_pressed)
+
+        self.add_pygame_key_callback(pygame.K_RIGHT, cdata, putback=False, func=self.right_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, cdata, putback=False, func=self.right_pressed)
+
+        self.add_pygame_key_callback(pygame.K_RETURN, cdata, putback=False, func=self.enter_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, cdata, putback=False, func=self.enter_pressed)
+
+        self.add_pygame_key_callback(pygame.K_BACKSPACE, cdata, putback=False, func=self.backspace_pressed)
+
+        self.add_pygame_event_callback(pygame.TEXTINPUT, cdata, putback=False, func=self.handle_text_input)
+
+    def handle_text_input(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.is_typing:
+            ref.savefile_name += event.text
+            if (len(ref.savefile_name)) > ref.max_name_length:
+                ref.savefile_name = ref.savefile_name[:ref.max_name_length]
+            ref.render_text()
+
+
+    def escape_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.is_typing:
+            ref.is_typing = False
+            pygame.key.stop_text_input()
+        else:
+            return Frame.CallbackEvent.EXIT
+
+
+    def left_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if not ref.is_typing:
+            ref.highlighted_index -= 1
+            ref.highlighted_index %= 3
+
+            if self.highlighted_index == 1:
+                pygame.key.start_text_input()
+                ref.is_typing = True
+
+            ref.render_text()
+
+    def right_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if not ref.is_typing:
+
+            ref.highlighted_index += 1
+            ref.highlighted_index %= 3
+
+            if self.highlighted_index == 1:
+                pygame.key.start_text_input()
+                ref.is_typing = True
+
+            ref.render_text()
+
+    def backspace_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.is_typing and ref.savefile_name:
+            ref.savefile_name = ref.savefile_name[:-1]
+            ref.render_text()
+
+    def enter_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.highlighted_index == 0:
+            ref.go_back_flag = True
+        if ref.highlighted_index == 2 and len(ref.savefile_name) > 0:
+            ref.load_playset_flag = True
+
 
 
     def tick(self):
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return None
 
-            if self.is_typing and event.type == pygame.TEXTINPUT:
-                self.savefile_name += event.text
-                if len(self.savefile_name) > self.max_name_length:
-                    self.savefile_name = self.savefile_name[:self.max_name_length]
-                self.render_text()
+        self.manage_pygame_events()
 
-        keys = pygame.key.get_pressed()
-
-        if self.key_delay_clock.elapsed() > self.key_delay:
-
-            if keys[pygame.K_ESCAPE]:
-
-                if self.is_typing:
-                    pygame.key.stop_text_input()
-                    self.is_typing = False
-                    self.highlighted_index = 1
-                    self.key_delay_clock.start()
-                else:
-                    return None
-
-            if keys[pygame.K_BACKSPACE]:
-                if self.is_typing and self.savefile_name:
-                    self.savefile_name = self.savefile_name[:-1]
-                    self.render_text()
-                    self.key_delay_clock.start()
-
-            if keys[pygame.K_LEFT] or (keys[KeyAlternatives.LEFT_ALTERNATIVE] and not self.is_typing):
-
-                self.highlighted_index -= 1
-                self.highlighted_index %= 3
-
-                if self.is_typing and self.highlighted_index != 1:
-                    pygame.key.stop_text_input()
-                    self.is_typing = False
-                elif not self.is_typing and self.highlighted_index == 1:
-                    pygame.key.start_text_input()
-                    self.is_typing = True
-
-                self.render_text()
-                self.key_delay_clock.start()
-
-            if keys[pygame.K_RIGHT] or (keys[KeyAlternatives.RIGHT_ALTERNATIVE] and not self.is_typing):
-
-                self.highlighted_index += 1
-                self.highlighted_index %= 3
-
-                if self.is_typing and self.highlighted_index != 1:
-                    pygame.key.stop_text_input()
-                    self.is_typing = False
-                elif not self.is_typing and self.highlighted_index == 1:
-                    pygame.key.start_text_input()
-                    self.is_typing = True
-
-                self.render_text()
-                self.key_delay_clock.start()
+        if self.exit_flag_raised():
+            return None
 
 
-            if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
+        if self.go_back_flag:
+            self.go_back_flag = False
+            return self.parent_frame
 
-                if self.highlighted_index == 0:
-                    return self.parent_frame
-                if self.highlighted_index == 2 and len(self.savefile_name) > 0:
-                    self.data[FrameDataID.GAMEINFO].savefile_name = self.savefile_name
-                    lpframe = LoadPlaysetFrame(self.data, self.frame_dim.copy(), self)
-                    return lpframe
+        if self.load_playset_flag:
+            self.load_playset_flag = False
+            self.data[FrameDataID.GAMEINFO].savefile_name = self.savefile_name
+            lpframe = LoadPlaysetFrame(self.data, self.frame_dim.copy(), self)
+            return lpframe
 
 
         return self
