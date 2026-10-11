@@ -100,6 +100,9 @@ class Frame(EventQueueManager):
 
     def block_input_all_frames(self, exceptions=None):
 
+        if self.parent_frame is not None:
+            self.set_parent_frame.block_input_all_frames(exceptions)
+
         if exceptions is None:
             exceptions = []
 
@@ -111,6 +114,9 @@ class Frame(EventQueueManager):
                 sframe.block_input()
 
     def unblock_input_all_frames(self, exceptions=None):
+
+        if self.parent_frame is not None:
+            self.set_parent_frame.unblock_input_all_frames(exceptions)
 
         if exceptions is None:
             exceptions = []

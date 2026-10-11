@@ -2,6 +2,8 @@ from enum import Enum, auto
 
 class FrameEnums(Enum):
 
+    FRAME_REFERENCE = auto()
+
     EMPTY_FRAME = auto()
     TEST_FRAME = auto()
 

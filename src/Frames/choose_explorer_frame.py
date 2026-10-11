@@ -84,7 +84,6 @@ class ChooseExplorerFrame(Frame):
         self.info_frame = info_frame
         self.info_frame.set_parent_frame(self)
 
-        self.add_subframe(info_frame)
         self.info_frame_state = self.INFO_FRAME_SLIDING_IN
         self.inputs_blocked = True
         self.info_frame_clock.start()
@@ -92,7 +91,6 @@ class ChooseExplorerFrame(Frame):
     def deinitialize_info_frame(self):
 
         self.info_frame_state = self.INFO_FRAME_INACTIVE
-        self.remove_subframe(self.info_frame)
         self.info_frame = None
         self.inputs_blocked = False
 
@@ -153,7 +151,13 @@ class ChooseExplorerFrame(Frame):
     def tick(self):
 
 
-        subframe_data = self.subframes_tick()
+        if self.info_frame is not None:
+            ref, data = self.info_frame.tick()
+            if ref is None:
+                return (None, None)
+            elif ref == FrameEnums.FRAME_REFERENCE:
+                return (FrameEnums.FRAME_REFERENCE, data)
+
 
         if self.info_frame is not None:
 
@@ -163,7 +167,6 @@ class ChooseExplorerFrame(Frame):
                  if event.type == Frame.Event.EXIT_PARENT_FRAME:
 
                      idx = self.info_frame.get_selected_index()
-                     print(idx)
                      return (None, None)
 
 
@@ -255,4 +258,6 @@ class ChooseExplorerFrame(Frame):
             screen.blit(self.second_explorer_image, (sex + self.shift, sey))
         screen.blit(self.info_text, self.info_text_pos)
 
-        super().draw(screen)
+
+        if self.info_frame is not None:
+            self.info_frame.draw(screen)

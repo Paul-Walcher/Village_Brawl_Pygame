@@ -3,6 +3,7 @@ Gamehandler class, handles the gameloop
 """
 import pygame
 from Frames.frame_mappings import frame_mappings
+from Frames.frame_enums import FrameEnums
 
 class Gamehandler:
 
@@ -21,14 +22,20 @@ class Gamehandler:
         self.frame_enum = start_frame.frame_enum
 
         while self.running:
-
             frame_enum, data = self.current_frame.tick()
 
             if frame_enum is None:
+                print(frame_enum, data)
                 self.running = False
                 break
 
-            if frame_enum != self.frame_enum:
+            if frame_enum == FrameEnums.FRAME_REFERENCE:
+
+                self.current_frame = data
+                self.frame_enum = self.current_frame.frame_enum
+                #returns the frame that should be used
+
+            elif frame_enum != self.frame_enum:
 
                 self.current_frame = frame_mappings[frame_enum](data, self.main_frame)
                 self.frame_enum = frame_enum

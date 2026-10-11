@@ -11,7 +11,11 @@ class DropdownMenu(Widget):
 
     NOTHING_SELECTED = 0
     OPTION_SELECTED = 1
-    SELECTED_ANIMATION_PLAYING = 2
+    SELECT_ANIMATION_PLAYING = 2
+
+    class EventTypes:
+
+        SELECT_ANIMATION_ENDED = 0
 
     def __init__(self,
                 frame_dim,
@@ -27,8 +31,8 @@ class DropdownMenu(Widget):
                 lines_shown = True,
                 outline_size=0,
                 outline_color=Colors.T(Colors.BLACK),
-                text_margins_percentage=(0.3, 0.3),
-                highlighted_text_margins_percentage=(0.2, 0.2),
+                text_margins_percentage=(0.4, 0.4),
+                highlighted_text_margins_percentage=(0.1, 0.1),
                 initial_selected_index=-1,
                 selected_animation_duration=800#ms
                 ):
@@ -69,6 +73,8 @@ class DropdownMenu(Widget):
         self.text_margin_box = None
         self.highlighted_text_margin_box = None
 
+        self.selected_animation_duration = selected_animation_duration
+
         self.selected_index = initial_selected_index
         self.last_selected_index = initial_selected_index
 
@@ -79,7 +85,124 @@ class DropdownMenu(Widget):
         self.option_frames = []
 
         self.moves_buffered = 0
-        self.move_states = [DropdownMenu.NOTHING_SELECTED, DropdownMenu.OPTION_SELECTED]
+        self.move_states = [DropdownMenu.OPTION_SELECTED]
+
+        self.select_clock = Clock()
+
+        self.rerender()
+
+
+    def move_up(self):
+
+        if self.state == DropdownMenu.NOTHING_SELECTED:
+            self.selected_index = 0
+            self.state = DropdownMenu.OPTION_SELECTED
+            return
+        if self.state in self.move_states:
+            self.moves_buffered -= 1
+
+    def move_down(self):
+
+        if self.state == DropdownMenu.NOTHING_SELECTED:
+            self.selected_index = self.n_options-1
+            self.state = DropdownMenu.OPTION_SELECTED
+            return
+        if self.state in self.move_states:
+            self.moves_buffered += 1
+
+
+    def select(self):
+        if self.state == DropdownMenu.NOTHING_SELECTED or self.state == DropdownMenu.SELECT_ANIMATION_PLAYING:
+            return
+        #selects the current selected option
+        self.state = DropdownMenu.SELECT_ANIMATION_PLAYING
+        self.select_clock.start()
+
+    def unfocus(self):
+
+        self.selected_index = -1
+        self.moves_buffered = 0
+        self.state = DropdownMenu.NOTHING_SELECTED
+
+        self.render()
+
+    def focus_on(self, index):
+
+        self.selected_index = index
+        self.moves_buffered = 0
+        self.state = DropdownMenu.OPTION_SELECTED
+        self.render()
+
+    def render_select_animation(self):
+
+        percentage = self.select_clock.elapsed() / self.selected_animation_duration
+
+        if percentage >= 1.0:
+            self.finalize_select_animation()
+            return
+
+        else:
+
+            if percentage <= 0.5:
+
+                fp = 2*percentage
+
+                cx = self.highlight_inside_frame_dim.x - self.x
+                cy = self.highlight_inside_frame_dim.y - self.y + (self.selected_index) * self.full_box_height
+                cw = self.option_box_width
+                ch = self.option_box_height
+
+                mx, my = self.text_margins_percentage
+                hmx, hmy = self.highlighted_text_margins_percentage
+
+                mxd, myd = hmx + (mx - hmx) * fp, hmy + (my - hmy) * fp
+
+
+                sframe = pygame.Rect(cx, cy, cw, ch)
+                rframe = graphics.apply_margins(sframe, mxd, myd)
+
+                rtext = graphics.render_page_from_chars(self.font, self.options[self.selected_index], rframe,
+                                                        text_color=self.highlighted_text_color, centered=True,
+                                                        vertical_centered=True)
+
+                self.rendered_highlighted_texts[self.selected_index] = rtext
+
+            else:
+
+                fp = 2 * (percentage - 0.5)
+
+                cx = self.highlight_inside_frame_dim.x - self.x
+                cy = self.highlight_inside_frame_dim.y - self.y + (self.selected_index) * self.full_box_height
+                cw = self.option_box_width
+                ch = self.option_box_height
+
+                mx, my = self.text_margins_percentage
+                hmx, hmy = self.highlighted_text_margins_percentage
+
+                mxd, myd = mx + (hmx - mx) * fp, my + (hmy - my) * fp
+
+                sframe = pygame.Rect(cx, cy, cw, ch)
+                rframe = graphics.apply_margins(sframe, mxd, myd)
+
+                rtext = graphics.render_page_from_chars(self.font, self.options[self.selected_index], rframe,
+                                                        text_color=self.highlighted_text_color, centered=True,
+                                                        vertical_centered=True)
+
+                self.rendered_highlighted_texts[self.selected_index] = rtext
+
+
+
+        self.render()
+
+
+
+    def finalize_select_animation(self):
+
+        data = self.selected_index
+        fevent = Event(DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED, data)
+        self.event_queue.append(fevent)
+
+        self.state = DropdownMenu.OPTION_SELECTED
 
         self.rerender()
 
@@ -172,6 +295,7 @@ class DropdownMenu(Widget):
 
         self.render()
 
+
     def get_surfaces(self):
 
         return [self.surface]
@@ -180,5 +304,13 @@ class DropdownMenu(Widget):
 
         return [(self.surface, (self.x, self.y))]
 
+
     def tick(self):
-        pass
+
+        if self.state in self.move_states:
+            self.selected_index += self.moves_buffered
+            self.selected_index %= self.n_options
+            self.moves_buffered = 0
+            self.render()
+        if self.state == DropdownMenu.SELECT_ANIMATION_PLAYING:
+            self.render_select_animation()

@@ -153,7 +153,7 @@ class ExplorerInfoFrame(Frame):
         if (keys[pygame.K_ESCAPE]):
             return (None, None)
 
-        if self.key_clock.elapsed() > self.key_delay:
+        if self.key_clock.elapsed() > self.key_delay and not self.input_blocked:
 
             if keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
 
@@ -200,7 +200,8 @@ class ExplorerInfoFrame(Frame):
 
             if event.type == ImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
                 eframe = TestFrame(None, pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT))
-                self.parent_frame.add_subframe(eframe)
+                eframe.parent_frame = self.parent_frame
+                return (FrameEnums.FRAME_REFERENCE, eframe)
 
         return (FrameEnums.EXPLORER_INFO_FRAME, self.data)
 
