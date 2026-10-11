@@ -45,22 +45,37 @@ class IntroFrame(Frame):
         self.entry_delay = 500#ms
         self.entry_delay_clock.start()
 
+        self.enter_intro_menu = False
+
+        self.bind_events()
+
+    def bind_events(self):
+
+        cdata = {"frame_ref": self}
+
+        self.add_pygame_key_callback(pygame.K_RETURN, cdata, False, self.enter_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, cdata, False, self.enter_pressed)
+
+    def enter_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.entry_delay_clock.elapsed() > ref.entry_delay:
+            ref.enter_intro_menu = True
+
+
     def tick(self):
 
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return None
+        self.manage_pygame_events()
 
-        keys = pygame.key.get_pressed()
-
-        if (keys[pygame.K_ESCAPE]):
+        if self.exit_flag_raised():
             return None
 
-        if (keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]) and self.entry_delay_clock.elapsed() > self.entry_delay:
+        if self.enter_intro_menu:
 
             imframe = IntroMenuFrame(self.data, self.frame_dim.copy(), self)
-
+            self.enter_intro_menu = False
             return imframe
 
         #setting opacity

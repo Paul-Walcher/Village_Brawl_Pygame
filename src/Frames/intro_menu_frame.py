@@ -4,6 +4,7 @@ from Frames.frame_enums import FrameEnums
 from constants import Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
+import time
 
 from Frames.choose_playset_frame import ChoosePlaysetFrame
 
@@ -28,12 +29,11 @@ class IntroMenuFrame(Frame):
 
         self.frame_rect = pygame.Rect(0, 0, self.width, self.height)
 
-        self.clock = Clock()
-        self.key_delay = 100#ms
+        self.choose_playset_flag = False
+        self.go_back_flag = False
 
         self.render_highlighted()
-
-        self.clock.start()
+        self.bind_events()
 
 
     def render_highlighted(self):
@@ -62,63 +62,87 @@ class IntroMenuFrame(Frame):
         self.back_pos = (self.width//20,
                             self.height - self.back_text.get_height() - self.height // 20)
 
+    def bind_events(self):
+
+        cdata = {"frame_ref": self}
+
+        self.add_pygame_key_callback(pygame.K_LEFT, cdata, putback=False, func=self.left_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, cdata, putback=False, func=self.left_pressed)
+
+        self.add_pygame_key_callback(pygame.K_RIGHT, cdata, putback=False, func=self.right_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, cdata, putback=False, func=self.right_pressed)
+
+        self.add_pygame_key_callback(pygame.K_UP, cdata, putback=False, func=self.up_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.UP_ALTERNATIVE, cdata, putback=False, func=self.up_pressed)
+
+        self.add_pygame_key_callback(pygame.K_DOWN, cdata, putback=False, func=self.down_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.DOWN_ALTERNATIVE, cdata, putback=False, func=self.down_pressed)
+
+        self.add_pygame_key_callback(pygame.K_RETURN, cdata, putback=False, func=self.enter_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, cdata, putback=False, func=self.enter_pressed)
+
+
+    def left_pressed(self, event, data):
+        ref = data["frame_ref"]
+
+        if ref.chosen_index != 2:
+            ref.chosen_index = 2
+            ref.render_highlighted()
+
+    def right_pressed(self, event, data):
+        ref = data["frame_ref"]
+
+        if ref.chosen_index == 2 or ref.chosen_index == -1:
+            ref.chosen_index = 0
+            ref.render_highlighted()
+
+    def up_pressed(self, event, data):
+        ref = data["frame_ref"]
+
+        if ref.chosen_index == -1:
+            ref.chosen_index = 0
+        else:
+            ref.chosen_index -= 1
+            ref.chosen_index %= 3
+
+        ref.render_highlighted()
+
+    def down_pressed(self, event, data):
+        ref = data["frame_ref"]
+
+        if ref.chosen_index == -1:
+            ref.chosen_index = 0
+        else:
+            ref.chosen_index += 1
+            ref.chosen_index %= 3
+
+        ref.render_highlighted()
+
+    def enter_pressed(self, event, data):
+        ref = data["frame_ref"]
+
+        if ref.chosen_index == 2:
+            ref.go_back_flag = True
+        if ref.chosen_index == 0:
+            ref.choose_playset_flag = True
 
 
 
     def tick(self):
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return None
+        self.manage_pygame_events()
 
-        keys = pygame.key.get_pressed()
+        if self.exit_flag_raised():
+            return None
 
-        if keys[pygame.K_ESCAPE]:
-            return (None, None)
+        if self.go_back_flag:
+            self.go_back_flag = False
+            return self.parent_frame
 
-        if (keys[pygame.K_UP] or keys[KeyAlternatives.UP_ALTERNATIVE]) and self.clock.elapsed() > self.key_delay:
-
-            if self.chosen_index == -1:
-                self.chosen_index = 0
-            else:
-                self.chosen_index -= 1
-                self.chosen_index %= 3
-
-            self.render_highlighted()
-            self.clock.start()
-
-        if (keys[pygame.K_DOWN] or keys[KeyAlternatives.DOWN_ALTERNATIVE]) and self.clock.elapsed() > self.key_delay:
-
-            if self.chosen_index == -1:
-                self.chosen_index = 0
-            else:
-                self.chosen_index += 1
-                self.chosen_index %= 3
-
-            self.render_highlighted()
-            self.clock.start()
-
-        if (keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]) and self.clock.elapsed() > self.key_delay:
-
-            if self.chosen_index != 2:
-                self.chosen_index = 2
-                self.render_highlighted()
-                self.clock.start()
-
-        if (keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]) and self.clock.elapsed() > self.key_delay:
-
-            if self.chosen_index == 2 or self.chosen_index == -1:
-                self.chosen_index = 0
-                self.render_highlighted()
-                self.clock.start()
-
-        if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
-            if self.chosen_index == 2:
-                return self.parent
-
-            if self.chosen_index == 0:
-                cpframe = ChoosePlaysetFrame(self.data, self.frame_dim.copy(), self)
-                return cpframe
+        if self.choose_playset_flag:
+            cpframe = ChoosePlaysetFrame(self.data, self.frame_dim.copy(), self)
+            self.choose_playset_flag = False
+            return cpframe
 
 
         return self

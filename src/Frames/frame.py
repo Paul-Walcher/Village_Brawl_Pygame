@@ -62,7 +62,7 @@ class Frame(EventQueueManager):
         self.widgets = [] #own widgets
 
         #adding escape key
-        self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT)
+        self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT, key_delay=0)
 
     @property
     def frame_dim(self):
