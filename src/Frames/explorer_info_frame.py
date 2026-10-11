@@ -18,12 +18,12 @@ from widgets.labeled_image_slider import LabeledImageSlider
 
 class ExplorerInfoFrame(Frame):
 
-    def __init__(self, data=None, frame_dim=None):
+    def __init__(self, explorer_enum, data=None, frame_dim=None, parent_frame=None):
 
-        super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame_dim)
+        super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame_dim, parent_frame)
 
         self.modules = self.data[FrameDataID.MODULES]
-        self.explorer_enum = self.data["ExplorerEnum"]
+        self.explorer_enum = explorer_enum
 
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
@@ -60,6 +60,7 @@ class ExplorerInfoFrame(Frame):
 
         #rendering
         self.rerender()
+        self.bind_events()
 
         self.key_clock.start()
 
@@ -129,8 +130,6 @@ class ExplorerInfoFrame(Frame):
 
     def rerender(self):
 
-        self.explorer_enum = self.data["ExplorerEnum"]
-
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
 
@@ -140,73 +139,109 @@ class ExplorerInfoFrame(Frame):
         self.render_textbox()
         self.render_slider_menu()
 
+    def bind_events(self):
+
+        cdata = {"frame_ref": self}
+
+        self.add_pygame_key_callback(pygame.K_LEFT, cdata, putback=False, func=self.left_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, cdata, putback=False, func=self.left_pressed)
+
+        self.add_pygame_key_callback(pygame.K_RIGHT, cdata, putback=False, func=self.right_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, cdata, putback=False, func=self.right_pressed)
+
+        self.add_pygame_key_callback(pygame.K_UP, cdata, putback=False, func=self.up_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.UP_ALTERNATIVE, cdata, putback=False, func=self.up_pressed)
+
+        self.add_pygame_key_callback(pygame.K_DOWN, cdata, putback=False, func=self.down_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.DOWN_ALTERNATIVE, cdata, putback=False, func=self.down_pressed)
+
+        self.add_pygame_key_callback(pygame.K_RETURN, cdata, putback=False, func=self.enter_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, cdata, putback=False, func=self.enter_pressed)
+
+
+
+
+    def left_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.state == ref.NO_FOCUS:
+            ref.state = ref.DESCRIPTION_FOCUSED
+            ref.textbox.set_outline_size(ref.focused_outline_size)
+        elif ref.state == ref.DESCRIPTION_FOCUSED:
+            ref.textbox.prev_page()
+            ref.key_clock.start()
+        elif ref.state == ref.MENU_FOCUSED:
+            ref.slider_menu.slide_right()
+            ref.key_clock.start()
+
+        return None
+
+    def right_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.state == ref.NO_FOCUS:
+            ref.state = ref.DESCRIPTION_FOCUSED
+            ref.textbox.set_outline_size(ref.focused_outline_size)
+        elif ref.state == ref.DESCRIPTION_FOCUSED:
+            ref.textbox.next_page()
+            ref.key_clock.start()
+        elif ref.state == ref.MENU_FOCUSED:
+            ref.slider_menu.slide_left()
+            ref.key_clock.start()
+
+        return None
+
+    def up_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.state == ref.NO_FOCUS or ref.state == ref.MENU_FOCUSED:
+            ref.state = ref.DESCRIPTION_FOCUSED
+            ref.textbox.set_outline_size(ref.focused_outline_size)
+
+        return None
+
+    def down_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.state == ref.NO_FOCUS or ref.state == ref.DESCRIPTION_FOCUSED:
+            ref.state = ref.MENU_FOCUSED
+            ref.textbox.set_outline_size(0)
+
+        return None
+
+    def enter_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        ref.slider_menu.play_select_animation()
+
+        return None
+
     def tick(self):
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return (None, None)
+        super().manage_pygame_events()
 
-        super().tick()
+        if self.exit_flag_raised():
+            return None
 
-        keys = pygame.key.get_pressed()
-
-        if (keys[pygame.K_ESCAPE]):
-            return (None, None)
-
-        if self.key_clock.elapsed() > self.key_delay and not self.input_blocked:
-
-            if keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
-
-                if self.state == self.NO_FOCUS:
-                    self.state = self.DESCRIPTION_FOCUSED
-                    self.textbox.set_outline_size(self.focused_outline_size)
-                elif self.state == self.DESCRIPTION_FOCUSED:
-                    self.textbox.prev_page()
-                    self.key_clock.start()
-                elif self.state == self.MENU_FOCUSED:
-                    self.slider_menu.slide_right()
-                    self.key_clock.start()
-
-            if keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
-
-                if self.state == self.NO_FOCUS:
-                    self.state = self.DESCRIPTION_FOCUSED
-                    self.textbox.set_outline_size(self.focused_outline_size)
-                elif self.state == self.DESCRIPTION_FOCUSED:
-                    self.textbox.next_page()
-                    self.key_clock.start()
-                elif self.state == self.MENU_FOCUSED:
-                    self.slider_menu.slide_left()
-                    self.key_clock.start()
-
-            if keys[pygame.K_UP] or keys[KeyAlternatives.UP_ALTERNATIVE]:
-
-                if self.state == self.NO_FOCUS or self.state == self.MENU_FOCUSED:
-                    self.state = self.DESCRIPTION_FOCUSED
-                    self.textbox.set_outline_size(self.focused_outline_size)
-
-            if keys[pygame.K_DOWN] or keys[KeyAlternatives.DOWN_ALTERNATIVE]:
-
-                if self.state == self.NO_FOCUS or self.state == self.DESCRIPTION_FOCUSED:
-                    self.state = self.MENU_FOCUSED
-                    self.textbox.set_outline_size(0)
-
-            if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
-                self.slider_menu.play_select_animation()
+        self.widgets_tick()
 
         slider_events = self.slider_menu.poll_events()
 
         for event in slider_events:
 
             if event.type == ImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
-                eframe = TestFrame(None, pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT))
-                eframe.parent_frame = self.parent_frame
-                return (FrameEnums.FRAME_REFERENCE, eframe)
+                eframe = TestFrame(None, pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT), self)
+                return eframe
 
-        return (FrameEnums.EXPLORER_INFO_FRAME, self.data)
+        return self
 
 
-    def draw(self, screen):
+    def render(self, screen):
 
         if self.surface is not None:
             self.surface.fill((*Colors.DARK_GRAY, Alpha.LEVEL_6))
@@ -223,7 +258,6 @@ class ExplorerInfoFrame(Frame):
                 pygame.draw.rect(self.surface, (*Colors.BLACK, 255), self.menu_slider_area, width=self.focused_outline_size)
 
 
+            self.render_widgets(self.surface)
 
-
-            super().draw(self.surface)
             screen.blit(self.surface, (self.x, self.y))

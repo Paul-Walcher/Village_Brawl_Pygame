@@ -13,9 +13,9 @@ import constants
 
 class ChooseExplorerFrame(Frame):
 
-    def __init__(self, data=None, frame_dim=None):
+    def __init__(self, data=None, frame_dim=None, parent_frame=None):
 
-        super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame_dim)
+        super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame_dim, parent_frame)
 
         self.modules = self.data[FrameDataID.MODULES]
         self.stack = self.data[FrameDataID.STACK]
@@ -71,33 +71,33 @@ class ChooseExplorerFrame(Frame):
         self.info_frame_state = self.INFO_FRAME_INACTIVE
         self.info_frame = None
 
-        self.inputs_blocked = False
+        self.bind_events()
 
     def initialize_info_frame(self):
 
-        data = {FrameDataID.MODULES: self.modules,
-                "ExplorerEnum": self.explorer_enums[self.explorer_index]
-                }
 
         iframe = pygame.Rect(self.width, 0, self.width // 2, self.height)
-        info_frame = ExplorerInfoFrame(data, iframe)
+        info_frame = ExplorerInfoFrame(self.explorer_enums[self.explorer_index], self.data, iframe, self)
         self.info_frame = info_frame
-        self.info_frame.set_parent_frame(self)
+
+        for key in [pygame.K_LEFT, pygame.K_RIGHT, KeyAlternatives.LEFT_ALTERNATIVE, KeyAlternatives.RIGHT_ALTERNATIVE]:
+            self.disable_pygame_key(key)
 
         self.info_frame_state = self.INFO_FRAME_SLIDING_IN
-        self.inputs_blocked = True
         self.info_frame_clock.start()
 
     def deinitialize_info_frame(self):
 
         self.info_frame_state = self.INFO_FRAME_INACTIVE
         self.info_frame = None
-        self.inputs_blocked = False
+
+        for key in [pygame.K_LEFT, pygame.K_RIGHT, KeyAlternatives.LEFT_ALTERNATIVE, KeyAlternatives.RIGHT_ALTERNATIVE]:
+            self.enable_pygame_key(key)
 
     def finalize_info_frame(self):
 
         final_frame = pygame.Rect(self.width//2, 0, self.width//2, self.height)
-        self.info_frame.set_frame(final_frame)
+        self.info_frame.frame_dim = final_frame
 
         self.info_frame_state = self.INFO_FRAME_ACTIVE
 
@@ -144,36 +144,68 @@ class ChooseExplorerFrame(Frame):
 
         #if we have an info frame, set the explorer and rerender it
         if self.info_frame is not None:
-            self.info_frame.data["ExplorerEnum"] = self.explorer_enums[self.explorer_index]
+            self.info_frame.explorer_enum = self.explorer_enums[self.explorer_index]
             self.info_frame.rerender()
+
+    def bind_events(self):
+
+        cdata = {"frame_ref": self}
+
+        self.add_pygame_key_callback(pygame.K_ESCAPE, cdata, putback=False, func=self.escape_pressed)
+
+        self.add_pygame_key_callback(pygame.K_LEFT, cdata, putback=False, func=self.left_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, cdata, putback=False, func=self.left_pressed)
+
+        self.add_pygame_key_callback(pygame.K_RIGHT, cdata, putback=False, func=self.right_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, cdata, putback=False, func=self.right_pressed)
+
+        self.add_pygame_key_callback(pygame.K_i, cdata, putback=False, func=self.i_pressed)
+
+    def escape_pressed(self, event, data):
+        return Frame.CallbackEvent.EXIT
+
+    def left_pressed(self, event, data):
+        ref = data["frame_ref"]
+
+        if not (ref.rotating_left or ref.rotating_right):
+
+            ref.rotating_left = True
+            ref.initialize_rotation()
+
+            ref.rotation_clock.start()
+
+    def right_pressed(self, event, data):
+        ref = data["frame_ref"]
+
+        if not (ref.rotating_left or ref.rotating_right):
+
+            ref.rotating_right = True
+            ref.initialize_rotation()
+
+            ref.rotation_clock.start()
+
+    def i_pressed(self, event, data):
+        ref = data["frame_ref"]
+
+        if ref.info_frame_state == ref.INFO_FRAME_INACTIVE:
+            ref.initialize_info_frame()
+        elif ref.info_frame_state == ref.INFO_FRAME_ACTIVE:
+            ref.info_frame_state = ref.INFO_FRAME_SLIDING_OUT
+            ref.info_frame_clock.start()
+
 
 
     def tick(self):
 
+        nframe = self
 
         if self.info_frame is not None:
-            ref, data = self.info_frame.tick()
-            if ref is None:
-                return (None, None)
-            elif ref == FrameEnums.FRAME_REFERENCE:
-                return (FrameEnums.FRAME_REFERENCE, data)
+            nframe = self.info_frame.tick()
 
-
-        if self.info_frame is not None:
-
-            events = self.info_frame.poll_events()
-
-            for event in events:
-                 if event.type == Frame.Event.EXIT_PARENT_FRAME:
-
-                     idx = self.info_frame.get_selected_index()
-                     return (None, None)
-
-
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return (None, None)
+            if nframe is self.info_frame:
+                nframe = self
+            elif nframe is not None:
+                nframe.set_parent_frame(self)
 
         if self.info_frame_state == self.INFO_FRAME_SLIDING_IN:
 
@@ -181,7 +213,7 @@ class ChooseExplorerFrame(Frame):
                 self.finalize_info_frame()
             else:
                 info_frame_frame = pygame.Rect(int(self.width - (self.info_frame_clock.elapsed() / self.info_frame_sliding_time * self.width//2)), 0, self.width//2, self.height)
-                self.info_frame.set_frame(info_frame_frame)
+                self.info_frame.frame_dim = info_frame_frame
 
         elif self.info_frame_state == self.INFO_FRAME_SLIDING_OUT:
 
@@ -189,13 +221,7 @@ class ChooseExplorerFrame(Frame):
                 self.deinitialize_info_frame()
             else:
                 info_frame_frame = pygame.Rect(int(self.width // 2 + (self.info_frame_clock.elapsed() / self.info_frame_sliding_time * self.width//2)), 0, self.width//2, self.height)
-                self.info_frame.set_frame(info_frame_frame)
-
-
-        keys = pygame.key.get_pressed()
-
-        if (keys[pygame.K_ESCAPE]):
-            return (None, None)
+                self.info_frame.frame_dim = info_frame_frame
 
         if self.rotating_left or self.rotating_right:
             if self.rotation_clock.elapsed() > self.rotation_duration:
@@ -205,42 +231,15 @@ class ChooseExplorerFrame(Frame):
             elif self.rotating_right:
                 self.shift = int((self.rotation_clock.elapsed() / self.rotation_duration) * self.width)
 
-        if self.key_clock.elapsed() > self.key_delay:
+        self.manage_pygame_events()
 
-            if keys[pygame.K_i]:
-                if self.info_frame_state == self.INFO_FRAME_INACTIVE:
-                    self.initialize_info_frame()
-                elif self.info_frame_state == self.INFO_FRAME_ACTIVE:
-                    self.info_frame_state = self.INFO_FRAME_SLIDING_OUT
-                    self.info_frame_clock.start()
+        if self.exit_flag_raised():
+            return None
 
-            if not self.inputs_blocked:
-                if keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
-
-                    if not (self.rotating_left or self.rotating_right):
-
-                        self.rotating_left = True
-                        self.initialize_rotation()
-
-                        self.rotation_clock.start()
-                        self.key_clock.start()
-
-                if keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
-
-                    if not (self.rotating_left or self.rotating_right):
-
-                        self.rotating_right = True
-                        self.initialize_rotation()
-
-                        self.rotation_clock.start()
-                        self.key_clock.start()
+        return nframe
 
 
-
-        return (FrameEnums.CHOOSE_EXPLORER_FRAME, self.data)
-
-
-    def draw(self, screen):
+    def render(self, screen):
 
 
         ex, ey = self.explorer_image_pos
@@ -260,4 +259,4 @@ class ChooseExplorerFrame(Frame):
 
 
         if self.info_frame is not None:
-            self.info_frame.draw(screen)
+            self.info_frame.render(screen)

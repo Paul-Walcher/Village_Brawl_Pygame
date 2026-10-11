@@ -10,14 +10,15 @@ from clock import Clock
 from modules import Modules
 import constants
 
+from Frames.choose_explorer_frame import ChooseExplorerFrame
+
 class LoadPlaysetFrame(Frame):
 
-    def __init__(self, data=None, frame_dim=None):
+    def __init__(self, data=None, frame_dim=None, parent_frame=None):
 
-        super().__init__(FrameEnums.LOAD_PLAYSET_FRAME, data, frame_dim)
+        super().__init__(FrameEnums.LOAD_PLAYSET_FRAME, data, frame_dim, parent_frame)
 
         self.modules = None
-
 
         self.loading_text = None
         self.loading_text_pos = None
@@ -64,12 +65,12 @@ class LoadPlaysetFrame(Frame):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return (None, None)
+                return None
 
         keys = pygame.key.get_pressed()
 
         if (keys[pygame.K_ESCAPE]):
-            return (None, None)
+            return None
 
         if self.loading_clock.elapsed() > self.loading_delay:
 
@@ -84,13 +85,15 @@ class LoadPlaysetFrame(Frame):
             if self.loading_finished and self.extra_clock.elapsed() > constants.__ADDITIONAL_LOAD_TIME__:
 
                 self.data[FrameDataID.MODULES] = self.modules
-                return (FrameEnums.CHOOSE_EXPLORER_FRAME, self.data)
+
+                ceframe = ChooseExplorerFrame(self.data, self.frame_dim.copy(), None) #resetting parent_frame_list
+                return ceframe
 
 
-        return (FrameEnums.LOAD_PLAYSET_FRAME, self.data)
+        return self
 
 
-    def draw(self, screen):
+    def render(self, screen):
 
         screen.fill(Colors.BLACK)
 

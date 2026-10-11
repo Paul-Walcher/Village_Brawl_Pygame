@@ -7,8 +7,8 @@ from constants import Colors
 
 class EmptyFrame(Frame):
 
-    def __init__(self, data, frame_dim, background_color=(*Colors.BLACK, 255)):
-        super().__init__(FrameEnums.EMPTY_FRAME, data, frame_dim)
+    def __init__(self, data, frame_dim, parent_frame=None, background_color=(*Colors.BLACK, 255)):
+        super().__init__(FrameEnums.EMPTY_FRAME, data, frame_dim, parent_frame)
         self.background_color = background_color
 
         self.surface = pygame.Surface((self.frame_dim.width, self.frame_dim.height), pygame.SRCALPHA)
@@ -24,12 +24,11 @@ class EmptyFrame(Frame):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_ESCAPE]:
-            return (None, self.data)
+            return None
 
-        return (self.frame_enum, self.data)
+        return self
 
 
-    def draw(self, screen):
+    def render(self, screen):
         self.surface.fill(self.background_color)
         screen.blit(self.surface, (self.frame_dim.x, self.frame_dim.y))
-        super().draw(screen)

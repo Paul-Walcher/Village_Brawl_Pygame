@@ -5,11 +5,13 @@ from constants import Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
 
+from Frames.choose_playset_frame import ChoosePlaysetFrame
+
 class IntroMenuFrame(Frame):
 
-    def __init__(self, data=None, frame_dim=None):
+    def __init__(self, data=None, frame_dim=None, parent_frame=None):
 
-        super().__init__(FrameEnums.INTRO_MENU_FRAME, data, frame_dim)
+        super().__init__(FrameEnums.INTRO_MENU_FRAME, data, frame_dim, parent_frame)
 
         self.new_game_text = None
         self.new_game_pos = None
@@ -67,7 +69,7 @@ class IntroMenuFrame(Frame):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return (None, None)
+                return None
 
         keys = pygame.key.get_pressed()
 
@@ -112,15 +114,16 @@ class IntroMenuFrame(Frame):
 
         if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
             if self.chosen_index == 2:
-                return (FrameEnums.INTRO_FRAME, self.data)
+                return self.parent
 
             if self.chosen_index == 0:
-                return (FrameEnums.CHOOSE_PLAYSET_FRAME, self.data)
+                cpframe = ChoosePlaysetFrame(self.data, self.frame_dim.copy(), self)
+                return cpframe
 
 
-        return (FrameEnums.INTRO_MENU_FRAME, self.data)
+        return self
 
-    def draw(self, screen):
+    def render(self, screen):
 
         screen.fill(Colors.BLACK)
 

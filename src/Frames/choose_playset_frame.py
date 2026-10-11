@@ -8,12 +8,13 @@ import graphics
 from clock import Clock
 from gameinfo import Gameinfo
 
+from Frames.choose_save_name_frame import ChooseSaveNameFrame
 
 class ChoosePlaysetFrame(Frame):
 
-    def __init__(self, data=None, frame_dim=None):
+    def __init__(self, data=None, frame_dim=None, parent_frame=None):
 
-        super().__init__(FrameEnums.CHOOSE_PLAYSET_FRAME, data, frame_dim)
+        super().__init__(FrameEnums.CHOOSE_PLAYSET_FRAME, data, frame_dim, parent_frame)
 
         self.frame_rect = pygame.Rect(0, 0, self.width, self.height)
 
@@ -118,29 +119,31 @@ class ChoosePlaysetFrame(Frame):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return (None, None)
+                return None
 
         keys = pygame.key.get_pressed()
 
         if self.keyclock.elapsed() > self.key_buffer_time:
 
             if keys[pygame.K_ESCAPE]:
-                return (None, None)
+                return None
 
             if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
 
                 if self.back_focused:
-                    return (FrameEnums.INTRO_MENU_FRAME, self.data)
+                    return self.parent_frame
                 if self.playsets_focused:
                     ginfo = Gameinfo()
                     ginfo.playset = self.playsets[self.playset_index]
                     data = {}
                     if self.data:
                         self.data[FrameDataID.GAMEINFO] = ginfo
-                        data = self.data
                     else:
-                        data = {FrameDataID.GAMEINFO: ginfo}
-                    return (FrameEnums.CHOOSE_SAVE_NAME_FRAME, data)
+                        self.data = {FrameDataID.GAMEINFO: ginfo}
+
+                    csnframe = ChooseSaveNameFrame(self.data, self.frame_dim.copy(), self)
+
+                    return csnframe
 
 
             if keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
@@ -173,9 +176,9 @@ class ChoosePlaysetFrame(Frame):
                     self.render_text()
                     self.keyclock.start()
 
-        return (FrameEnums.CHOOSE_PLAYSET_FRAME, self.data)
+        return self
 
-    def draw(self, screen):
+    def render(self, screen):
 
         screen.fill(Colors.BLACK)
 

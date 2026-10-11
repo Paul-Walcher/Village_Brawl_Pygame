@@ -7,11 +7,12 @@ import graphics
 import clock
 import random
 from Frames.frame_enums import FrameEnums
+from Frames.intro_menu_frame import IntroMenuFrame
 
 class IntroFrame(Frame):
 
-    def __init__(self, data=None, frame_dim=None):
-        super().__init__(FrameEnums.INTRO_FRAME, data, frame_dim)
+    def __init__(self, data=None, frame_dim=None, parent_frame=None):
+        super().__init__(FrameEnums.INTRO_FRAME, data, frame_dim, parent_frame)
 
 
         self.num_headlines = 20
@@ -49,16 +50,18 @@ class IntroFrame(Frame):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return (None, None)
+                return None
 
         keys = pygame.key.get_pressed()
 
         if (keys[pygame.K_ESCAPE]):
-            return (None, None)
+            return None
 
         if (keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]) and self.entry_delay_clock.elapsed() > self.entry_delay:
 
-            return (FrameEnums.INTRO_MENU_FRAME, self.data)
+            imframe = IntroMenuFrame(self.data, self.frame_dim.copy(), self)
+
+            return imframe
 
         #setting opacity
         if self.fading:
@@ -113,9 +116,9 @@ class IntroFrame(Frame):
             self.clock.start()
 
 
-        return (self.frame_enum, self.data)
+        return self
 
-    def draw(self, screen):
+    def render(self, screen):
 
         screen.fill(Colors.BLACK)
 

@@ -7,11 +7,13 @@ from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
 
+from Frames.load_playset_frame import LoadPlaysetFrame
+
 class ChooseSaveNameFrame(Frame):
 
-    def __init__(self, data=None, frame_dim=None):
+    def __init__(self, data=None, frame_dim=None, parent_frame=None):
 
-        super().__init__(FrameEnums.CHOOSE_SAVE_NAME_FRAME, data, frame_dim)
+        super().__init__(FrameEnums.CHOOSE_SAVE_NAME_FRAME, data, frame_dim, parent_frame)
 
 
         center_pos = (self.width // 2, self.height // 2)
@@ -87,7 +89,7 @@ class ChooseSaveNameFrame(Frame):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return (None, None)
+                return None
 
             if self.is_typing and event.type == pygame.TEXTINPUT:
                 self.savefile_name += event.text
@@ -107,7 +109,7 @@ class ChooseSaveNameFrame(Frame):
                     self.highlighted_index = 1
                     self.key_delay_clock.start()
                 else:
-                    return (None, None)
+                    return None
 
             if keys[pygame.K_BACKSPACE]:
                 if self.is_typing and self.savefile_name:
@@ -149,15 +151,16 @@ class ChooseSaveNameFrame(Frame):
             if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
 
                 if self.highlighted_index == 0:
-                    return (FrameEnums.CHOOSE_PLAYSET_FRAME, self.data)
+                    return self.parent_frame
                 if self.highlighted_index == 2 and len(self.savefile_name) > 0:
                     self.data[FrameDataID.GAMEINFO].savefile_name = self.savefile_name
-                    return (FrameEnums.LOAD_PLAYSET_FRAME, self.data)
+                    lpframe = LoadPlaysetFrame(self.data, self.frame_dim.copy(), self)
+                    return lpframe
 
 
-        return (FrameEnums.CHOOSE_SAVE_NAME_FRAME, self.data)
+        return self
 
-    def draw(self, screen):
+    def render(self, screen):
 
         screen.fill(Colors.BLACK)
 

@@ -10,8 +10,8 @@ import time
 
 class TestFrame(EmptyFrame):
 
-    def __init__(self, data, frame_dim):
-        super().__init__(data, frame_dim)
+    def __init__(self, data, frame_dim, parent_frame=None):
+        super().__init__(data, frame_dim, parent_frame)
 
         self.frame_enum = FrameEnums.TEST_FRAME
 
@@ -36,20 +36,17 @@ class TestFrame(EmptyFrame):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return (None, None)
+                return None
 
         keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_ESCAPE]:
-            return (None, None)
 
         self.dropdown.tick()
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_ESCAPE]:
-            return (None, None)
+            return self.parent_frame
 
-        if self.key_clock.elapsed() > self.key_delay and not self.input_blocked:
+        if self.key_clock.elapsed() > self.key_delay:
 
             if keys[pygame.K_UP] or keys[KeyAlternatives.UP_ALTERNATIVE]:
                 self.dropdown.move_up()
@@ -61,9 +58,9 @@ class TestFrame(EmptyFrame):
                 self.dropdown.select()
                 self.key_clock.start()
 
-        return (self.frame_enum, None)
+        return self
 
-    def draw(self, screen):
+    def render(self, screen):
 
         self.surface.fill(Colors.BLACK)
 
