@@ -15,15 +15,15 @@ class DropdownMenu(Widget):
 
     def __init__(self,
                 frame_dim,
-                font=Fonts.MINECRAFT,
                 options=None,#list of lines of options, where each line is a list of sentences
+                font=Fonts.MINECRAFT,
                 background_color=Colors.T(Colors.BLACK),
                 highlighted_background_color=Colors.T(Colors.DARK_SLATE_GRAY),
                 text_color=Colors.T(Colors.WHITE),
                 in_option_line_margin=5,#px
                 highlighted_text_color=Colors.T(Colors.YELLOW),
-                line_margin=5#px,
-                line_color = Colors.DARK_GRAY,
+                line_margin=5,#px,
+                line_color = Colors.GRAY,
                 lines_shown = True,
                 outline_size=0,
                 outline_color=Colors.T(Colors.BLACK),
@@ -72,7 +72,7 @@ class DropdownMenu(Widget):
         self.selected_index = initial_selected_index
         self.last_selected_index = initial_selected_index
 
-        self.state = (NOTHING_SELECTED if self.selected_index == -1 else OPTION_SELECTED)
+        self.state = (DropdownMenu.NOTHING_SELECTED if self.selected_index == -1 else DropdownMenu.OPTION_SELECTED)
 
         self.rendered_texts = []
         self.rendered_highlighted_texts = []
@@ -100,19 +100,19 @@ class DropdownMenu(Widget):
 
         #drawing the lines#
         lwidth = int(self.highlight_inside_frame_dim.width * 0.8)
-        lstart = int(self.highlight_inside_frame_dim.x + self.highlight_inside_frame_dim.width * 0.1)
+        lstart = int(self.highlight_inside_frame_dim.width * 0.1)
 
         for i in range(1, self.n_options):
 
-            cy = self.highlight_inside_frame_dim.y + i*self.option_box_height
+            cy = (self.highlight_inside_frame_dim.y - self.y) + i*self.option_box_height
             pygame.draw.line(self.surface, self.line_color, (lstart, cy), (lstart + lwidth, cy))
 
         for i in range(self.n_options):
             if (i == self.selected_index):
-                for text, pos in self.rendered_texts[i]:
+                for text, pos in self.rendered_highlighted_texts[i]:
                         self.surface.blit(text, pos)
             else:
-                for text, pos in self.rendered_highlighted_texts[i]:
+                for text, pos in self.rendered_texts[i]:
                     self.surface.blit(text, pos)
 
 
@@ -123,6 +123,7 @@ class DropdownMenu(Widget):
         self.rendered_texts = []
         self.rendered_highlighted_texts = []
         self.option_frames = []
+        self.boxframes = []
 
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
@@ -142,24 +143,24 @@ class DropdownMenu(Widget):
         self.text_margin_box = graphics.apply_margins(pygame.Rect(0, 0, self.option_box_width, self.option_box_height), *self.text_margins_percentage)
         self.highlighted_text_margin_box = graphics.apply_margins(pygame.Rect(0, 0, self.option_box_width, self.option_box_height), *self.highlighted_text_margins_percentage)
 
-        cx = self.highlight_inside_frame_dim.x
-        cy = self.highlight_inside_frame_dim.y
+        cx = self.highlight_inside_frame_dim.x - self.x
+        cy = self.highlight_inside_frame_dim.y - self.y
 
         for page in self.options:
 
-            tmb, htmb =self.text_margin_box.copy(), self.highlighted_text_margin_box.copy()
+            tmb, htmb = self.text_margin_box.copy(), self.highlighted_text_margin_box.copy()
             tmb.x += cx
             tmb.y += cy
             htmb.x += cx
             htmb.y += cy
 
-            box = pygame.Rect(cx, cy, hifd.width, hifd.height)
+            box = pygame.Rect(cx, cy, hifd.width, self.option_box_height)
 
             self.boxframes.append((box, tmb, htmb))
 
 
-            rtext = graphics.render_page_from_chars(self.font, page, tmb, self.text_color, centered=True, line_margin=self.in_option_line_margin)
-            hrtext = graphics.render_page_from_chars(self.font, page, htmb, self.highlighted_text_color, centered=True, line_margin=self.in_option_line_margin)
+            rtext = graphics.render_page_from_chars(self.font, page, tmb, self.text_color, centered=True, vertical_centered=True, line_margin=self.in_option_line_margin)
+            hrtext = graphics.render_page_from_chars(self.font, page, htmb, self.highlighted_text_color, centered=True, vertical_centered=True, line_margin=self.in_option_line_margin)
 
             self.rendered_texts.append(rtext)
             self.rendered_highlighted_texts.append(hrtext)
@@ -167,7 +168,7 @@ class DropdownMenu(Widget):
             cy += self.full_box_height
 
 
-        self.state = (NOTHING_SELECTED if self.selected_index == -1 else OPTION_SELECTED)
+        self.state = (DropdownMenu.NOTHING_SELECTED if self.selected_index == -1 else DropdownMenu.OPTION_SELECTED)
 
         self.render()
 

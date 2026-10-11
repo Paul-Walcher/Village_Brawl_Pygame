@@ -117,23 +117,45 @@ def page_by_chars(text, line_length=40, paragraph_length=5, one_page=False):
 
     return pages
 
-def render_page_from_chars(font, page, frame, text_color=constants.Colors.BLACK, centered=False, line_margin=5):
-
+def render_page_from_chars(
+    font,
+    page,
+    frame,
+    text_color=constants.Colors.BLACK,
+    centered=False,
+    vertical_centered=False,
+    line_margin=5
+):
     fsize = get_fontsize(font, page, frame, line_margin=line_margin)
     trend = []
     cy = 0
 
-    for line in page:
+    rendered_lines = [
+        render_text(font, fsize, line, text_color)
+        for line in page
+    ]
 
-        rend = render_text(font, fsize, line, text_color)
+    # Calculate vertical offset to center all lines within the frame
+    total_height = sum(rend.get_height() for rend in rendered_lines)
+    total_height += max(0, len(rendered_lines) - 1) * line_margin
+
+    if vertical_centered:
+        cy = (frame.height - total_height) // 2
+
+    for rend in rendered_lines:
         pos = (frame.x, frame.y + cy)
+
+        # Horizontal centering (unchanged)
         if centered:
-            pos = (int(frame.x + (frame.width - rend.get_width())//2), frame.y+cy)
+            pos = (
+                int(frame.x + (frame.width - rend.get_width()) // 2),
+                frame.y + cy
+            )
+
         trend.append((rend, pos))
         cy += rend.get_height() + line_margin
 
     return trend
-
 
 
 def render_image(img_path, dimensions=None):
