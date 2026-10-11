@@ -63,13 +63,9 @@ class LoadPlaysetFrame(Frame):
 
     def tick(self):
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return None
+        self.manage_pygame_events()
 
-        keys = pygame.key.get_pressed()
-
-        if (keys[pygame.K_ESCAPE]):
+        if self.exit_flag_raised():
             return None
 
         if self.loading_clock.elapsed() > self.loading_delay:
