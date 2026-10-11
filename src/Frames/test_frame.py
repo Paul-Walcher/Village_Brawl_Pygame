@@ -58,14 +58,16 @@ class TestFrame(EmptyFrame):
                 self.dropdown.move_down()
                 self.key_clock.start()
             elif keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
-
-                time.sleep(0.3)
-                return (FrameEnums.FRAME_REFERENCE, self.parent_frame)
+                self.dropdown.select()
+                self.key_clock.start()
 
         return (self.frame_enum, None)
 
     def draw(self, screen):
 
         self.surface.fill(Colors.BLACK)
+
+        for surf, pos in self.dropdown.get_surfaces_with_position():
+            self.surface.blit(surf, pos)
 
         screen.blit(self.surface, (self.x, self.y))
