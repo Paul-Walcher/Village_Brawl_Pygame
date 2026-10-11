@@ -35,10 +35,10 @@ class ChoosePlaysetFrame(Frame):
 
         self.playset_index = min(len(self.playsets), self.playsets_shown // 2)
 
-        self.key_buffer_time = 200#ms
-        self.keyclock = Clock()
-        self.keyclock.start()
+        self.parent_frame_flag = False
+        self.choose_save_name_flag = False
 
+        self.bind_events()
         self.render_text()
 
     def render_text(self):
@@ -113,68 +113,92 @@ class ChoosePlaysetFrame(Frame):
             idx += 1
             font_below -= font_decrease
 
+    def bind_events(self):
 
+        cdata = {"frame_ref": self}
+
+        self.add_pygame_key_callback(pygame.K_LEFT, cdata, putback=False, func=self.left_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, cdata, putback=False, func=self.left_pressed)
+
+        self.add_pygame_key_callback(pygame.K_RIGHT, cdata, putback=False, func=self.right_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, cdata, putback=False, func=self.right_pressed)
+
+        self.add_pygame_key_callback(pygame.K_UP, cdata, putback=False, func=self.up_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.UP_ALTERNATIVE, cdata, putback=False, func=self.up_pressed)
+
+        self.add_pygame_key_callback(pygame.K_DOWN, cdata, putback=False, func=self.down_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.DOWN_ALTERNATIVE, cdata, putback=False, func=self.down_pressed)
+
+        self.add_pygame_key_callback(pygame.K_RETURN, cdata, putback=False, func=self.enter_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, cdata, putback=False, func=self.enter_pressed)
+
+
+    def left_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if not ref.back_focused:
+            ref.back_focused = True
+            ref.playsets_focused = False
+            ref.render_text()
+
+    def right_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if not ref.playsets_focused:
+            ref.back_focused = False
+            ref.playsets_focused = True
+            ref.render_text()
+
+    def up_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.playsets_focused and ref.playset_index > 0:
+            ref.playset_index -= 1
+            ref.render_text()
+
+    def down_pressed(self, event, data):
+
+        ref = data["frame_ref"]
+
+        if ref.playsets_focused and ref.playset_index < len(ref.playsets) - 1:
+            ref.playset_index += 1
+            ref.render_text()
+
+    def enter_pressed(self, event, data):
+        ref = data["frame_ref"]
+
+        if ref.back_focused:
+            ref.parent_frame_flag = True
+        if ref.playsets_focused:
+            ref.choose_save_name_flag = True
 
     def tick(self):
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return None
+        self.manage_pygame_events()
 
-        keys = pygame.key.get_pressed()
+        if self.exit_flag_raised():
+            return None
 
-        if self.keyclock.elapsed() > self.key_buffer_time:
+        if self.parent_frame_flag:
+            self.parent_frame_flag = False
+            return self.parent_frame
 
-            if keys[pygame.K_ESCAPE]:
-                return None
+        if self.choose_save_name_flag:
+            self.choose_save_name_flag = False
 
-            if keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
+            ginfo = Gameinfo()
+            ginfo.playset = self.playsets[self.playset_index]
+            if self.data:
+                self.data[FrameDataID.GAMEINFO] = ginfo
+            else:
+                self.data = {FrameDataID.GAMEINFO: ginfo}
 
-                if self.back_focused:
-                    return self.parent_frame
-                if self.playsets_focused:
-                    ginfo = Gameinfo()
-                    ginfo.playset = self.playsets[self.playset_index]
-                    data = {}
-                    if self.data:
-                        self.data[FrameDataID.GAMEINFO] = ginfo
-                    else:
-                        self.data = {FrameDataID.GAMEINFO: ginfo}
+            csnframe = ChooseSaveNameFrame(self.data, self.frame_dim.copy(), self)
 
-                    csnframe = ChooseSaveNameFrame(self.data, self.frame_dim.copy(), self)
-
-                    return csnframe
-
-
-            if keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
-
-                if not self.back_focused:
-                    self.back_focused = True
-                    self.playsets_focused = False
-                    self.render_text()
-                    self.keyclock.start()
-
-            if keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
-
-                if not self.playsets_focused:
-                    self.back_focused = False
-                    self.playsets_focused = True
-                    self.render_text()
-                    self.keyclock.start()
-
-            if keys[pygame.K_UP] or keys[KeyAlternatives.UP_ALTERNATIVE]:
-
-                if self.playsets_focused and self.playset_index > 0:
-                    self.playset_index -= 1
-                    self.render_text()
-                    self.keyclock.start()
-
-            if keys[pygame.K_DOWN] or keys[KeyAlternatives.DOWN_ALTERNATIVE]:
-
-                if self.playsets_focused and self.playset_index < len(self.playsets)-1:
-                    self.playset_index += 1
-                    self.render_text()
-                    self.keyclock.start()
+            return csnframe
 
         return self
 
