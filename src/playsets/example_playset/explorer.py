@@ -25,6 +25,7 @@ enums = importlib.import_module(f"{constants.PLAYSETS_FOLDER}.example_playset.en
 
 class Basic_Explorer(Explorer_Template):
 
+
     @staticmethod
     def info():
 
@@ -58,6 +59,8 @@ class Basic_Explorer(Explorer_Template):
 
         super().__init__(modules, Basic_Explorer.info(), frame_enum, data, frame_dim, parent_frame)
 
+    def check_activation(self):
+        return False
 
     def tick(self):
         pass

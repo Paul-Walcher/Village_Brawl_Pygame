@@ -113,6 +113,7 @@ class Explorer_Template(Frame):
 
 
 
+
     def __init__(self, modules, einfo=None, frame_enum=FrameEnums.UNDEFINED, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
 
         super().__init__(frame_enum, data, frame_dim, parent_frame)
@@ -137,8 +138,12 @@ class Explorer_Template(Frame):
         self.unlocked_packs = [] #list of enums
         self.unlockable_packs = [] #list of enums
 
+
         self.load_instances()
 
+    def check_activation(self):
+        #receives the data, and if the card can be activated it should return True, else False
+        return False
 
 
     def load_instances(self):

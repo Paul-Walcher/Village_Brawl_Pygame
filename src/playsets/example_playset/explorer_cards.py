@@ -56,7 +56,8 @@ class Small_Rest(Explorer_Card_Template):
     def __init__(self, modules, frame_enum=FrameEnums.UNDEFINED, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, Small_Rest.info(), frame_enum, data, frame_dim, parent_frame)
 
-
+    def check_activation(self):
+        return False
 
     def tick(self):
         pass
