@@ -10,6 +10,8 @@ from templates.explorer_card_template import Explorer_Card_Template, CardInfo
 import constants
 import deck
 
+from Frames.frame_enums import FrameEnums
+
 playset_path = os.path.dirname(os.path.abspath(__file__))
 playset_name = os.path.basename(playset_path)
 asset_path = os.path.join(playset_path, "assets")
@@ -51,11 +53,13 @@ class Small_Rest(Explorer_Card_Template):
         return cinfo
 
 
-    def __init__(self, modules):
-
-        super().__init__(modules, Small_Rest.info())
-
+    def __init__(self, modules, frame_enum=FrameEnums.UNDEFINED, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
+        super().__init__(modules, Small_Rest.info(), frame_enum, data, frame_dim, parent_frame)
 
 
-    def activate(self, phaseinfo):
+
+    def tick(self):
+        pass
+
+    def render(self, screen):
         pass

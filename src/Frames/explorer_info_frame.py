@@ -6,6 +6,7 @@ from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.empty_frame import EmptyFrame
 from Frames.test_frame import TestFrame
+from Frames.show_explorer_starting_cards_frame import ShowExplorerStartingCardsFrame
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, Alpha, IIMAGE, STANDARD_BACKSIDES
 import graphics
 from clock import Clock
@@ -31,6 +32,9 @@ class ExplorerInfoFrame(Frame):
         self.focused_outline_size = 5
         self.f_outline_d = 0.1
 
+        self.icon_imgs = [IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
+                        IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"), IIMAGE("Pack_Icon.png")
+                ]
 
 
         self.headline_area = pygame.Rect(0, 0, self.width, self.height // 8)
@@ -113,10 +117,6 @@ class ExplorerInfoFrame(Frame):
 
 
     def render_slider_menu(self):
-
-        self.icon_imgs = [IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
-                        IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"), IIMAGE("Pack_Icon.png")
-                ]
 
         srect = graphics.apply_margins(self.menu_slider_area, 0.1, 0.1)
 
@@ -235,8 +235,15 @@ class ExplorerInfoFrame(Frame):
         for event in slider_events:
 
             if event.type == ImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
-                eframe = TestFrame(None, pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT), self)
-                return eframe
+
+                if self.slider_menu.get_selected_index() == 0:
+
+                    secframe = ShowExplorerStartingCardsFrame(self.explorer_enum, self.data, constants.FULLSCREEN, self)
+                    return secframe
+                else:
+
+                    eframe = TestFrame(None, pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT), self)
+                    return eframe
 
         return self
 

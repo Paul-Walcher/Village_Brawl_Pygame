@@ -11,6 +11,8 @@ from templates.explorer_template import Explorer_Template, ExplorerInfo
 import constants
 from deck import Deck
 
+from Frames.frame_enums import FrameEnums
+
 playset_path = os.path.dirname(os.path.abspath(__file__))
 playset_name = os.path.basename(playset_path)
 asset_path = os.path.join(playset_path, "assets")
@@ -52,11 +54,13 @@ class Basic_Explorer(Explorer_Template):
 
         return einfo
 
-    def __init__(self, modules):
+    def __init__(self, modules, frame_enum=FrameEnums.UNDEFINED, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
 
-        super().__init__(modules, Basic_Explorer.info())
-        self.load_instances()
+        super().__init__(modules, Basic_Explorer.info(), frame_enum, data, frame_dim, parent_frame)
 
 
-    def activate_ability(self, phaseinfo):
+    def tick(self):
+        pass
+
+    def render(self, screen):
         pass

@@ -20,10 +20,25 @@ import constants
 from event_queue_manager import EventQueueManager, Event
 from widgets.widget import Widget
 
-class CardListing(Widget):
+class TextInput(Widget):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,
+                frame_dim,
+                font=Fonts.MINECRAFT,
+                text_color=Colors.BLACK
+
+                ):
+
+        super().__init__(self, frame_dim)
+
+    def tick(self):
+        pass
+
+    def get_surfaces(self):
+        pass
+
+    def get_surfaces_with_positions(self):
+        pass
 
     def rerender(self):
         pass

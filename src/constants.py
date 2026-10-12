@@ -8,6 +8,7 @@ import pygame
 pygame.init()
 
 WIDTH, HEIGHT = pygame.display.get_desktop_sizes()[0]
+FULLSCREEN = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
 __ADDITIONAL_LOAD_TIME__ = 500#ms
 BASE_ASSET_PATH = "BaseAssets"

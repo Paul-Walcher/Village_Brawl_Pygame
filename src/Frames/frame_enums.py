@@ -2,7 +2,7 @@ from enum import Enum, auto
 
 class FrameEnums(Enum):
 
-    FRAME_REFERENCE = auto()
+    UNDEFINED = auto()
 
     EMPTY_FRAME = auto()
     TEST_FRAME = auto()
@@ -13,6 +13,8 @@ class FrameEnums(Enum):
     CHOOSE_SAVE_NAME_FRAME = auto()
     LOAD_PLAYSET_FRAME = auto()
     CHOOSE_EXPLORER_FRAME = auto()
+
     EXPLORER_INFO_FRAME = auto()
+    SHOW_EXPLORER_STARTING_CARDS_FRAME = auto()
 
     INTERACTION_FRAME = auto()

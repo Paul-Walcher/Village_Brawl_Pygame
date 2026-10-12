@@ -7,7 +7,10 @@ from enum import Enum, auto
 
 from deck import Deck
 
-from templates.activatable import Activatable, ActivationResult, ActivationResultEnums
+import constants
+
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
 
 class ExplorerInfo:
 
@@ -101,7 +104,7 @@ class ExplorerInfo:
         return ecopy
 
 
-class Explorer_Template(Activatable):
+class Explorer_Template(Frame):
 
 
     @staticmethod
@@ -110,7 +113,9 @@ class Explorer_Template(Activatable):
 
 
 
-    def __init__(self, modules, einfo=None):
+    def __init__(self, modules, einfo=None, frame_enum=FrameEnums.UNDEFINED, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
+
+        super().__init__(frame_enum, data, frame_dim, parent_frame)
 
         #info
         self.info = (einfo if einfo is not None else Explorer_Template.info())
@@ -132,7 +137,9 @@ class Explorer_Template(Activatable):
         self.unlocked_packs = [] #list of enums
         self.unlockable_packs = [] #list of enums
 
-        super().__init__(self.info.activation_phases)
+        self.load_instances()
+
+
 
     def load_instances(self):
 

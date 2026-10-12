@@ -126,7 +126,7 @@ class Frame(EventQueueManager):
 
     def clear_event_callbacks(self):
         self.__event_callbacks = []
-        
+
     def add_pygame_event_callback(self, type, data, putback, func):
 
         cb = Frame.CallbackEvent(type, data, putback, func)
@@ -212,6 +212,11 @@ class Frame(EventQueueManager):
         for widget in self.widgets:
             for w, pos in widget.get_surfaces_with_position():
                 screen.blit(w, pos)
+
+
+    @abstractmethod
+    def tick(self):
+        pass
 
     @abstractmethod
     def render(self, screen):
