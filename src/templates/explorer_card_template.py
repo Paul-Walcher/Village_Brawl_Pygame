@@ -61,3 +61,6 @@ class Explorer_Card_Template(Frame):
     def check_activation(self):
         #receives the data, and if the card can be activated it should return True, else False
         return False
+
+    def initialize_activation(self):
+        pass

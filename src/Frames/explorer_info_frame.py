@@ -33,8 +33,11 @@ class ExplorerInfoFrame(Frame):
         self.f_outline_d = 0.1
 
         self.icon_imgs = [IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
-                        IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"), IIMAGE("Pack_Icon.png")
+                        IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"),
+                        IIMAGE("Pack_Icon.png"), IIMAGE("Villager_Icon.png")
                 ]
+
+        self.slider_labels = [["Deck"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"], ["Villagers"]]
 
 
         self.headline_area = pygame.Rect(0, 0, self.width, self.height // 8)
@@ -121,7 +124,7 @@ class ExplorerInfoFrame(Frame):
         srect = graphics.apply_margins(self.menu_slider_area, 0.1, 0.1)
 
         self.slider_menu = LabeledImageSlider(self.icon_imgs,
-                                                [["Deck"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"]],
+                                                self.slider_labels,
                                                 srect, text_location=LabeledImageSlider.BOTTOM,
                                                 max_slides=2
                                                 )

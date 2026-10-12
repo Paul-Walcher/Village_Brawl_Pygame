@@ -62,6 +62,9 @@ class Basic_Explorer(Explorer_Template):
     def check_activation(self):
         return False
 
+    def initialize_activation(self):
+        pass
+
     def tick(self):
         pass
 

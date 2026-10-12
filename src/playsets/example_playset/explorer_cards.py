@@ -59,6 +59,9 @@ class Small_Rest(Explorer_Card_Template):
     def check_activation(self):
         return False
 
+    def initialize_activation(self):
+        pass
+
     def tick(self):
         pass
 

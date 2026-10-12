@@ -145,6 +145,9 @@ class Explorer_Template(Frame):
         #receives the data, and if the card can be activated it should return True, else False
         return False
 
+    def initialize_activation(self):
+        pass
+
 
     def load_instances(self):
 
