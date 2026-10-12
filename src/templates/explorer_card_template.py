@@ -7,12 +7,14 @@ from enum import Enum, auto
 import constants
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
+
+from templates.renderable_card import Renderable_Card
 """
 class CardTag:
     pass
 """
 
-class CardInfo:
+class CardInfo(Renderable_Card):
 
     def __init__(self,
                 name: str = "",
@@ -28,15 +30,12 @@ class CardInfo:
                     ):
 
 
+        super(),__init__(name, name_color, description, card_image_path, standard_image_path)
+        
         self.card_enum = None
 
-        self.name = name
-        self.name_color = name_color
-        self.description = description
         self.tags = (tags if tags is not None else [])
         self.standard_selling_reward = (standard_selling_reward if standard_selling_reward is not None else [])#list of dictionaries
-        self.card_image_path = card_image_path
-        self.standard_image_path = standard_image_path
         self.max_per_deck = max_per_deck
         self.activation_phases = (activation_phases if activation_phases is not None else [])
 

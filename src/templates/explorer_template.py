@@ -12,7 +12,9 @@ import constants
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 
-class ExplorerInfo:
+from templates.renderable_card import Renderable_Card
+
+class ExplorerInfo(Renderable_Card):
 
     def __init__(self,
                 name: str = "",
@@ -34,19 +36,11 @@ class ExplorerInfo:
                 starting_buildings: dict = None,
                 starting_villagers: dict = None):
 
+
+        super().__init__(name, name_color, description, card_image_path, standard_image_path)
         #reference to the explorer enum
         self.explorer_enum = explorer_enum
 
-        #name
-        self.name = name
-        #namecolor, shown in the selection screen
-        self.name_color = (255, 255, 255)
-        #description
-        self.description = description
-        #card image path
-        self.card_image_path = card_image_path
-        #standard image path
-        self.standard_image_path = standard_image_path
         #starting items. these need to be the enums from items_mappings.
         #starting items are {name_enum: amount}
         self.starting_items = (starting_items if starting_items is not None else {})
