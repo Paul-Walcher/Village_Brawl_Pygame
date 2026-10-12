@@ -31,17 +31,20 @@ class TextInput(Widget):
                 background_color=Colors.WHITE,
                 outline_size=5,
                 outline_color=Colors.BLACK,
-                textfield_hmargin=0.1,
-                textfield_vmargin=0.05,
+                textfield_hmargin=0.2,
+                textfield_vmargin=0.4,
                 starting_text="",
                 n_chars_shown=10,
                 max_textlength=50,
-                cursor_color=Colors.GRAY
+                cursor_color=Colors.GRAY,
+                cursor_margin=5,#px
+                cursor_width=5#px
                 ):
 
         super().__init__(frame_dim)
 
         self.font = font
+        self.fontsize = 0
         self.text_color = text_color
         self.background_color = background_color
         self.outline_size = outline_size
@@ -54,6 +57,8 @@ class TextInput(Widget):
         self.cursor_pos = 0
         self.cursor_color = cursor_color
         self.cursor_offset = 0
+        self.cursor_margin = cursor_margin
+        self.cursor_width = cursor_width
 
         self.n_chars_shown = n_chars_shown
         self.max_textlength = max_textlength
@@ -69,21 +74,48 @@ class TextInput(Widget):
 
         self.surface = pygame.Surface((self.width, self.height))
 
-        textrect = None
+        textrect = pygame.Rect(0, 0, self.width, self.height)
 
         if self.outline_shown:
             trect = pygame.Rect(self.outline_size, self.outline_size, self.width - self.outline_size, self.height - self.outline_size)
             textrect = graphics.apply_margins(trect, self.textfield_hmargin, self.textfield_vmargin)
         else:
-            textrect = graphics.apply_margins(self.frame_dim, self.textfield_hmargin, self.textfield_vmargin)
-            textrect.x -= self.x
-            textrect.y -= self.y
+            textrect = graphics.apply_margins(textrect, self.textfield_hmargin, self.textfield_vmargin)
 
-        self.text_to_render = [[(self.text[self.cursor_offset:self.cursor_offset+self.cursor_pos], self.text_color),
-                                (TextInput.CURSOR_SYMBOL, self.cursor_color), (self.text[self.cursor_offset+self.cursor_pos:], self.text_color)]]
+        textrect.width -= (2 * self.cursor_margin + self.cursor_width)
 
-        self.text_to_render = graphics.render_page_from_chars_color(self.font, self.text_to_render, textrect, self.text_color, centered=True, vertical_centered=True)
+        self.textrect = textrect
 
+        self.fontsize = graphics.get_fontsize(self.font, [" "*self.n_chars_shown], textrect)
+
+        self.rtext = self.text[self.cursor_offset:self.cursor_offset+self.n_chars_shown]
+
+        self.front_text = self.rtext[:self.cursor_pos]
+        self.cursor_text = TextInput.CURSOR_SYMBOL
+        self.back_text = self.rtext[self.cursor_pos:]
+
+        self.front_text_rendered = graphics.render_text(self.font, self.fontsize, self.front_text, self.text_color)
+        self.back_text_rendered = graphics.render_text(self.font, self.fontsize, self.back_text, self.text_color)
+
+        textlen = self.front_text_rendered.get_width() + self.back_text_rendered.get_width() + (2* self.cursor_margin + self.cursor_width if self.cursor_shown else 0)
+        textheight = max([self.front_text_rendered.get_height(), self.back_text_rendered.get_height()])
+
+        x_offset = (0 if not self.cursor_shown else self.cursor_margin)
+        y_offset = (textrect.height - textheight) // 2
+
+        cx = textrect.x + x_offset
+        cy = textrect.y + y_offset
+
+        ftext_pos = (cx, cy)
+        cx += self.front_text_rendered.get_width()
+        if self.cursor_shown:
+            cx += self.cursor_margin
+            self.cursor_render_pos = pygame.Rect(cx, cy, self.cursor_width, textheight)
+            cx += self.cursor_margin + self.cursor_width
+        btext_pos = (cx, cy)
+
+        self.text_rendered = [(self.front_text_rendered, ftext_pos),
+                            (self.back_text_rendered, btext_pos)]
 
         self.render()
 
@@ -91,11 +123,14 @@ class TextInput(Widget):
 
         self.surface.fill(self.background_color)
 
-        for surf, pos in self.text_to_render:
+        for surf, pos in self.text_rendered:
             self.surface.blit(surf, pos)
 
-        if self.outline_shown:
+        #drawing cursor
+        if self.cursor_shown:
+            pygame.draw.rect(self.surface, self.cursor_color, self.cursor_render_pos)
 
+        if self.outline_shown:
             pygame.draw.rect(self.surface, self.outline_color, self.frame_dim, width=self.outline_size)
 
     def tick(self):
