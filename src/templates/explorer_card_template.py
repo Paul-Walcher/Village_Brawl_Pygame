@@ -21,6 +21,7 @@ class CardInfo(Renderable_Card):
                 name_color: tuple = (255, 255, 255),
                 card_enum = None,
                 description: str = "",
+                description_color: str = None,
                 tags: list = None,
                 standard_selling_reward = None,
                 card_image_path: str = "",
@@ -30,8 +31,8 @@ class CardInfo(Renderable_Card):
                     ):
 
 
-        super(),__init__(name, name_color, description, card_image_path, standard_image_path)
-        
+        super().__init__(name, name_color, description, description_color, card_image_path, standard_image_path)
+
         self.card_enum = None
 
         self.tags = (tags if tags is not None else [])

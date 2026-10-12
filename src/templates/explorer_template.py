@@ -21,6 +21,7 @@ class ExplorerInfo(Renderable_Card):
                 name_color: tuple = (255, 255, 255),
                 explorer_enum = None,
                 description: str = "",
+                description_color: str = "",
                 card_image_path: str = "",
                 standard_image_path: str = "",
                 lives: int = 5,
@@ -37,7 +38,7 @@ class ExplorerInfo(Renderable_Card):
                 starting_villagers: dict = None):
 
 
-        super().__init__(name, name_color, description, card_image_path, standard_image_path)
+        super().__init__(name, name_color, description, description_color, card_image_path, standard_image_path)
         #reference to the explorer enum
         self.explorer_enum = explorer_enum
 

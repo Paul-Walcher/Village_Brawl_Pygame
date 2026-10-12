@@ -3,6 +3,8 @@ import constants
 from collections import deque
 import re
 
+NL = (None,)
+
 def render_text(font, fontsize, text, color=constants.Colors.WHITE):
 
     f = pygame.font.Font(font, fontsize)
@@ -130,6 +132,7 @@ def render_page_from_chars(
     trend = []
     cy = 0
 
+
     rendered_lines = [
         render_text(font, fsize, line, text_color)
         for line in page
@@ -154,6 +157,283 @@ def render_page_from_chars(
 
         trend.append((rend, pos))
         cy += rend.get_height() + line_margin
+
+    return trend
+
+def _wrap_colored_chars(chars, line_length):
+    """Wrap a line of (character, color) pairs, preserving word boundaries."""
+    if not chars:
+        return [[]]
+
+    wrapped = []
+    remaining = list(chars)
+
+    while len(remaining) > line_length:
+        # Include one extra character so a space just after the limit
+        # can be used as a word boundary.
+        window = remaining[:line_length + 1]
+
+        last_break = None
+        seen_content = False
+
+        for i, (char, _) in enumerate(window):
+            if char.isspace():
+                if seen_content:
+                    last_break = i
+            else:
+                seen_content = True
+
+        if last_break is not None:
+            # Break at the last available whitespace.
+            wrapped.append(remaining[:last_break])
+            remaining = remaining[last_break + 1:]
+
+            # Discard leading whitespace on the next line.
+            while remaining and remaining[0][0].isspace():
+                remaining = remaining[1:]
+
+        else:
+            # No word boundary available: split a long word.
+            wrapped.append(remaining[:line_length])
+            remaining = remaining[line_length:]
+
+    if remaining or not wrapped:
+        wrapped.append(remaining)
+
+    return wrapped
+
+
+def _color_chars_to_runs(chars):
+    """Convert (character, color) pairs into (text, color) segments."""
+    if not chars:
+        return []
+
+    runs = []
+    current_color = chars[0][1]
+    current_text = []
+
+    for char, color in chars:
+        if color != current_color:
+            runs.append(("".join(current_text), current_color))
+            current_text = []
+            current_color = color
+
+        current_text.append(char)
+
+    if current_text:
+        runs.append(("".join(current_text), current_color))
+
+    return runs
+
+
+def page_by_chars_color(
+    text,
+    line_length=40,
+    paragraph_length=5,
+    one_page=False
+):
+    """
+    Convert colored text into pages.
+
+    Input:
+        [
+            ("Hello ", RED),
+            ("world!", BLUE),
+            (None,),
+            ("Another line.", GREEN)
+        ]
+
+    Output:
+        [
+            [
+                [("Hello ", RED), ("world!", BLUE)],
+                [("Another line.", GREEN)]
+            ]
+        ]
+
+    Structure:
+        pages -> lines -> (text, color) segments
+    """
+
+    if line_length < 1:
+        raise ValueError("line_length must be at least 1")
+
+    if one_page:
+        paragraph_length = constants.INFINITE
+
+    if paragraph_length <= 0:
+        raise ValueError("paragraph_length must be positive")
+
+    if not text:
+        return []
+
+    # First, reconstruct logical lines from all text segments.
+    # Colors are assigned per character so even a word can have
+    # multiple colors.
+    logical_lines = [[]]
+
+    for item in text:
+        if not isinstance(item, (tuple, list)):
+            raise TypeError(
+                "Each text element must be a tuple (text, color) "
+                "or a newline marker (None,)"
+            )
+
+        if len(item) == 1 and item[0] is None:
+            logical_lines.append([])
+            continue
+
+        if len(item) != 2:
+            raise ValueError(
+                "Each text segment must be (text, color), "
+                "or a newline marker (None,)"
+            )
+
+        segment_text, color = item
+
+        if not isinstance(segment_text, str):
+            raise TypeError("Segment text must be a string")
+
+        logical_lines[-1].extend(
+            (char, color) for char in segment_text
+        )
+
+    # Wrap each logical line, then combine adjacent characters
+    # with the same color into rendering-friendly segments.
+    colored_lines = []
+
+    for chars in logical_lines:
+        wrapped_lines = _wrap_colored_chars(chars, line_length)
+
+        for wrapped_line in wrapped_lines:
+            colored_lines.append(
+                _color_chars_to_runs(wrapped_line)
+            )
+
+    # Divide the lines into pages.
+    pages = []
+    current_page = []
+
+    for line in colored_lines:
+        if len(current_page) >= paragraph_length:
+            pages.append(current_page)
+            current_page = []
+
+        current_page.append(line)
+
+    if current_page:
+        pages.append(current_page)
+
+    return pages
+
+
+def render_page_from_chars_color(
+    font,
+    page,
+    frame,
+    text_color=constants.Colors.BLACK,
+    centered=False,
+    vertical_centered=False,
+    line_margin=5
+):
+    """
+    Render a page returned by page_by_chars_color().
+
+    Returns a list of (pygame.Surface, position) pairs.
+    Each colored text segment is rendered separately.
+    """
+
+    if not page:
+        return []
+
+    # Build plain strings for get_fontsize().
+    plain_page = [
+        "".join(segment_text for segment_text, _ in line) or " "
+        for line in page
+    ]
+
+    fsize = get_fontsize(
+        font,
+        plain_page,
+        frame,
+        line_margin=line_margin
+    )
+
+    # Used to determine the correct height for empty lines.
+    empty_line_surface = render_text(
+        font, fsize, " ", text_color
+    )
+
+    rendered_lines = []
+    line_widths = []
+    line_heights = []
+
+    # Render each color segment independently.
+    for line in page:
+        rendered_segments = []
+
+        for segment_text, color in line:
+            if not segment_text:
+                continue
+
+            color = text_color if color is None else color
+
+            surface = render_text(
+                font,
+                fsize,
+                segment_text,
+                color
+            )
+
+            rendered_segments.append(surface)
+
+        rendered_lines.append(rendered_segments)
+
+        line_widths.append(
+            sum(surface.get_width() for surface in rendered_segments)
+        )
+
+        line_heights.append(
+            max(
+                (
+                    surface.get_height()
+                    for surface in rendered_segments
+                ),
+                default=empty_line_surface.get_height()
+            )
+        )
+
+    # Calculate the total height for vertical centering.
+    total_height = sum(line_heights)
+    total_height += max(0, len(page) - 1) * line_margin
+
+    cy = (
+        (frame.height - total_height) // 2
+        if vertical_centered
+        else 0
+    )
+
+    trend = []
+
+    for i, rendered_segments in enumerate(rendered_lines):
+        line_width = line_widths[i]
+
+        # Center the complete line, not each individual segment.
+        cx = (
+            frame.x + (frame.width - line_width) // 2
+            if centered
+            else frame.x
+        )
+
+        for surface in rendered_segments:
+            trend.append((
+                surface,
+                (int(cx), int(frame.y + cy))
+            ))
+
+            cx += surface.get_width()
+
+        cy += line_heights[i] + line_margin
 
     return trend
 

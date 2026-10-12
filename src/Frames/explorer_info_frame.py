@@ -142,6 +142,7 @@ class ExplorerInfoFrame(Frame):
         self.render_textbox()
         self.render_slider_menu()
 
+
     def bind_events(self):
 
         cdata = {"frame_ref": self}
@@ -269,5 +270,6 @@ class ExplorerInfoFrame(Frame):
 
 
             self.render_widgets(self.surface)
+
 
             screen.blit(self.surface, (self.x, self.y))

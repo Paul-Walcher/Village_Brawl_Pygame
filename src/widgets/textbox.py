@@ -15,7 +15,7 @@ class Textbox(Widget):
 
     def __init__(self, font, fontsize, text, frame_dim, outline_size=0, outline_color=Colors.BLACK, text_color=Colors.BLACK,
                 background_color=Colors.TRANSPARENT, wmargin=5, hmargin=5, line_margin=2, centered=False,
-                pagenumber_color=Colors.WHITE, startpage=0
+                pagenumber_color=Colors.WHITE, startpage=0, text_colored=False
 
                 ):
 
@@ -32,6 +32,7 @@ class Textbox(Widget):
         self.hmargin = hmargin
         self.line_margin = line_margin
         self.centered = centered
+        self.text_colored = text_colored
 
         self.page_index = startpage
         self.rpage = []
@@ -58,7 +59,10 @@ class Textbox(Widget):
         self.render()
 
     def calculate_pages(self):
-        self.pages = graphics.page_by_chars(self.text)
+        if not self.text_colored:
+            self.pages = graphics.page_by_chars(self.text)
+        else:
+            self.pages = graphics.page_by_chars_color(self.text)
         self.n_pages = len(self.pages)
 
         self.page_index %= self.n_pages
@@ -67,22 +71,30 @@ class Textbox(Widget):
         self.render()
 
     def render_page(self):
+
+        aheight = self.height - 2*self.outline_size - 2*self.hmargin
+        awidth = self.width - 2*self.outline_size - 2*self.wmargin
+
+        pagenum_height = int(self.pagenumber_percentage * aheight) + self.line_margin
+        text_height = aheight - pagenum_height
+
+        toprect = pygame.Rect(self.wmargin + self.outline_size, self.hmargin + self.outline_size, awidth, text_height)
+        numrect = pygame.Rect(self.wmargin + self.outline_size, self.hmargin + self.outline_size + text_height, awidth, pagenum_height)
+
         if self.pagenumber_shown:
-
-            aheight = self.height - 2*self.outline_size - 2*self.hmargin
-            awidth = self.width - 2*self.outline_size - 2*self.wmargin
-            pagenum_height = int(self.pagenumber_percentage * aheight) + self.line_margin
-            text_height = aheight - pagenum_height
-
-            toprect = pygame.Rect(self.wmargin + self.outline_size, self.hmargin + self.outline_size, awidth, text_height)
-            numrect = pygame.Rect(self.wmargin + self.outline_size, self.hmargin + self.outline_size + text_height, awidth, pagenum_height)
 
             pagestr = f"{self.page_index+1}/{self.n_pages}"
 
-            self.rpage = graphics.render_page_from_chars(self.font, self.pages[self.page_index],
-                                                        toprect,
-                                                        Colors.GREEN, centered=True, line_margin=self.line_margin
-                                                        )
+            if not self.text_colored:
+                self.rpage = graphics.render_page_from_chars(self.font, self.pages[self.page_index],
+                                                            toprect,
+                                                            self.text_color, centered=True, line_margin=self.line_margin
+                                                            )
+            else:
+                self.rpage = graphics.render_page_from_chars_color(self.font, self.pages[self.page_index],
+                                                            toprect,
+                                                            self.text_color, centered=True, line_margin=self.line_margin
+                                                            )
 
             fsize = graphics.get_fontsize(self.font, [pagestr], numrect)
             pagenum_rendered = graphics.render_text(self.font, fsize, pagestr, self.pagenumber_color)
@@ -91,11 +103,16 @@ class Textbox(Widget):
             self.rpage.append((pagenum_rendered, pagenum_pos))
 
         else:
-            self.rpage = graphics.render_page_from_chars(self.font, self.pages[self.page_index],
-                                                        pygame.Rect(self.outline_size+self.wmargin, self.outline_size+self.hmargin,
-                                                        self.width-2*self.wmargin-2*self.outline_size, self.height-2*self.hmargin-2*self.outline_size),
-                                                        Colors.GREEN, centered=True, line_margin=self.line_margin
-                                                        )
+            if not self.text_colored:
+                self.rpage = graphics.render_page_from_chars(self.font, self.pages[self.page_index],
+                                                            toprect,
+                                                            self.text_color, centered=True, line_margin=self.line_margin
+                                                            )
+            else:
+                self.rpage = graphics.render_page_from_chars_color(self.font, self.pages[self.page_index],
+                                                            toprect,
+                                                            self.text_color, centered=True, line_margin=self.line_margin
+                                                            )
 
     def show_pagenumber(self):
         self.pagenumber_shown = True
