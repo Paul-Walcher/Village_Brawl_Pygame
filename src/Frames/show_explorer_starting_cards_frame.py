@@ -7,6 +7,8 @@ from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
 
+from widgets.text_input import TextInput
+
 class ShowExplorerStartingCardsFrame(Frame):
 
     def __init__(self, explorer_enum, data=None, frame_dim=None, parent_frame=None):
@@ -18,6 +20,10 @@ class ShowExplorerStartingCardsFrame(Frame):
 
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
+
+        self.input_widget_frame_dim = pygame.Rect(100, 100, 500, 100)
+        self.input_widget = TextInput(self.input_widget_frame_dim)
+        self.widgets.append(self.input_widget)
 
         self.bind_events()
         self.rerender()
@@ -35,8 +41,11 @@ class ShowExplorerStartingCardsFrame(Frame):
         if self.exit_flag_raised():
             return None
 
+        self.widgets_tick()
+
         return self
 
     def render(self, screen):
 
         screen.fill(Colors.BLACK)
+        self.render_widgets(screen)
