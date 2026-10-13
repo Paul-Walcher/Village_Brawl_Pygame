@@ -26,7 +26,17 @@ class ShowExplorerStartingCardsFrame(Frame):
         self.explorer_info = self.explorer_ref.info()
 
         self.card = self.modules.mappings.explorer_cards_mappings[self.modules.enums.ExplorerCardEnums.SMALL_REST]
+        self.cardinfo = self.card.info()
 
+        self.cardlistviewer = RenderableCardListviewer(
+                                                        self.frame_dim.copy(),
+                                                        {self.cardinfo: 10},
+                                                        {"Deck": {"cardlist": {self.cardinfo: 5}, "mutable": True}},
+                                                        shown_group="Deck",
+                                                        trunk_shown=True
+                                                        )
+
+        self.widgets.append(self.cardlistviewer)
 
         self.bind_events()
         self.rerender()
@@ -51,5 +61,5 @@ class ShowExplorerStartingCardsFrame(Frame):
 
     def render(self, screen):
 
-        screen.fill(Colors.CYAN)
+        screen.fill(Colors.BLACK)
         self.render_widgets(screen)
