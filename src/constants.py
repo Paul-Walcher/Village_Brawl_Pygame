@@ -65,6 +65,7 @@ class Colors:
     BLUE = (0, 0, 255)
     YELLOW = (255, 255, 0)
     CYAN = (0, 255, 255)
+    DARK_CYAN = (0, 114, 114)
     LIGHT_ORANGE = (255, 144, 0)
     GRAY = (127, 127, 127)
     DARK_GRAY = (109, 109, 109)

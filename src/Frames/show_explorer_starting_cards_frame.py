@@ -8,6 +8,7 @@ import graphics
 from clock import Clock
 
 from widgets.text_input import TextInput
+from widgets.renderable_card_listviewer import RenderableCardListviewer
 import constants
 
 from Frames.cardinfo_frame import CardinfoFrame
