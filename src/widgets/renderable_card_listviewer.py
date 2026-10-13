@@ -72,7 +72,7 @@ class RenderableCardListviewer(Widget):
                 font=Fonts.MINECRAFT,
                 max_group_number=25,
                 cards_per_line=4,
-                cards_per_column=3,
+                cards_per_column=4,
                 sorting_function=None,
                 max_groups_shown_in_menu=10,
                 trunk_shown=False,
@@ -120,6 +120,9 @@ class RenderableCardListviewer(Widget):
         self.font = font
         self.description_color = description_color
 
+        self.main_list_yscroll = 0
+        self.trunk_yscroll = 0
+
         self.card_render_cache = {}
         self.text_render_cache = {}
 
@@ -158,10 +161,62 @@ class RenderableCardListviewer(Widget):
         self.trunk_menu_bar_textinput_width_percentage = trunk_menu_bar_textinput_width_percentage
         self.trunk_menu_bar_option_dropdown_width_percentage = trunk_menu_bar_option_dropdown_width_percentage
 
+        self.key_clock = Clock()
+        self.key_clock.start()
+        self.key_delay = 200
+
+        self.scroll_up = False
+        self.scroll_down = False
+        self.scroll_speed = 10
+
         self.rerender()
 
     def tick(self):
-        pass
+
+        putback = []
+        for event in pygame.event.get():
+
+            should_putback = True
+
+            if event.type == pygame.KEYDOWN:
+                if self.key_clock.elapsed() >= self.key_delay:
+
+                    if event.key == pygame.K_w:
+                        should_putback = False
+                        self.scroll_up = True
+                        self.key_clock.start()
+
+                    if event.key == pygame.K_s:
+                        should_putback = False
+                        self.scroll_down = True
+                        self.key_clock.start()
+
+            if event.type == pygame.KEYUP:
+                if self.key_clock.elapsed() >= self.key_delay:
+
+                    if event.key == pygame.K_w:
+                        should_putback = False
+                        self.scroll_up = False
+                        self.key_clock.start()
+
+                    if event.key == pygame.K_s:
+                        should_putback = False
+                        self.scroll_down = False
+                        self.key_clock.start()
+
+            if should_putback:
+                putback.append(event)
+
+        for event in putback:
+            pygame.event.post(event)
+
+        if self.scroll_up:
+            self.main_list_yscroll += self.scroll_speed
+            self.main_list_yscroll = min(self.main_list_yscroll, 0)
+        if self.scroll_down:
+            self.main_list_yscroll -= self.scroll_speed
+
+
 
     def rerender(self):
 
@@ -288,7 +343,8 @@ class RenderableCardListviewer(Widget):
 
         idx = 0
 
-        self.main_list_cards_rects = []
+        self.main_list_cards_rects = {}
+
         for cinfo, amount in self.main_list_cards:
 
             rrect = pygame.Rect(cx, cy, self.main_list_cwdith, self.main_list_cheight)
@@ -302,9 +358,12 @@ class RenderableCardListviewer(Widget):
             text_rect.y += img_rect.height
             text_rect.height -= img_rect.height
 
-            text_rect = graphics.apply_margins(text_rect, 0.1, 0.1)
+            text_rect = graphics.apply_margins(text_rect, 0.2, 0.2)
 
-            self.main_list_cards_rects.append((img_rect, text_rect))
+            if cy not in self.main_list_cards_rects:
+                self.main_list_cards_rects[cy] = []
+
+            self.main_list_cards_rects[cy].append((idx, img_rect, text_rect))
 
             idx += 1
 
@@ -328,11 +387,14 @@ class RenderableCardListviewer(Widget):
         self.trunk_surface.fill(self.trunk_list_color)
         self.label_surface.fill(self.label_color)
 
-        for i in range(len(self.main_list_cards_rects)):
+        for cy in self.main_list_cards_rects:
 
-            img_rect, text_rect = self.main_list_cards_rects[i]
+            if cy + self.main_list_cheight + self.main_list_yscroll < self.main_list_area.y or\
+                cy + self.main_list_yscroll > self.main_list_area.y + self.main_list_area.height:
+                continue
 
-            if self.main_list_area.colliderect(img_rect):
+            for i, img_rect, text_rect in self.main_list_cards_rects[cy]:
+
                 cinfo = self.main_list_cards[i][0]
                 img = None
                 if cinfo.card_image_path in self.card_render_cache:
@@ -352,9 +414,11 @@ class RenderableCardListviewer(Widget):
                     img = pygame.transform.smoothscale(img, (hscale, vscale))
                     self.card_render_cache[cinfo.card_image_path] = img
 
-                self.surface.blit(img, (img_rect.x, img_rect.y))
+                rcp = img_rect.copy()
+                rcp.y += self.main_list_yscroll
+                pos = graphics.get_center_with_surface(img, rcp)
+                self.surface.blit(img, pos)
 
-            if self.main_list_area.colliderect(text_rect):
                 amount = self.main_list_cards[i][1]
                 trend = None
 
@@ -367,7 +431,7 @@ class RenderableCardListviewer(Widget):
                     self.text_render_cache[amount] = trend
 
                 for surf, pos in trend:
-                    self.surface.blit(surf, (pos[0] + text_rect.x, pos[1] + text_rect.y))
+                    self.surface.blit(surf, (pos[0] + text_rect.x, pos[1] + text_rect.y + self.main_list_yscroll))
 
         if self.trunk_area.x < self.width:
             #drawing separator

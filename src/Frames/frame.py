@@ -231,6 +231,7 @@ class Frame(EventQueueManager):
 
     def render_widgets(self, screen):
         for widget in self.widgets:
+            widget.render()
             for w, pos in widget.get_surfaces_with_position():
                 screen.blit(w, pos)
 
