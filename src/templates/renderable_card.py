@@ -11,7 +11,8 @@ class Renderable_Card:
                 card_image_path="",
                 standard_image_path="",
                 description_line_length=40,
-                description_page_size=5
+                description_page_size=5,
+                width_to_height_ratio = 5/7
                 ):
 
         self.name = name
@@ -30,6 +31,8 @@ class Renderable_Card:
 
         self.n_pages = len(self.description_pages)
         self.n_pages_color = (len(self.description_pages_color) if self.description_pages_color is not None else -1)
+
+        self.width_to_height_ratio = width_to_height_ratio
 
     @property
     def description(self):

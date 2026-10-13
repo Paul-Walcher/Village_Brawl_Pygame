@@ -96,3 +96,5 @@ class KeyAlternatives:
     DOWN_ALTERNATIVE = pygame.K_s
     LEFT_ALTERNATIVE = pygame.K_a
     RIGHT_ALTERNATIVE = pygame.K_d
+
+    SHOW_IMAGE_KEY = pygame.K_LALT

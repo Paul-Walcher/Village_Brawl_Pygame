@@ -9,6 +9,8 @@ from clock import Clock
 
 from widgets.text_input import TextInput
 
+from Frames.cardinfo_frame import CardinfoFrame
+
 class ShowExplorerStartingCardsFrame(Frame):
 
     def __init__(self, explorer_enum, data=None, frame_dim=None, parent_frame=None):
@@ -20,11 +22,10 @@ class ShowExplorerStartingCardsFrame(Frame):
 
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
+#
+        self.cframe = CardinfoFrame(self.explorer_info, data=None, frame_dim=self.frame_dim.copy(),
+                                    parent_frame=self)
 
-        self.input_widget_frame_dim = pygame.Rect(100, 100, 500, 100)
-        self.input_widget = TextInput(self.input_widget_frame_dim)
-        self.input_widget.start_input()
-        self.widgets.append(self.input_widget)
 
         self.bind_events()
         self.rerender()
@@ -42,11 +43,14 @@ class ShowExplorerStartingCardsFrame(Frame):
         if self.exit_flag_raised():
             return None
 
+        self.cframe.tick()
+
         self.widgets_tick()
 
         return self
 
     def render(self, screen):
 
-        screen.fill(Colors.BLACK)
+        screen.fill(Colors.CYAN)
         self.render_widgets(screen)
+        self.cframe.render(screen)

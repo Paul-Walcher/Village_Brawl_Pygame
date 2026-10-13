@@ -10,6 +10,7 @@ from Frames.explorer_info_frame import ExplorerInfoFrame
 from Frames.empty_frame import EmptyFrame
 from Frames.test_frame import TestFrame
 from Frames.show_explorer_starting_cards_frame import ShowExplorerStartingCardsFrame
+from Frames.cardinfo_frame import CardinfoFrame
 
 frame_mappings = {
                     FrameEnums.INTRO_FRAME: IntroFrame,
@@ -21,5 +22,6 @@ frame_mappings = {
                     FrameEnums.EXPLORER_INFO_FRAME: ExplorerInfoFrame,
                     FrameEnums.EMPTY_FRAME: EmptyFrame,
                     FrameEnums.TEST_FRAME: TestFrame,
-                    FrameEnums.SHOW_EXPLORER_STARTING_CARDS_FRAME: ShowExplorerStartingCardsFrame
+                    FrameEnums.SHOW_EXPLORER_STARTING_CARDS_FRAME: ShowExplorerStartingCardsFrame,
+                    FrameEnums.CARDINFO_FRAME: CardinfoFrame
                     }

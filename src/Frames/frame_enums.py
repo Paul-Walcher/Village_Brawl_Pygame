@@ -13,6 +13,7 @@ class FrameEnums(Enum):
     CHOOSE_SAVE_NAME_FRAME = auto()
     LOAD_PLAYSET_FRAME = auto()
     CHOOSE_EXPLORER_FRAME = auto()
+    CARDINFO_FRAME = auto()
 
     EXPLORER_INFO_FRAME = auto()
     SHOW_EXPLORER_STARTING_CARDS_FRAME = auto()
