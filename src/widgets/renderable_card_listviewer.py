@@ -63,7 +63,7 @@ class RenderableCardListviewer(Widget):
                 max_group_number=25,
                 cards_per_line=5,
                 cards_per_column=5,
-                sorting_function=RenderableCardListviewer.SortingFunctions.name_descending,
+                sorting_function=None,
                 max_groups_shown_in_menu=10,
                 trunk_shown=False,
                 search_while_typing=True,
@@ -95,7 +95,7 @@ class RenderableCardListviewer(Widget):
         self.groups = deepcopy(groups)
         self.shown_group = (shown_group if shown_group is not None else list(self.groups.keys())[0])
         self.max_group_number = max_group_number
-        self.sorting_function = sorting_function
+        self.sorting_function = (sorting_function if sorting_function is not None else RenderableCardListviewer.SortingFunctions.name_descending)
         self.max_groups_shown_in_menu = max_groups_shown_in_menu
         self.cards_per_line = cards_per_line
         self.cards_per_column = cards_per_column

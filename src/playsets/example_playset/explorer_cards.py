@@ -42,7 +42,8 @@ class Small_Rest(Explorer_Card_Template):
                         Card_Tags.HEALING,
                         Card_Tags.HEALING_TOKEN,
                         Card_Tags.HEALING_TOKEN_GENERATOR
-                    
+                    ]
+
 
         cinfo.card_image_path = os.path.join(card_asset_path, "Small_Rest_Card.png")
         cinfo.standard_image_path = os.path.join(standard_asset_path, "Small_Rest_Standard.png")

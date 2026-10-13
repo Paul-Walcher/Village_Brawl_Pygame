@@ -25,6 +25,8 @@ class ShowExplorerStartingCardsFrame(Frame):
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
 
+        self.card = self.modules.mappings.explorer_cards_mappings[self.modules.enums.ExplorerCardEnums.SMALL_REST]
+
 
         self.bind_events()
         self.rerender()
@@ -42,7 +44,6 @@ class ShowExplorerStartingCardsFrame(Frame):
         if self.exit_flag_raised():
             return None
 
-        self.cframe.tick()
 
         self.widgets_tick()
 

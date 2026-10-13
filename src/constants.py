@@ -71,7 +71,7 @@ class Colors:
     DARK_GRAY = (109, 109, 109)
     DARK_SLATE_GRAY = (47, 79, 79)
 
-    STANDARD_TEXT_COLOR = Colors.WHITE
+    STANDARD_TEXT_COLOR = WHITE
 
 
 class Fonts:

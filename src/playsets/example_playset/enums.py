@@ -5,6 +5,13 @@ class ExplorerEnums(Enum):
 
     BASIC_EXPLORER = auto()
 
+class ExplorerCardsEnums(Enum):
+
+    SMALL_REST = auto()
+
+class VillageCardsEnums(Enum):
+    pass
+
 class ItemEnums(Enum):
 
     REST_MARKER = auto()

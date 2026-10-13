@@ -12,6 +12,8 @@ class Modules:
         #loading the modules
         playset = f"{PLAYSETS_FOLDER}.{playset_name}"
 
+        print(playset)
+
         modules = Modules()
 
         modules.biome_cards_module = importlib.import_module(f"{playset}.biome_cards")
@@ -28,7 +30,8 @@ class Modules:
         modules.objectives_module = importlib.import_module(f"{playset}.objectives")
         modules.packs_module = importlib.import_module(f"{playset}.packs")
         modules.scenarios_module = importlib.import_module(f"{playset}.scenarios")
-        modules.supporters_module = importlib.import_module(f"{playset}.supporters")
+        modules.explorer_supporters_module = importlib.import_module(f"{playset}.explorer_supporters")
+        modules.village_supporters_module = importlib.import_module(f"{playset}.village_supporters")
         modules.village_boss_cards_module = importlib.import_module(f"{playset}.village_boss_cards")
         modules.village_bosses_module = importlib.import_module(f"{playset}.village_bosses")
         modules.village_cards_module = importlib.import_module(f"{playset}.village_cards")
