@@ -3,11 +3,12 @@ import pygame
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, WIDTH, HEIGHT
 import graphics
 from clock import Clock
 
 from widgets.text_input import TextInput
+import constants
 
 from Frames.cardinfo_frame import CardinfoFrame
 
@@ -23,8 +24,10 @@ class ShowExplorerStartingCardsFrame(Frame):
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
 #
-        self.cframe = CardinfoFrame(self.explorer_info, data=None, frame_dim=self.frame_dim.copy(),
+        self.cframe = CardinfoFrame(self.explorer_info, data=None, frame_dim=pygame.Rect(WIDTH, 0, WIDTH, HEIGHT),
                                     parent_frame=self)
+
+        self.cframe.slide_to((self.x, self.y), 1400)
 
 
         self.bind_events()

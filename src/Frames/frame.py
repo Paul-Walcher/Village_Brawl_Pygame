@@ -38,6 +38,8 @@ class Frame(EventQueueManager):
         self.width = self.frame_dim.width
         self.height = self.frame_dim.height
 
+        self._has_focus = True
+
         self.__event_callbacks = [Frame.CallbackEvent(pygame.QUIT, None, False, lambda e, d: Frame.CallbackEvent.EXIT)]
         self.__exit_flag_raised = False
         self.__disabled_keys = {}
@@ -80,6 +82,25 @@ class Frame(EventQueueManager):
                         )
         self._frame_dim = oframe
 
+    def move_by(self, x=0, y=0, w=0, h=0):
+
+        nframe = pygame.Rect(self.x + x, self.y, self.width + w, self.height + h)
+        self.frame_dim = nframe
+
+    def move_to(self, x=None, y=None, w=None, h=None):
+
+        r = pygame.Rect((x if x is not None else self.x),
+                        (y if y is not None else self.y),
+                        (w if w is not None else self.width),
+                        (h if h is not None else self.height))
+
+        self.frame_dim = r
+
+    def focus(self):
+        self._has_focus = True
+
+    def unfocus(self):
+        self._has_focus = False
 
     def manage_pygame_events(self):
 

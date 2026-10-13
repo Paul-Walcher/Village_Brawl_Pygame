@@ -32,10 +32,10 @@ class TextInput(Widget):
                 background_color=Colors.WHITE,
                 outline_size=5,
                 outline_color=Colors.BLACK,
-                textfield_hmargin=0.2,
-                textfield_vmargin=0.4,
+                textfield_hmargin=0.1,
+                textfield_vmargin=0.2,
                 starting_text="",
-                n_chars_shown=20,
+                n_chars_shown=30,
                 max_textlength=50,
                 cursor_color=Colors.BLACK,
                 cursor_margin=5,#px
@@ -44,6 +44,8 @@ class TextInput(Widget):
                 ):
 
         super().__init__(frame_dim)
+
+        self._has_focus = False
 
         self.font = font
         self.fontsize = 0
@@ -68,9 +70,9 @@ class TextInput(Widget):
         self.text_rendered = None
 
         self.outline_shown = False
-        self.cursor_shown = True
+        self.cursor_shown = False
 
-        self.input_active = False
+        self.input_active = self._has_focus
         self.key_delay = key_delay
         self.key_clock = Clock()
 
@@ -96,7 +98,9 @@ class TextInput(Widget):
         else:
             textrect = graphics.apply_margins(textrect, self.textfield_hmargin, self.textfield_vmargin)
 
-        textrect.width -= (2 * self.cursor_margin + self.cursor_width)
+        if self.cursor_shown:
+            textrect.x += (2 * self.cursor_margin + self.cursor_width) // 2
+            textrect.width -= (2 * self.cursor_margin + self.cursor_width)
 
         self.textrect = textrect
 
@@ -119,6 +123,10 @@ class TextInput(Widget):
 
         cx = textrect.x + x_offset
         cy = textrect.y + y_offset
+
+        full_length = self.front_text_rendered.get_width() + self.back_text_rendered.get_width() + (2*self.cursor_margin + self.cursor_width if self.cursor_shown else 0)
+
+        cx += (textrect.width - full_length) // 2
 
         ftext_pos = (cx, cy)
         cx += self.front_text_rendered.get_width()
@@ -152,50 +160,55 @@ class TextInput(Widget):
         events_processed = []
         should_rerender = False
 
-        for event in pygame.event.get():
+        if self._has_focus:
 
-            etext = False
+            for event in pygame.event.get():
 
-            if event.type == pygame.TEXTINPUT:
-                etext = True
+                etext = False
 
-                if self.key_clock.elapsed() >= self.key_delay:
-                    if self.input_active:
-                        tadd = event.text
-                        addlen = self.max_textlength - len(self.text)
-                        tadd = tadd[:addlen]
-
-                        self.text = self.text[:self.cursor_offset+self.cursor_pos] + tadd + self.text[self.cursor_offset+self.cursor_pos:]
-                        self.move_cursor_right(len(tadd))
-                        self.key_clock.start()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_BACKSPACE:
+                if event.type == pygame.TEXTINPUT:
                     etext = True
 
                     if self.key_clock.elapsed() >= self.key_delay:
                         if self.input_active:
-                            if self.cursor_pos > 0:
-                                self.text = self.text[:self.cursor_offset+self.cursor_pos-1] + self.text[self.cursor_offset+self.cursor_pos:]
-                                self.cursor_pos -= 1
-                            should_rerender = True
+                            tadd = event.text
+                            addlen = self.max_textlength - len(self.text)
+                            tadd = tadd[:addlen]
+
+                            self.text = self.text[:self.cursor_offset+self.cursor_pos] + tadd + self.text[self.cursor_offset+self.cursor_pos:]
+                            self.move_cursor_right(len(tadd))
                             self.key_clock.start()
 
-                if event.key == pygame.K_LEFT:
-                    etext = True
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_BACKSPACE:
+                        etext = True
 
-                    if self.key_clock.elapsed() >= self.key_delay:
-                        if self.input_active:
-                            self.move_cursor_left()
-                            self.key_clock.start()
+                        if self.key_clock.elapsed() >= self.key_delay:
+                            if self.input_active:
+                                if self.cursor_pos > 0:
+                                    self.text = self.text[:self.cursor_offset+self.cursor_pos-1] + self.text[self.cursor_offset+self.cursor_pos:]
+                                    if self.cursor_offset > 0:
+                                        self.cursor_offset -= 1
+                                    else:
+                                        self.cursor_pos -= 1
+                                    should_rerender = True
+                                self.key_clock.start()
 
-                if event.key == pygame.K_RIGHT:
-                    etext = True
+                    if event.key == pygame.K_LEFT:
+                        etext = True
 
-                    if self.key_clock.elapsed() >= self.key_delay:
-                        if self.input_active:
-                            self.move_cursor_right()
-                            self.key_clock.start()
+                        if self.key_clock.elapsed() >= self.key_delay:
+                            if self.input_active:
+                                self.move_cursor_left()
+                                self.key_clock.start()
+
+                    if event.key == pygame.K_RIGHT:
+                        etext = True
+
+                        if self.key_clock.elapsed() >= self.key_delay:
+                            if self.input_active:
+                                self.move_cursor_right()
+                                self.key_clock.start()
 
 
         for event in events_processed:
@@ -220,13 +233,15 @@ class TextInput(Widget):
         self.cursor_offset = 0
         self.rerender()
 
-    def start_input(self):
+    def focus(self):
         pygame.key.start_text_input()
+        self._has_focus = True
         self.input_active = True
         self.show_cursor()
 
-    def end_input(self):
+    def unfocus(self):
         pygame.key.stop_text_input()
+        self._has_focus = False
         self.input_active = False
         self.hide_cursor()
 
