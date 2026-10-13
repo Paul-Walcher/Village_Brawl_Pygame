@@ -215,10 +215,12 @@ class TextInput(Widget):
     def start_input(self):
         pygame.key.start_text_input()
         self.input_active = True
+        self.show_cursor()
 
     def end_input(self):
         pygame.key.stop_text_input()
         self.input_active = False
+        self.hide_cursor()
 
     def show_outline(self):
         self.outline_shown = True
@@ -250,7 +252,10 @@ class TextInput(Widget):
         self.rerender()
 
     def show_cursor(self):
-        pass
+
+        self.cursor_shown = True
+        self.rerender()
 
     def hide_cursor(self):
-        pass
+        self.cursor_shown = False
+        self.rerender()
