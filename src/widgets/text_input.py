@@ -161,8 +161,12 @@ class TextInput(Widget):
 
                 if self.key_clock.elapsed() >= self.key_delay:
                     if self.input_active:
-                        self.text = self.text[:self.cursor_offset+self.cursor_pos] + event.text + self.text[self.cursor_offset+self.cursor_pos:]
-                        self.move_cursor_right()
+                        tadd = event.text
+                        addlen = self.max_textlength - len(self.text)
+                        tadd = tadd[:addlen]
+
+                        self.text = self.text[:self.cursor_offset+self.cursor_pos] + tadd + self.text[self.cursor_offset+self.cursor_pos:]
+                        self.move_cursor_right(len(tadd))
                         self.key_clock.start()
 
             if event.type == pygame.KEYDOWN:
@@ -207,10 +211,14 @@ class TextInput(Widget):
         return [(self.surface, (self.x, self.y))]
 
     def get_text(self):
-        pass
+        return self.text
 
     def set_text(self, text):
-        pass
+
+        self.text = text
+        self.cursor_pos = 0
+        self.cursor_offset = 0
+        self.rerender()
 
     def start_input(self):
         pygame.key.start_text_input()
@@ -230,24 +238,26 @@ class TextInput(Widget):
         self.outline_shown = False
         self.render()
 
-    def move_cursor_left(self):
+    def move_cursor_left(self, n=1):
 
-        if self.cursor_pos == 0:
-            if self.cursor_offset > 0:
-                self.cursor_offset -= 1
-        else:
-            self.cursor_pos -= 1
+        for i in range(n):
+            if self.cursor_pos == 0:
+                if self.cursor_offset > 0:
+                    self.cursor_offset -= 1
+            else:
+                self.cursor_pos -= 1
 
         self.rerender()
 
 
-    def move_cursor_right(self):
+    def move_cursor_right(self, n=1):
 
-        if self.cursor_pos == self.n_chars_shown:
-            if self.cursor_offset < self.n_chars_shown-1:
-                self.cursor_offset += 1
-        else:
-            self.cursor_pos += 1
+        for i in range(n):
+            if self.cursor_pos == self.n_chars_shown:
+                if self.cursor_offset < len(self.text)-1:
+                    self.cursor_offset += 1
+            else:
+                self.cursor_pos += 1
 
         self.rerender()
 
