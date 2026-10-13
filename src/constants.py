@@ -96,6 +96,7 @@ class Fontsizes:
 class KeyAlternatives:
 
     ENTER_ALTERNATIVE = pygame.K_o
+    BACK_KEY = pygame.K_k
 
     UP_ALTERNATIVE = pygame.K_w
     DOWN_ALTERNATIVE = pygame.K_s
