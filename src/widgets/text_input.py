@@ -16,6 +16,7 @@ import graphics
 from clock import Clock
 from modules import Modules
 import constants
+from constants import KeyAlternatives
 
 from event_queue_manager import EventQueueManager, Event
 from widgets.widget import Widget
@@ -34,11 +35,12 @@ class TextInput(Widget):
                 textfield_hmargin=0.2,
                 textfield_vmargin=0.4,
                 starting_text="",
-                n_chars_shown=10,
+                n_chars_shown=20,
                 max_textlength=50,
-                cursor_color=Colors.GRAY,
+                cursor_color=Colors.BLACK,
                 cursor_margin=5,#px
-                cursor_width=5#px
+                cursor_width=5,#px
+                key_delay=0#ms
                 ):
 
         super().__init__(frame_dim)
@@ -68,7 +70,19 @@ class TextInput(Widget):
         self.outline_shown = False
         self.cursor_shown = True
 
+        self.input_active = False
+        self.key_delay = key_delay
+        self.key_clock = Clock()
+
+        self.button_down = None
+
         self.rerender()
+
+        self.key_clock.start()
+
+    def __del__(self):
+        if self.input_active:
+            pygame.key.stop_text_input()
 
     def rerender(self):
 
@@ -86,7 +100,7 @@ class TextInput(Widget):
 
         self.textrect = textrect
 
-        self.fontsize = graphics.get_fontsize(self.font, [" "*self.n_chars_shown], textrect)
+        self.fontsize = graphics.get_fontsize(self.font, ["W"*self.n_chars_shown], textrect)
 
         self.rtext = self.text[self.cursor_offset:self.cursor_offset+self.n_chars_shown]
 
@@ -134,7 +148,57 @@ class TextInput(Widget):
             pygame.draw.rect(self.surface, self.outline_color, self.frame_dim, width=self.outline_size)
 
     def tick(self):
-        pass
+
+        events_processed = []
+        should_rerender = False
+
+        for event in pygame.event.get():
+
+            etext = False
+
+            if event.type == pygame.TEXTINPUT:
+                etext = True
+
+                if self.key_clock.elapsed() >= self.key_delay:
+                    if self.input_active:
+                        self.text = self.text[:self.cursor_offset+self.cursor_pos] + event.text + self.text[self.cursor_offset+self.cursor_pos:]
+                        self.move_cursor_right()
+                        self.key_clock.start()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    etext = True
+
+                    if self.key_clock.elapsed() >= self.key_delay:
+                        if self.input_active:
+                            if self.cursor_pos > 0:
+                                self.text = self.text[:self.cursor_offset+self.cursor_pos-1] + self.text[self.cursor_offset+self.cursor_pos:]
+                                self.cursor_pos -= 1
+                            should_rerender = True
+                            self.key_clock.start()
+
+                if event.key == pygame.K_LEFT:
+                    etext = True
+
+                    if self.key_clock.elapsed() >= self.key_delay:
+                        if self.input_active:
+                            self.move_cursor_left()
+                            self.key_clock.start()
+
+                if event.key == pygame.K_RIGHT:
+                    etext = True
+
+                    if self.key_clock.elapsed() >= self.key_delay:
+                        if self.input_active:
+                            self.move_cursor_right()
+                            self.key_clock.start()
+
+
+        for event in events_processed:
+            pygame.event.post(event)
+
+        if should_rerender:
+            self.rerender()
 
     def get_surfaces(self):
         return [self.surface]
@@ -149,10 +213,12 @@ class TextInput(Widget):
         pass
 
     def start_input(self):
-        pass
+        pygame.key.start_text_input()
+        self.input_active = True
 
     def end_input(self):
-        pass
+        pygame.key.stop_text_input()
+        self.input_active = False
 
     def show_outline(self):
         self.outline_shown = True
@@ -163,10 +229,25 @@ class TextInput(Widget):
         self.render()
 
     def move_cursor_left(self):
-        pass
+
+        if self.cursor_pos == 0:
+            if self.cursor_offset > 0:
+                self.cursor_offset -= 1
+        else:
+            self.cursor_pos -= 1
+
+        self.rerender()
+
 
     def move_cursor_right(self):
-        pass
+
+        if self.cursor_pos == self.n_chars_shown:
+            if self.cursor_offset < self.n_chars_shown-1:
+                self.cursor_offset += 1
+        else:
+            self.cursor_pos += 1
+
+        self.rerender()
 
     def show_cursor(self):
         pass

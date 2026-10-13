@@ -23,6 +23,7 @@ class ShowExplorerStartingCardsFrame(Frame):
 
         self.input_widget_frame_dim = pygame.Rect(100, 100, 500, 100)
         self.input_widget = TextInput(self.input_widget_frame_dim)
+        self.input_widget.start_input()
         self.widgets.append(self.input_widget)
 
         self.bind_events()
