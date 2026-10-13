@@ -9,7 +9,10 @@ class ItemEnums(Enum):
 
     REST_MARKER = auto()
 
-class SupporterEnums(Enum):
+class ExplorerSupporterEnums(Enum):
+    pass
+
+class VillageSupporterEnums(Enum):
     pass
 
 class PackEnums(Enum):

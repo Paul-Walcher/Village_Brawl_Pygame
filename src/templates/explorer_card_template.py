@@ -36,7 +36,6 @@ class CardInfo(Renderable_Card):
         self.card_enum = None
 
         self.tags = (tags if tags is not None else [])
-        self.standard_selling_reward = (standard_selling_reward if standard_selling_reward is not None else [])#list of dictionaries
         self.max_per_deck = max_per_deck
         self.activation_phases = (activation_phases if activation_phases is not None else [])
 
@@ -64,3 +63,7 @@ class Explorer_Card_Template(Frame):
 
     def initialize_activation(self):
         pass
+
+    def get_selling_reward(self):
+        #list of (enum: (amount, type))
+        return {}

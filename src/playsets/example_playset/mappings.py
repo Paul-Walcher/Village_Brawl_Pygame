@@ -38,7 +38,11 @@ items_mappings = {
 
 }
 
-supporters_mappings = {
+explorer_supporters_mappings = {
+
+}
+
+village_supporters_mappings = {
 
 }
 

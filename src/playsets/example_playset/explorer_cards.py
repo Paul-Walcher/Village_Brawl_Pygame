@@ -8,6 +8,7 @@ import constants
 
 from templates.explorer_card_template import Explorer_Card_Template, CardInfo
 import constants
+from constants import Colors
 import deck
 
 from Frames.frame_enums import FrameEnums
@@ -32,20 +33,19 @@ class Small_Rest(Explorer_Card_Template):
         cinfo = CardInfo()
 
         cinfo.name = "Small Rest"
-        cinfo.name_color = constants.Colors.WHITE
+        cinfo.name_color = Colors.STANDARD_TEXT_COLOR
 
         cinfo.card_enum = enums.ExplorerCardEnums.SMALL_REST
         cinfo.description = "This card generates 1 Rest Token."
+        cinfo.description_color = [("This card generates 1 Rest Token", Colors.STANDARD_TEXT_COLOR)]
         cinfo.tags = [
                         Card_Tags.HEALING,
                         Card_Tags.HEALING_TOKEN,
                         Card_Tags.HEALING_TOKEN_GENERATOR
-                    ]
-
-        cinfo.standard_selling_reward = []
+                    
 
         cinfo.card_image_path = os.path.join(card_asset_path, "Small_Rest_Card.png")
-        cinfo.standard_image_path = os.path.join(standard_asset_path, "Small_Rest.png")
+        cinfo.standard_image_path = os.path.join(standard_asset_path, "Small_Rest_Standard.png")
 
         cinfo.max_per_deck = 40
         cinfo.activation_phases = []
