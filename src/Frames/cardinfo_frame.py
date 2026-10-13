@@ -212,7 +212,7 @@ class CardinfoFrame(Frame):
 
         self.full_image_pos = graphics.get_center_with_surface(self.full_image, self.render_frame)
 
-        true_description_area = graphics.apply_margins(self.description_area, 0.5, 0.5)
+        true_description_area = graphics.apply_margins(self.description_area, 0.2, 0.2)
         line_rect = true_description_area.copy()
         line_rect.height //= self.lines_per_page
 

@@ -23,11 +23,6 @@ class ShowExplorerStartingCardsFrame(Frame):
 
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
-#
-        self.cframe = CardinfoFrame(self.explorer_info, data=None, frame_dim=pygame.Rect(WIDTH, 0, WIDTH, HEIGHT),
-                                    parent_frame=self)
-
-        self.cframe.slide_to((self.x, self.y), 1400)
 
 
         self.bind_events()
@@ -56,4 +51,3 @@ class ShowExplorerStartingCardsFrame(Frame):
 
         screen.fill(Colors.CYAN)
         self.render_widgets(screen)
-        self.cframe.render(screen)
