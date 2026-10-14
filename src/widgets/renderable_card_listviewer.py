@@ -20,6 +20,15 @@ from widgets.widget import Widget
 from event_queue_manager import Event
 from copy import deepcopy
 
+"""
+
+Important!!!
+
+Create a mutable trunk group in the groups
+
+"""
+
+
 class RenderableCardListviewer(Widget):
 
     NOTHING_FOCUSED = 0
@@ -112,6 +121,8 @@ class RenderableCardListviewer(Widget):
 
         self.full_cardlist = full_cardlist.copy()
         self.groups = deepcopy(groups)
+        #adding the trunk group
+        self.groups["Full Cardlist"] = {"cardlist": self.full_cardlist, "mutable": False}
         self.shown_group = (shown_group if shown_group is not None else list(self.groups.keys())[0])
         self.group_name_color = group_name_color
         self.max_group_number = max_group_number
@@ -134,8 +145,8 @@ class RenderableCardListviewer(Widget):
         self.label_color = label_color
         self.label_alpha = label_alpha
 
-        self.selected_card_index_main_list = 0 #column, row
-        self.selected_card_index_trunk = 0 #column, row
+        self.selected_card_index_main_list = 0
+        self.selected_card_index_trunk = 0
 
         self.state = RenderableCardListviewer.NOTHING_FOCUSED
 
