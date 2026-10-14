@@ -77,31 +77,6 @@ class ExplorerInfo(Renderable_Card):
         #ability_activation_phases
         self.activation_phases = (ability_activation_phases if ability_activation_phases is not None else [])
 
-    def copy(self):
-
-        ecopy = ExplorerInfo()
-
-        ecopy.name = self.name
-        ecopy.name_color = self.name_color
-        ecopy.description = self.description
-        ecopy.card_image_path = self.card_image_path
-        ecopy.standard_image_path = self.standard_image_path
-
-        ecopy.starting_items = self.starting_items.copy()
-        ecopy.starting_supporters = self.starting_supporters.copy()
-        ecopy.starting_cards = self.starting_cards.copy()
-        ecopy.starting_blueprints = self.starting_blueprints.copy()
-        ecopy.starting_packs = self.starting_packs.copy()
-        ecopy.unlocked_packs = self.unlocked_packs.copy()
-        ecopy.unlockable_packs = self.unlockable_packs.copy()
-        ecopy.starting_buildings = self.starting_buildings.copy()
-        ecopy.starting_villagers = self.starting_villagers.copy()
-        ecopy.lives = self.lives
-        ecopy.inventory_size = self.inventory_size
-        ecopy.activation_phases = self.activation_phases.copy()
-
-        return ecopy
-
 
 class Explorer_Template(PlaysetEntity):
 

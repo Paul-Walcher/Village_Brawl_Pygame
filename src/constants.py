@@ -7,6 +7,10 @@ import pygame
 
 pygame.init()
 
+EPSILON = 10E-6
+
+fequal = lambda a, b: (abs(a-b) <= EPSILON)
+
 WIDTH, HEIGHT = pygame.display.get_desktop_sizes()[0]
 FULLSCREEN = pygame.Rect(0, 0, WIDTH, HEIGHT)
 

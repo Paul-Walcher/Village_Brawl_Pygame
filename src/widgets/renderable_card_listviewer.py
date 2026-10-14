@@ -176,6 +176,10 @@ class RenderableCardListviewer(Widget):
         self.trunk_menu_bar_textinput_width_percentage = trunk_menu_bar_textinput_width_percentage
         self.trunk_menu_bar_option_dropdown_width_percentage = trunk_menu_bar_option_dropdown_width_percentage
 
+        self.shadow_hoffset_p = 0.075
+        self.shadow_voffset_p = 0.075
+        self.shadow_alpha = 120
+
         self.key_clock = Clock()
         self.key_clock.start()
         self.key_delay = 200
@@ -416,6 +420,8 @@ class RenderableCardListviewer(Widget):
             for i, img_rect, text_rect in card_rects[cy]:
 
                 cinfo = card_list[i][0]
+
+
                 img = None
                 if cinfo.card_image_path in img_cache:
                     img = img_cache[cinfo.card_image_path]
@@ -424,12 +430,12 @@ class RenderableCardListviewer(Widget):
                     img = graphics.render_image(cinfo.card_image_path)
                     hscale, vscale = 0, 0
 
-                    if cinfo.width_to_height_ratio > 1.0:
+                    if cinfo.card_width_to_height_ratio > 1.0:
                         hscale = cwidth
-                        vscale = (1.0 / cinfo.width_to_height_ratio) * cwidth
+                        vscale = (1.0 / cinfo.card_width_to_height_ratio) * cwidth
                     else:
                         vscale = actual_card_height
-                        hscale = cinfo.width_to_height_ratio * actual_card_height
+                        hscale = cinfo.card_width_to_height_ratio * actual_card_height
 
                     img = pygame.transform.smoothscale(img, (hscale, vscale))
                     img_cache[cinfo.card_image_path] = img
@@ -437,6 +443,15 @@ class RenderableCardListviewer(Widget):
                 rcp = img_rect.copy()
                 rcp.y += yscroll
                 pos = graphics.get_center_with_surface(img, rcp)
+
+                shadow_rect = pygame.Rect(pos[0], pos[1], img.get_width(), img.get_height())
+                shadow_rect.x += int(self.shadow_hoffset_p * shadow_rect.width)
+                shadow_rect.y += int(self.shadow_voffset_p * shadow_rect.height)
+
+                shadow_surf = pygame.Surface((shadow_rect.width, shadow_rect.height), pygame.SRCALPHA)
+                shadow_surf.fill((*Colors.BLACK, self.shadow_alpha))
+
+                self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
                 self.surface.blit(img, pos)
 
                 amount = card_list[i][1]

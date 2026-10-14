@@ -13,7 +13,7 @@ from widgets.widget import Widget
 
 class Textbox(Widget):
 
-    def __init__(self, font, fontsize, text, frame_dim, outline_size=0, outline_color=Colors.BLACK, text_color=Colors.BLACK,
+    def __init__(self, font, text, frame_dim, line_length=40, paragraph_length=5, outline_size=0, outline_color=Colors.BLACK, text_color=Colors.BLACK,
                 background_color=Colors.TRANSPARENT, wmargin=5, hmargin=5, line_margin=2, centered=False,
                 pagenumber_color=Colors.WHITE, startpage=0, text_colored=False
 
@@ -22,12 +22,13 @@ class Textbox(Widget):
         super().__init__(frame_dim)
 
         self.text = text
+        self.line_length = line_length
+        self.paragraph_length = paragraph_length
         self.outline_size = outline_size
         self.outline_color = outline_color
         self.text_color = text_color
         self.background_color = background_color
         self.font = font
-        self.fontsize = fontsize
         self.wmargin = wmargin
         self.hmargin = hmargin
         self.line_margin = line_margin
@@ -55,16 +56,26 @@ class Textbox(Widget):
 
     def set_outline_size(self, size):
 
+        if size == self.outline_size:
+            return
         self.outline_size = size
+        self.render()
+
+    def set_outline_color(self, color):
+
+        if color == self.outline_color:
+            return
+
+        self.outline_color = color
         self.render()
 
     def calculate_pages(self):
         if not self.text_colored:
-            self.pages = graphics.page_by_chars(self.text)
+            self.pages = graphics.page_by_chars(self.text, line_length=self.line_length, paragraph_length=self.paragraph_length)
         else:
-            self.pages = graphics.page_by_chars_color(self.text)
-        self.n_pages = len(self.pages)
+            self.pages = graphics.page_by_chars_color(self.text, line_length=self.line_length, paragraph_length=self.paragraph_length)
 
+        self.n_pages = len(self.pages)
         self.page_index %= self.n_pages
 
     def rerender(self):
@@ -134,6 +145,12 @@ class Textbox(Widget):
     def prev_page(self):
 
         self.page_index -= 1
+        self.page_index %= self.n_pages
+        self.render()
+
+    def skip_to_page(self, page_index):
+
+        self.page_index = page_index
         self.page_index %= self.n_pages
         self.render()
 
