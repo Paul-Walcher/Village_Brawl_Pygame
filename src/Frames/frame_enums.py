@@ -3,6 +3,7 @@ from enum import Enum, auto
 class FrameEnums(Enum):
 
     UNDEFINED = auto()
+    PLAYSET_ENTITY = auto()
 
     EMPTY_FRAME = auto()
     TEST_FRAME = auto()

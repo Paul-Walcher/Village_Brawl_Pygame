@@ -21,6 +21,7 @@ card_asset_path = os.path.join(asset_path, "card_assets")
 
 
 enums = importlib.import_module(f"{constants.PLAYSETS_FOLDER}.example_playset.enums")
+tags = importlib.import_module(f"{constants.PLAYSETS_FOLDER}.example_playset.tags")
 
 
 class Basic_Explorer(Explorer_Template):
@@ -38,6 +39,9 @@ class Basic_Explorer(Explorer_Template):
 
         einfo.card_image_path = os.path.join(card_asset_path, "Basic_Explorer_Card.png")
         einfo.standard_image_path = os.path.join(standard_asset_path, "Basic_Explorer_Standard.png")
+
+
+        einfo.tags = []
 
         einfo.lives = 10
         einfo.inventory_size = 10.0

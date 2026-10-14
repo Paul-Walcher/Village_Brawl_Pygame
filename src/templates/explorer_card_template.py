@@ -9,6 +9,7 @@ from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 
 from templates.renderable_card import Renderable_Card
+from templates.playset_entity import PlaysetEntity
 """
 class CardTag:
     pass
@@ -40,7 +41,7 @@ class CardInfo(Renderable_Card):
         self.activation_phases = (activation_phases if activation_phases is not None else [])
 
 
-class Explorer_Card_Template(Frame):
+class Explorer_Card_Template(PlaysetEntity):
 
     @staticmethod
     def info():
@@ -50,19 +51,11 @@ class Explorer_Card_Template(Frame):
 
         super().__init__(frame_enum, data, frame_dim, parent_frame)
 
-        self.modules = modules
-        self.mappings = modules.mappings
-        self.enums = modules.enums
-        self.tags = modules.tags
+        self.info = (cinfo if cinfo is not None else Explorer_Card_Template.info())
 
-        self.info = (cinfo if cinfo is not None else Card_Template.info())
 
-    def check_activation(self):
-        #receives the data, and if the card can be activated it should return True, else False
-        return False
-
-    def initialize_activation(self):
-        pass
+    def tick(self, phase_info, location):
+        super().tick(phaseinfo)
 
     def get_selling_reward(self):
         #list of (enum: (amount, type))

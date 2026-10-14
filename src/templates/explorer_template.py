@@ -11,6 +11,7 @@ import constants
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
+from templates.playset_entity import PlaysetEntity
 
 from templates.renderable_card import Renderable_Card
 
@@ -25,6 +26,7 @@ class ExplorerInfo(Renderable_Card):
                 card_image_path: str = "",
                 standard_image_path: str = "",
                 lives: int = 5,
+                tags = None,
                 ability_activation_phases = None,
                 inventory_size: float = 10.0,
                 starting_items: dict = None,
@@ -68,6 +70,8 @@ class ExplorerInfo(Renderable_Card):
         #stats
         #lives
         self.lives = lives
+        #tags
+        self.tags = (tags if tags is not None else [])
         #inventory size
         self.inventory_size = inventory_size
         #ability_activation_phases
@@ -99,7 +103,7 @@ class ExplorerInfo(Renderable_Card):
         return ecopy
 
 
-class Explorer_Template(Frame):
+class Explorer_Template(PlaysetEntity):
 
 
     @staticmethod
@@ -109,16 +113,12 @@ class Explorer_Template(Frame):
 
 
 
-    def __init__(self, modules, einfo=None, frame_enum=FrameEnums.UNDEFINED, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
+    def __init__(self, modules, einfo=None, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
 
         super().__init__(frame_enum, data, frame_dim, parent_frame)
 
         #info
         self.info = (einfo if einfo is not None else Explorer_Template.info())
-        self.modules = modules
-        self.mappings = modules.mappings
-        self.enums = modules.enums
-        self.tags = modules.tags
 
         self.lives = 0 #current lives
         self.inventory_size = 0#inventory_size
@@ -155,18 +155,18 @@ class Explorer_Template(Frame):
 
         self.inventory = []
         for key, value in self.info.starting_items.items():
-            self.inventory.extend([self.mappings.item_mappings[key]() for i in range(value)])
+            self.inventory.extend([self.mappings.item_mappings[key](self.modules) for i in range(value)])
 
         self.active_supporters = []
         self.inactive_supporters = []
         for key, value in self.info.starting_supporters.items():
-            self.inactive_supporters.extend([self.mappings.supporter_mappings[key]() for i in range(value)])
+            self.inactive_supporters.extend([self.mappings.supporter_mappings[key](self.modules) for i in range(value)])
 
         self.trunk = self.info.starting_cards.copy()
 
         self.blueprints = []
         for key, value in self.info.starting_blueprints.items():
-            self.blueprints.extend([self.mappings.blueprint_mappings[key]() for i in range(value)])
+            self.blueprints.extend([self.mappings.blueprint_mappings[key](self.modules) for i in range(value)])
 
         self.packs = self.info.starting_packs.copy()
         self.unlocked_packs = self.info.unlocked_packs.copy()
@@ -187,5 +187,5 @@ class Explorer_Template(Frame):
             return False
         else:
             for i in range(amount):
-                self.inventory.append(new_item_ref())
+                self.inventory.append(new_item_ref(self.modules))
             return True

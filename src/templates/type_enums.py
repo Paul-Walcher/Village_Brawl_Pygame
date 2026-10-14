@@ -2,6 +2,9 @@ from enum import Enum, auto
 
 class TypeEnums(Enum):
 
+    GENERAL_CARD = auto()
+    GENERAL_SUPPORTER = auto()
+
     BIOME_CARD = auto()
     BIOME = auto()
 

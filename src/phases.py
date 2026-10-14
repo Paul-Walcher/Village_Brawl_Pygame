@@ -49,28 +49,8 @@ class PhaseInfo:
 
     #gets the data passed from the frames
 
-    def __init__(self, data=None, phase=None, parent_frame=None):
+    def __init__(self, phase=None, data=None, parent_frame=None):
 
         self.data = data
         self.phase = phase
         self.parent_frame = parent_frame
-
-class CardActivationPhaseInfo(PhaseInfo):
-
-    def __init__(self, data=None, phase=None, parent_frame=None, activated_card=None, activation_location=None, activating_entity=None):
-
-        super().__init__(data, phase, parent_frame)
-
-        self.activated_card = activated_card
-        self.activation_location = activation_location
-        self.activating_entity = activating_entity
-
-class CardDiscardPhaseInfo(PhaseInfo):
-
-    def __init__(self, data=None, phase=None, parent_frame=None,discarded_card=None, discarding_location=None, discarding_entity=None):
-
-        super().__init__(data, phase, parent_frame)
-
-        self.discarded_card = discarded_card
-        self.discarding_location = discarding_location
-        self.discarding_entity = discarding_entity

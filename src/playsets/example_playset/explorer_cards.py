@@ -23,8 +23,6 @@ card_asset_path = os.path.join(asset_path, "card_assets")
 enums = importlib.import_module(f"{constants.PLAYSETS_FOLDER}.example_playset.enums")
 tags = importlib.import_module(f"{constants.PLAYSETS_FOLDER}.example_playset.tags")
 
-Card_Tags = tags.Card_Tags
-
 class Small_Rest(Explorer_Card_Template):
 
     @staticmethod
@@ -39,9 +37,9 @@ class Small_Rest(Explorer_Card_Template):
         cinfo.description = "This card generates 1 Rest Token."
         cinfo.description_color = [("This card generates 1 Rest Token", Colors.STANDARD_TEXT_COLOR)]
         cinfo.tags = [
-                        Card_Tags.HEALING,
-                        Card_Tags.HEALING_TOKEN,
-                        Card_Tags.HEALING_TOKEN_GENERATOR
+                        tags.Healing_Tag(healing_factor=0),
+                        tags.Healing_Token(),
+                        tags.Healing_Token_Generator(amount_generated=1)
                     ]
 
 
