@@ -35,7 +35,7 @@ class Basic_Explorer(Explorer_Template):
         einfo.name_color = Colors.LIGHT_ORANGE
         einfo.explorer_enum = enums.ExplorerEnums.BASIC_EXPLORER
         einfo.description = "Basic Explorer. Has no special abilities."
-        einfo.description_color = [("Basic Explorer.", Colors.YELLOW), (" Has no special abilities.", Colors.GREEN)]
+        einfo.description_color = [(einfo.description, Colors.STANDARD_TEXT_COLOR)]
 
         einfo.card_image_path = os.path.join(card_asset_path, "Basic_Explorer_Card.png")
         einfo.standard_image_path = os.path.join(standard_asset_path, "Basic_Explorer_Standard.png")

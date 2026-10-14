@@ -7,6 +7,7 @@ from Frames.frame_enums import FrameEnums
 from Frames.empty_frame import EmptyFrame
 from Frames.test_frame import TestFrame
 from Frames.show_explorer_starting_cards_frame import ShowExplorerStartingCardsFrame
+from Frames.cardinfo_frame import CardinfoFrame
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, Alpha, IIMAGE, STANDARD_BACKSIDES
 import graphics
 from clock import Clock
@@ -246,7 +247,7 @@ class ExplorerInfoFrame(Frame):
                     return secframe
                 else:
 
-                    eframe = TestFrame(None, pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT), self)
+                    eframe = CardinfoFrame(self.explorer_info, data=None, frame_dim=pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT), parent_frame=self)
                     return eframe
 
         return self

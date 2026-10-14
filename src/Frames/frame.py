@@ -148,6 +148,9 @@ class Frame(EventQueueManager):
     def clear_event_callbacks(self):
         self.__event_callbacks = []
 
+    def clear_pygame_events(self):
+        events = pygame.event.get()
+
     def add_pygame_event_callback(self, type, data, putback, func):
 
         cb = Frame.CallbackEvent(type, data, putback, func)
