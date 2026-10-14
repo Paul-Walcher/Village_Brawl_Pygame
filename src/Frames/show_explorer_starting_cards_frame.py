@@ -31,9 +31,9 @@ class ShowExplorerStartingCardsFrame(Frame):
         self.cardlistviewer = RenderableCardListviewer(
                                                         self.frame_dim.copy(),
                                                         {self.card.info(): 10},
-                                                        {"Deck": {"cardlist": {self.card.info(): i for i in range(100)}, "mutable": True}},
+                                                        {"Deck": {"cardlist": {self.card.info(): i for i in range(1000)}, "mutable": True}},
                                                         shown_group="Deck",
-                                                        trunk_shown=True
+                                                        trunk_shown=False
                                                         )
 
         self.widgets.append(self.cardlistviewer)

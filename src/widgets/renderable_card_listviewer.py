@@ -73,6 +73,8 @@ class RenderableCardListviewer(Widget):
                 max_group_number=25,
                 cards_per_line=4,
                 cards_per_column=4,
+                cards_per_line_added_when_trunk_not_shown = 8,
+                cards_per_column_added_when_trunk_not_shown=0,
                 sorting_function=None,
                 max_groups_shown_in_menu=10,
                 trunk_shown=False,
@@ -117,14 +119,16 @@ class RenderableCardListviewer(Widget):
         self.max_groups_shown_in_menu = max_groups_shown_in_menu
         self.cards_per_line = cards_per_line
         self.cards_per_column = cards_per_column
+        self.cards_per_line_added_when_trunk_not_shown = cards_per_line_added_when_trunk_not_shown
+        self.cards_per_column_added_when_trunk_not_shown = cards_per_column_added_when_trunk_not_shown
         self.font = font
         self.description_color = description_color
 
         self.main_list_yscroll = 0
         self.trunk_yscroll = 0
 
-        self.card_render_cache = {}
-        self.text_render_cache = {}
+        self.card_render_cache_main_list = {}
+        self.text_render_cache_main_list = {}
 
         self.label_vmargin = label_vmargin
         self.label_color = label_color
@@ -227,14 +231,16 @@ class RenderableCardListviewer(Widget):
                                         self.width - 2*self.border_width, self.height - 2*self.border_height)
 
         self.main_list_area = self.inner_area.copy()
-        self.main_list_area.width = int((1.0 - self.trunk_width_percentage) * self.main_list_area.width)
+
+        if (self.trunk_shown):
+            self.main_list_area.width = int((1.0 - self.trunk_width_percentage) * self.main_list_area.width)
 
         self.trunk_separator_width = int(self.inner_area.width * self.trunk_separator_margin)
         self.trunk_separator_height = self.inner_area.height
         self.trunk_separator_frame_dim = pygame.Rect(0, 0, self.trunk_separator_width, self.trunk_separator_height)
-        trunk_x = self.inner_area.x + (self.inner_area.width if not self.trunk_shown else self.main_list_area.width)
+        trunk_x = (self.width if not self.trunk_shown else self.main_list_area.x + int(self.trunk_width_percentage * self.inner_area.width))
         #trunk gets a rect starting at 0, 0, because it has a own surface
-        self.trunk_area = pygame.Rect(trunk_x, self.inner_area.y, int(self.trunk_width_percentage * self.inner_area.width), self.inner_area.height)
+        self.trunk_area = pygame.Rect(trunk_x, self.inner_area.y, self.inner_area.width - self.main_list_area.width, self.inner_area.height)
 
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.trunk_surface = pygame.Surface((self.trunk_area.width, self.trunk_area.height), pygame.SRCALPHA)
@@ -318,17 +324,26 @@ class RenderableCardListviewer(Widget):
         self.main_list_area.y += self.label_height
         self.main_list_area.height -= self.label_height
 
-        self.main_list_hdist_margin = 0.2
-        self.main_list_vdist_margin = 0.2
+        self.recalculate_main_list_positions()
+
+        self.render()
+
+    def recalculate_main_list_positions(self):
+
+        cpl = self.cards_per_line + (self.cards_per_line_added_when_trunk_not_shown if not self.trunk_shown else 0)
+        cpc = self.cards_per_column + (self.cards_per_column_added_when_trunk_not_shown if not self.trunk_shown else 0)
+
+        self.main_list_hdist_margin = 0.1
+        self.main_list_vdist_margin = 0.1
 
         self.main_list_hdist = int(self.main_list_area.width * self.main_list_hdist_margin)
         self.main_list_vdist = int(self.main_list_area.height * self.main_list_vdist_margin)
 
-        self.main_list_hseparator = self.main_list_hdist // (self.cards_per_line + 2)
-        self.main_list_vseparator = self.main_list_vdist // (self.cards_per_column + 2)
+        self.main_list_hseparator = self.main_list_hdist // (cpl + 2)
+        self.main_list_vseparator = self.main_list_vdist // (cpc + 2)
 
-        self.main_list_cwdith = (self.main_list_area.width - self.main_list_hdist) // self.cards_per_line
-        self.main_list_cheight = (self.main_list_area.height - self.main_list_vdist) // self.cards_per_column
+        self.main_list_cwdith = (self.main_list_area.width - self.main_list_hdist) // cpl
+        self.main_list_cheight = (self.main_list_area.height - self.main_list_vdist) // cpc
 
         self.gcards = self.groups[self.shown_group]["cardlist"]
         self.main_list_cards = self.sorting_function(self.gcards)
@@ -369,15 +384,63 @@ class RenderableCardListviewer(Widget):
 
             cx += self.main_list_cwdith + self.main_list_hseparator
 
-            if not (idx) % self.cards_per_line:
+            if not (idx) % cpl:
 
                 cx = self.main_list_area.x + self.main_list_hseparator
                 cy += self.main_list_cheight + self.main_list_vseparator
 
 
+    def render_list_with_yscroll(self, img_cache, txt_cache,
+                                    render_area, card_dims, actual_card_height,
+                                    card_rects, card_list, yscroll):
 
+        cwidth, cheight = card_dims
 
-        self.render()
+        for cy in card_rects:
+
+            if cy + cheight + yscroll < render_area.y or\
+                cy + yscroll > render_area.y + render_area.height:
+                continue
+
+            for i, img_rect, text_rect in card_rects[cy]:
+
+                cinfo = card_list[i][0]
+                img = None
+                if cinfo.card_image_path in img_cache:
+                    img = img_cache[cinfo.card_image_path]
+                else:
+
+                    img = graphics.render_image(cinfo.card_image_path)
+                    hscale, vscale = 0, 0
+
+                    if cinfo.width_to_height_ratio > 1.0:
+                        hscale = cwidth
+                        vscale = (1.0 / cinfo.width_to_height_ratio) * cwidth
+                    else:
+                        vscale = actual_card_height
+                        hscale = cinfo.width_to_height_ratio * actual_card_height
+
+                    img = pygame.transform.smoothscale(img, (hscale, vscale))
+                    img_cache[cinfo.card_image_path] = img
+
+                rcp = img_rect.copy()
+                rcp.y += yscroll
+                pos = graphics.get_center_with_surface(img, rcp)
+                self.surface.blit(img, pos)
+
+                amount = card_list[i][1]
+                trend = None
+
+                if amount in txt_cache:
+                    trend = txt_cache[amount]
+                else:
+                    trend = graphics.render_page_from_chars(self.font, [f"x{amount}"], pygame.Rect(0, 0, text_rect.width, text_rect.height),
+                                                            self.description_color, centered=True, vertical_centered=True
+                                                            )
+                    txt_cache[amount] = trend
+
+                for surf, pos in trend:
+                    self.surface.blit(surf, (pos[0] + text_rect.x, pos[1] + text_rect.y + yscroll))
 
 
 
@@ -387,53 +450,13 @@ class RenderableCardListviewer(Widget):
         self.trunk_surface.fill(self.trunk_list_color)
         self.label_surface.fill(self.label_color)
 
-        for cy in self.main_list_cards_rects:
+        self.render_list_with_yscroll(self.card_render_cache_main_list, self.text_render_cache_main_list,
+                                        self.main_list_area, (self.main_list_cwdith, self.main_list_cheight),
+                                        self.main_list_card_height, self.main_list_cards_rects,
+                                        self.main_list_cards, self.main_list_yscroll
+                                        )
 
-            if cy + self.main_list_cheight + self.main_list_yscroll < self.main_list_area.y or\
-                cy + self.main_list_yscroll > self.main_list_area.y + self.main_list_area.height:
-                continue
-
-            for i, img_rect, text_rect in self.main_list_cards_rects[cy]:
-
-                cinfo = self.main_list_cards[i][0]
-                img = None
-                if cinfo.card_image_path in self.card_render_cache:
-                    img = self.card_render_cache[cinfo.card_image_path]
-                else:
-
-                    img = graphics.render_image(cinfo.card_image_path)
-                    hscale, vscale = 0, 0
-
-                    if cinfo.width_to_height_ratio > 1.0:
-                        hscale = self.main_list_cwdith
-                        vscale = (1.0 / cinfo.width_to_height_ratio) * self.main_list_cwdith
-                    else:
-                        vscale = self.main_list_card_height
-                        hscale = cinfo.width_to_height_ratio * self.main_list_card_height
-
-                    img = pygame.transform.smoothscale(img, (hscale, vscale))
-                    self.card_render_cache[cinfo.card_image_path] = img
-
-                rcp = img_rect.copy()
-                rcp.y += self.main_list_yscroll
-                pos = graphics.get_center_with_surface(img, rcp)
-                self.surface.blit(img, pos)
-
-                amount = self.main_list_cards[i][1]
-                trend = None
-
-                if amount in self.text_render_cache:
-                    trend = self.text_render_cache[amount]
-                else:
-                    trend = graphics.render_page_from_chars(self.font, [f"x{amount}"], pygame.Rect(0, 0, text_rect.width, text_rect.height),
-                                                            self.description_color, centered=True, vertical_centered=True
-                                                            )
-                    self.text_render_cache[amount] = trend
-
-                for surf, pos in trend:
-                    self.surface.blit(surf, (pos[0] + text_rect.x, pos[1] + text_rect.y + self.main_list_yscroll))
-
-        if self.trunk_area.x < self.width:
+        if self.trunk_shown:
             #drawing separator
             pygame.draw.rect(self.trunk_surface, self.trunk_separator_color, self.trunk_separator_frame_dim)
             self.surface.blit(self.trunk_surface, (self.trunk_area.x, self.trunk_area.y))
