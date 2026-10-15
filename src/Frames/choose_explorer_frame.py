@@ -71,8 +71,6 @@ class ChooseExplorerFrame(Frame):
         self.info_frame_state = self.INFO_FRAME_INACTIVE
         self.info_frame = None
 
-        self.bind_events()
-
     def initialize_info_frame(self):
 
 

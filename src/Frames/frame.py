@@ -7,6 +7,55 @@ from clock import Clock
 
 class Frame(EventQueueManager):
 
+    class SlideHandler:
+
+        def __init__(self, x_offset, y_offset, slide_positions, slide_duration=800):
+
+            self.x_offset = x_offset
+            self.y_offset = y_offset
+
+            self.slide_start_positions = slide_positions.copy()
+            self.current_slide_positions = slide_positions.copy()
+
+            self.slide_duration = slide_duration
+            self.clock = Clock()
+
+            self.time_passed = 0
+
+            self.is_sliding = False
+
+        def reset_slide(self):
+            self.is_sliding = False
+            self.time_passed = 0
+
+        def start_slide(self):
+
+            self.clock.start()
+            self.is_sliding = True
+
+        def stop_slide(self):
+
+            self.time_passed += self.clock.elapsed()
+            self.is_sliding = False
+
+        def tick(self):
+
+            if self.is_sliding:
+                percentage = (self.clock.elapsed() + self.time_passed) / self.slide_duration
+
+                new_pos = []
+
+                for x, y in self.slide_start_positions:
+
+                    new_pos.append((x + int(self.x_offset * percentage), y + int(self.y_offset * percentage)))
+
+                self.current_slide_positions = new_pos
+
+        def positions(self):
+            return self.current_slide_positions.copy()
+
+
+
     class CallbackEvent(Event):
 
         EXIT = 0
@@ -38,9 +87,12 @@ class Frame(EventQueueManager):
         self.width = self.frame_dim.width
         self.height = self.frame_dim.height
 
+        self.slide_endpos = None
+        self.slide_startpos = None
+
         self._has_focus = True
 
-        self.__event_callbacks = [Frame.CallbackEvent(pygame.QUIT, None, False, lambda e, d: Frame.CallbackEvent.EXIT)]
+        self.__event_callbacks = []
         self.__exit_flag_raised = False
         self.__disabled_keys = {}
 
@@ -66,6 +118,8 @@ class Frame(EventQueueManager):
         #adding escape key
         self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT, key_delay=0)
 
+        self.bind_events()
+
     @property
     def frame_dim(self):
         return self._frame_dim
@@ -82,6 +136,28 @@ class Frame(EventQueueManager):
                         )
         self._frame_dim = oframe
 
+    @property
+    def has_focus(self):
+        return self._has_focus
+
+    @has_focus.setter
+    def has_focus(self, x):
+        if x != self._has_focus:
+            self._has_focus = x
+            self.clear_pygame_events()
+            self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT, key_delay=0)
+            self.bind_events()
+            if self._has_focus:
+                self.on_focus_gained()
+            else:
+                self.on_focus_lost()
+
+    def on_focus_gained(self):
+        pass
+
+    def on_focus_lost(self):
+        pass
+
     def move_by(self, x=0, y=0, w=0, h=0):
 
         nframe = pygame.Rect(self.x + x, self.y, self.width + w, self.height + h)
@@ -97,10 +173,13 @@ class Frame(EventQueueManager):
         self.frame_dim = r
 
     def focus(self):
-        self._has_focus = True
+        self.has_focus = True
 
     def unfocus(self):
-        self._has_focus = False
+        self.has_focus = False
+
+    def bind_events(self):
+        pass
 
     def manage_pygame_events(self):
 
@@ -118,6 +197,7 @@ class Frame(EventQueueManager):
 
                 # Then, filter key-specific callbacks.
                 if event.type == pygame.KEYDOWN:
+
                     if (
                         ecallback.data is not None
                         and "key" in ecallback.data
@@ -150,6 +230,9 @@ class Frame(EventQueueManager):
 
     def clear_pygame_events(self):
         events = pygame.event.get()
+
+    def get_event_callbacks(self):
+        return self.__event_callbacks.copy()
 
     def add_pygame_event_callback(self, type, data, putback, func):
 

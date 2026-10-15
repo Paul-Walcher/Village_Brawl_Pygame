@@ -53,7 +53,6 @@ class ChooseSaveNameFrame(Frame):
         self.go_back_flag = False
         self.load_playset_flag = False
 
-        self.bind_events()
         self.render_text()
 
 

@@ -33,7 +33,6 @@ class IntroMenuFrame(Frame):
         self.go_back_flag = False
 
         self.render_highlighted()
-        self.bind_events()
 
 
     def render_highlighted(self):

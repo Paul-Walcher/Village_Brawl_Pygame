@@ -45,7 +45,7 @@ class TextInput(Widget):
 
         super().__init__(frame_dim)
 
-        self._has_focus = False
+        self.has_focus = False
 
         self.font = font
         self.fontsize = 0
@@ -72,7 +72,7 @@ class TextInput(Widget):
         self.outline_shown = False
         self.cursor_shown = False
 
-        self.input_active = self._has_focus
+        self.input_active = self.has_focus
         self.key_delay = key_delay
         self.key_clock = Clock()
 
@@ -160,7 +160,7 @@ class TextInput(Widget):
         events_processed = []
         should_rerender = False
 
-        if self._has_focus:
+        if self.has_focus:
 
             for event in pygame.event.get():
 
@@ -235,13 +235,13 @@ class TextInput(Widget):
 
     def focus(self):
         pygame.key.start_text_input()
-        self._has_focus = True
+        self.has_focus = True
         self.input_active = True
         self.show_cursor()
 
     def unfocus(self):
         pygame.key.stop_text_input()
-        self._has_focus = False
+        self.has_focus = False
         self.input_active = False
         self.hide_cursor()
 

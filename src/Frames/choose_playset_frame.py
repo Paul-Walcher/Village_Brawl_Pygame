@@ -38,7 +38,6 @@ class ChoosePlaysetFrame(Frame):
         self.parent_frame_flag = False
         self.choose_save_name_flag = False
 
-        self.bind_events()
         self.render_text()
 
     def render_text(self):

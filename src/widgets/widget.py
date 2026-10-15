@@ -27,6 +27,25 @@ class Widget(EventQueueManager):
         self.height = oframe.height
         self.__frame_dim = oframe
 
+    @property
+    def has_focus(self):
+        return self._has_focus
+
+    @has_focus.setter
+    def has_focus(self, x):
+        if x != self._has_focus:
+            self._has_focus = x
+            if self._has_focus:
+                self.on_focus_gained()
+            else:
+                self.on_focus_lost()
+
+    def on_focus_gained(self):
+        pass
+
+    def on_focus_lost(self):
+        pass
+
     def move_by(self, x=0, y=0, w=0, h=0):
 
         nframe = pygame.Rect(self.x + x, self.y, self.width + w, self.height + h)

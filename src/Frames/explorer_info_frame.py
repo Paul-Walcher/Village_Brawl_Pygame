@@ -68,7 +68,6 @@ class ExplorerInfoFrame(Frame):
 
         #rendering
         self.rerender()
-        self.bind_events()
 
         self.key_clock.start()
 

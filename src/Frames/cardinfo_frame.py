@@ -42,7 +42,6 @@ class CardinfoFrame(Frame):
         self.chars_per_line = chars_per_line
         self.lines_per_page = lines_per_page
 
-        self.bevents = []
 
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
@@ -52,40 +51,22 @@ class CardinfoFrame(Frame):
         self.is_sliding = False
         self.slide_clock = Clock()
 
-        self.bind_events()
         self.rerender()
-
-    def focus(self):
-        self._has_focus = True
-        self.bind_events()
-
-    def unfocus(self):
-        self._has_focus = False
-        self.bind_events()
 
     def bind_events(self):
 
-        for be in self.bevents:
-            self.remove_pygame_event_callback(be)
-
-        self.bevents = []
-
         data = {"frame_ref": self}
 
-        if self._has_focus:
+        if self.has_focus:
 
             for key in [pygame.K_RIGHT, KeyAlternatives.RIGHT_ALTERNATIVE]:
                 cb = self.add_pygame_key_callback(key, data.copy(),  False, self.next_page)
-                self.bevents.append(cb)
             for key in [pygame.K_LEFT, KeyAlternatives.LEFT_ALTERNATIVE]:
                 cb = self.add_pygame_key_callback(key, data.copy(),  False, self.prev_page)
-                self.bevents.append(cb)
 
             cb_kd = self.add_pygame_event_callback(pygame.KEYDOWN, data.copy(), False, self.alt_down)
             cb_ku = self.add_pygame_event_callback(pygame.KEYUP, data.copy(), False, self.alt_up)
 
-            self.bevents.append(cb_kd)
-            self.bevents.append(cb_ku)
 
     def next_page(self, event, data):
 
@@ -167,7 +148,9 @@ class CardinfoFrame(Frame):
     def tick(self):
 
         self.manage_pygame_events()
-        self.clear_pygame_events()
+
+        if self.has_focus:
+            self.clear_pygame_events()
 
         if self.exit_flag_raised():
             return None

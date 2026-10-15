@@ -47,7 +47,6 @@ class IntroFrame(Frame):
 
         self.enter_intro_menu = False
 
-        self.bind_events()
 
     def bind_events(self):
 

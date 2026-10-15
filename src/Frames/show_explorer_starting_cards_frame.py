@@ -38,7 +38,6 @@ class ShowExplorerStartingCardsFrame(Frame):
 
         self.widgets.append(self.cardlistviewer)
 
-        self.bind_events()
         self.rerender()
 
     def rerender(self):
