@@ -235,7 +235,6 @@ class RenderableCardListviewer(Frame):
             self.main_list_yscroll -= self.scroll_speed
 
 
-
     def rerender(self):
 
         self.border_width = int(self.border_frame_margin * self.width)
@@ -340,7 +339,7 @@ class RenderableCardListviewer(Frame):
 
         self.recalculate_main_list_positions()
 
-        self.prerender4()
+        self.prerender()
 
     def recalculate_main_list_positions(self):
 
@@ -469,7 +468,7 @@ class RenderableCardListviewer(Frame):
 
 
 
-    def prerender4(self):
+    def prerender(self):
 
         self.surface.fill(self.main_list_color)
         self.trunk_surface.fill(self.trunk_list_color)
@@ -493,6 +492,7 @@ class RenderableCardListviewer(Frame):
         self.surface.blit(self.label_text, self.label_pos)
 
     def render(self, screen):
+        self.prerender()
         screen.blit(self.surface, (self.x, self.y))
 
 

@@ -307,6 +307,7 @@ class DropdownMenu(Frame):
 
     def render(self, screen):
 
+        self.prerender()
         screen.blit(self.surface, (self.x, self.y))
 
 

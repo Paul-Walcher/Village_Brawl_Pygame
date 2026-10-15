@@ -7,8 +7,8 @@ from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
 
-from widgets.text_input import TextInput
-from widgets.renderable_card_listviewer import RenderableCardListviewer
+from Frames.widgets.text_input import TextInput
+from Frames.widgets.renderable_card_listviewer import RenderableCardListviewer
 import constants
 
 from Frames.cardinfo_frame import CardinfoFrame

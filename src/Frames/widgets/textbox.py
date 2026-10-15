@@ -168,6 +168,7 @@ class Textbox(Frame):
 
     def render(self, screen):
 
+        self.prerender()
         screen.blit(self.surface, (self.x, self.y))
 
     def tick(self):

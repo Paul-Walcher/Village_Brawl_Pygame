@@ -187,7 +187,7 @@ class Frame(EventQueueManager):
     def has_focus(self, x):
         if x != self._has_focus:
             self._has_focus = x
-            self.clear_pygame_events()
+            self.clear_event_callbacks()
             self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT, key_delay=0)
             self.bind_events()
             if self._has_focus:

@@ -13,10 +13,10 @@ import graphics
 from clock import Clock
 from modules import Modules
 import constants
-from widgets.textbox import Textbox
-from widgets.image_slider import ImageSlider
-from widgets.text_slider import TextSlider
-from widgets.labeled_image_slider import LabeledImageSlider
+from Frames.widgets.textbox import Textbox
+from Frames.widgets.image_slider import ImageSlider
+from Frames.widgets.text_slider import TextSlider
+from Frames.widgets.labeled_image_slider import LabeledImageSlider
 
 class ExplorerInfoFrame(Frame):
 

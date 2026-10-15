@@ -547,6 +547,7 @@ class TextSlider(Frame):
 
     def render(self, screen):
 
+        self.prerender()
         screen.blit(self.bottom_surface, (self.x, self.y))
         screen.blit(self.top_surface, (self.x, self.y))
 

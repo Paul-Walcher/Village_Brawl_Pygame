@@ -3,7 +3,7 @@ import pygame
 from Frames.empty_frame import EmptyFrame
 from Frames.frame_enums import FrameEnums
 
-from widgets.dropdown_menu import DropdownMenu
+from Frames.widgets.dropdown_menu import DropdownMenu
 from constants import Colors, KeyAlternatives
 from clock import Clock
 import time

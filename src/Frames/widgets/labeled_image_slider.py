@@ -17,8 +17,8 @@ from clock import Clock
 from modules import Modules
 import constants
 
-from widgets.image_slider import ImageSlider
-from widgets.text_slider import TextSlider
+from Frames.widgets.image_slider import ImageSlider
+from Frames.widgets.text_slider import TextSlider
 from event_queue_manager import Event
 
 class LabeledImageSlider(Frame):

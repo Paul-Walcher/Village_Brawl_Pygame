@@ -4,8 +4,8 @@ from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 import graphics
 from constants import Colors, Alpha, Fonts, Fontsizes, KeyAlternatives, WIDTH, HEIGHT
-from widgets.textbox import Textbox
-from widgets.text_input import TextInput
+from Frames.widgets.textbox import Textbox
+from Frames.widgets.text_input import TextInput
 from clock import Clock
 from event_queue_manager import Event
 

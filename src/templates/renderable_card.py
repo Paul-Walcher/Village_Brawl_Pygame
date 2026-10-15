@@ -2,7 +2,7 @@ import pygame
 
 from constants import Colors, Fonts, fequal
 import graphics
-from widgets.textbox import Textbox
+from Frames.widgets.textbox import Textbox
 
 class Renderable_Card:
 
