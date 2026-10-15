@@ -41,7 +41,7 @@ class Textbox(Widget):
 
         self.pagenumber_shown = False
 
-        self.pagenumber_percentage = 0.1
+        self.pagenumber_percentage = 0.2
         self.pagenumber_color = pagenumber_color
 
         self.calculate_pages()
@@ -83,16 +83,21 @@ class Textbox(Widget):
 
     def render_page(self):
 
+        pdist = (int(0.05 * self.height) if self.pagenumber_shown else 0)
         aheight = self.height - 2*self.outline_size - 2*self.hmargin
         awidth = self.width - 2*self.outline_size - 2*self.wmargin
 
-        pagenum_height = int(self.pagenumber_percentage * aheight) + self.line_margin
-        text_height = aheight - pagenum_height
+        pagenum_height = (int(self.pagenumber_percentage * (self.height)) if self.pagenumber_shown else 0)
+        text_height = self.height - pagenum_height
 
-        toprect = pygame.Rect(self.wmargin + self.outline_size, self.hmargin + self.outline_size, awidth, text_height)
-        numrect = pygame.Rect(self.wmargin + self.outline_size, self.hmargin + self.outline_size + text_height, awidth, pagenum_height)
+        toprect = pygame.Rect(self.wmargin + self.outline_size, self.hmargin + self.outline_size, awidth, text_height - 2 * self.outline_size - pdist)
+        numrect = pygame.Rect(self.outline_size, pdist + self.outline_size + text_height, self.width - 2*self.outline_size, pagenum_height - self.outline_size)
+
+        self.boxrect = pygame.Rect(0, 0, self.width, text_height)
 
         if self.pagenumber_shown:
+
+            toprect.height -= numrect.height
 
             pagestr = f"{self.page_index+1}/{self.n_pages}"
 
@@ -161,7 +166,7 @@ class Textbox(Widget):
 
         if self.outline_size > 0:
 
-            pygame.draw.rect(self.surface, self.outline_color, (0, 0, self.width, self.height), width=self.outline_size)
+            pygame.draw.rect(self.surface, self.outline_color, self.boxrect, width=self.outline_size)
 
         for rfont, pos in self.rpage:
 

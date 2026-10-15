@@ -48,8 +48,12 @@ class Renderable_Card:
     @description.setter
     def description(self, desc):
 
+        old_desc = self.__description
         self.__description = desc
-        if self.__description_color is None:
+
+        if self.__description_color is None or (len(self.__description_color) == 1 \
+            and self.__description_color[0][0] == old_desc and self.__description_color[0][1] == Colors.STANDARD_TEXT_COLOR):
+
             self.__description_color = [(self.__description, Colors.STANDARD_TEXT_COLOR)]
         self.description_pages = graphics.page_by_chars(self.__description, self.__description_line_length, self.__description_paragraph_length)
 
@@ -145,37 +149,53 @@ class Renderable_Card:
                         line_length=self.description_line_length, paragraph_length=self.description_paragraph_length,
                         wmargin=wmargin, hmargin=hmargin, text_color=text_color, centered=True, text_colored=colored
                         )
+    def get_areas(self, frame_dim, height_distributions, hmargin=0.2, vmargin=0.2):
+
+
+        frame_dim = graphics.apply_margins(frame_dim, hmargin, vmargin)
+        x, y, w, h = frame_dim.x, frame_dim.y, frame_dim.width, frame_dim.height
+        heights = [int(hp *  h) for hp in height_distributions]
+
+        back = []
+        cy = frame_dim.y
+
+        for height in heights:
+
+            back.append(pygame.Rect(x, cy, w, height))
+
+            cy += height
+
+        return back
+
 
     def get_info_page_parts(self, frame_dim,
                                 font=Fonts.MINECRAFT,
-                                hmargin=0.2, vmargin = 0.2,
+                                hmargin=0.1, vmargin = 0.1,
                                 chars_per_line=50, lines_per_page=5,
-                                height_distributions=[0.1, 0.1, 0.35, 0.1, 0.25, 0.1]#equals: headline area, distance, card image area, distance, textbox area, distance
+                                description_textbox_text=None,
+                                height_distributions=[0.1, 0.05, 0.45, 0.1, 0.25, 0.05]#equals: headline area, distance, card image area, distance, textbox area, distance
                                 ):
 
 
         if not fequal(1.0, sum(height_distributions)):
             raise RuntimeError("Height Distributions must add up to 1")
 
+        if description_textbox_text == None:
+            description_textbox_text = self.description_color
         #returns a part list, should be used by the render_info_page_parts method
         x, y, w, h = frame_dim.x, frame_dim.y, frame_dim.width, frame_dim.height
 
         render_frame = graphics.apply_margins(pygame.Rect(x, y, w, h), hmargin, vmargin)
 
-        headline_area_height, headline_image_dist, image_area_height, \
-        image_description_dist, description_area_height, description_bottom_dist = [int(hp *  h) for hp in height_distributions]
+
+        headline_area, headline_image_dist_r, image_area,\
+        image_description_dist_r, description_area, description_bottom_dist_r = self.get_areas(frame_dim, height_distributions, hmargin=hmargin, vmargin=vmargin)
+
+        headline_image_dist, image_description_dist, description_bottom_dist = headline_image_dist_r.h ,image_description_dist_r.h, description_bottom_dist_r.h
 
 
-        headline_area = render_frame.copy()
-        headline_area.height = headline_area_height
-
-        image_area = render_frame.copy()
-        image_area.y = headline_area.y + headline_area_height + headline_image_dist
-        image_area.height = image_area_height
-
-        description_area = render_frame.copy()
-        description_area.y = image_area.y + image_area_height + image_description_dist
-        description_area.height = description_area_height
+        rwidth = render_frame.width
+        rheight = render_frame.height
 
         headline, headline_pos = None, None
         image, image_pos = None, None
@@ -217,12 +237,16 @@ class Renderable_Card:
 
         description_textbox = Textbox(
                                             font,
-                                            self.description_color,
+                                            description_textbox_text,
                                             true_description_area,
                                             outline_size=5,
                                             outline_color=Colors.WHITE,
                                             centered=True,
-                                            text_colored=True
+                                            text_colored=True,
+                                            line_length=chars_per_line,
+                                            paragraph_length=lines_per_page,
+                                            wmargin=int(0.2 * true_description_area.w),
+                                            hmargin=int(0.2 *  true_description_area.h)
                                             )
 
         description_textbox.show_pagenumber()

@@ -2,18 +2,22 @@
 """
 Template for any explorer.
 """
+import pygame
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 
 from deck import Deck
 
 import constants
+from constants import Colors, Fonts
+import graphics
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from templates.playset_entity import PlaysetEntity
 
 from templates.renderable_card import Renderable_Card
+from copy import deepcopy
 
 class ExplorerInfo(Renderable_Card):
 
@@ -76,6 +80,104 @@ class ExplorerInfo(Renderable_Card):
         self.inventory_size = inventory_size
         #ability_activation_phases
         self.activation_phases = (ability_activation_phases if ability_activation_phases is not None else [])
+
+    def get_info_page_parts(self, frame_dim,
+                                font=Fonts.MINECRAFT,
+                                hmargin=0, vmargin = 0,
+                                chars_per_line=50, lines_per_page=5,
+                                height_distributions=[0.1, 0.05, 0.45, 0.1, 0.25, 0.05]):#equals: headline area, distance, card image area, distance, textbox area, distance)
+
+
+        stats_hp = 0.2
+        stats_insert_index = 3
+
+        adjust = (stats_hp - height_distributions[stats_insert_index])
+
+        tweight = sum([height_distributions[i] for i in range(len(height_distributions)) if i != stats_insert_index])
+
+        height_distributions = list(map(lambda x: x - (x / tweight) * adjust, height_distributions))
+        height_distributions[stats_insert_index] = stats_hp
+
+        areas = self.get_areas(frame_dim, height_distributions, hmargin, vmargin)
+        stats_text_area = areas[stats_insert_index]
+
+        page_padding = 2
+
+        stats_page = [
+                        [("Lives: ", Colors.RED), (f"{self.lives}", Colors.STANDARD_TEXT_COLOR)],
+                        [("Inventory Size: ", Colors.BLUE), (f"{self.inventory_size}", Colors.STANDARD_TEXT_COLOR)]
+                        ]
+
+        for i in range(page_padding):
+            stats_page.insert(0, [])
+            stats_page.append([])
+
+        page_parts = Renderable_Card.get_info_page_parts(self,
+                                                        frame_dim,
+                                                        font=font,
+                                                        hmargin=hmargin,
+                                                        vmargin=vmargin,
+                                                        chars_per_line=chars_per_line,
+                                                        lines_per_page=lines_per_page,
+                                                        height_distributions=height_distributions
+                                                        )
+
+        tbox = page_parts[2][1][0]
+
+        rendered_stats_page = graphics.render_page_from_chars_color(
+                                    font,
+                                    stats_page,
+                                    stats_text_area,
+                                    text_color=Colors.STANDARD_TEXT_COLOR,
+                                    vertical_centered = True
+                                )
+
+        rstats = []
+
+        for surf, (x, y) in rendered_stats_page:
+            rstats.append((surf, (x + tbox - stats_text_area.x, y)))
+
+        page_parts.append(rstats)
+
+        return page_parts
+
+    def render_info_page_parts(self,
+                                screen,
+                                page_parts,
+                                page_index=-1,
+                                background_color=Colors.BLACK,
+                                outline_size=None,
+                                outline_color=None,
+                                full_image_shown=False
+                                ):
+
+        Renderable_Card.render_info_page_parts(self,
+                                    screen,
+                                    page_parts=page_parts[:-1],
+                                    page_index=page_index,
+                                    background_color=background_color,
+                                    outline_size=outline_size,
+                                    outline_color=outline_color,
+                                    full_image_shown=False
+                                    )
+
+        stats_page = page_parts[-1]
+
+        for surf, pos in stats_page:
+            screen.blit(surf, pos)
+
+        if full_image_shown:
+
+            full_image, full_image_pos = page_parts[3]
+
+            tsurf = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+            tsurf.fill((*Colors.BLACK, 180))
+
+            tsurf.blit(full_image, full_image_pos)
+
+            screen.blit(tsurf, (0, 0))
+
+
 
 
 class Explorer_Template(PlaysetEntity):

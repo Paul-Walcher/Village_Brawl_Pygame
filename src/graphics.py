@@ -123,7 +123,7 @@ def render_page_from_chars(
     font,
     page,
     frame,
-    text_color=constants.Colors.BLACK,
+    text_color=constants.Colors.STANDARD_TEXT_COLOR,
     centered=False,
     vertical_centered=False,
     line_margin=5
@@ -331,7 +331,7 @@ def render_page_from_chars_color(
     font,
     page,
     frame,
-    text_color=constants.Colors.BLACK,
+    text_color=constants.Colors.STANDARD_TEXT_COLOR,
     centered=False,
     vertical_centered=False,
     line_margin=5

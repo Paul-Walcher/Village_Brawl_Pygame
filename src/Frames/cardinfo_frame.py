@@ -18,7 +18,7 @@ class CardinfoFrame(Frame):
     def __init__(self, cardinfo, font=Fonts.MINECRAFT,
                 alpha=Alpha.LEVEL_5,
                 has_focus=True,
-                hmargin=0.2, vmargin = 0.2,
+                hmargin=0.1, vmargin=0.1,
                 chars_per_line=50, lines_per_page=5,
                 slide_duration=800,
                 data=None, frame_dim=None, parent_frame=None
