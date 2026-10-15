@@ -19,9 +19,8 @@ import constants
 from constants import KeyAlternatives
 
 from event_queue_manager import EventQueueManager, Event
-from widgets.widget import Widget
 
-class TextInput(Widget):
+class TextInput(Frame):
 
     CURSOR_SYMBOL = "|"
 
@@ -43,7 +42,7 @@ class TextInput(Widget):
                 key_delay=0#ms
                 ):
 
-        super().__init__(frame_dim)
+        super().__init__(FrameEnums.TeXTINPUT_WIDGET, None, frame_dim)
 
         self.has_focus = False
 
@@ -139,9 +138,9 @@ class TextInput(Widget):
         self.text_rendered = [(self.front_text_rendered, ftext_pos),
                             (self.back_text_rendered, btext_pos)]
 
-        self.render()
+        self.prerender()
 
-    def render(self):
+    def prerender(self):
 
         self.surface.fill(self.background_color)
 
@@ -154,6 +153,10 @@ class TextInput(Widget):
 
         if self.outline_shown:
             pygame.draw.rect(self.surface, self.outline_color, self.frame_dim, width=self.outline_size)
+
+    def render(self, screen):
+
+        screen.blit(self.surface, (self.x, self.y))
 
     def tick(self):
 
@@ -247,11 +250,11 @@ class TextInput(Widget):
 
     def show_outline(self):
         self.outline_shown = True
-        self.render()
+        self.prerender()
 
     def hide_outline(self):
         self.outline_shown = False
-        self.render()
+        self.prerender()
 
     def move_cursor_left(self, n=1):
 

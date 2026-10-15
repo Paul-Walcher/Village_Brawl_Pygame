@@ -145,7 +145,8 @@ class Renderable_Card:
 
     def get_description_textbox(self, frame_dim, colored=True, font=Fonts.MINECRAFT, text_color=Colors.STANDARD_TEXT_COLOR,line_margin=5, wmargin=5, hmargin=5):
 
-        return Textbox(font, (self.description_color if colored else self.description), frame_dim,
+        return Textbox(frame_dim,
+                        font, (self.description_color if colored else self.description),
                         line_length=self.description_line_length, paragraph_length=self.description_paragraph_length,
                         wmargin=wmargin, hmargin=hmargin, text_color=text_color, centered=True, text_colored=colored
                         )
@@ -236,9 +237,9 @@ class Renderable_Card:
         fsize = graphics.get_fontsize(font, ["W" * chars_per_line], line_rect)
 
         description_textbox = Textbox(
+                                            true_description_area,
                                             font,
                                             description_textbox_text,
-                                            true_description_area,
                                             outline_size=5,
                                             outline_color=Colors.WHITE,
                                             centered=True,

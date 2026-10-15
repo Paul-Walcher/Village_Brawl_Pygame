@@ -16,10 +16,9 @@ import graphics
 from clock import Clock
 from modules import Modules
 import constants
-from widgets.widget import Widget
 from event_queue_manager import Event
 
-class TextSlider(Widget):
+class TextSlider(Frame):
 
     SLIDING_LEFT = 0
     SLIDING_RIGHT = 1
@@ -60,7 +59,7 @@ class TextSlider(Widget):
                 "You need more images for this image span."
             )
 
-        super().__init__(frame_dim)
+        super().__init__(FrameEnums.TEXTSLIDER_WIDGET, None, frame_dim)
 
         self.text = text
         self.font = font
@@ -148,21 +147,13 @@ class TextSlider(Widget):
     # General
     # =============================================================
 
-    @Widget.frame_dim.setter
-    def frame_dim(self, oframe):
-
-        Widget.frame_dim.fset(self, oframe)
-        self.state = TextSlider.NOT_SLIDING
-
-        self.rerender()
-
 
     def get_selected_index(self):
         return self.image_index - self.slides
 
     def set_background_color(self, color):
         self.background_color = color
-        self.render()
+        self.prerender()
 
     def get_focus_index(self):
         return self.image_index
@@ -435,7 +426,7 @@ class TextSlider(Widget):
 
             self.rects.append(rect)
 
-        self.render()
+        self.prerender()
 
     # =============================================================
     # Layout
@@ -530,7 +521,7 @@ class TextSlider(Widget):
     # Rendering
     # =============================================================
 
-    def render(self):
+    def prerender(self):
 
         self.bottom_surface.fill(
             self.background_color
@@ -553,6 +544,11 @@ class TextSlider(Widget):
                     img,
                     (x, y)
                 )
+
+    def render(self, screen):
+
+        screen.blit(self.bottom_surface, (self.x, self.y))
+        screen.blit(self.top_surface, (self.x, self.y))
 
     # =============================================================
     # LEFT SLIDE
@@ -860,7 +856,7 @@ class TextSlider(Widget):
 
         self.rendered_images = rimages
 
-        self.render()
+        self.prerender()
 
     def finalize_slide_left(self):
 
@@ -1175,7 +1171,7 @@ class TextSlider(Widget):
 
         self.rendered_images = rimages
 
-        self.render()
+        self.prerender()
 
     def finalize_slide_right(self):
 

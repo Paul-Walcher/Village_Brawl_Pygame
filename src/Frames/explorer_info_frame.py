@@ -108,7 +108,7 @@ class ExplorerInfoFrame(Frame):
 
         trect = self.textbox_dim.copy()
 
-        self.textbox = Textbox(Fonts.MINECRAFT, text, trect, text_color=(*Colors.GREEN, 255), centered=True)
+        self.textbox = Textbox(trect, Fonts.MINECRAFT, text, text_color=(*Colors.GREEN, 255), centered=True)
         self.textbox_pos = (self.textbox_dim.x, self.textbox_dim.y)
 
         self.textbox.show_pagenumber()

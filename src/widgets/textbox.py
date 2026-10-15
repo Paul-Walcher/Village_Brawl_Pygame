@@ -9,17 +9,18 @@ import graphics
 from clock import Clock
 from modules import Modules
 import constants
-from widgets.widget import Widget
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
 
-class Textbox(Widget):
+class Textbox(Frame):
 
-    def __init__(self, font, text, frame_dim, line_length=40, paragraph_length=5, outline_size=0, outline_color=Colors.BLACK, text_color=Colors.BLACK,
+    def __init__(self, frame_dim, font, text, line_length=40, paragraph_length=5, outline_size=0, outline_color=Colors.BLACK, text_color=Colors.BLACK,
                 background_color=Colors.TRANSPARENT, wmargin=5, hmargin=5, line_margin=2, centered=False,
                 pagenumber_color=Colors.WHITE, startpage=0, text_colored=False
 
                 ):
 
-        super().__init__(frame_dim)
+        super().__init__(FrameEnums.TEXTBOX_WIDGET, None, frame_dim)
 
         self.text = text
         self.line_length = line_length
@@ -45,21 +46,14 @@ class Textbox(Widget):
         self.pagenumber_color = pagenumber_color
 
         self.calculate_pages()
-        self.render()
-
-    @Widget.frame_dim.setter
-    def frame_dim(self, oframe):
-
-        Widget.frame_dim.fset(self, oframe)
-
-        self.rerender()
+        self.prerender()
 
     def set_outline_size(self, size):
 
         if size == self.outline_size:
             return
         self.outline_size = size
-        self.render()
+        self.prerender()
 
     def set_outline_color(self, color):
 
@@ -67,7 +61,7 @@ class Textbox(Widget):
             return
 
         self.outline_color = color
-        self.render()
+        self.prerender()
 
     def calculate_pages(self):
         if not self.text_colored:
@@ -79,7 +73,7 @@ class Textbox(Widget):
         self.page_index %= self.n_pages
 
     def rerender(self):
-        self.render()
+        self.prerender()
 
     def render_page(self):
 
@@ -132,11 +126,11 @@ class Textbox(Widget):
 
     def show_pagenumber(self):
         self.pagenumber_shown = True
-        self.render()
+        self.prerender()
 
     def hide_pagenumber(self):
         self.pagenumber_shown = False
-        self.render()
+        self.prerender()
 
     def num_pages(self):
         return self.n_pages
@@ -145,21 +139,21 @@ class Textbox(Widget):
 
         self.page_index += 1
         self.page_index %= self.n_pages
-        self.render()
+        self.prerender()
 
     def prev_page(self):
 
         self.page_index -= 1
         self.page_index %= self.n_pages
-        self.render()
+        self.prerender()
 
     def skip_to_page(self, page_index):
 
         self.page_index = page_index
         self.page_index %= self.n_pages
-        self.render()
+        self.prerender()
 
-    def render(self):
+    def prerender(self):
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.render_page()
         self.surface.fill(self.background_color)
@@ -171,6 +165,10 @@ class Textbox(Widget):
         for rfont, pos in self.rpage:
 
             self.surface.blit(rfont, pos)
+
+    def render(self, screen):
+
+        screen.blit(self.surface, (self.x, self.y))
 
     def tick(self):
         pass

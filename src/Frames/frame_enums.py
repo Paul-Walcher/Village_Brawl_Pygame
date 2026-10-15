@@ -20,3 +20,12 @@ class FrameEnums(Enum):
     SHOW_EXPLORER_STARTING_CARDS_FRAME = auto()
 
     INTERACTION_FRAME = auto()
+
+    #WIDGETS
+    TEXTBOX_WIDGET = auto()
+    TEXTSLIDER_WIDGET = auto()
+    TEXTINPUT_WIDGET = auto()
+    RENDERABLE_CARDLIST_VIEWER_WIDGET = auto()
+    LABELED_IMAGE_SLIDER_WIDGET = auto()
+    IMAGESLIDER_WIDGET = auto()
+    DROPDOWN_MENU_WIDGET = auto()

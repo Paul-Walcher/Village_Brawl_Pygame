@@ -19,10 +19,9 @@ import constants
 
 from widgets.image_slider import ImageSlider
 from widgets.text_slider import TextSlider
-from widgets.widget import Widget
 from event_queue_manager import Event
 
-class LabeledImageSlider(Widget):
+class LabeledImageSlider(Frame):
 
     LEFT = 0
     RIGHT = 1
@@ -62,7 +61,7 @@ class LabeledImageSlider(Widget):
         flipping_animation_duration = 500#ms
     ):
 
-        super().__init__(frame_dim)
+        super().__init__(FrameEnums.LABELED_IMAGE_SLIDER_WIDGET, None, frame_dim)
         self.images = images
         self.back_images = (back_images if back_images is not None else self.images.copy())
         self.text = text
@@ -108,17 +107,31 @@ class LabeledImageSlider(Widget):
 
         self.rerender()
 
-    @Widget.frame_dim.setter
+    @Frame.frame_dim.setter
     def frame_dim(self, oframe):
 
         self.is_sliding = False
 
-        Widget.frame_dim.fset(self, oframe)
+        Frame.frame_dim.fset(self, oframe)
 
         self.image_slider.dim_frame = oframe
         self.text_slider.dim_frame = oframe
 
-        self.rerender()
+    @Frame.x.setter
+    def x(self, v):
+
+        self.image_slider.x += (v - self.x)
+        self.text_slider.x += (v - self.x)
+
+        Frame.x.fset(self, v)
+
+    @Frame.y.setter
+    def y(self, v):
+
+        self.image_slider.y += (v - self.y)
+        self.text_slider.y += (v - self.y)
+
+        Frame.y.fset(self, v)
 
     def play_select_animation(self):
         self.select_animation_queued = True
@@ -184,6 +197,9 @@ class LabeledImageSlider(Widget):
         irect = pygame.Rect(*self.imagepos, self.images_width, self.images_height)
         trect = pygame.Rect(*self.textpos, self.text_width, self.text_height)
 
+        self.irect = irect
+        self.trect = trect
+
         self.image_slider = ImageSlider(
                                         self.images,
                                         irect,
@@ -248,7 +264,7 @@ class LabeledImageSlider(Widget):
 
         return back
 
-    def render(self):
+    def prerender(self):
         pass
 
     def tick(self):
@@ -300,6 +316,11 @@ class LabeledImageSlider(Widget):
 
         self.image_slider.tick()
         self.text_slider.tick()
+
+    def render(self, screen):
+
+        self.image_slider.render(screen)
+        self.text_slider.render(screen)
 
     def flip_card(self):
         self.cardflip_queued = True

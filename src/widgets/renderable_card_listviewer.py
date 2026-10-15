@@ -16,7 +16,6 @@ import graphics
 from clock import Clock
 from modules import Modules
 import constants
-from widgets.widget import Widget
 from event_queue_manager import Event
 from copy import deepcopy
 
@@ -29,7 +28,7 @@ Create a mutable trunk group in the groups
 """
 
 
-class RenderableCardListviewer(Widget):
+class RenderableCardListviewer(Frame):
 
     NOTHING_FOCUSED = 0
     MAIN_LIST_FOCUSED = 1
@@ -117,7 +116,7 @@ class RenderableCardListviewer(Widget):
         if len(groups) > max_group_number:
             raise RuntimeError("Too many groups. Adjust your max_group_size")
 
-        super().__init__(frame_dim)
+        super().__init__(FrameEnums.RENDERABLE_CARDLIST_VIEWER_WIDGET, None, frame_dim)
 
         self.full_cardlist = full_cardlist.copy()
         self.groups = deepcopy(groups)
@@ -341,7 +340,7 @@ class RenderableCardListviewer(Widget):
 
         self.recalculate_main_list_positions()
 
-        self.render()
+        self.prerender4()
 
     def recalculate_main_list_positions(self):
 
@@ -470,7 +469,7 @@ class RenderableCardListviewer(Widget):
 
 
 
-    def render(self):
+    def prerender4(self):
 
         self.surface.fill(self.main_list_color)
         self.trunk_surface.fill(self.trunk_list_color)
@@ -492,6 +491,9 @@ class RenderableCardListviewer(Widget):
 
         self.surface.blit(self.label_surface, self.label_surface_pos)
         self.surface.blit(self.label_text, self.label_pos)
+
+    def render(self, screen):
+        screen.blit(self.surface, (self.x, self.y))
 
 
     def get_surfaces(self):

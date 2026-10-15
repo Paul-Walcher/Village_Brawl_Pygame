@@ -1,13 +1,14 @@
 import pygame
 
 import graphics
-from widgets.widget import Widget
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
 from event_queue_manager import Event
 from constants import Colors, Fonts
 from clock import Clock
 
 
-class DropdownMenu(Widget):
+class DropdownMenu(Frame):
 
     NOTHING_SELECTED = 0
     OPTION_SELECTED = 1
@@ -40,7 +41,7 @@ class DropdownMenu(Widget):
         if options is None or len(options) == 0:
             raise RuntimeError("No options provided")
 
-        super().__init__(frame_dim)
+        super().__init__(FrameEnums.DROPDOWN_MENU_WIDGET, None, frame_dim)
 
         self.options = options
 
@@ -124,14 +125,14 @@ class DropdownMenu(Widget):
         self.moves_buffered = 0
         self.state = DropdownMenu.NOTHING_SELECTED
 
-        self.render()
+        self.prerender()
 
     def focus_on(self, index):
 
         self.selected_index = index
         self.moves_buffered = 0
         self.state = DropdownMenu.OPTION_SELECTED
-        self.render()
+        self.prerender()
 
     def render_select_animation(self):
 
@@ -192,7 +193,7 @@ class DropdownMenu(Widget):
 
 
 
-        self.render()
+        self.prerender()
 
 
 
@@ -206,7 +207,7 @@ class DropdownMenu(Widget):
 
         self.rerender()
 
-    def render(self):
+    def prerender(self):
 
         self.surface.fill(self.background_color)
 
@@ -293,7 +294,7 @@ class DropdownMenu(Widget):
 
         self.state = (DropdownMenu.NOTHING_SELECTED if self.selected_index == -1 else DropdownMenu.OPTION_SELECTED)
 
-        self.render()
+        self.prerender()
 
 
     def get_surfaces(self):
@@ -304,6 +305,10 @@ class DropdownMenu(Widget):
 
         return [(self.surface, (self.x, self.y))]
 
+    def render(self, screen):
+
+        screen.blit(self.surface, (self.x, self.y))
+
 
     def tick(self):
 
@@ -311,6 +316,6 @@ class DropdownMenu(Widget):
             self.selected_index += self.moves_buffered
             self.selected_index %= self.n_options
             self.moves_buffered = 0
-            self.render()
+            self.prerender()
         if self.state == DropdownMenu.SELECT_ANIMATION_PLAYING:
             self.render_select_animation()

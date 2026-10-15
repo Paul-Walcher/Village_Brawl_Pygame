@@ -17,11 +17,10 @@ import graphics
 from clock import Clock
 from modules import Modules
 import constants
-from widgets.widget import Widget
 from event_queue_manager import Event
 
 
-class ImageSlider(Widget):
+class ImageSlider(Frame):
 
     class EventTypes:
 
@@ -63,7 +62,7 @@ class ImageSlider(Widget):
                 "You need more images for this image span."
             )
 
-        super().__init__(frame_dim)
+        super().__init__(FrameEnums.IMAGESLIDER_WIDGET, None, frame_dim)
 
         self.images = images
         self.back_images = (back_images if back_images is not None else self.images.copy())
@@ -163,21 +162,13 @@ class ImageSlider(Widget):
     # General
     # =============================================================
 
-    @Widget.frame_dim.setter
-    def frame_dim(self, oframe):
-
-        Widget.frame_dim.fset(self, oframe)
-
-        self.state = ImageSlider.NOT_SLIDING
-        self.rerender()
-
     def get_selected_index(self):
         return self.image_index - self.slides
 
     def set_background_color(self, color):
 
         self.background_color = color
-        self.render()
+        self.prerender()
 
     def get_focus_index(self):
         return self.image_index
@@ -401,7 +392,7 @@ class ImageSlider(Widget):
 
             self.rects.append(rect)
 
-        self.render()
+        self.prerender()
 
     # =============================================================
     # Layout
@@ -493,7 +484,7 @@ class ImageSlider(Widget):
     # Rendering
     # =============================================================
 
-    def render(self):
+    def prerender(self):
 
         self.bottom_surface.fill(
             self.background_color
@@ -620,7 +611,7 @@ class ImageSlider(Widget):
 
             new_slot = old_index - 1
 
-            # ALWAYS render the original image again.
+            # ALWAYS prerender the original image again.
             #
             # Do not use self.rendered_images[old_index][0]
             # for scale calculations, because that surface is
@@ -807,7 +798,7 @@ class ImageSlider(Widget):
 
         self.rendered_images = rimages
 
-        self.render()
+        self.prerender()
 
     def finalize_slide_left(self):
 
@@ -940,7 +931,7 @@ class ImageSlider(Widget):
             old_list_index = old_index + 1
             new_slot = old_index + 1
 
-            # Again, render the original image instead of using
+            # Again, prerender the original image instead of using
             # the already-scaled rendered surface.
             img = graphics.render_image(
                 self.images[
@@ -1126,7 +1117,7 @@ class ImageSlider(Widget):
 
         self.rendered_images = rimages
 
-        self.render()
+        self.prerender()
 
     def finalize_slide_right(self):
 
@@ -1192,7 +1183,7 @@ class ImageSlider(Widget):
             self.rendered_images[self.images_span][1], self.rendered_images[self.images_span][2] = npos
 
 
-            self.render()
+            self.prerender()
 
     def render_flipping_animation(self):
 
@@ -1231,7 +1222,7 @@ class ImageSlider(Widget):
 
                 self.rendered_images[self.images_span] = [new_img, new_pos[0], new_pos[1], self.rendered_images[self.images_span][3]]
 
-            self.render()
+            self.prerender()
 
     def render_flipping_all_animation(self):
 
@@ -1274,7 +1265,7 @@ class ImageSlider(Widget):
                 for i in range(len(self.saved_image_copies)):
                     self.rendered_images[i] = [new_imgs[i], new_pos[i][0], new_pos[i][1], self.rendered_images[i][3]]
 
-            self.render()
+            self.prerender()
 
 
 
@@ -1300,6 +1291,12 @@ class ImageSlider(Widget):
         back = self.event_queue
         self.event_queue = []
         return back
+
+    def render(self, screen):
+
+        screen.blit(self.bottom_surface, (self.x, self.y))
+        screen.blit(self.top_surface, (self.x, self.y))
+
 
     def tick(self):
 

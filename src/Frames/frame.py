@@ -2,7 +2,6 @@ import pygame
 from abc import ABC, abstractmethod
 from constants import FrameDataID
 from event_queue_manager import EventQueueManager, Event
-from widgets.widget import Widget
 from clock import Clock
 
 class Frame(EventQueueManager):
@@ -82,10 +81,10 @@ class Frame(EventQueueManager):
         if self.data is not None:
             self.data[FrameDataID.CURRENT_FRAME] = self
         self._frame_dim = (frame_dim if frame_dim is not None else pygame.Rect(0, 0, 0, 0))
-        self.x = self.frame_dim.x
-        self.y = self.frame_dim.y
-        self.width = self.frame_dim.width
-        self.height = self.frame_dim.height
+        self._x = self.frame_dim.x
+        self._y = self.frame_dim.y
+        self._width = self.frame_dim.width
+        self._height = self.frame_dim.height
 
         self.slide_endpos = None
         self.slide_startpos = None
@@ -127,14 +126,58 @@ class Frame(EventQueueManager):
     @frame_dim.setter
     def frame_dim(self, oframe):
 
-        self.x = oframe.x
-        self.y = oframe.y
-        self.width = oframe.width
-        self.height = oframe.height
-        self.center = (self.x + self.width // 2,
-                        self.y + self.height // 2
+        self._x = oframe.x
+        self._y = oframe.y
+        self._width = oframe.width
+        self._height = oframe.height
+
+        #those set the x, y, w, h
+
+        self.center = (self._x + self._width // 2,
+                        self._y + self._height // 2
                         )
-        self._frame_dim = oframe
+
+        self._frame_dim = oframe.copy()
+
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, val):
+        self.frame_dim = pygame.Rect(val, self.y, self.width, self.height)
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, val):
+        self.frame_dim = pygame.Rect(self.x, val, self.width, self.height)
+
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    def width(self, val):
+        pre_w = self.width
+        self.frame_dim = pygame.Rect(self.x, self.y, val, self.height)
+        if pre_w != self.width:
+            self.rerender()
+
+    @property
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self, val):
+        pre_h = self.height
+        self.frame_dim = pygame.Rect(self.x, self.y, self.width, val)
+        if pre_h != self.height:
+            self.rerender()
+
+
 
     @property
     def has_focus(self):
@@ -317,10 +360,11 @@ class Frame(EventQueueManager):
 
     def render_widgets(self, screen):
         for widget in self.widgets:
-            widget.render()
-            for w, pos in widget.get_surfaces_with_position():
-                screen.blit(w, pos)
+            widget.render(screen)
 
+    #called when the image size changes
+    def rerender(self):
+        pass
 
     @abstractmethod
     def tick(self):
