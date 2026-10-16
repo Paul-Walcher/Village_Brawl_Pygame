@@ -38,6 +38,8 @@ class RenderableCardListviewer(Frame):
     TRUNK_SLIDING_IN = 5
     TRUNK_SLIDING_OUT = 6
 
+    FULL_IMAGE_SHOWN_MAIN_LIST = 7
+    FULL_IMAGE_SHOWN_TRUNK = 8
     #view states
     SHOW_WITH_AMOUNT = 100
     SHOW_EACH_CARD = 101
@@ -88,7 +90,7 @@ class RenderableCardListviewer(Frame):
                 max_group_number=25,
                 cards_per_line=4,
                 cards_per_column=4,
-                cards_per_line_added_when_trunk_not_shown = 8,
+                cards_per_line_added_when_trunk_not_shown = 4,
                 cards_per_column_added_when_trunk_not_shown=0,
                 sorting_function=None,
                 max_groups_shown_in_menu=10,
@@ -189,44 +191,174 @@ class RenderableCardListviewer(Frame):
         self.shadow_voffset_p = 0.075
         self.shadow_alpha = 120
 
-        self.key_clock = Clock()
-        self.key_clock.start()
-        self.key_delay = 20
+        self.main_list_selected_index = 0
+        self.trunk_selected_index = 0
 
-        self.scroll_up = False
-        self.scroll_down = False
-        self.scroll_speed = 10
+        self.main_list_cards_dict = {}
+        self.trunk_list_cards_dict = {}
 
-        self.main_list_view_state = (main_list_view_state if main_list_view_state is not None else RenderableCardListviewer.SHOW_WITH_AMOUNT)
+        self.selected_increase = 0.05
+        self.selected_color = Colors.YELLOW
+        self.selected_alpha = 160
+
+        self.main_list_view_state = (main_list_view_state if main_list_view_state is not None else RenderableCardListviewer.SHOW_EACH_CARD)
         self.trunk_view_state = (trunk_view_state if trunk_view_state is not None else RenderableCardListviewer.SHOW_WITH_AMOUNT)
 
+        self.full_image_surface = None
+
+        self.event_clock = Clock()
+        self.event_delay = 300
+        self.event_clock.start()
+
         self.rerender()
+
+
+    def left_pressed(self):
+
+        if self.state == RenderableCardListviewer.NOTHING_FOCUSED:
+            self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+        elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+
+
+            line_length = self.cards_per_line
+            if not self.trunk_shown:
+                line_length += self.cards_per_line_added_when_trunk_not_shown
+
+            if not self.main_list_selected_index % line_length:
+                self.state = RenderableCardListviewer.NOTHING_FOCUSED
+                return
+
+            self.main_list_selected_index -= 1
+            self.main_list_selected_index %= self.n_cards_main_list_shown
+
+            idx, rect, _ = self.main_list_cards_dict[self.main_list_selected_index]
+
+            self.main_list_yscroll = -(rect.y - self.main_list_ystart)
+
+    def right_pressed(self):
+
+        if self.state == RenderableCardListviewer.NOTHING_FOCUSED:
+            if self.trunk_shown:
+                self.state = RenderableCardListviewer.TRUNK_FOCUSED
+            else:
+                self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+        elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+
+            line_length = self.cards_per_line
+            if not self.trunk_shown:
+                line_length += self.cards_per_line_added_when_trunk_not_shown
+
+            if not (self.main_list_selected_index+1) % line_length:
+                self.state = RenderableCardListviewer.NOTHING_FOCUSED
+                return
+
+            self.main_list_selected_index += 1
+            self.main_list_selected_index %= self.n_cards_main_list_shown
+
+            idx, rect, _ = self.main_list_cards_dict[self.main_list_selected_index]
+
+            self.main_list_yscroll = -(rect.y - self.main_list_ystart)
+
+    def up_pressed(self):
+
+        if self.state == RenderableCardListviewer.NOTHING_FOCUSED:
+            self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+        elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+
+            line_length = self.cards_per_line
+            if not self.trunk_shown:
+                line_length += self.cards_per_line_added_when_trunk_not_shown
+
+            if (self.main_list_selected_index - line_length)  < 0:
+                self.main_list_selected_index = 0
+                self.state = RenderableCardListviewer.NOTHING_FOCUSED
+                return
+
+            self.main_list_selected_index -= line_length
+            self.main_list_selected_index %= self.n_cards_main_list_shown
+
+            idx, rect, _ = self.main_list_cards_dict[self.main_list_selected_index]
+
+            self.main_list_yscroll = -(rect.y - self.main_list_ystart)
+
+    def down_pressed(self):
+
+        if self.state == RenderableCardListviewer.NOTHING_FOCUSED:
+            self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+        elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+
+            line_length = self.cards_per_line
+            if not self.trunk_shown:
+                line_length += self.cards_per_line_added_when_trunk_not_shown
+
+            self.main_list_selected_index += line_length
+            self.main_list_selected_index %= self.n_cards_main_list_shown
+
+            idx, rect, _ = self.main_list_cards_dict[self.main_list_selected_index]
+
+            self.main_list_yscroll = -(rect.y - self.main_list_ystart)
+
+
+
 
     def tick(self):
 
         self.manage_pygame_events()
 
-        if self.key_pressed(pygame.K_w):
-            self.scroll_up = True
-        else:
-            self.scroll_up = False
+        if self.has_focus:
 
-        if self.key_pressed(pygame.K_s):
-            self.scroll_down = True
-        else:
-            self.scroll_down = False
+            if self.event_clock.elapsed() > self.event_delay:
+                if (self.key_pressed(pygame.K_RIGHT) or self.key_pressed(KeyAlternatives.RIGHT_ALTERNATIVE)):
+                    self.right_pressed()
+                    self.event_clock.start()
 
+                if (self.key_pressed(pygame.K_LEFT) or self.key_pressed(KeyAlternatives.LEFT_ALTERNATIVE)):
+                    self.left_pressed()
+                    self.event_clock.start()
 
-        if self.scroll_up and self.key_clock.elapsed() > self.key_delay:
-            self.main_list_yscroll += self.scroll_speed
-            self.main_list_yscroll = min(self.main_list_yscroll, 0)
-            self.key_clock.start()
-        if self.scroll_down and self.key_clock.elapsed() > self.key_delay:
-            self.main_list_yscroll -= self.scroll_speed
-            self.key_clock.start()
+                if (self.key_pressed(pygame.K_UP) or self.key_pressed(KeyAlternatives.UP_ALTERNATIVE)):
+                    self.up_pressed()
+                    self.event_clock.start()
+
+                if (self.key_pressed(pygame.K_DOWN) or self.key_pressed(KeyAlternatives.DOWN_ALTERNATIVE)):
+                    self.down_pressed()
+                    self.event_clock.start()
+
+            if (self.key_pressed(KeyAlternatives.SHOW_IMAGE_KEY)):
+
+                if self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+                    self.state = RenderableCardListviewer.FULL_IMAGE_SHOWN_MAIN_LIST
+                    cinfo = self.get_main_list_cinfo_from_selected_index()
+                    self.render_full_image(cinfo)
+
+            else:
+                if self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN_MAIN_LIST:
+                    self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+                elif self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN_TRUNK:
+                    self.state = RenderableCardListviewer.TRUNK_FOCUSED
+
+    def get_main_list_cinfo_from_selected_index(self):
+
+        return self.main_list_cards[self.main_list_cards_dict[self.main_list_selected_index][0]][0].info()
+
+    def render_full_image(self, cinfo):
+
+        cw, ch = self.width // 2, int(self.height * 0.9)
+        center_frame = pygame.Rect(cw // 2, (self.height - ch) // 2, cw, ch)
+        cimage = cinfo.get_card_image_rendered(center_frame)
+        cpos = graphics.get_center_with_surface(cimage, center_frame)
+
+        self.full_image_surface.fill((*Colors.BLACK, 200))
+        self.full_image_surface.blit(cimage, cpos)
+
 
 
     def rerender(self):
+
+        self.full_image_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
         self.border_width = int(self.border_frame_margin * self.width)
         self.border_height = int(self.border_frame_margin * self.height)
@@ -329,7 +461,7 @@ class RenderableCardListviewer(Frame):
 
         gcards = self.groups[self.shown_group]["cardlist"]
 
-        n_cards = sum(gcards.values())
+        self.n_cards_main_list = sum(gcards.values())
 
         self.decksize_frame = pygame.Rect(self.label_frame.width + self.label_frame.x, self.label_frame.y,
                                     int((1.0 - self.label_name_width_percentage) * self.label_frame.width),
@@ -337,7 +469,7 @@ class RenderableCardListviewer(Frame):
                                     )
         self.decksize_frame = graphics.apply_margins(self.decksize_frame, 0.2, 0.2)
 
-        decksize_pages = ["Cards:", str(n_cards)]
+        decksize_pages = ["Cards:", str(self.n_cards_main_list)]
 
         self.mainlist_decksize_rendered = graphics.render_page_from_chars(self.font, decksize_pages, self.decksize_frame,
                                                                             text_color=self.group_name_color,
@@ -386,10 +518,14 @@ class RenderableCardListviewer(Frame):
 
         cx = self.main_list_area.x + self.main_list_hseparator
         cy = self.main_list_area.y + self.main_list_vseparator
+        self.main_list_xstart = cx
+        self.main_list_ystart = cy
 
         idx = 0
         count = 0
+        card_id_index = 0
 
+        self.main_list_cards_dict = {}
         self.main_list_cards_rects = {}
 
         for cardclass, amount in self.main_list_cards:
@@ -412,9 +548,11 @@ class RenderableCardListviewer(Frame):
                 if cy not in self.main_list_cards_rects:
                     self.main_list_cards_rects[cy] = []
 
-                self.main_list_cards_rects[cy].append((idx, img_rect, text_rect))
+                self.main_list_cards_rects[cy].append((card_id_index, idx, img_rect, text_rect))
+                self.main_list_cards_dict[card_id_index] = (idx, img_rect, text_rect)
 
                 idx += 1
+                card_id_index += 1
 
                 cx += self.main_list_cwdith + self.main_list_hseparator
 
@@ -435,9 +573,11 @@ class RenderableCardListviewer(Frame):
                     if cy not in self.main_list_cards_rects:
                         self.main_list_cards_rects[cy] = []
 
-                    self.main_list_cards_rects[cy].append((idx, img_rect, None))
+                    self.main_list_cards_rects[cy].append((card_id_index, idx, img_rect, None))
+                    self.main_list_cards_dict[card_id_index] = (idx, img_rect, None)
 
                     count += 1
+                    card_id_index += 1
 
                     cx += self.main_list_cwdith + self.main_list_hseparator
 
@@ -447,6 +587,8 @@ class RenderableCardListviewer(Frame):
                         cy += self.main_list_cheight + self.main_list_vseparator
 
                 idx += 1
+
+        self.n_cards_main_list_shown = card_id_index
 
 
 
@@ -462,9 +604,10 @@ class RenderableCardListviewer(Frame):
                 cy + yscroll > render_area.y + render_area.height:
                 continue
 
-            for i, img_rect, text_rect in card_rects[cy]:
+            for id_index, i, img_rect, text_rect in card_rects[cy]:
 
                 cinfo = card_list[i][0].info()
+
 
 
                 img = None
@@ -493,10 +636,26 @@ class RenderableCardListviewer(Frame):
                 shadow_rect.x += int(self.shadow_hoffset_p * shadow_rect.width)
                 shadow_rect.y += int(self.shadow_voffset_p * shadow_rect.height)
 
+                shadow_color = ((*Colors.BLACK, self.shadow_alpha) if (id_index != self.main_list_selected_index or self.state != RenderableCardListviewer.MAIN_LIST_FOCUSED)\
+                                else (*Colors.YELLOW, self.selected_alpha))
+
                 shadow_surf = pygame.Surface((shadow_rect.width, shadow_rect.height), pygame.SRCALPHA)
-                shadow_surf.fill((*Colors.BLACK, self.shadow_alpha))
+                shadow_surf.fill(shadow_color)
 
                 self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
+
+                if self.main_list_selected_index == id_index and self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+
+                    #scaling up selected card
+                    img_x_inc, img_y_inc = img.get_width() * 0.1, img.get_height() * 0.1
+                    img = pygame.transform.smoothscale(img, (img.get_width() + img_x_inc, img.get_height() + img_y_inc))
+                    rcp.x -= img_x_inc // 2
+                    rcp.y -= img_y_inc
+                    rcp.width += img_x_inc
+                    rcp.height += img_y_inc
+
+                    pos = graphics.get_center_with_surface(img, rcp)
+
                 self.surface.blit(img, pos)
 
                 amount = card_list[i][1]
@@ -541,6 +700,13 @@ class RenderableCardListviewer(Frame):
         self.surface.blit(self.label_text, self.label_pos)
         for surf, pos in self.mainlist_decksize_rendered:
             self.surface.blit(surf, pos)
+
+        if self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN_MAIN_LIST\
+            or self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN_TRUNK:
+
+            self.surface.blit(self.full_image_surface, (0, 0))
+
+
 
     def render(self, screen):
         self.prerender()
