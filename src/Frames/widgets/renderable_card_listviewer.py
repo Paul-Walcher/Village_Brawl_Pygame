@@ -38,6 +38,10 @@ class RenderableCardListviewer(Frame):
     TRUNK_SLIDING_IN = 5
     TRUNK_SLIDING_OUT = 6
 
+    #view states
+    SHOW_WITH_AMOUNT = 100
+    SHOW_EACH_CARD = 101
+
     class SortingFunctions:
 
         @staticmethod
@@ -48,14 +52,14 @@ class RenderableCardListviewer(Frame):
         def name_descending(cardlist):
 
             clist = [(key, value) for key, value in cardlist.items()]
-            clist.sort(key=lambda x: x[0].name)
+            clist.sort(key=lambda x: x[0].info().name)
             return clist
 
         @staticmethod
         def name_ascending(cardlist):
 
             clist = [(key, value) for key, value in cardlist.items()]
-            clist.sort(key=lambda x: x[0].name)
+            clist.sort(key=lambda x: x[0].info().name)
             clist.reverse()
             return clist
 
@@ -111,7 +115,9 @@ class RenderableCardListviewer(Frame):
                 inner_frame_vmargin=0.05,
                 trunk_menu_bar_textinput_width_percentage=0.6,
                 trunk_menu_bar_option_dropdown_width_percentage=0.3,
-                description_color=Colors.BLACK
+                description_color=Colors.BLACK,
+                main_list_view_state=None,
+                trunk_view_state=None
                 ):
 
         if len(groups) == 0:
@@ -190,6 +196,9 @@ class RenderableCardListviewer(Frame):
         self.scroll_down = False
         self.scroll_speed = 10
 
+        self.main_list_view_state = (main_list_view_state if main_list_view_state is not None else RenderableCardListviewer.SHOW_WITH_AMOUNT)
+        self.trunk_view_state = (trunk_view_state if trunk_view_state is not None else RenderableCardListviewer.SHOW_WITH_AMOUNT)
+
         self.rerender()
 
     def tick(self):
@@ -198,16 +207,12 @@ class RenderableCardListviewer(Frame):
 
         if self.key_pressed(pygame.K_w):
             self.scroll_up = True
-
         else:
-
             self.scroll_up = False
 
         if self.key_pressed(pygame.K_s):
             self.scroll_down = True
-
         else:
-
             self.scroll_down = False
 
 
@@ -328,6 +333,10 @@ class RenderableCardListviewer(Frame):
 
     def recalculate_main_list_positions(self):
 
+        #clearing caches#
+        self.card_render_cache_main_list = {}
+        self.text_render_cache_main_list = {}
+
         cpl = self.cards_per_line + (self.cards_per_line_added_when_trunk_not_shown if not self.trunk_shown else 0)
         cpc = self.cards_per_column + (self.cards_per_column_added_when_trunk_not_shown if not self.trunk_shown else 0)
 
@@ -349,43 +358,76 @@ class RenderableCardListviewer(Frame):
         self.cardnum_margin = 0.2
         #rendering all cards, and adding their position
         self.cardnum_height = int(self.cardnum_margin * self.main_list_cheight)
-        self.main_list_card_height = self.main_list_cheight - self.cardnum_height
+        self.main_list_card_height = 0
+        if self.main_list_view_state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
+            self.main_list_card_height = self.main_list_cheight - self.cardnum_height
+        elif self.main_list_view_state == RenderableCardListviewer.SHOW_EACH_CARD:
+            self.main_list_card_height = self.main_list_cheight
 
         cx = self.main_list_area.x + self.main_list_hseparator
         cy = self.main_list_area.y + self.main_list_vseparator
 
         idx = 0
+        count = 0
 
         self.main_list_cards_rects = {}
 
-        for cinfo, amount in self.main_list_cards:
+        for cardclass, amount in self.main_list_cards:
 
-            rrect = pygame.Rect(cx, cy, self.main_list_cwdith, self.main_list_cheight)
+            if self.main_list_view_state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
 
-            img_rect = rrect.copy()
-            img_rect.height = self.main_list_card_height
+                rrect = pygame.Rect(cx, cy, self.main_list_cwdith, self.main_list_cheight)
 
-            img_text = [f"x{amount}"]
+                img_rect = rrect.copy()
+                img_rect.height = self.main_list_card_height
 
-            text_rect = rrect.copy()
-            text_rect.y += img_rect.height
-            text_rect.height -= img_rect.height
+                img_text = [f"x{amount}"]
 
-            text_rect = graphics.apply_margins(text_rect, 0.2, 0.2)
+                text_rect = rrect.copy()
+                text_rect.y += img_rect.height
+                text_rect.height -= img_rect.height
 
-            if cy not in self.main_list_cards_rects:
-                self.main_list_cards_rects[cy] = []
+                text_rect = graphics.apply_margins(text_rect, 0.2, 0.2)
 
-            self.main_list_cards_rects[cy].append((idx, img_rect, text_rect))
+                if cy not in self.main_list_cards_rects:
+                    self.main_list_cards_rects[cy] = []
 
-            idx += 1
+                self.main_list_cards_rects[cy].append((idx, img_rect, text_rect))
 
-            cx += self.main_list_cwdith + self.main_list_hseparator
+                idx += 1
 
-            if not (idx) % cpl:
+                cx += self.main_list_cwdith + self.main_list_hseparator
 
-                cx = self.main_list_area.x + self.main_list_hseparator
-                cy += self.main_list_cheight + self.main_list_vseparator
+                if not (idx) % cpl:
+
+                    cx = self.main_list_area.x + self.main_list_hseparator
+                    cy += self.main_list_cheight + self.main_list_vseparator
+
+            elif self.main_list_view_state == RenderableCardListviewer.SHOW_EACH_CARD:
+
+                for cardcp in range(amount):
+
+                    rrect = pygame.Rect(cx, cy, self.main_list_cwdith, self.main_list_cheight)
+
+                    img_rect = rrect.copy()
+                    img_rect.height = self.main_list_card_height
+
+                    if cy not in self.main_list_cards_rects:
+                        self.main_list_cards_rects[cy] = []
+
+                    self.main_list_cards_rects[cy].append((idx, img_rect, None))
+
+                    count += 1
+
+                    cx += self.main_list_cwdith + self.main_list_hseparator
+
+                    if not (count) % cpl:
+
+                        cx = self.main_list_area.x + self.main_list_hseparator
+                        cy += self.main_list_cheight + self.main_list_vseparator
+
+                idx += 1
+
 
 
     def render_list_with_yscroll(self, img_cache, txt_cache,
@@ -402,7 +444,7 @@ class RenderableCardListviewer(Frame):
 
             for i, img_rect, text_rect in card_rects[cy]:
 
-                cinfo = card_list[i][0]
+                cinfo = card_list[i][0].info()
 
 
                 img = None
@@ -438,18 +480,20 @@ class RenderableCardListviewer(Frame):
                 self.surface.blit(img, pos)
 
                 amount = card_list[i][1]
-                trend = None
 
-                if amount in txt_cache:
-                    trend = txt_cache[amount]
-                else:
-                    trend = graphics.render_page_from_chars(self.font, [f"x{amount}"], pygame.Rect(0, 0, text_rect.width, text_rect.height),
-                                                            self.description_color, centered=True, vertical_centered=True
-                                                            )
-                    txt_cache[amount] = trend
+                if self.main_list_view_state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
+                    trend = None
 
-                for surf, pos in trend:
-                    self.surface.blit(surf, (pos[0] + text_rect.x, pos[1] + text_rect.y + yscroll))
+                    if amount in txt_cache:
+                        trend = txt_cache[amount]
+                    else:
+                        trend = graphics.render_page_from_chars(self.font, [f"x{amount}"], pygame.Rect(0, 0, text_rect.width, text_rect.height),
+                                                                self.description_color, centered=True, vertical_centered=True
+                                                                )
+                        txt_cache[amount] = trend
+
+                    for surf, pos in trend:
+                        self.surface.blit(surf, (pos[0] + text_rect.x, pos[1] + text_rect.y + yscroll))
 
 
 
