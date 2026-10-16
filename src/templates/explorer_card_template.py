@@ -40,6 +40,35 @@ class CardInfo(Renderable_Card):
         self.max_per_deck = max_per_deck
         self.activation_phases = (activation_phases if activation_phases is not None else [])
 
+    def get_info_page_parts(self, frame_dim,
+                                font=Fonts.MINECRAFT,
+                                hmargin=0, vmargin = 0,
+                                chars_per_line=50, lines_per_page=5,
+                                height_distributions=[0.1, 0.05, 0.45, 0.1, 0.25, 0.05]):#equals: headline area, distance, card image area, distance, textbox area, distance)
+
+        page_parts = Renderable_Card.get_info_page_parts(self, frame_dim, dont, hmargin, vmargin, chars_per_line, lines_per_page, height_distributions)
+
+        textbox_ref = page_parts[2][0]
+
+        tag_headline_page = [[[("Tags", Colors.STANDARD_TEXT_COLOR)]]]
+
+        tag_pages = []
+
+        for tag in self.tags:
+
+            strag = str(tag)
+            lines = strag.splitlines()
+            for line in lines:
+                tag_pages.append((line, tag.tag_color))
+
+        tag_pages = graphics.page_by_chars_color(tag_pages, line_length=chars_per_line, paragraph_length=lines_per_page)
+
+        last_page = tag_pages[-1]
+        if len(last_page) < lines_per_page:
+            last_page.extend([[]] * (lines_per_page - len(last_page)))
+
+        return page_parts
+
 
 class Explorer_Card_Template(PlaysetEntity):
 
