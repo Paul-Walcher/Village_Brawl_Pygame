@@ -16,22 +16,11 @@ class IntroFrame(Frame):
 
 
         self.num_headlines = 20
-        self.village_brawl_headlines = [graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE + i, "Village Brawl", Colors.WHITE) for i in range(self.num_headlines)]
-        self.village_brawl_pos = [(graphics.center_horizontally(self.village_brawl_headlines[i], pygame.Rect(0, 0, self.width, self.height)), self.height // 20) for i in range(self.num_headlines)]
 
         self.headline_index = 0
         self.clock = clock.Clock()
         self.headline_change_time = 50#ms
         self.headline_index_going_right = True
-
-        self.center_image_size = (self.height // 2, self.height // 2)
-        self.center_image = graphics.render_image(random.choice(INTRO_IMAGES), self.center_image_size)
-        self.center_image_pos = (graphics.center_horizontally(self.center_image, pygame.Rect(0, 0, self.width, self.height)),
-                                graphics.center_vertically(self.center_image, pygame.Rect(0, self.height // 4, self.width, self.height//4 * 3))
-        )
-
-        self.press_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.SMALL, "Press enter to continue...", Colors.WHITE)
-        self.press_text_pos = (20, self.height - 20)
 
         self.image_clock = clock.Clock()
         self.image_alpha = 255
@@ -46,6 +35,24 @@ class IntroFrame(Frame):
         self.entry_delay_clock.start()
 
         self.enter_intro_menu = False
+
+        self.rerender()
+
+    def rerender(self):
+
+        self.widgets = []
+
+        self.village_brawl_headlines = [graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE + i, "Village Brawl", Colors.WHITE) for i in range(self.num_headlines)]
+        self.village_brawl_pos = [(graphics.center_horizontally(self.village_brawl_headlines[i], pygame.Rect(0, 0, self.width, self.height)), self.height // 20) for i in range(self.num_headlines)]
+
+        self.center_image_size = (self.height // 2, self.height // 2)
+        self.center_image = graphics.render_image(random.choice(INTRO_IMAGES), self.center_image_size)
+        self.center_image_pos = (graphics.center_horizontally(self.center_image, pygame.Rect(0, 0, self.width, self.height)),
+                                graphics.center_vertically(self.center_image, pygame.Rect(0, self.height // 4, self.width, self.height//4 * 3))
+        )
+
+        self.press_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.SMALL, "Press enter to continue...", Colors.WHITE)
+        self.press_text_pos = (20, self.height - 20)
 
 
     def bind_events(self):

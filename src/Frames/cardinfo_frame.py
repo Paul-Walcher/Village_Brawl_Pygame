@@ -42,9 +42,6 @@ class CardinfoFrame(Frame):
         self.chars_per_line = chars_per_line
         self.lines_per_page = lines_per_page
 
-
-        self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-
         self.full_image_shown = False
 
         self.slide_duration = slide_duration
@@ -110,6 +107,10 @@ class CardinfoFrame(Frame):
 
 
     def rerender(self):
+
+        self.widgets = []
+        
+        self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
         self.page_parts = self.cardinfo.get_info_page_parts(pygame.Rect(0, 0, self.width, self.height),
                                                         font=self.font,

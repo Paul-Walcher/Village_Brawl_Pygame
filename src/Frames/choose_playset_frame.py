@@ -22,11 +22,6 @@ class ChoosePlaysetFrame(Frame):
 
         self.playsets_shown = 5
 
-        self.headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE, "Playsets", Colors.CYAN)
-        self.headline_pos = (graphics.center_horizontally(self.headline, self.frame_rect), self.height // 20)
-
-        self.playset_texts = [] #list of tuples (playset font, position)
-
         self.back_text = None
         self.back_pos = None
 
@@ -37,6 +32,17 @@ class ChoosePlaysetFrame(Frame):
 
         self.parent_frame_flag = False
         self.choose_save_name_flag = False
+
+        self.rerender()
+
+    def rerender(self):
+
+        self.widgets = []
+
+        self.headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE, "Playsets", Colors.CYAN)
+        self.headline_pos = (graphics.center_horizontally(self.headline, self.frame_rect), self.height // 20)
+
+        self.playset_texts = [] #list of tuples (playset font, position)
 
         self.render_text()
 

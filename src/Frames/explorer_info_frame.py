@@ -41,22 +41,6 @@ class ExplorerInfoFrame(Frame):
         self.slider_labels = [["Deck"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"], ["Villagers"]]
 
 
-        self.headline_area = pygame.Rect(0, 0, self.width, self.height // 8)
-        self.explorer_image_area = pygame.Rect(0, self.headline_area.height + self.headline_area.y, self.width, self.height // 8 * 3)
-        self.textbox_area = pygame.Rect(0, self.explorer_image_area.y + self.explorer_image_area.height, self.width, self.height // 16 * 3)
-        menu_slider_wmargin = self.width//5
-        menu_slider_hmargin = self.height // 16
-        self.menu_slider_area = pygame.Rect(menu_slider_wmargin, self.textbox_area.y + self.textbox_area.height + menu_slider_hmargin,
-                                            self.width - 2*menu_slider_wmargin, self.height // 16 * 5 - 2*menu_slider_hmargin)
-
-        self.f_outline_sp = self.focused_outline_size / self.menu_slider_area.width
-
-        self.actual_slider_area = graphics.apply_margins(self.menu_slider_area, self.f_outline_sp + self.f_outline_d, self.f_outline_sp + self.f_outline_d)
-
-
-
-        self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-
         self.key_delay = 200#ms
         self.key_clock = Clock()
 
@@ -132,6 +116,24 @@ class ExplorerInfoFrame(Frame):
 
 
     def rerender(self):
+
+        self.widgets = []
+
+        self.headline_area = pygame.Rect(0, 0, self.width, self.height // 8)
+        self.explorer_image_area = pygame.Rect(0, self.headline_area.height + self.headline_area.y, self.width, self.height // 8 * 3)
+        self.textbox_area = pygame.Rect(0, self.explorer_image_area.y + self.explorer_image_area.height, self.width, self.height // 16 * 3)
+        menu_slider_wmargin = self.width//5
+        menu_slider_hmargin = self.height // 16
+        self.menu_slider_area = pygame.Rect(menu_slider_wmargin, self.textbox_area.y + self.textbox_area.height + menu_slider_hmargin,
+                                            self.width - 2*menu_slider_wmargin, self.height // 16 * 5 - 2*menu_slider_hmargin)
+
+        self.f_outline_sp = self.focused_outline_size / self.menu_slider_area.width
+
+        self.actual_slider_area = graphics.apply_margins(self.menu_slider_area, self.f_outline_sp + self.f_outline_d, self.f_outline_sp + self.f_outline_d)
+
+
+
+        self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()

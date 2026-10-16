@@ -25,6 +25,12 @@ class ShowExplorerStartingCardsFrame(Frame):
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
 
+        self.rerender()
+
+    def rerender(self):
+
+        self.widgets = []
+
         self.card = self.modules.mappings.explorer_cards_mappings[self.modules.enums.ExplorerCardEnums.SMALL_REST]
         self.cardinfo = self.card.info()
 
@@ -37,11 +43,6 @@ class ShowExplorerStartingCardsFrame(Frame):
                                                         )
 
         self.widgets.append(self.cardlistviewer)
-
-        self.rerender()
-
-    def rerender(self):
-        pass
 
     def bind_events(self):
         pass

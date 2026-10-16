@@ -26,28 +26,7 @@ class ChooseExplorerFrame(Frame):
         self.explorer_infos = [ref.info() for ref in self.explorer_refs]
 
         self.explorer_index = (0 if self.stack.size() == 0 else self.stack.pop())
-        self.explorer_dimensions = (int(self.height//4 *3 * 0.714), self.height//4 * 3)
 
-        self.headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE,
-                                            self.explorer_infos[self.explorer_index].name, self.explorer_infos[self.explorer_index].name_color
-                                            )
-        self.headline_pos = (graphics.center_horizontally(self.headline, self.frame_dim), self.height // 20)
-
-        self.headline_size = self.height // 20 + self.headline.get_height()
-
-        self.explorer_center_frame = pygame.Rect(0, self.headline_size, self.width, self.height-self.headline_size)
-
-        self.explorer_image = graphics.render_image(self.explorer_infos[self.explorer_index].card_image_path, self.explorer_dimensions)
-        self.explorer_image_pos = graphics.get_center_with_surface(self.explorer_image, self.explorer_center_frame)
-
-        self.info_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.SMALL, "Press i to see info", Colors.WHITE)
-        self.info_text_pos = (self.width - self.width // 20 - self.info_text.get_width(), self.height - self.height//20 - self.info_text.get_height())
-
-        self.second_headline = None
-        self.second_headline_pos = (0, 0)
-
-        self.second_explorer_image = None
-        self.second_explorer_image_pos = (0, 0)
 
         self.rotating_left = False
         self.rotating_right = False
@@ -70,6 +49,35 @@ class ChooseExplorerFrame(Frame):
         self.info_frame_clock = Clock()
         self.info_frame_state = self.INFO_FRAME_INACTIVE
         self.info_frame = None
+
+        self.rerender()
+
+    def rerender(self):
+
+        self.widgets = []
+
+        self.explorer_dimensions = (int(self.height//4 *3 * 0.714), self.height//4 * 3)
+
+        self.headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE,
+                                            self.explorer_infos[self.explorer_index].name, self.explorer_infos[self.explorer_index].name_color
+                                            )
+        self.headline_pos = (graphics.center_horizontally(self.headline, self.frame_dim), self.height // 20)
+
+        self.headline_size = self.height // 20 + self.headline.get_height()
+
+        self.explorer_center_frame = pygame.Rect(0, self.headline_size, self.width, self.height-self.headline_size)
+
+        self.explorer_image = graphics.render_image(self.explorer_infos[self.explorer_index].card_image_path, self.explorer_dimensions)
+        self.explorer_image_pos = graphics.get_center_with_surface(self.explorer_image, self.explorer_center_frame)
+
+        self.info_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.SMALL, "Press i to see info", Colors.WHITE)
+        self.info_text_pos = (self.width - self.width // 20 - self.info_text.get_width(), self.height - self.height//20 - self.info_text.get_height())
+
+        self.second_headline = None
+        self.second_headline_pos = (0, 0)
+
+        self.second_explorer_image = None
+        self.second_explorer_image_pos = (0, 0)
 
     def initialize_info_frame(self):
 

@@ -13,6 +13,16 @@ class TestFrame(EmptyFrame):
     def __init__(self, data, frame_dim, parent_frame=None):
         super().__init__(data, frame_dim, parent_frame)
 
+        self.rerender()
+
+
+
+        self.key_clock = Clock()
+        self.key_delay = 300#ms
+
+        self.key_clock.start()
+
+    def rerender(self):
         self.frame_enum = FrameEnums.TEST_FRAME
 
         self.dropdown_frame = pygame.Rect(self.x + 100, self.y + 100, 200, 500)
@@ -24,13 +34,6 @@ class TestFrame(EmptyFrame):
                                         background_color=Colors.WHITE,
                                         text_color=Colors.RED
                                         )
-
-
-
-        self.key_clock = Clock()
-        self.key_delay = 300#ms
-
-        self.key_clock.start()
 
     def tick(self):
 

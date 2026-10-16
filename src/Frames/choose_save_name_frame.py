@@ -15,9 +15,6 @@ class ChooseSaveNameFrame(Frame):
 
         super().__init__(FrameEnums.CHOOSE_SAVE_NAME_FRAME, data, frame_dim, parent_frame)
 
-
-        center_pos = (self.width // 2, self.height // 2)
-
         self.highlighted_index = -1
         self.is_typing = False
 
@@ -27,8 +24,6 @@ class ChooseSaveNameFrame(Frame):
         self.savefile_name_font = None
         self.savefile_name_font_pos = None
 
-        self.frame_rect = pygame.Rect(0, 0, self.width, self.height)
-
         self.back_text = None
         self.back_pos = None
 
@@ -37,6 +32,19 @@ class ChooseSaveNameFrame(Frame):
 
         self.headline = None
         self.headline_pos = None
+
+
+        self.go_back_flag = False
+        self.load_playset_flag = False
+
+        self.rerender()
+
+    def rerender(self):
+
+        center_pos = (self.width // 2, self.height // 2)
+
+        self.widgets = []
+        self.frame_rect = pygame.Rect(0, 0, self.width, self.height)
 
         self.typing_frame = pygame.Surface((self.width // 2, self.height // 4))
         self.typing_frame.fill(Colors.WHITE)
@@ -49,9 +57,6 @@ class ChooseSaveNameFrame(Frame):
         self.typing_selected_frame = pygame.Surface(selected_frame_size)
         self.typing_selected_frame.fill(Colors.WHITE)
         self.typing_selected_frame_pos = graphics.center_at(self.typing_selected_frame, center_pos)
-
-        self.go_back_flag = False
-        self.load_playset_flag = False
 
         self.render_text()
 

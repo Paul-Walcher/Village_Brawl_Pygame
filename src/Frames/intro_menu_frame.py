@@ -23,17 +23,20 @@ class IntroMenuFrame(Frame):
         self.back_text = None
         self.back_pos = None
 
+        self.choose_playset_flag = False
+        self.go_back_flag = False
+
+        self.rerender()
+
+    def rerender(self):
+
         self.text_distance = self.height // 10
 
         self.chosen_index = -1
 
         self.frame_rect = pygame.Rect(0, 0, self.width, self.height)
 
-        self.choose_playset_flag = False
-        self.go_back_flag = False
-
         self.render_highlighted()
-
 
     def render_highlighted(self):
 
