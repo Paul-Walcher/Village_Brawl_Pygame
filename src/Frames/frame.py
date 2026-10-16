@@ -123,6 +123,8 @@ class Frame(EventQueueManager):
                         self.frame_dim.y + self.frame_dim.h // 2
                         )
 
+        self.__key_scancodes = {}
+
         self.widgets = [] #own widgets
 
         #adding escape key
@@ -257,6 +259,12 @@ class Frame(EventQueueManager):
     def bind_events(self):
         pass
 
+    def key_pressed(self, scancode):
+        if scancode not in self.__key_scancodes:
+            return False
+        else:
+            return self.__key_scancodes[scancode]
+
     def manage_pygame_events(self):
 
         putback_events = []
@@ -264,6 +272,20 @@ class Frame(EventQueueManager):
         for event in pygame.event.get():
             processed = True
             matched_any = False
+
+            if event.type == pygame.KEYDOWN:
+
+                if event.key not in self.__key_scancodes:
+                    self.__key_scancodes[event.key] = True
+
+                self.__key_scancodes[event.key] = True
+
+            if event.type == pygame.KEYUP:
+
+                if event.key not in self.__key_scancodes:
+                    self.__key_scancodes[event.key] = False
+
+                self.__key_scancodes[event.key] = False
 
             for ecallback in self.__event_callbacks:
 

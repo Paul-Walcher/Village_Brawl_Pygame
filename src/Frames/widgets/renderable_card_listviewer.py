@@ -34,6 +34,9 @@ class RenderableCardListviewer(Frame):
     MAIN_LIST_FOCUSED = 1
     TRUNK_FOCUSED = 2
     TRUNK_MENU_BAR_FOCUSED = 3
+    DROPDOWN_MENU_FOCUSED = 4
+    TRUNK_SLIDING_IN = 5
+    TRUNK_SLIDING_OUT = 6
 
     class SortingFunctions:
 
@@ -181,7 +184,7 @@ class RenderableCardListviewer(Frame):
 
         self.key_clock = Clock()
         self.key_clock.start()
-        self.key_delay = 200
+        self.key_delay = 20
 
         self.scroll_up = False
         self.scroll_down = False
@@ -191,48 +194,30 @@ class RenderableCardListviewer(Frame):
 
     def tick(self):
 
-        putback = []
-        for event in pygame.event.get():
+        self.manage_pygame_events()
 
-            should_putback = True
+        if self.key_pressed(pygame.K_w):
+            self.scroll_up = True
 
-            if event.type == pygame.KEYDOWN:
-                if self.key_clock.elapsed() >= self.key_delay:
+        else:
 
-                    if event.key == pygame.K_w:
-                        should_putback = False
-                        self.scroll_up = True
-                        self.key_clock.start()
+            self.scroll_up = False
 
-                    if event.key == pygame.K_s:
-                        should_putback = False
-                        self.scroll_down = True
-                        self.key_clock.start()
+        if self.key_pressed(pygame.K_s):
+            self.scroll_down = True
 
-            if event.type == pygame.KEYUP:
-                if self.key_clock.elapsed() >= self.key_delay:
+        else:
 
-                    if event.key == pygame.K_w:
-                        should_putback = False
-                        self.scroll_up = False
-                        self.key_clock.start()
+            self.scroll_down = False
 
-                    if event.key == pygame.K_s:
-                        should_putback = False
-                        self.scroll_down = False
-                        self.key_clock.start()
 
-            if should_putback:
-                putback.append(event)
-
-        for event in putback:
-            pygame.event.post(event)
-
-        if self.scroll_up:
+        if self.scroll_up and self.key_clock.elapsed() > self.key_delay:
             self.main_list_yscroll += self.scroll_speed
             self.main_list_yscroll = min(self.main_list_yscroll, 0)
-        if self.scroll_down:
+            self.key_clock.start()
+        if self.scroll_down and self.key_clock.elapsed() > self.key_delay:
             self.main_list_yscroll -= self.scroll_speed
+            self.key_clock.start()
 
 
     def rerender(self):
