@@ -6,6 +6,9 @@ from clock import Clock
 
 class Frame(EventQueueManager):
 
+    STANDARD_FOCUS_GROUP = "STANDARD FOCUS GROUP"
+    FOCUS_GROUPS = {}
+
     class SlideHandler:
 
         def __init__(self, x_offset, y_offset, slide_positions, slide_duration=800):
@@ -74,7 +77,9 @@ class Frame(EventQueueManager):
         EXIT_FRAME = 0 #signal to exit the current frame
         EXIT_PARENT_FRAME = 1
 
-    def __init__(self, frame_enum, data=None, frame_dim=None, parent_frame=None, max_parent_frames=10):
+    def __init__(self, frame_enum, data=None, frame_dim=None, parent_frame=None, max_parent_frames=10,
+                focus_group=None, has_focus=True
+                ):
 
         self.frame_enum = frame_enum
         self.data = (data if data is not None else {})
@@ -89,7 +94,13 @@ class Frame(EventQueueManager):
         self.slide_endpos = None
         self.slide_startpos = None
 
-        self._has_focus = True
+        self._has_focus = has_focus
+
+        self.focus_group = focus_group
+        if self.focus_group is None:
+            self.focus_group = Frame.STANDARD_FOCUS_GROUP
+
+        self.has_focus = has_focus
 
         self.__event_callbacks = []
         self.__exit_flag_raised = False
@@ -187,6 +198,27 @@ class Frame(EventQueueManager):
     def has_focus(self, x):
         if x != self._has_focus:
             self._has_focus = x
+
+            if self.focus_group is not None:
+
+                if self.focus_group not in Frame.FOCUS_GROUPS:
+                    Frame.FOCUS_GROUPS[self.focus_group] = None
+
+                fd = Frame.FOCUS_GROUPS[self.focus_group]
+
+                if not x:
+                    if fd == self:
+                        Frame.FOCUS_GROUPS[self.focus_group] = None
+                else:
+
+                    if fd is not None:
+                        fd.has_focus = False
+
+                    Frame.FOCUS_GROUPS[self.focus_group] = self
+
+
+
+
             self.clear_event_callbacks()
             self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT, key_delay=0)
             self.bind_events()
