@@ -150,6 +150,7 @@ class RenderableCardListviewer(Frame):
         self.text_render_cache_main_list = {}
 
         self.label_vmargin = label_vmargin
+        self.label_name_width_percentage = 0.8
         self.label_color = label_color
         self.label_alpha = label_alpha
 
@@ -316,6 +317,7 @@ class RenderableCardListviewer(Frame):
         self.label_surface_pos = (self.inner_area.x, self.inner_area.y)
 
         self.label_frame = self.main_list_area.copy()
+        self.label_frame.width = int(self.label_name_width_percentage * self.label_frame.width)
         self.label_frame.height = self.label_height
         self.label_frame = graphics.apply_margins(self.label_frame, 0.05, 0.2)
 
@@ -324,11 +326,29 @@ class RenderableCardListviewer(Frame):
         self.label_text = graphics.render_text(self.font, fsize, self.shown_group, self.group_name_color)
         self.label_pos = graphics.get_center_with_surface(self.label_text, self.label_frame)
 
+
+        gcards = self.groups[self.shown_group]["cardlist"]
+
+        n_cards = sum(gcards.values())
+
+        self.decksize_frame = pygame.Rect(self.label_frame.width + self.label_frame.x, self.label_frame.y,
+                                    int((1.0 - self.label_name_width_percentage) * self.label_frame.width),
+                                    self.label_height
+                                    )
+        self.decksize_frame = graphics.apply_margins(self.decksize_frame, 0.2, 0.2)
+
+        decksize_pages = ["Cards:", str(n_cards)]
+
+        self.mainlist_decksize_rendered = graphics.render_page_from_chars(self.font, decksize_pages, self.decksize_frame,
+                                                                            text_color=self.group_name_color,
+                                                                            centered=True, vertical_centered=True
+                                                                        )
+
+
         self.main_list_area.y += self.label_height
         self.main_list_area.height -= self.label_height
 
         self.recalculate_main_list_positions()
-
         self.prerender()
 
     def recalculate_main_list_positions(self):
@@ -519,6 +539,8 @@ class RenderableCardListviewer(Frame):
 
         self.surface.blit(self.label_surface, self.label_surface_pos)
         self.surface.blit(self.label_text, self.label_pos)
+        for surf, pos in self.mainlist_decksize_rendered:
+            self.surface.blit(surf, pos)
 
     def render(self, screen):
         self.prerender()
