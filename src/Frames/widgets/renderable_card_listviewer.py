@@ -327,6 +327,20 @@ class RenderableCardListviewer(Frame):
                     self.down_pressed()
                     self.event_clock.start()
 
+                if (self.key_pressed(pygame.K_LCTRL)):
+
+                    if self.key_pressed(pygame.K_v):
+
+                        if self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+
+                            if self.main_list_view_state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
+                                self.main_list_view_state = RenderableCardListviewer.SHOW_EACH_CARD
+                            elif self.main_list_view_state == RenderableCardListviewer.SHOW_EACH_CARD:
+                                self.main_list_view_state = RenderableCardListviewer.SHOW_WITH_AMOUNT
+
+                            self.event_clock.start()
+                            self.rerender()
+
             if (self.key_pressed(KeyAlternatives.SHOW_IMAGE_KEY)):
 
                 if self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
@@ -357,6 +371,9 @@ class RenderableCardListviewer(Frame):
 
 
     def rerender(self):
+
+        self.main_list_selected_index = 0
+        self.trunk_selected_index = 0
 
         self.full_image_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
@@ -518,6 +535,7 @@ class RenderableCardListviewer(Frame):
 
         cx = self.main_list_area.x + self.main_list_hseparator
         cy = self.main_list_area.y + self.main_list_vseparator
+        self.main_list_yscroll = 0
         self.main_list_xstart = cx
         self.main_list_ystart = cy
 
