@@ -121,7 +121,7 @@ class RenderableCardListviewer(Frame):
         self.full_cardlist = full_cardlist.copy()
         self.groups = deepcopy(groups)
         #adding the trunk group
-        self.groups["Full Cardlist"] = {"cardlist": self.full_cardlist, "mutable": False}
+        self.groups["Full Cardlist"] = {"cardlist": self.full_cardlist, "mutable": False, "is_copylist": True}
         self.shown_group = (shown_group if shown_group is not None else list(self.groups.keys())[0])
         self.group_name_color = group_name_color
         self.max_group_number = max_group_number

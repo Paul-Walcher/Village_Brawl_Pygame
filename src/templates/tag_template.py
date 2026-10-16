@@ -3,16 +3,19 @@ from abc import abstractmethod, ABC
 from templates.type_enums import TypeEnums
 
 class Tag_Template(ABC):
+
     def __init__(self, type_enum, own_enum, tag_color=Colors.STANDARD_TEXT_COLOR):
 
         self.type_enum = type_enum
         self.own_enum = own_enum
 
+        self.tag_tab = f" "*5
+        self.full_tag_tab = " " * len(f"{self.own_enum}:") + self.tag_tab
         self.tag_color = tag_color
 
     def __repr__(self):
         tab_in = " "*len(self.own_enum)
-        return f"{self.own_enum}: -"
+        return f"{self.own_enum}:"
 
 class General_Card_Tag_Template(Tag_Template):
 

@@ -22,7 +22,7 @@ class Healing_Tag(General_Card_Tag_Template):
         self.healing_factor = healing_factor
 
     def __repr__(self):
-        return f"{self.own_enum}: Healing Factor = {self.healing_factor}"
+        return f"{self.own_enum}: {self.tag_tab}Healing Factor = {self.healing_factor}"
 
 class Healing_Token(General_Card_Tag_Template):
 
@@ -38,7 +38,7 @@ class Healing_Token_Generator(General_Card_Tag_Template):
         self.amount_generated = amount_generated
 
     def __repr__(self):
-        return f"{self.own_enum}: Amount Generated = {self.amount_generated}"
+        return f"{self.own_enum}: {self.tag_tab}Amount Generated = {self.amount_generated}"
 
 class Healing_Token_Consumer(General_Card_Tag_Template):
 
@@ -48,7 +48,7 @@ class Healing_Token_Consumer(General_Card_Tag_Template):
         self.amount_consumed = amount_consumed
 
     def __repr__(self):
-        return f"{self.own_enum}: Amount Consumed = {self.amount_consumed}"
+        return f"{self.own_enum}: {self.tag_tab}Amount Consumed = {self.amount_consumed}"
 
 class Item_Generator(General_Card_Tag_Template):
 
@@ -58,7 +58,7 @@ class Item_Generator(General_Card_Tag_Template):
         self.items_generated = items_generated
 
     def __repr__(self):
-        return f"{self.own_enum}: Items Generated = {self.items_generated}"
+        return f"{self.own_enum}: {self.tag_tab}Items Generated = {self.items_generated}"
 
 class Item_Consumer(General_Card_Tag_Template):
 
@@ -68,4 +68,4 @@ class Item_Consumer(General_Card_Tag_Template):
         self.items_consumed = items_consumed
 
     def __repr__(self):
-        return f"{self.own_enum}: Items Consumed = {self.amount_generated}"
+        return f"{self.own_enum}: {self.tag_tab}Items Consumed = {self.amount_generated}"

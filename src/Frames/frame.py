@@ -130,6 +130,9 @@ class Frame(EventQueueManager):
 
         self.bind_events()
 
+    def __del__(self):
+        self.raise_exit_flag()
+
     @property
     def frame_dim(self):
         return self._frame_dim
@@ -217,8 +220,6 @@ class Frame(EventQueueManager):
                     Frame.FOCUS_GROUPS[self.focus_group] = self
 
 
-
-
             self.clear_event_callbacks()
             self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT, key_delay=0)
             self.bind_events()
@@ -285,7 +286,7 @@ class Frame(EventQueueManager):
                 res = ecallback(event)
 
                 if res == Frame.CallbackEvent.EXIT:
-                    self.__exit_flag_raised = True
+                    self.raise_exit_flag()
 
                 if res == Frame.CallbackEvent.FAILURE:
                     processed = False
@@ -360,6 +361,15 @@ class Frame(EventQueueManager):
         cb = Frame.CallbackEvent(pygame.KEYDOWN, data, putback, lambda event, d: self.__key_callback_wrapper(event, key, d, putback, func, key_delay))
         self.__event_callbacks.append(cb)
         return cb
+
+
+    def raise_exit_flag(self, next_focused_frame=None):
+        self.__exit_flag_raised = True
+        if next_focused_frame is None:
+            next_focused_frame = self.parent_frame
+        if next_focused_frame is not None and next_focused_frame.focus_group == self.focus_group:
+            next_focused_frame.has_focus = True
+        self.has_focus = False
 
 
     def exit_flag_raised(self):

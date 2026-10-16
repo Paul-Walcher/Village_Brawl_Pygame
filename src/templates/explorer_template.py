@@ -135,6 +135,7 @@ class ExplorerInfo(Renderable_Card):
             lines = strag.splitlines()
             for line in lines:
                 tag_pages.append((line, tag.tag_color))
+                tag_pages.append(graphics.NL)
 
         tag_pages = graphics.page_by_chars_color(tag_pages, line_length=chars_per_line, paragraph_length=lines_per_page)
 
