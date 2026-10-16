@@ -124,6 +124,14 @@ class Textbox(Frame):
                                                             self.text_color, centered=True, line_margin=self.line_margin
                                                             )
 
+
+    def add_pages(self, pages):
+        self.pages.extend(pages)
+        self.n_pages = len(self.pages)
+        self.page_index %= self.n_pages
+
+        self.prerender()
+
     def show_pagenumber(self):
         self.pagenumber_shown = True
         self.prerender()

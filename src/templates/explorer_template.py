@@ -123,6 +123,23 @@ class ExplorerInfo(Renderable_Card):
                                                         )
 
         tbox = page_parts[2][1][0]
+        textbox_ref = page_parts[2][0]
+
+        tag_headline_page = [[[("Tags", Colors.STANDARD_TEXT_COLOR)]]]
+
+        tag_pages = []
+
+        for tag in self.tags:
+
+            tag_pages.append((str(tag), tag.tag_color))
+
+        tag_pages = graphics.page_by_chars_color(tag_pages, line_length=chars_per_line, paragraph_length=lines_per_page)
+
+        textbox_ref.add_pages(tag_headline_page)
+        textbox_ref.add_pages(tag_pages)
+
+
+
 
         rendered_stats_page = graphics.render_page_from_chars_color(
                                     font,
