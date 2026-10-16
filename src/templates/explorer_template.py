@@ -131,9 +131,16 @@ class ExplorerInfo(Renderable_Card):
 
         for tag in self.tags:
 
-            tag_pages.append((str(tag), tag.tag_color))
+            strag = str(tag)
+            lines = strag.splitlines()
+            for line in lines:
+                tag_pages.append((line, tag.tag_color))
 
         tag_pages = graphics.page_by_chars_color(tag_pages, line_length=chars_per_line, paragraph_length=lines_per_page)
+
+        last_page = tag_pages[-1]
+        if len(last_page) < lines_per_page:
+            last_page.extend([[]] * (lines_per_page - len(last_page)))
 
         textbox_ref.add_pages(tag_headline_page)
         textbox_ref.add_pages(tag_pages)

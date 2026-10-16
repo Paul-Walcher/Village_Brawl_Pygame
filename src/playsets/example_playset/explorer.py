@@ -41,7 +41,7 @@ class Basic_Explorer(Explorer_Template):
         einfo.standard_image_path = os.path.join(standard_asset_path, "Basic_Explorer_Standard.png")
 
 
-        einfo.tags = []
+        einfo.tags = [tags.Healing_Tag(10)]
 
         einfo.lives = 10
         einfo.inventory_size = 10.0
