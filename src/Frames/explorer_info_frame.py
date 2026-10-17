@@ -248,7 +248,7 @@ class ExplorerInfoFrame(Frame):
                     return secframe
                 else:
 
-                    eframe = CardinfoFrame(self.explorer_info, data=None, frame_dim=pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT), parent_frame=self)
+                    eframe = TestFrame(data=None, frame_dim=pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT), parent_frame=self)
                     return eframe
 
         return self

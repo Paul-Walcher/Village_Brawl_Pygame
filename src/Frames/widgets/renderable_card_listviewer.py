@@ -30,21 +30,24 @@ Create a mutable trunk group in the groups
 
 class RenderableCardListviewer(Frame):
 
-    NOTHING_FOCUSED = 0
-    MAIN_LIST_FOCUSED = 1
-    TRUNK_FOCUSED = 2
-    TRUNK_MENU_BAR_FOCUSED = 3
-    DROPDOWN_MENU_FOCUSED = 4
-    TRUNK_SLIDING_IN = 5
-    TRUNK_SLIDING_OUT = 6
+    NOTHING_FOCUSED = 0 #nothing is focused
+    MAIN_LIST_FOCUSED = 1 #the cards in the list are focused
+    MENU_BAR_FOCUSED = 2 #the menu bar is focused
+    DROPDOWN_MENU_FOCUSED = 3 #means the dropdown menu is shown
+    SEARCHBAR_FOCUSED = 4 #the textinput is focused
+    GROUP_SELECTION = 5 #displays the groups available (Should show if a group is a copy group or not)
+    FULL_IMAGE_SHOWN = 6 #if the main list is focused, the selected image is shown on fullscreen
 
-    FULL_IMAGE_SHOWN_MAIN_LIST = 7
-    FULL_IMAGE_SHOWN_TRUNK = 8
     #view states
     SHOW_WITH_AMOUNT = 100
     SHOW_EACH_CARD = 101
 
     class SortingFunctions:
+
+        """
+        Functions to sort cardlists.
+        Each cardlist is: [(RenderableCard (Class), amount)]
+        """
 
         @staticmethod
         def no_order(cardlist):

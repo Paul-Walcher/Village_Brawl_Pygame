@@ -30,5 +30,6 @@ class Gamehandler:
                 self.current_frame = frame_back
 
 
+            self.screen.fill((0, 0, 0))
             self.current_frame.render(self.screen)
             pygame.display.flip()

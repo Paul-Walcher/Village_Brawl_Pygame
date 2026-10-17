@@ -4,6 +4,7 @@ from Frames.empty_frame import EmptyFrame
 from Frames.frame_enums import FrameEnums
 
 from Frames.widgets.dropdown_menu import DropdownMenu
+from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu
 from constants import Colors, KeyAlternatives
 from clock import Clock
 import time
@@ -23,17 +24,27 @@ class TestFrame(EmptyFrame):
         self.key_clock.start()
 
     def rerender(self):
-        self.frame_enum = FrameEnums.TEST_FRAME
 
-        self.dropdown_frame = pygame.Rect(self.x + 100, self.y + 100, 200, 500)
+        self.dropdown_frame = pygame.Rect(self.x + 100, self.y + 100, 800, 500)
 
         self.surface = pygame.Surface((self.frame_dim.w, self.frame_dim.h))
 
-        self.dropdown = DropdownMenu(   self.dropdown_frame,
-                                        [["Line 1"], ["L1", "and L2"], ["DDD", "DDD", "DDD"]],
-                                        background_color=Colors.WHITE,
-                                        text_color=Colors.RED
-                                        )
+        options = {
+                    ("line 1", "line 2"): {
+                                                ("E",): None,
+                                                ("RT", "TZ", "IO"): None
+                                            },
+                    ("LINE",): None,
+                    ("JJ", "JJ", "JJ", "JJ"): None
+
+                    }
+
+        self.dropdown = ExpandableDropdownMenu(     self.dropdown_frame,
+                                                    options,
+                                                    background_color=Colors.WHITE,
+                                                    text_color=Colors.RED,
+                                                    outline_color=Colors.BLUE
+                                                    )
 
     def tick(self):
 
@@ -67,7 +78,6 @@ class TestFrame(EmptyFrame):
 
         self.surface.fill(Colors.BLACK)
 
-        for surf, pos in self.dropdown.get_surfaces_with_position():
-            self.surface.blit(surf, pos)
+        self.dropdown.render(self.surface)
 
         screen.blit(self.surface, (self.x, self.y))

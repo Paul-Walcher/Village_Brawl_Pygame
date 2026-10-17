@@ -211,10 +211,6 @@ class DropdownMenu(Frame):
 
         self.surface.fill(self.background_color)
 
-        #rendering outline
-        if self.outline_size > 0:
-            pygame.draw.rect(self.surface, self.outline_color, self.frame_dim, width=self.outline_size)
-
         for i in range(self.n_options):
 
             box, _1, _2 = self.boxframes[i]
@@ -223,13 +219,13 @@ class DropdownMenu(Frame):
             pygame.draw.rect(self.surface, bcolor, box)
 
         #drawing the lines#
-        lwidth = int(self.highlight_inside_frame_dim.width * 0.8)
-        lstart = int(self.highlight_inside_frame_dim.width * 0.1)
+        lwidth = int(self.highlight_inside_frame_dim.width * 1.0)
+        lstart = int(self.highlight_inside_frame_dim.width * 0.0)
 
         for i in range(1, self.n_options):
 
             cy = (self.highlight_inside_frame_dim.y - self.y) + i*self.option_box_height
-            pygame.draw.line(self.surface, self.line_color, (lstart, cy), (lstart + lwidth, cy))
+            pygame.draw.line(self.surface, self.line_color, (lstart, cy), (lstart + lwidth, cy), width=int(0.025 * self.option_box_height))
 
         for i in range(self.n_options):
             if (i == self.selected_index):
@@ -238,6 +234,10 @@ class DropdownMenu(Frame):
             else:
                 for text, pos in self.rendered_texts[i]:
                     self.surface.blit(text, pos)
+
+        #rendering outline
+        if self.outline_size > 0:
+            pygame.draw.rect(self.surface, self.outline_color, pygame.Rect(0, 0, self.width, self.height), width=self.outline_size)
 
 
 
@@ -252,7 +252,7 @@ class DropdownMenu(Frame):
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
         self.highlight_inside_frame_dim = pygame.Rect(self.x + self.outline_size, self.y + self.outline_size,
-                                                        self.width + 2*self.outline_size, self.height + 2*self.outline_size)
+                                                        self.width - 2*self.outline_size, self.height - 2*self.outline_size)
 
         self.n_options = len(self.options)
 
