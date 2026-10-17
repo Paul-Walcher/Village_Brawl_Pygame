@@ -314,7 +314,7 @@ class Frame(EventQueueManager):
             return cframe._parent_frame_list.copy()
         else:
             back_list = self.__cutoff_parent_frames(cframe.parent_frame, pindex-1)
-            cframe._parent_frame_list = [self.parent_frame] + back_list
+            cframe._parent_frame_list = [cframe.parent_frame] + back_list
 
             return cframe._parent_frame_list.copy()
 
