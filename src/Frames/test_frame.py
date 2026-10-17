@@ -32,7 +32,10 @@ class TestFrame(EmptyFrame):
         options = {
                     ("line 1", "line 2"): {
                                                 ("E",): None,
-                                                ("RT", "TZ", "IO"): None
+                                                ("RT", "TZ", "IO"): {
+                                                                        ("ERERER", "BZTT"): None,
+                                                                        ("HBEDZG",): None
+                                                                            }
                                             },
                     ("LINE",): None,
                     ("JJ", "JJ", "JJ", "JJ"): None
@@ -60,6 +63,10 @@ class TestFrame(EmptyFrame):
         if keys[pygame.K_ESCAPE]:
             return self.parent_frame
 
+        for event in self.dropdown.poll_events():
+            if event.type == ExpandableDropdownMenu.EventTypes.SELECTION_FINISHED_EVENT:
+                print(event.data)
+
         if self.key_clock.elapsed() > self.key_delay:
 
             if keys[pygame.K_UP] or keys[KeyAlternatives.UP_ALTERNATIVE]:
@@ -67,6 +74,12 @@ class TestFrame(EmptyFrame):
                 self.key_clock.start()
             elif keys[pygame.K_DOWN] or keys[KeyAlternatives.DOWN_ALTERNATIVE]:
                 self.dropdown.move_down()
+                self.key_clock.start()
+            elif keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
+                self.dropdown.move_left()
+                self.key_clock.start()
+            elif keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
+                self.dropdown.move_right()
                 self.key_clock.start()
             elif keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
                 self.dropdown.select()
