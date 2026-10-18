@@ -42,11 +42,10 @@ class TestFrame(EmptyFrame):
 
                     }
 
-        self.dropdown = ExpandableDropdownMenu(     self.dropdown_frame,
-                                                    options,
-                                                    background_color=Colors.WHITE,
-                                                    text_color=Colors.RED,
-                                                    outline_color=Colors.BLUE
+        start_options = [["AAA"], ["BBB", "CCC"], ["DDD", "EEE", "FFF"]]
+
+        self.dropdown = DropdownMenu(     self.dropdown_frame,
+                                                    start_options
                                                     )
 
     def tick(self):
@@ -75,21 +74,23 @@ class TestFrame(EmptyFrame):
             elif keys[pygame.K_DOWN] or keys[KeyAlternatives.DOWN_ALTERNATIVE]:
                 self.dropdown.move_down()
                 self.key_clock.start()
-            elif keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
-                self.dropdown.move_left()
-                self.key_clock.start()
-            elif keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
-                self.dropdown.move_right()
-                self.key_clock.start()
             elif keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
                 self.dropdown.select()
+                self.key_clock.start()
+            elif keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
+                #self.dropdown.move_left()
+                self.dropdown.unfocus()
+                self.key_clock.start()
+            elif keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
+                #self.dropdown.move_right()
+                self.dropdown.unfocus()
                 self.key_clock.start()
 
         return self
 
     def render(self, screen):
 
-        self.surface.fill(Colors.BLACK)
+        self.surface.fill(Colors.GRAY)
 
         self.dropdown.render(self.surface)
 

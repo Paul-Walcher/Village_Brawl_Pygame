@@ -84,6 +84,9 @@ class Colors:
     GRAY = (127, 127, 127)
     DARK_GRAY = (109, 109, 109)
     DARK_SLATE_GRAY = (47, 79, 79)
+    MAGENTA = (255, 0, 255)
+    DARK_MAGENTA = (139, 0, 139)
+    LILAC = (253, 61, 245)
 
     STANDARD_TEXT_COLOR = WHITE
 
