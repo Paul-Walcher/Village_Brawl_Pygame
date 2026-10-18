@@ -30,9 +30,9 @@ class DropdownMenu(Frame):
                                 #example: options=[["Option 1"], ["This line is long", "so it gets broken up"]]
                 font=Fonts.MINECRAFT, #font for the option text
                 background_color=Colors.T(Colors.BLACK), #background color for unhighlighted option boxes
-                highlighted_background_color=Colors.T(Colors.BLACK), #background color for highlighted option boxes
+                highlighted_background_color=Colors.T(Colors.WHITE), #background color for highlighted option boxes
                 text_color=Colors.T(Colors.WHITE), #colors of the text for an option that is not highlighted
-                highlighted_text_color=Colors.T(Colors.CYAN), #color for the text that is selected
+                highlighted_text_color=Colors.T(Colors.BLACK), #color for the text that is selected
                 in_option_line_margin=5,#px, the distance between lines inside an option box
                 line_margin=5,#px, the margin between lines for the option text
                 line_color = Colors.GRAY, #color of the line dividing the options
