@@ -17,18 +17,20 @@ class ExpandableDropdownMenu(DropdownMenu):
 
     class EventTypes:
 
-        SELECT_ANIMATION_ENDED = 0
-        SELECTION_FINISHED_EVENT = 1
+        SELECT_ANIMATION_ENDED = R_ID()
+        SELECTION_FINISHED_EVENT = R_ID()
 
     class SelectionFinishedEvent(Event):
 
         def __init__(self, idx_list):
             super().__init__(ExpandableDropdownMenu.EventTypes.SELECTION_FINISHED_EVENT, idx_list)
             #idx_list or self.data contains a list with with tuples, where the tuples are the page of the selected
-            #where every time the event gets pushed up one dropdoan menu,
+            #where every time the event gets pushed up one dropdo1n menu,
             #a the text of the currently selected option is inserted at 0 into the list
+            #e.g data = [("A", "B"), ("V",), ("C",)]
 
         def add_selected_name(self, name):
+            #adds the selected option to the data
             self.data.insert(0, name)
 
 
@@ -36,19 +38,25 @@ class ExpandableDropdownMenu(DropdownMenu):
     def __init__(self,
                 frame_dim,
                 options=None,
-                precalculated_depth_and_max_length=None,
-                dropdown_parent=None,
                 #Options is a dict like:
                 #
                 # {
                 #   ("line1", "line2"): {OPTIONS FOR THE NEXT DROPDOWN MENU} //or if there is no Menu its just None
                 #}
+                precalculated_depth_and_max_length=None,#depth == how many dropdown manus follow this one,
+                                                        #max_length == number of options in the dropdown menu with the most options
+                                                        #only the first dropdown menu needs to calculate this,
+                                                        #and can pass the information on
+                dropdown_parent=None, #since this class works recursively, each expandable dropdown menu needs to know which menu it is attached to
+
+
+                #for the rest see dropdown_menu.py
                 font=Fonts.MINECRAFT,
                 background_color=Colors.T(Colors.BLACK),
-                highlighted_background_color=Colors.T(Colors.DARK_SLATE_GRAY),
+                highlighted_background_color=Colors.T(Colors.WHITE),
                 text_color=Colors.T(Colors.WHITE),
+                highlighted_text_color=Colors.T(Colors.BLACK),
                 in_option_line_margin=5,#px
-                highlighted_text_color=Colors.T(Colors.YELLOW),
                 line_margin=5,#px,
                 line_color = Colors.GRAY,
                 lines_shown = True,
@@ -63,26 +71,26 @@ class ExpandableDropdownMenu(DropdownMenu):
         if options is None or len(options) == 0:
             raise RuntimeError("No options provided")
 
-        self.expanded_dropdown_menus = {}#list of immediate dropdown menus
-        self.deferred_dropdown_menu = None
+        self.expanded_dropdown_menus = {}   #list of immediate dropdown menus. if an option tuple has a follow up menu,
+                                            #the option tuple is the key and the follow up dropdown menu is the value
+        self.deferred_dropdown_menu = None  #if no follow up dropdown menu is open, this is None.
+                                            #Otherwise contains a reference to the follow up dropdown menu
+        self.dropdown_parent = dropdown_parent #parent dropdown menu. is None for the first dropdown menu
 
-        #parent dropdown menu
-        self.dropdown_parent = dropdown_parent
-
-        self.dictionary_options = options
-        self.original_frame_dim = frame_dim
+        self.dictionary_options = options   #since we use a list to give the options to the parent class to initialize, we need to save the
+                                            #dictionary for ourselves
+        self.original_frame_dim = frame_dim #the original frame dimension, we split it horizontally for follow up dropdown menus
 
         #now calculating the depth
         self.max_depth, self.max_length = (self._calculate_depth_and_max_length(options) if precalculated_depth_and_max_length is None else precalculated_depth_and_max_length)
 
-        frame_dim = frame_dim.copy()
-        #adjusting the frame dimension
-        frame_dim.width = frame_dim.width // self.max_depth
-        #adjusting based on the height
-        frame_dim.height = (frame_dim.height // self.max_length) * len(options)
+        frame_dim = frame_dim.copy() #getting an copy of the frame dimension
+        frame_dim.width = frame_dim.width // self.max_depth #adjusting the frame dimension, splitting horizontally
+        frame_dim.height = (frame_dim.height // self.max_length) * len(options) #adjusting the frame dimension based on the maximum options
 
-
-        super().__init__(frame_dim,
+        #calling the superconstructor
+        DropdownMenu.__init__(self,
+                        frame_dim,
                         options=list(options.keys()),
                         font=font,
                         background_color=background_color,
@@ -100,28 +108,33 @@ class ExpandableDropdownMenu(DropdownMenu):
                         initial_selected_index=initial_selected_index,
                         selected_animation_duration=selected_animation_duration
                         )
-
+        #we need to move during when we show the deferred menu, and are not in an entered state
         self.move_states.append(ExpandableDropdownMenu.DEFERRED_MENU_SHOWN)
 
     def _calculate_depth_and_max_length(self, options):
         #returns the depth of the deepest nested dropdown menu
+        #we use a deque in order to avoid putting to many calls on the stack
         mdepth = deque([(options, 1)])
         max_depth = 1
         max_length = -1
 
+        #as long as we havent processed each option
         while len(mdepth) > 0:
-
+            #getting the current option and depth
             option, depth = mdepth.popleft()
+            #getting the amount of options in the dropdown
             max_length = max(max_length, len(list(option.values())))
             for v in option.values():
                 if v is not None:
-                    max_depth = max(max_depth, depth+1)
-                    mdepth.append((v, depth+1))
+                    #if any of the options values is not None, that means its a dropdown menu
+                    max_depth = max(max_depth, depth+1)#we need to check max deptg
+                    mdepth.append((v, depth+1)) #add the next option to processing
 
         return max_depth, max_length
 
 
     def is_deferred(self):
+        #returns if this dropdown menu is deferred
         return self.state == ExpandableDropdownMenu.FOCUS_DEFERRED
 
 
@@ -131,12 +144,11 @@ class ExpandableDropdownMenu(DropdownMenu):
         DropdownMenu.rerender(self)
         #adding the other dropdown menus
         self.expanded_dropdown_menus = {}
-
+        #we need to cut the frame of the currernt dopdown menu from the frame for the remaining dropdowns
         expanded_frame_dim = self.original_frame_dim.copy()
-
         expanded_frame_dim.x = self.frame_dim.x + self.frame_dim.width
         expanded_frame_dim.width -= self.frame_dim.width
-
+        #adding dropdown menus recursively
         for key, eoptions in self.dictionary_options.items():
             if eoptions is not None:
 
@@ -165,58 +177,61 @@ class ExpandableDropdownMenu(DropdownMenu):
                                                         selected_animation_duration=self.selected_animation_duration
                                                     )
 
-                self.expanded_dropdown_menus[key] = new_dropdown
+                self.expanded_dropdown_menus[key] = new_dropdown #associating the dropdown with the corresponding option
 
     def move_up(self):
 
         if self.deferred_dropdown_menu is not None and self.state == ExpandableDropdownMenu.FOCUS_DEFERRED:
+            #if deferred, let the deferred menu handle it
             self.deferred_dropdown_menu.move_up()
         else:
-            if self.state == DropdownMenu.NOTHING_SELECTED:
-                self.selected_index = 0
-                self.state = DropdownMenu.OPTION_SELECTED
-                return
-            if self.state in self.move_states:
-                self.moves_buffered -= 1
+            #handle normally
+            DropdownMenu.move_up(self)
 
     def move_down(self):
 
         if self.deferred_dropdown_menu is not None and self.state == ExpandableDropdownMenu.FOCUS_DEFERRED:
+            #if deferred, let the deferred menu handle it
             self.deferred_dropdown_menu.move_down()
         else:
-            if self.state == DropdownMenu.NOTHING_SELECTED:
-                self.selected_index = self.n_options-1
-                self.state = DropdownMenu.OPTION_SELECTED
-                return
-            if self.state in self.move_states:
-                self.moves_buffered += 1
+            #handle normally
+            DropdownMenu.move_down(self)
 
     def move_right(self):
 
+        #defer if menu shown and going right
         if self.deferred_dropdown_menu is not None and self.state == ExpandableDropdownMenu.DEFERRED_MENU_SHOWN:
             self.state = ExpandableDropdownMenu.FOCUS_DEFERRED
             self.deferred_dropdown_menu.move_up()
-
+        #if it is already deferred, let the next dropdown menu handle it
         elif self.deferred_dropdown_menu is not None and self.state == ExpandableDropdownMenu.FOCUS_DEFERRED:
             self.deferred_dropdown_menu.move_right()
 
     def move_left(self):
 
+        #if the signal to move left arrives, and a deferred menu exists, give the signal to the menu
         if self.deferred_dropdown_menu is not None and self.state == ExpandableDropdownMenu.FOCUS_DEFERRED:
             self.deferred_dropdown_menu.move_left()
         else:
+            #otherwise, if a parent exists give control back to the parent dropdown menu
             if self.dropdown_parent is not None:
                 self.state = DropdownMenu.NOTHING_SELECTED
                 self.selected_index = -1
                 self.dropdown_parent.state = ExpandableDropdownMenu.DEFERRED_MENU_SHOWN
+            else:
+                #unfocus after going too far left
+                self.unfocus()
 
 
 
 
     def select(self):
 
-        if self.state == DropdownMenu.NOTHING_SELECTED or self.state == DropdownMenu.SELECT_ANIMATION_PLAYING:
+        #if were not in a position to select, return
+        if self.state == DropdownMenu.NOTHING_SELECTED or self.state == DropdownMenu.SELECT_ANIMATION_PLAYING\
+            or self.state == ExpandableDropdownMenu.DEFERRED_MENU_SHOWN:
             return
+        #if deferred, defer the select command
         if self.deferred_dropdown_menu is not None and self.state == ExpandableDropdownMenu.FOCUS_DEFERRED:
             self.deferred_dropdown_menu.select()
         else:
@@ -243,6 +258,8 @@ class ExpandableDropdownMenu(DropdownMenu):
 
     def render_select_animation(self):
 
+        #select animation: first half decreases the size to normal text margin, then goes back up
+
         percentage = self.select_clock.elapsed() / self.selected_animation_duration
 
         if percentage >= 1.0:
@@ -255,8 +272,8 @@ class ExpandableDropdownMenu(DropdownMenu):
 
                 fp = 2*percentage
 
-                cx = self.highlight_inside_frame_dim.x - self.x
-                cy = self.highlight_inside_frame_dim.y - self.y + (self.selected_index) * self.full_box_height
+                cx = self.inner_frame_dim.x - self.x
+                cy = self.inner_frame_dim.y - self.y + (self.selected_index) * self.full_box_height
                 cw = self.option_box_width
                 ch = self.option_box_height
 
@@ -279,8 +296,8 @@ class ExpandableDropdownMenu(DropdownMenu):
 
                 fp = 2 * (percentage - 0.5)
 
-                cx = self.highlight_inside_frame_dim.x - self.x
-                cy = self.highlight_inside_frame_dim.y - self.y + (self.selected_index) * self.full_box_height
+                cx = self.inner_frame_dim.x - self.x
+                cy = self.inner_frame_dim.y - self.y + (self.selected_index) * self.full_box_height
                 cw = self.option_box_width
                 ch = self.option_box_height
 
@@ -306,6 +323,7 @@ class ExpandableDropdownMenu(DropdownMenu):
 
     def finalize_select_animation(self):
 
+        #create the event
         data = self.selected_index
         fevent = ExpandableDropdownMenu.SelectionFinishedEvent([self.options[self.selected_index]])
         self.event_queue.append(fevent)
@@ -318,35 +336,8 @@ class ExpandableDropdownMenu(DropdownMenu):
 
     def prerender(self):
 
-        self.surface.fill(self.background_color)
-
-        for i in range(self.n_options):
-
-            box, _1, _2 = self.boxframes[i]
-            bcolor = (self.highlighted_background_color if i == self.selected_index else self.background_color)
-
-            pygame.draw.rect(self.surface, bcolor, box)
-
-        #drawing the lines#
-        lwidth = int(self.highlight_inside_frame_dim.width * 0.8)
-        lstart = int(self.highlight_inside_frame_dim.width * 0.1)
-
-        for i in range(1, self.n_options):
-
-            cy = (self.highlight_inside_frame_dim.y - self.y) + i*self.option_box_height
-            pygame.draw.line(self.surface, self.line_color, (lstart, cy), (lstart + lwidth, cy))
-
-        for i in range(self.n_options):
-            if (i == self.selected_index):
-                for text, pos in self.rendered_highlighted_texts[i]:
-                        self.surface.blit(text, pos)
-            else:
-                for text, pos in self.rendered_texts[i]:
-                    self.surface.blit(text, pos)
-        #rendering outline
-        if self.outline_size > 0:
-            pygame.draw.rect(self.surface, self.outline_color, pygame.Rect(0, 0, self.width, self.height), width=self.outline_size)
-
+        DropdownMenu.prerender(self)
+        #prerender next menu
         if self.deferred_dropdown_menu is not None:
             self.deferred_dropdown_menu.prerender()
 
@@ -362,6 +353,7 @@ class ExpandableDropdownMenu(DropdownMenu):
 
     def tick(self):
 
+        #giving tick command to currently expanded dropdownmenu
         if self.deferred_dropdown_menu is not None:
             self.deferred_dropdown_menu.tick()
 
@@ -369,6 +361,7 @@ class ExpandableDropdownMenu(DropdownMenu):
             self.selected_index += self.moves_buffered
             self.selected_index %= self.n_options
             self.moves_buffered = 0
+            #after a move, check if we need to show another dropdown menu
             if self.options[self.selected_index] in self.expanded_dropdown_menus:
                 self.deferred_dropdown_menu = self.expanded_dropdown_menus[self.options[self.selected_index]]
                 self.state = ExpandableDropdownMenu.DEFERRED_MENU_SHOWN
@@ -380,10 +373,10 @@ class ExpandableDropdownMenu(DropdownMenu):
         if self.state == DropdownMenu.SELECT_ANIMATION_PLAYING:
             self.render_select_animation()
 
-        #checking for select
+        #checking events
         if self.deferred_dropdown_menu is not None:
             for event in self.deferred_dropdown_menu.poll_events():
                 if event.type == ExpandableDropdownMenu.EventTypes.SELECTION_FINISHED_EVENT:
-
+                    #if we got a selection finished event, append the own current option, then add it to the event queue
                     event.add_selected_name(self.options[self.selected_index])
                     self.event_queue.append(event)

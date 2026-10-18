@@ -44,8 +44,8 @@ class TestFrame(EmptyFrame):
 
         start_options = [["AAA"], ["BBB", "CCC"], ["DDD", "EEE", "FFF"]]
 
-        self.dropdown = DropdownMenu(     self.dropdown_frame,
-                                                    start_options
+        self.dropdown = ExpandableDropdownMenu(     self.dropdown_frame,
+                                                    options
                                                     )
 
     def tick(self):
@@ -78,12 +78,12 @@ class TestFrame(EmptyFrame):
                 self.dropdown.select()
                 self.key_clock.start()
             elif keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
-                #self.dropdown.move_left()
-                self.dropdown.unfocus()
+                self.dropdown.move_left()
+                #self.dropdown.unfocus()
                 self.key_clock.start()
             elif keys[pygame.K_RIGHT] or keys[KeyAlternatives.RIGHT_ALTERNATIVE]:
-                #self.dropdown.move_right()
-                self.dropdown.unfocus()
+                self.dropdown.move_right()
+                #self.dropdown.unfocus()
                 self.key_clock.start()
 
         return self
