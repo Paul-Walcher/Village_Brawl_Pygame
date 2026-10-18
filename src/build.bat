@@ -1,0 +1,1 @@
+python -m PyInstaller --clean --noconfirm --onefile --name VillageBrawl --collect-submodules playsets --add-data "playsets\example_playset\assets:playsets\example_playset\assets" main.py
