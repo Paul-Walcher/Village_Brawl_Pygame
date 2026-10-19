@@ -110,6 +110,11 @@ class RenderableCardListviewer(Frame):
                 menu_label_menu_button_hmargin=0.2,
                 menu_label_decksize_text_hmargin=0.2,
                 menu_label_vmargin=0.1,
+                #full image data
+                full_image_background_color=Colors.BLACK,
+                full_image_background_alpha=180,
+                cardtext_hmargin=0.2,
+                cardtext_vmargin=0.2,
                 #distances inside the label, so the text wont be right at the border
                 menu_label_inner_hmargin=0.05,
                 menu_label_inner_vmargin=0.05,
@@ -199,6 +204,13 @@ class RenderableCardListviewer(Frame):
         self.main_list_separator_h_percentage = main_list_separator_h_percentage
         self.main_list_separator_v_percentage = main_list_separator_v_percentage
 
+        self.full_image_background_color = full_image_background_color
+        self.full_image_background_alpha = full_image_background_alpha
+
+        #margin for the textbox
+        self.cardtext_hmargin = cardtext_hmargin
+        self.cardtext_vmargin = cardtext_vmargin
+
         self.border_frame_margin = border_frame_margin
         self.border_frame_color = border_frame_color
         self.border_frame_outline_margin = border_frame_outline_margin
@@ -216,7 +228,7 @@ class RenderableCardListviewer(Frame):
         #margin for the distance between the card image and any text rendered below
         self.subtext_margin = subtext_margin
         #current view state
-        self.main_list_view_state = (main_list_view_state if main_list_view_state is not None else RenderableCardListviewer.SHOW_EACH_CARD)
+        self.main_list_view_state = (main_list_view_state if main_list_view_state is not None else RenderableCardListviewer.SHOW_WITH_AMOUNT)
 
         #index of the selected card
         self.selected_card_index = 0
@@ -544,6 +556,8 @@ class RenderableCardListviewer(Frame):
 
                 img_rect = pygame.Rect(cx, cy, self.cardimage_width, self.cardimage_height)
                 text_rect = pygame.Rect(cx, cy + self.cardimage_height, self.subtext_width, self.subtext_height)
+                #applying the margins
+                text_rect = graphics.apply_margins(text_rect, self.cardtext_hmargin, self.cardtext_vmargin)
 
                 if cy not in self.main_list_cards_rects:
                     self.main_list_cards_rects[cy] = []
@@ -715,6 +729,9 @@ class RenderableCardListviewer(Frame):
             self.move_one_row_down()
         elif self.state == RenderableCardListviewer.MOVING_ALL_ROWS_UP:
             self.move_all_rows_up()
+        elif self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN:
+            if not self.key_pressed(KeyAlternatives.SHOW_IMAGE_KEY):
+                self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
         else:
             #accept inputs
 
@@ -734,6 +751,11 @@ class RenderableCardListviewer(Frame):
 
                 if self.key_pressed(pygame.K_DOWN) or self.key_pressed(KeyAlternatives.DOWN_ALTERNATIVE):
                     self.down_pressed()
+                    self.key_clock.start()
+
+                if self.key_pressed(KeyAlternatives.SHOW_IMAGE_KEY):
+                    self.state = RenderableCardListviewer.FULL_IMAGE_SHOWN
+                    self.prerender_full_image()
                     self.key_clock.start()
     """
     INTERACTION FUNCTIONS
@@ -892,3 +914,15 @@ class RenderableCardListviewer(Frame):
         self.main_list_yscroll_copy = 0
 
         self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+    def prerender_full_image(self):
+
+        self.full_image_surface.fill((*self.full_image_background_color, self.full_image_background_alpha))
+        #rendering the image
+        main_list_card_idx = self.main_list_cards_dict[self.selected_card_index][0]
+        cinfo = self.main_list_cards[main_list_card_idx][0].info()
+
+        img_path = cinfo.card_image_path
+
+        isurf, ipos = graphics.img_load_and_position(img_path, self.frame_dim)
+        self.full_image_surface.blit(isurf, ipos)
