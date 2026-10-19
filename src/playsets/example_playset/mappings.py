@@ -33,6 +33,17 @@ explorer_mappings = {
 }
 
 explorer_cards_mappings = {
+                            enums.ExplorerCardEnums.EXAMPLE_CARD_1: explorer_cards_module.Example_Card_1,
+                            enums.ExplorerCardEnums.EXAMPLE_CARD_2: explorer_cards_module.Example_Card_2,
+                            enums.ExplorerCardEnums.EXAMPLE_CARD_3: explorer_cards_module.Example_Card_3,
+                            enums.ExplorerCardEnums.EXAMPLE_CARD_4: explorer_cards_module.Example_Card_4,
+                            enums.ExplorerCardEnums.EXAMPLE_CARD_5: explorer_cards_module.Example_Card_5,
+                            enums.ExplorerCardEnums.EXAMPLE_CARD_6: explorer_cards_module.Example_Card_6,
+                            enums.ExplorerCardEnums.EXAMPLE_CARD_7: explorer_cards_module.Example_Card_7,
+                            enums.ExplorerCardEnums.EXAMPLE_CARD_8: explorer_cards_module.Example_Card_8,
+                            enums.ExplorerCardEnums.EXAMPLE_CARD_9: explorer_cards_module.Example_Card_9,
+                            enums.ExplorerCardEnums.EXAMPLE_CARD_10: explorer_cards_module.Example_Card_10,
+
                             enums.ExplorerCardEnums.SMALL_REST: explorer_cards_module.Small_Rest
 }
 

@@ -8,7 +8,8 @@ class PlaysetEntity(Frame):
     def info():
         pass
 
-    def __init__(self, modules, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
+    def __init__(self, modules, entity_type, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None,
+                        frame_dim=constants.FULLSCREEN, parent_frame=None):
 
         super().__init__(frame_enum, data, frame_dim, parent_frame)
 
@@ -19,10 +20,16 @@ class PlaysetEntity(Frame):
 
         self.prev_phase = None
 
+        self.entity_type = entity_type
+
         self.phase_change_functions = {}
 
     def tick(self, phaseinfo):
         self.execute_phase_change(phaseinfo)
+
+    #default is drawing nothing
+    def render(self, screen):
+        pass
 
     def execute_phase_change(self, phaseinfo):
 

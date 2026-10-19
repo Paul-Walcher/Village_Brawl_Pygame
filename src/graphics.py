@@ -1,5 +1,6 @@
 import pygame
 import constants
+from constants import fequal
 from collections import deque
 import re
 
@@ -514,3 +515,92 @@ def apply_margins(rect, h_margin_percentage=0.0, v_margin_percentage=0.0):
                                             int(rect.height * (1.0 - v_margin_percentage))
                                         )
     return margin_rect
+
+def split_rect_horizontally(rect, percentages):
+    #percentages isa list of percentages. the percentages must add up to 1
+    if not fequal(sum(percentages), 1.0):
+        raise RuntimeError("The percentages must sum up to 1 to split the pygame.Rect")
+
+    split_rects = []
+
+    cx = 0
+    for p in percentages[:-1]:
+
+        nr = rect.copy()
+        nr.x += cx
+        nr.width = int(nr.width * p)
+
+        cx += nr.width
+        split_rects.append(nr)
+
+    nr = rect.copy()
+    nr.x += cx
+    nr.width = (rect.width - cx)
+    split_rects.append(nr)
+
+    return split_rects
+
+def split_rect_vertically(rect, percentages):
+    #percentages isa list of percentages. the percentages must add up to 1
+    if not fequal(sum(percentages), 1.0):
+        raise RuntimeError("The percentages must sum up to 1 to split the pygame.Rect")
+
+    split_rects = []
+
+    cy = 0
+    for p in percentages[:-1]:
+
+        nr = rect.copy()
+        nr.y += cy
+        nr.height = int(nr.height * p)
+
+        cy += nr.height
+        split_rects.append(nr)
+
+    nr = rect.copy()
+    nr.y += cy
+    nr.height = (rect.height - cy)
+    split_rects.append(nr)
+
+    return split_rects
+
+def scale_image_to_frame(img_surf, frame):
+
+    w, h = frame.width, frame.h
+    w2h = img_surf.get_width() / img_surf.get_height()
+    sw, sh = 0, 0
+
+    if w2h > 1.0:
+        if w <= h:
+            sw = w
+            sh = int((1.0 / w2h) * w)
+        else:
+            ph = int((1.0 / w2h) * w)
+            if ph > h:
+                sh = h
+                sw = int(w2h * h)
+            else:
+                sw = w
+                sh = int((1.0 / w2h) * w)
+    else:
+        if h <= w:
+            sh = h
+            sw = int(w2h * h)
+        else:
+            pw = int(w2h * h)
+            if pw > w:
+                sw = w
+                sh = int((1.0 / w2h) * w)
+            else:
+                sw = int(w2h * h)
+                sh = h
+
+    return pygame.transform.smoothscale(img_surf, (sw, sh))
+
+def img_load_and_position(img_path, frame):
+
+    img = render_image(img_path)
+    img = scale_image_to_frame(img, frame)
+    img_pos = get_center_with_surface(img, frame)
+
+    return (img, img_pos)

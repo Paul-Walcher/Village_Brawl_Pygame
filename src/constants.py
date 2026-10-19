@@ -32,6 +32,11 @@ PLAYSETS_FOLDER = "playsets"
 INTRO_IMAGES = [SIMAGE(x) for x in ["Wood.png", "Stone.png", "Pebble.png", "Twig.png"]]
 STANDARD_BACKSIDES = lambda x: [CIMAGE("standard_backside.png") for i in range(x)]
 
+#Icon images
+MENU_BUTTON_UNFOCUSED_IMAGE = os.path.join(ICON_IMAGE_PATH, "Menu_Button_Unfocused.png")
+MENU_BUTTON_FOCUSED_IMAGE = os.path.join(ICON_IMAGE_PATH, "Menu_Button_Focused.png")
+
+
 HASH_VALUE = 1
 
 def R_ID():

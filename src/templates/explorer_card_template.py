@@ -87,9 +87,5 @@ class Explorer_Card_Template(PlaysetEntity):
         self.info = (cinfo if cinfo is not None else Explorer_Card_Template.info())
 
 
-    def tick(self, phase_info, location):
+    def tick(self, phaseinfo, location):
         super().tick(phaseinfo)
-
-    def get_selling_reward(self):
-        #list of (enum: (amount, type))
-        return {}

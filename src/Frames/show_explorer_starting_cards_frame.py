@@ -36,13 +36,10 @@ class ShowExplorerStartingCardsFrame(Frame):
 
         self.cardlistviewer = RenderableCardListviewer(
                                                         self.frame_dim.copy(),
-                                                        {self.card: 100},
-                                                        {"Deck": {"cardlist": {self.card: 100}, "mutable": True, "is_copylist": False}},
-                                                        shown_group="Deck",
-                                                        trunk_shown=False
+                                                        {self.card: 10},
+                                                        {"Deck": {"cardlist": {self.card: 10}, "mutable": True, "is_copylist": False}},
+                                                        shown_group="Deck"
                                                         )
-
-        self.widgets.append(self.cardlistviewer)
 
     def bind_events(self):
         pass
@@ -54,12 +51,11 @@ class ShowExplorerStartingCardsFrame(Frame):
         if self.exit_flag_raised():
             return None
 
-
-        self.widgets_tick()
+        self.cardlistviewer.tick()
 
         return self
 
     def render(self, screen):
 
         screen.fill(Colors.BLACK)
-        self.render_widgets(screen)
+        self.cardlistviewer.render(screen)

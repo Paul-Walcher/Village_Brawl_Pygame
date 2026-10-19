@@ -109,7 +109,7 @@ class CardinfoFrame(Frame):
     def rerender(self):
 
         self.widgets = []
-        
+
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
         self.page_parts = self.cardinfo.get_info_page_parts(pygame.Rect(0, 0, self.width, self.height),

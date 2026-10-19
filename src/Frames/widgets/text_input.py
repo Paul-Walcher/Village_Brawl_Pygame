@@ -221,12 +221,6 @@ class TextInput(Frame):
         if should_rerender:
             self.rerender()
 
-    def get_surfaces(self):
-        return [self.surface]
-
-    def get_surfaces_with_position(self):
-        return [(self.surface, (self.x, self.y))]
-
     def get_text(self):
         return self.text
 

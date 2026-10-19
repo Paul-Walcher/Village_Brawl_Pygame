@@ -5,11 +5,22 @@ class ExplorerEnums(Enum):
 
     BASIC_EXPLORER = auto()
 
-class ExplorerCardsEnums(Enum):
+class ExplorerCardEnums(Enum):
+
+    EXAMPLE_CARD_1 = auto()
+    EXAMPLE_CARD_2 = auto()
+    EXAMPLE_CARD_3 = auto()
+    EXAMPLE_CARD_4 = auto()
+    EXAMPLE_CARD_5 = auto()
+    EXAMPLE_CARD_6 = auto()
+    EXAMPLE_CARD_7 = auto()
+    EXAMPLE_CARD_8 = auto()
+    EXAMPLE_CARD_9 = auto()
+    EXAMPLE_CARD_10 = auto()
 
     SMALL_REST = auto()
 
-class VillageCardsEnums(Enum):
+class VillageCardEnums(Enum):
     pass
 
 class ItemEnums(Enum):
@@ -57,10 +68,6 @@ class VillageEnums(Enum):
 
 class VillagerEnums(Enum):
     pass
-
-class ExplorerCardEnums(Enum):
-
-    SMALL_REST = auto()
 
 class VillageBossCardEnums(Enum):
     pass
