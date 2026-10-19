@@ -40,6 +40,10 @@ class RenderableCardListviewer(Frame):
     GROUP_SELECTION = R_ID() #displays the groups available (Should show if a group is a copy group or not)
     FULL_IMAGE_SHOWN = R_ID() #if the main list is focused, the selected image is shown on fullscreen
 
+    #animation states
+    MOVING_ONE_ROW_UP = R_ID()
+    MOVING_ONE_ROW_DOWN = R_ID()
+    MOVING_ALL_ROWS_UP = R_ID()
     #view states
     SHOW_WITH_AMOUNT = R_ID()
     SHOW_EACH_CARD = R_ID()
@@ -150,7 +154,9 @@ class RenderableCardListviewer(Frame):
                 #margin between timage and any text rendered below
                 subtext_margin=0.2,
                 #delay between inputs
-                key_delay=200#ms
+                key_delay=200,#ms
+                rowscrolling_duration=300,#ms when scrolling one row upor down, this is the duration it takes
+                rowscrolling_all_duration=500#ms #rowscrolling all rows up
                 ):
 
         if len(groups) == 0:
@@ -281,6 +287,8 @@ class RenderableCardListviewer(Frame):
         self.cardimage_height = -1
         #scroll variable
         self.main_list_yscroll = 0
+        #and copy
+        self.main_list_yscroll_copy = 0
         #the amount of visible cards in the list
         self.n_cards_shown = 0
 
@@ -309,6 +317,11 @@ class RenderableCardListviewer(Frame):
         #key clock for all key triggers
         self.key_clock = Clock()
         self.key_delay = key_delay
+
+        #rowscrolling clock
+        self.rowscrolling_clock = Clock()
+        self.rowscrolling_duration = rowscrolling_duration
+        self.rowscrolling_all_duration = rowscrolling_all_duration
 
         self.key_clock.start()
         self.rerender()
@@ -588,10 +601,11 @@ class RenderableCardListviewer(Frame):
                 cy + self.main_list_yscroll > self.inner_main_list_frame.y + self.inner_main_list_frame.height:
                 continue
 
-            self.rendered_rows.append((cy, *self.main_list_cards_rects[cy]))
 
             for id_index, main_list_cards_idx, img_rect, text_rect in self.main_list_cards_rects[cy]:
 
+
+                self.rendered_rows.append((cy, id_index, main_list_cards_idx, img_rect, text_rect))
                 cinfo = self.main_list_cards[main_list_cards_idx][0].info()
 
                 img, img_pos = None, None
@@ -694,23 +708,33 @@ class RenderableCardListviewer(Frame):
     def tick(self):
         self.manage_pygame_events()
 
-        if self.key_clock.elapsed() > self.key_delay:
+        #non input accepting states
+        if self.state == RenderableCardListviewer.MOVING_ONE_ROW_UP:
+            self.move_one_row_up()
+        elif self.state == RenderableCardListviewer.MOVING_ONE_ROW_DOWN:
+            self.move_one_row_down()
+        elif self.state == RenderableCardListviewer.MOVING_ALL_ROWS_UP:
+            self.move_all_rows_up()
+        else:
+            #accept inputs
 
-            if self.key_pressed(pygame.K_LEFT) or self.key_pressed(KeyAlternatives.LEFT_ALTERNATIVE):
-                self.left_pressed()
-                self.key_clock.start()
+            if self.key_clock.elapsed() > self.key_delay:
 
-            if self.key_pressed(pygame.K_RIGHT) or self.key_pressed(KeyAlternatives.RIGHT_ALTERNATIVE):
-                self.right_pressed()
-                self.key_clock.start()
+                if self.key_pressed(pygame.K_LEFT) or self.key_pressed(KeyAlternatives.LEFT_ALTERNATIVE):
+                    self.left_pressed()
+                    self.key_clock.start()
 
-            if self.key_pressed(pygame.K_UP) or self.key_pressed(KeyAlternatives.UP_ALTERNATIVE):
-                self.up_pressed()
-                self.key_clock.start()
+                if self.key_pressed(pygame.K_RIGHT) or self.key_pressed(KeyAlternatives.RIGHT_ALTERNATIVE):
+                    self.right_pressed()
+                    self.key_clock.start()
 
-            if self.key_pressed(pygame.K_DOWN) or self.key_pressed(KeyAlternatives.DOWN_ALTERNATIVE):
-                self.down_pressed()
-                self.key_clock.start()
+                if self.key_pressed(pygame.K_UP) or self.key_pressed(KeyAlternatives.UP_ALTERNATIVE):
+                    self.up_pressed()
+                    self.key_clock.start()
+
+                if self.key_pressed(pygame.K_DOWN) or self.key_pressed(KeyAlternatives.DOWN_ALTERNATIVE):
+                    self.down_pressed()
+                    self.key_clock.start()
     """
     INTERACTION FUNCTIONS
     """
@@ -740,7 +764,131 @@ class RenderableCardListviewer(Frame):
                 self.selected_card_index += 1
 
     def up_pressed(self):
-        pass
+
+        if self.state == RenderableCardListviewer.NOTHING_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_BAR_FOCUSED
+        elif self.state == RenderableCardListviewer.MENU_BAR_FOCUSED:
+            self.state = RenderableCardListviewer.NOTHING_FOCUSED
+        elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+            #check for going off, and if the index is in rendered rows
+            if self.selected_card_index < self.cards_per_line:
+                self.state = RenderableCardListviewer.MENU_BAR_FOCUSED
+            elif (self.selected_card_index - self.cards_per_line) not in [x[1] for x in self.rendered_rows]:
+                self.state = RenderableCardListviewer.MOVING_ONE_ROW_UP
+                self.initialize_move_one_row_up()
+            else:
+                self.selected_card_index -= self.cards_per_line
 
     def down_pressed(self):
-        pass
+
+        if self.state == RenderableCardListviewer.NOTHING_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_BAR_FOCUSED
+        elif self.state == RenderableCardListviewer.MENU_BAR_FOCUSED:
+            self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+            self.selected_card_index = 0
+            self.main_list_yscroll = 0
+        elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+            #check for going off, and if the index is in rendered rows
+            if self.selected_card_index > (self.n_cards_shown - self.cards_per_line):
+                self.selected_card_index += self.cards_per_line
+                self.selected_card_index %= (self.n_cards_shown)
+                self.selected_card_index -= (self.cards_per_line - self.n_cards_shown % self.cards_per_line)
+                if self.selected_card_index < self.cards_per_line:
+                    self.state = RenderableCardListviewer.MOVING_ALL_ROWS_UP
+                    self.initialize_move_all_rows_up()
+            elif len(self.rendered_rows) < (self.cards_per_line * self.cards_per_column):
+                self.selected_card_index += self.cards_per_line
+                self.selected_card_index %= self.n_cards_shown
+            elif (self.selected_card_index + self.cards_per_line) not in [x[1] for x in self.rendered_rows]:
+
+                self.state = RenderableCardListviewer.MOVING_ONE_ROW_DOWN
+                self.initialize_move_one_row_down()
+            else:
+                self.selected_card_index += self.cards_per_line
+
+    #animation functions
+    def initialize_move_one_row_up(self):
+
+        #starting up
+        self.main_list_yscroll_copy = self.main_list_yscroll
+        #starting the clock
+        self.rowscrolling_clock.start()
+
+    def move_one_row_up(self):
+
+        #getting the percentage moved
+        percentage = self.rowscrolling_clock.elapsed() / self.rowscrolling_duration
+
+        scroll_amount = self.main_list_cheight + self.main_list_vseparator_size
+
+        if percentage >= 1.0:
+            self.finalize_move_one_row_up()
+        else:
+
+            self.main_list_yscroll = self.main_list_yscroll_copy + int(percentage * scroll_amount)
+
+    def finalize_move_one_row_up(self):
+
+        self.main_list_yscroll = self.main_list_yscroll_copy + self.main_list_cheight  + self.main_list_vseparator_size
+        self.main_list_yscroll_copy = 0
+
+        self.selected_card_index -= self.cards_per_line
+
+        self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+
+    #move down
+    def initialize_move_one_row_down(self):
+
+        #starting up
+        self.main_list_yscroll_copy = self.main_list_yscroll
+        #starting the clock
+        self.rowscrolling_clock.start()
+
+    def move_one_row_down(self):
+
+        #getting the percentage moved
+        percentage = self.rowscrolling_clock.elapsed() / self.rowscrolling_duration
+
+        scroll_amount = self.main_list_cheight + self.main_list_vseparator_size
+
+        if percentage >= 1.0:
+            self.finalize_move_one_row_down()
+        else:
+
+            self.main_list_yscroll = self.main_list_yscroll_copy - int(percentage * scroll_amount)
+
+    def finalize_move_one_row_down(self):
+
+        self.main_list_yscroll = self.main_list_yscroll_copy - self.main_list_cheight - self.main_list_vseparator_size
+        self.main_list_yscroll_copy = 0
+
+        self.selected_card_index += self.cards_per_line
+
+        self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+    #moving all rows up
+    def initialize_move_all_rows_up(self):
+
+        #starting up
+        self.main_list_yscroll_copy = self.main_list_yscroll
+        #starting the clock
+        self.rowscrolling_clock.start()
+
+    def move_all_rows_up(self):
+
+        #getting the percentage moved
+        percentage = self.rowscrolling_clock.elapsed() / self.rowscrolling_all_duration
+
+        if percentage >= 1.0:
+            self.finalize_move_all_rows_up()
+        else:
+
+            self.main_list_yscroll = int((1.0 - percentage) * self.main_list_yscroll_copy)
+
+    def finalize_move_all_rows_up(self):
+
+        self.main_list_yscroll = 0
+        self.main_list_yscroll_copy = 0
+
+        self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
