@@ -141,7 +141,7 @@ class Frame(EventQueueManager):
         #self.has_focus = x
         #or self.focus(), self.unfocus()
         #since this class handles the focus group
-        self._has_focus = has_focus
+        self._has_focus = not has_focus
         self.has_focus = has_focus
 
         #the event callbacks that used in self.manage_pygame_events()
@@ -185,6 +185,13 @@ class Frame(EventQueueManager):
 
     def __del__(self):
         self.raise_exit_flag()
+
+        #removing from exit group
+        if self.focus_group in Frame.FOCUS_GROUPS and Frame.FOCUS_GROUPS[self.focus_group] == self:
+            #even if parent is None, its ok
+            Frame.FOCUS_GROUPS[self.focus_group] = self.parent_frame
+
+
 
     @property
     def frame_dim(self):
@@ -520,16 +527,13 @@ class Frame(EventQueueManager):
         return cb
 
 
-    def raise_exit_flag(self, next_focused_frame=None):
+    def raise_exit_flag(self):
         #sets the exit flag, and gives the focus to next_focused_frame,
         #or the parent frame if the variable is None.
         #The focus can only be given if the next focused frame is in the same
         #focus group, and only if this frame has the focus
         self.__exit_flag_raised = True
-        if next_focused_frame is None:
-            next_focused_frame = self.parent_frame
-        if next_focused_frame is not None and next_focused_frame.focus_group == self.focus_group and self.has_focus:
-            next_focused_frame.has_focus = True
+
 
 
     def exit_flag_raised(self):

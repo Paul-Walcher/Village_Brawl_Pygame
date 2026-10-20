@@ -22,6 +22,8 @@ import constants
 from event_queue_manager import Event
 from copy import deepcopy
 
+#widgets
+from Frames.widgets.text_input import TextInput
 
 class RenderableCardListviewer(Frame):
 
@@ -33,17 +35,23 @@ class RenderableCardListviewer(Frame):
 
     NOTHING_FOCUSED = R_ID() #nothing is focused
     MAIN_LIST_FOCUSED = R_ID() #the cards in the list are focused
-    MENU_BAR_FOCUSED = R_ID() #the menu bar is focused
     MENU_BUTTON_FOCUSED = R_ID() #menu button in the menu label
+    MENU_DECKNAME_FOCUSED = R_ID()
+    MENU_DECKSIZE_FOCUSED = R_ID()
     DROPDOWN_MENU_FOCUSED = R_ID() #means the dropdown menu is shown
     SEARCHBAR_FOCUSED = R_ID() #the textinput is focused
     GROUP_SELECTION = R_ID() #displays the groups available (Should show if a group is a copy group or not)
     FULL_IMAGE_SHOWN = R_ID() #if the main list is focused, the selected image is shown on fullscreen
 
+    INITIALIZE_DECK_RENAMING_FRAME = R_ID()
+    DECK_RENAMING_FRAME_ACTIVE = R_ID()
+
     #animation states
     MOVING_ONE_ROW_UP = R_ID()
     MOVING_ONE_ROW_DOWN = R_ID()
     MOVING_ALL_ROWS_UP = R_ID()
+
+    DECKNAME_SELECTED_ANIMATION = R_ID()
     #view states
     SHOW_WITH_AMOUNT = R_ID()
     SHOW_EACH_CARD = R_ID()
@@ -89,11 +97,105 @@ class RenderableCardListviewer(Frame):
             clist.reverse()
             return clist
 
+    #subframes
+    class DeckRenameFrame(Frame):
+
+        def __init__(
+                    self,
+                    frame_dim,
+                    focus_group=""
+                    ):
+
+            #initializing
+            Frame.__init__(self, FrameEnums.UNDEFINED, None, frame_dim, focus_group=focus_group)
+
+            self.surface = None
+            self.text_input = None
+            self.text_input_frame = None
+
+            self.background_color = Colors.BLACK
+            self.background_alpha = 127
+
+            self.escape_released = False
+
+            self.rerender()
+
+        def rerender(self):
+
+            self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+
+            self.text_input_frame = pygame.Rect(0, 0, self.width//2, self.height//20)
+            xc, yc = graphics.get_center_with_rect(self.frame_dim, self.text_input_frame)
+            self.text_input_frame.x = xc
+            self.text_input_frame.y = yc
+
+            self.text_input = TextInput(
+                                        self.text_input_frame,
+                                        focus_group=self.focus_group
+                                        )
+            self.text_input.focus()
+
+
+        def set_input_text(self, text=""):
+            self.text_input.set_text(text)
+
+        def get_input_text(self):
+            return self.text_input.get_text()
+
+        def bind_events(self):
+            self.clear_event_callbacks()
+
+
+        def tick(self):
+            self.manage_pygame_events()
+            self.text_input.tick()
+
+            #polling textinput events
+            for event in self.text_input.poll_events():
+                if event.type == TextInput.EventTypes.ENTER_PRESSED:
+                    self.raise_exit_flag()
+
+            if self.exit_flag_raised():
+                return None
+
+            if self.has_focus:
+                #checking for any movement key
+                if self.key_pressed(pygame.K_LEFT) or self.key_pressed(KeyAlternatives.LEFT_ALTERNATIVE)\
+                    or self.key_pressed(pygame.K_RIGHT) or self.key_pressed(KeyAlternatives.RIGHT_ALTERNATIVE)\
+                    or self.key_pressed(pygame.K_UP) or self.key_pressed(KeyAlternatives.UP_ALTERNATIVE)\
+                    or self.key_pressed(pygame.K_DOWN) or self.key_pressed(KeyAlternatives.DOWN_ALTERNATIVE):
+
+                    self.text_input.focus()
+
+                if (self.key_pressed(KeyAlternatives.BACK_KEY) or self.key_pressed(pygame.K_ESCAPE)) and self.escape_released:
+                    self.raise_exit_flag()
+
+                if not (self.key_pressed(KeyAlternatives.BACK_KEY) and self.key_pressed(pygame.K_ESCAPE)) and not self.escape_released:
+                    self.escape_released = True
+
+            if not self.text_input.has_focus and not self.has_focus:
+                self.focus()
+                self.escape_released = False
+
+            return self
+
+        def render(self, screen):
+
+            self.surface.fill((*self.background_color, self.background_alpha))
+            self.text_input.render(self.surface)
+
+            screen.blit(self.surface, (self.x, self.y))
+
 
     def __init__(self,
                 frame_dim,  #frame dimension, into which it is rendered into
                 full_cardlist, #a dictionary of {RenderableCard(Class): amount}
                 groups,  #must include at least one group. is {name: {"cardlist": {renderable_card: amount}, "mutable": (False/True), "is_copylist": (False/True)}}
+
+                #focus group
+                focus_group="",
+                parent_frame=None,
+
                 shown_group=None, #the name of the first shown group, must be the name of a group or None
 
                 font=Fonts.MINECRAFT,
@@ -110,14 +212,16 @@ class RenderableCardListviewer(Frame):
                 menu_label_menu_button_hmargin=0.2,
                 menu_label_decksize_text_hmargin=0.2,
                 menu_label_vmargin=0.1,
+                menu_label_highlighted_color=Colors.YELLOW,
+                menu_label_highlighted_alpha=64,
                 #full image data
                 full_image_background_color=Colors.BLACK,
                 full_image_background_alpha=180,
                 cardtext_hmargin=0.2,
                 cardtext_vmargin=0.2,
                 #distances inside the label, so the text wont be right at the border
-                menu_label_inner_hmargin=0.05,
-                menu_label_inner_vmargin=0.05,
+                menu_label_inner_hmargin=0.1,
+                menu_label_inner_vmargin=0.1,
                 menu_label_color=Colors.BLACK,
                 menu_label_text_color=Colors.WHITE,
                 #alpha of the menu label
@@ -161,7 +265,8 @@ class RenderableCardListviewer(Frame):
                 #delay between inputs
                 key_delay=200,#ms
                 rowscrolling_duration=300,#ms when scrolling one row upor down, this is the duration it takes
-                rowscrolling_all_duration=500#ms #rowscrolling all rows up
+                rowscrolling_all_duration=500,#ms #rowscrolling all rows up
+                deckname_selected_animation_duration=400#ms
                 ):
 
         if len(groups) == 0:
@@ -171,7 +276,7 @@ class RenderableCardListviewer(Frame):
         if cards_per_line <= 0 or cards_per_column <= 0:
             raise RuntimeError("cards_per_line and cards_per_column have to be greater than 0")
 
-        super().__init__(FrameEnums.RENDERABLE_CARDLIST_VIEWER_WIDGET, None, frame_dim)
+        super().__init__(FrameEnums.RENDERABLE_CARDLIST_VIEWER_WIDGET, None, frame_dim, focus_group=focus_group, parent_frame=parent_frame)
 
         #deepcopying, to avoid altering the references
         self.full_cardlist = full_cardlist.copy()
@@ -228,7 +333,7 @@ class RenderableCardListviewer(Frame):
         #margin for the distance between the card image and any text rendered below
         self.subtext_margin = subtext_margin
         #current view state
-        self.main_list_view_state = (main_list_view_state if main_list_view_state is not None else RenderableCardListviewer.SHOW_WITH_AMOUNT)
+        self.main_list_view_state = (main_list_view_state if main_list_view_state is not None else RenderableCardListviewer.SHOW_EACH_CARD)
 
         #index of the selected card
         self.selected_card_index = 0
@@ -259,6 +364,8 @@ class RenderableCardListviewer(Frame):
         #menu label
         self.menu_label_surface = None
         self.menu_label_height = -1
+        #highlighted surface
+        self.menu_label_highlighted_surface = None
         #dimensions of the menu label
         self.menu_label_frame = None
         #frame with the distances to the edges calculated in
@@ -274,6 +381,9 @@ class RenderableCardListviewer(Frame):
         self.menu_button_unfocused_image_rendered_pos = None
         self.menu_button_focused_image_rendered = None
         self.menu_button_focused_image_rendered_pos = None
+        #highlighted menu
+        self.menu_label_highlighted_color = menu_label_highlighted_color
+        self.menu_label_highlighted_alpha = menu_label_highlighted_alpha
         #deckname surface and positions
         self.deckname_rendered_and_positions = None
         #decksize text and positions
@@ -326,6 +436,9 @@ class RenderableCardListviewer(Frame):
                                                                     RenderableCardListviewer.IS_COPYLIST_KEY: True}
         self.shown_group = (shown_group if shown_group is not None else list(self.groups.keys())[0])
 
+        #deckname subframe
+        self.rename_deck_subframe = None
+
         #key clock for all key triggers
         self.key_clock = Clock()
         self.key_delay = key_delay
@@ -334,6 +447,10 @@ class RenderableCardListviewer(Frame):
         self.rowscrolling_clock = Clock()
         self.rowscrolling_duration = rowscrolling_duration
         self.rowscrolling_all_duration = rowscrolling_all_duration
+
+        self.deckname_selected_animation_clock = Clock()
+        self.deckname_selected_animation_duration = deckname_selected_animation_duration
+        self.deckname_rendered_and_positions_copy = None
 
         self.key_clock.start()
         self.rerender()
@@ -422,6 +539,8 @@ class RenderableCardListviewer(Frame):
         #rendering the Name Label
         self.menu_label_height = int(self.inner_area.height * self.menu_label_vmargin)
         self.menu_label_surface = pygame.Surface((self.inner_area.width, self.menu_label_height), pygame.SRCALPHA)
+        self.menu_label_highlighted_surface = self.menu_label_surface.copy()
+        self.menu_label_highlighted_surface.fill((*self.menu_label_highlighted_color, self.menu_label_highlighted_alpha))
         self.menu_label_surface_pos = (self.inner_area.x, self.inner_area.y)
         #calculating menu label dimensions
         self.menu_label_frame = self.inner_area.copy()
@@ -438,21 +557,25 @@ class RenderableCardListviewer(Frame):
         """
 
         #now calculating the menu options
-        self.menu_button_frame, self.deckname_frame, self.decksize_frame = graphics.split_rect_horizontally(pygame.Rect(0, 0, self.inner_menu_label_frame.width, self.inner_menu_label_frame.height),
+        self.menu_button_frame, self.deckname_frame, self.decksize_frame = graphics.split_rect_horizontally(
+                                                                                                        pygame.Rect(
+                                                                                                        self.inner_menu_label_frame.x - self.menu_label_frame.x,
+                                                                                                        self.inner_menu_label_frame.y - self.menu_label_frame.y,
+                                                                                                        self.inner_menu_label_frame.width, self.inner_menu_label_frame.height),
                                                                                                         [self.menu_label_menu_button_hmargin,
                                                                                                         1.0-(self.menu_label_menu_button_hmargin + self.menu_label_decksize_text_hmargin),
                                                                                                         self.menu_label_decksize_text_hmargin
                                                                                                         ]
                                                                                                         )
-        self.menu_button_frame = graphics.apply_margins(self.menu_button_frame, self.menu_label_inner_hmargin, self.menu_label_inner_vmargin)
-        self.deckname_frame = graphics.apply_margins(self.deckname_frame, self.menu_label_inner_hmargin, self.menu_label_inner_vmargin)
-        self.decksize_frame = graphics.apply_margins(self.decksize_frame, self.menu_label_inner_hmargin, self.menu_label_inner_vmargin)
         #now rendering the menu items
         #rendering the menu button
         self.menu_button_unfocused_image_rendered,\
         self.menu_button_unfocused_image_rendered_pos = graphics.img_load_and_position(self.menu_button_unfocused_image, self.menu_button_frame)
         self.menu_button_focused_image_rendered,\
         self.menu_button_focused_image_rendered_pos = graphics.img_load_and_position(self.menu_button_focused_image, self.menu_button_frame)
+
+        self.menu_button_unfocused_image_rendered_pos = self.inner_menu_label_frame.x - self.menu_label_frame.x, self.menu_button_unfocused_image_rendered_pos[1]
+        self.menu_button_focused_image_rendered_pos = self.inner_menu_label_frame.x - self.menu_label_frame.x, self.menu_button_focused_image_rendered_pos[1]
         #rendering the name
         self.deckname_rendered_and_positions = graphics.render_page_from_chars_color(
                                                                                         font=self.font,
@@ -686,6 +809,18 @@ class RenderableCardListviewer(Frame):
         for rect, color in self.border_lines:
             pygame.draw.rect(self.surface, color, rect)
 
+        if self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED:
+            self.menu_label_highlighted_surface = pygame.Surface((self.menu_button_frame.width, self.menu_button_frame.height), pygame.SRCALPHA)
+            self.menu_label_highlighted_surface.fill((*self.menu_label_highlighted_color, self.menu_label_highlighted_alpha))
+            self.menu_label_surface.blit(self.menu_label_highlighted_surface, (self.menu_button_frame.x, self.menu_button_frame.y))
+        elif self.state == RenderableCardListviewer.MENU_DECKNAME_FOCUSED:
+            self.menu_label_highlighted_surface = pygame.Surface((self.deckname_frame.width, self.deckname_frame.height), pygame.SRCALPHA)
+            self.menu_label_highlighted_surface.fill((*self.menu_label_highlighted_color, self.menu_label_highlighted_alpha))
+            self.menu_label_surface.blit(self.menu_label_highlighted_surface, (self.deckname_frame.x, self.deckname_frame.y))
+        elif self.state == RenderableCardListviewer.MENU_DECKSIZE_FOCUSED:
+            self.menu_label_highlighted_surface = pygame.Surface((self.decksize_frame.width, self.decksize_frame.height), pygame.SRCALPHA)
+            self.menu_label_highlighted_surface.fill((*self.menu_label_highlighted_color, self.menu_label_highlighted_alpha))
+            self.menu_label_surface.blit(self.menu_label_highlighted_surface, (self.decksize_frame.x, self.decksize_frame.y))
         #widgets
         #button
         button_img = (self.menu_button_focused_image_rendered if self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED else self.menu_button_unfocused_image_rendered)
@@ -703,6 +838,8 @@ class RenderableCardListviewer(Frame):
 
         if self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN:
             self.surface.blit(self.full_image_surface, (0, 0))
+        elif self.state == RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE:
+            self.rename_deck_subframe.render(self.surface)
 
     def render(self, screen):
         self.prerender()
@@ -718,9 +855,14 @@ class RenderableCardListviewer(Frame):
         self.full_image_surface.fill((*Colors.BLACK, 200))
         self.full_image_surface.blit(cimage, cpos)
 
+    def bind_events(self):
+        self.clear_event_callbacks()
 
     def tick(self):
         self.manage_pygame_events()
+
+        if self.exit_flag_raised():
+            return None
 
         #non input accepting states
         if self.state == RenderableCardListviewer.MOVING_ONE_ROW_UP:
@@ -732,10 +874,37 @@ class RenderableCardListviewer(Frame):
         elif self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN:
             if not self.key_pressed(KeyAlternatives.SHOW_IMAGE_KEY):
                 self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+        elif self.state == RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION:
+            self.deckname_selected_animation()
+
+        elif self.state == RenderableCardListviewer.INITIALIZE_DECK_RENAMING_FRAME:
+            self.initialize_deck_renaming_frame()
+
+        elif self.state == RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE:
+            ret = self.rename_deck_subframe.tick()
+
+            if ret is None:
+
+                #setting the groupname
+                data_cp = deepcopy(self.groups[self.shown_group])
+                del self.groups[self.shown_group]
+                self.shown_group = self.rename_deck_subframe.get_input_text()
+                self.groups[self.shown_group] = data_cp
+                self.rename_deck_subframe = None
+                self.focus()
+                self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
+                self.rerender()
+                self.key_clock.start()
+
+
         else:
             #accept inputs
 
             if self.key_clock.elapsed() > self.key_delay:
+
+                if self.key_pressed(pygame.K_ESCAPE):
+                    self.escape_pressed()
+                    self.key_clock.start()
 
                 if self.key_pressed(pygame.K_LEFT) or self.key_pressed(KeyAlternatives.LEFT_ALTERNATIVE):
                     self.left_pressed()
@@ -757,6 +926,16 @@ class RenderableCardListviewer(Frame):
                     self.state = RenderableCardListviewer.FULL_IMAGE_SHOWN
                     self.prerender_full_image()
                     self.key_clock.start()
+
+                if self.key_pressed(pygame.K_RETURN) or self.key_pressed(KeyAlternatives.ENTER_ALTERNATIVE):
+                    self.enter_pressed()
+                    self.key_clock.start()
+
+                if self.key_pressed(pygame.K_BACKSPACE) or self.key_pressed(KeyAlternatives.BACK_KEY):
+                    self.back_pressed()
+                    self.key_clock.start()
+
+        return self
     """
     INTERACTION FUNCTIONS
     """
@@ -772,6 +951,12 @@ class RenderableCardListviewer(Frame):
                 self.state = RenderableCardListviewer.NOTHING_FOCUSED
             else:
                 self.selected_card_index -= 1
+        elif self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_DECKSIZE_FOCUSED
+        elif self.state == RenderableCardListviewer.MENU_DECKSIZE_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
+        elif self.state == RenderableCardListviewer.MENU_DECKNAME_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
 
     def right_pressed(self):
 
@@ -785,16 +970,28 @@ class RenderableCardListviewer(Frame):
             else:
                 self.selected_card_index += 1
 
+        elif self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
+        elif self.state == RenderableCardListviewer.MENU_DECKNAME_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_DECKSIZE_FOCUSED
+        elif self.state == RenderableCardListviewer.MENU_DECKSIZE_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
+
     def up_pressed(self):
 
         if self.state == RenderableCardListviewer.NOTHING_FOCUSED:
-            self.state = RenderableCardListviewer.MENU_BAR_FOCUSED
-        elif self.state == RenderableCardListviewer.MENU_BAR_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
+
+        elif self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED\
+            or self.state == RenderableCardListviewer.MENU_DECKNAME_FOCUSED\
+            or self.state == RenderableCardListviewer.MENU_DECKSIZE_FOCUSED:
+
             self.state = RenderableCardListviewer.NOTHING_FOCUSED
+
         elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
             #check for going off, and if the index is in rendered rows
             if self.selected_card_index < self.cards_per_line:
-                self.state = RenderableCardListviewer.MENU_BAR_FOCUSED
+                self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
             elif (self.selected_card_index - self.cards_per_line) not in [x[1] for x in self.rendered_rows]:
                 self.state = RenderableCardListviewer.MOVING_ONE_ROW_UP
                 self.initialize_move_one_row_up()
@@ -804,11 +1001,16 @@ class RenderableCardListviewer(Frame):
     def down_pressed(self):
 
         if self.state == RenderableCardListviewer.NOTHING_FOCUSED:
-            self.state = RenderableCardListviewer.MENU_BAR_FOCUSED
-        elif self.state == RenderableCardListviewer.MENU_BAR_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
+
+        elif self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED\
+            or self.state == RenderableCardListviewer.MENU_DECKNAME_FOCUSED\
+            or self.state == RenderableCardListviewer.MENU_DECKSIZE_FOCUSED:
+
             self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
             self.selected_card_index = 0
             self.main_list_yscroll = 0
+
         elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
             #check for going off, and if the index is in rendered rows
             if self.selected_card_index > (self.n_cards_shown - self.cards_per_line):
@@ -827,6 +1029,24 @@ class RenderableCardListviewer(Frame):
                 self.initialize_move_one_row_down()
             else:
                 self.selected_card_index += self.cards_per_line
+
+
+    def enter_pressed(self):
+
+        #checking for deck renaming
+        if self.state == RenderableCardListviewer.MENU_DECKNAME_FOCUSED:
+            self.state = RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION
+            self.initialize_deckname_selected_animation()
+
+    def back_pressed(self):
+        pass
+
+    def escape_pressed(self):
+        if self.state == RenderableCardListviewer.NOTHING_FOCUSED:
+            self.raise_exit_flag()
+        else:
+            self.state = RenderableCardListviewer.NOTHING_FOCUSED
+
 
     #animation functions
     def initialize_move_one_row_up(self):
@@ -915,6 +1135,50 @@ class RenderableCardListviewer(Frame):
 
         self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
 
+
+
+    def initialize_deckname_selected_animation(self):
+
+        self.deckname_rendered_and_positions_copy = self.deckname_rendered_and_positions
+        self.deckname_selected_animation_clock.start()
+
+    def deckname_selected_animation(self):
+
+        percentage = self.deckname_selected_animation_clock.elapsed() / self.deckname_selected_animation_duration
+
+        deckname_animation_frame = None
+
+        if percentage >= 1.0:
+            self.finalize_deckname_selected_animation()
+            return
+
+        elif percentage <= 0.5:
+
+            rp = percentage * 2
+            deckname_animation_frame = graphics.apply_margins(self.deckname_frame, 0.5 * rp, 0.5 * rp)
+
+        else:
+
+            rp = (percentage - 0.5) * 2
+            deckname_animation_frame = graphics.apply_margins(self.deckname_frame, 0.5 * (1.0 - rp), 0.5 * (1.0 - rp))
+
+
+
+
+        self.deckname_rendered_and_positions = graphics.render_page_from_chars_color(
+                                                                                        font=self.font,
+                                                                                        page=[[(self.shown_group, self.menu_label_text_color)]],
+                                                                                        frame=deckname_animation_frame,
+                                                                                        text_color=self.menu_label_text_color,
+                                                                                        centered=True,
+                                                                                        vertical_centered=True
+                                                                                    )
+
+    def finalize_deckname_selected_animation(self):
+
+        self.deckname_rendered_and_positions = self.deckname_rendered_and_positions_copy
+        self.state = RenderableCardListviewer.INITIALIZE_DECK_RENAMING_FRAME
+
     def prerender_full_image(self):
 
         self.full_image_surface.fill((*self.full_image_background_color, self.full_image_background_alpha))
@@ -926,3 +1190,9 @@ class RenderableCardListviewer(Frame):
 
         isurf, ipos = graphics.img_load_and_position(img_path, self.frame_dim)
         self.full_image_surface.blit(isurf, ipos)
+
+    def initialize_deck_renaming_frame(self):
+
+        self.rename_deck_subframe = RenderableCardListviewer.DeckRenameFrame(self.frame_dim, self.focus_group)
+        self.rename_deck_subframe.set_input_text(self.shown_group)
+        self.state = RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE

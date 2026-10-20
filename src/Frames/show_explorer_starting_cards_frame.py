@@ -36,13 +36,36 @@ class ShowExplorerStartingCardsFrame(Frame):
 
         self.cardlistviewer = RenderableCardListviewer(
                                                         self.frame_dim.copy(),
-                                                        {self.card: 100},
-                                                        {"Deck": {"cardlist": {self.card: 100}, "mutable": True, "is_copylist": False}},
+                                                        {self.card: 10,
+                                                        self.modules.explorer_cards_module.Example_Card_1: 5,
+                                                        self.modules.explorer_cards_module.Example_Card_2: 2,
+                                                        self.modules.explorer_cards_module.Example_Card_4: 5,
+                                                        self.modules.explorer_cards_module.Example_Card_3: 3,
+                                                        self.modules.explorer_cards_module.Example_Card_5: 5,
+                                                        self.modules.explorer_cards_module.Example_Card_6: 1,
+                                                        self.modules.explorer_cards_module.Example_Card_7: 7
+
+                                                        },
+                                                        {"Deck": {
+                                                        "cardlist": {
+                                                                        self.card: 10,
+                                                                        self.modules.explorer_cards_module.Example_Card_1: 5,
+                                                                        self.modules.explorer_cards_module.Example_Card_2: 2,
+                                                                        self.modules.explorer_cards_module.Example_Card_3: 3,
+                                                                        self.modules.explorer_cards_module.Example_Card_4: 5,
+                                                                        self.modules.explorer_cards_module.Example_Card_5: 5,
+                                                                        self.modules.explorer_cards_module.Example_Card_6: 1,
+                                                                        self.modules.explorer_cards_module.Example_Card_7: 7
+
+                                                        },
+
+                                                        "mutable": True, "is_copylist": False}},
+
                                                         shown_group="Deck"
                                                         )
 
     def bind_events(self):
-        pass
+        self.clear_event_callbacks()
 
     def tick(self):
 
@@ -51,7 +74,11 @@ class ShowExplorerStartingCardsFrame(Frame):
         if self.exit_flag_raised():
             return None
 
-        self.cardlistviewer.tick()
+        ret = self.cardlistviewer.tick()
+
+        if ret is None:
+            if self.key_pressed(pygame.K_ESCAPE):
+                self.raise_exit_flag()
 
         return self
 

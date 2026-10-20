@@ -11,7 +11,7 @@ class Modules:
 
         #loading the modules
         playset = f"{PLAYSETS_FOLDER}.{playset_name}"
-        
+
         modules = Modules()
 
         modules.biome_cards_module = importlib.import_module(f"{playset}.biome_cards")

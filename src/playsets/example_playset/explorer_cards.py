@@ -45,7 +45,7 @@ class Example_Card_1(Explorer_Card_Template):
                         keep_duration = 0
         )
 
-        return cinfos
+        return cinfo
 
     def __init__(self, modules, entity_type=TypeEnums.EXPLORER_CARD, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, entity_type, Example_Card_1.info(), frame_enum, data, frame_dim, parent_frame)
@@ -70,7 +70,7 @@ class Example_Card_2(Explorer_Card_Template):
                         keep_duration = 0
         )
 
-        return cinfos
+        return cinfo
 
     def __init__(self, modules, entity_type=TypeEnums.EXPLORER_CARD, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, entity_type, Example_Card_2.info(), frame_enum, data, frame_dim, parent_frame)
@@ -95,7 +95,7 @@ class Example_Card_3(Explorer_Card_Template):
                         keep_duration = 0
         )
 
-        return cinfos
+        return cinfo
 
     def __init__(self, modules, entity_type=TypeEnums.EXPLORER_CARD, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, entity_type, Example_Card_3.info(), frame_enum, data, frame_dim, parent_frame)
@@ -120,7 +120,7 @@ class Example_Card_4(Explorer_Card_Template):
                         keep_duration = 0
         )
 
-        return cinfos
+        return cinfo
 
     def __init__(self, modules, entity_type=TypeEnums.EXPLORER_CARD, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, entity_type, Example_Card_4.info(), frame_enum, data, frame_dim, parent_frame)
@@ -145,7 +145,7 @@ class Example_Card_5(Explorer_Card_Template):
                         keep_duration = 0
         )
 
-        return cinfos
+        return cinfo
 
     def __init__(self, modules, entity_type=TypeEnums.EXPLORER_CARD, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, entity_type, Example_Card_5.info(), frame_enum, data, frame_dim, parent_frame)
@@ -170,7 +170,7 @@ class Example_Card_6(Explorer_Card_Template):
                         keep_duration = 0
         )
 
-        return cinfos
+        return cinfo
 
     def __init__(self, modules, entity_type=TypeEnums.EXPLORER_CARD, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, entity_type, Example_Card_6.info(), frame_enum, data, frame_dim, parent_frame)
@@ -195,7 +195,7 @@ class Example_Card_7(Explorer_Card_Template):
                         keep_duration = 0
         )
 
-        return cinfos
+        return cinfo
 
     def __init__(self, modules, entity_type=TypeEnums.EXPLORER_CARD, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, entity_type, Example_Card_7.info(), frame_enum, data, frame_dim, parent_frame)
@@ -221,7 +221,7 @@ class Example_Card_8(Explorer_Card_Template):
                         keep_duration = 0
         )
 
-        return cinfos
+        return cinfo
 
     def __init__(self, modules, entity_type=TypeEnums.EXPLORER_CARD, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, entity_type, Example_Card_8.info(), frame_enum, data, frame_dim, parent_frame)
@@ -247,7 +247,7 @@ class Example_Card_9(Explorer_Card_Template):
                         keep_duration = 0
         )
 
-        return cinfos
+        return cinfo
 
     def __init__(self, modules, entity_type=TypeEnums.EXPLORER_CARD, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, entity_type, Example_Card_9.info(), frame_enum, data, frame_dim, parent_frame)
@@ -272,7 +272,7 @@ class Example_Card_10(Explorer_Card_Template):
                         keep_duration = 0
         )
 
-        return cinfos
+        return cinfo
 
     def __init__(self, modules, entity_type=TypeEnums.EXPLORER_CARD, frame_enum=FrameEnums.PLAYSET_ENTITY, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
         super().__init__(modules, entity_type, Example_Card_10.info(), frame_enum, data, frame_dim, parent_frame)
