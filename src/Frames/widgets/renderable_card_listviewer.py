@@ -52,6 +52,7 @@ class RenderableCardListviewer(Frame):
     MOVING_ALL_ROWS_UP = R_ID()
 
     DECKNAME_SELECTED_ANIMATION = R_ID()
+    MENU_BUTTON_SELECTED_ANIMATION = R_ID()
     #view states
     SHOW_WITH_AMOUNT = R_ID()
     SHOW_EACH_CARD = R_ID()
@@ -266,7 +267,8 @@ class RenderableCardListviewer(Frame):
                 key_delay=200,#ms
                 rowscrolling_duration=300,#ms when scrolling one row upor down, this is the duration it takes
                 rowscrolling_all_duration=500,#ms #rowscrolling all rows up
-                deckname_selected_animation_duration=400#ms
+                deckname_selected_animation_duration=400,#ms
+                menu_button_selected_animation_duration=400#ms
                 ):
 
         if len(groups) == 0:
@@ -452,11 +454,20 @@ class RenderableCardListviewer(Frame):
         self.deckname_selected_animation_duration = deckname_selected_animation_duration
         self.deckname_rendered_and_positions_copy = None
 
+        self.menu_button_selected_animation_clock = Clock()
+        self.menu_button_focused_image_rendered_copy = None
+        self.menu_button_focused_image_rendered_pos_copy = None
+        self.menu_button_frame_copy = None
+        self.menu_button_selected_animation_duration = menu_button_selected_animation_duration
+
         self.key_clock.start()
         self.rerender()
 
     def rerender(self):
 
+        #clearing caches#
+        self.card_render_cache = {}
+        self.text_render_cache = {}
         #resetting card index
         self.selected_card_index = 0
         #creating the full image surface
@@ -573,9 +584,6 @@ class RenderableCardListviewer(Frame):
         self.menu_button_unfocused_image_rendered_pos = graphics.img_load_and_position(self.menu_button_unfocused_image, self.menu_button_frame)
         self.menu_button_focused_image_rendered,\
         self.menu_button_focused_image_rendered_pos = graphics.img_load_and_position(self.menu_button_focused_image, self.menu_button_frame)
-
-        self.menu_button_unfocused_image_rendered_pos = self.inner_menu_label_frame.x - self.menu_label_frame.x, self.menu_button_unfocused_image_rendered_pos[1]
-        self.menu_button_focused_image_rendered_pos = self.inner_menu_label_frame.x - self.menu_label_frame.x, self.menu_button_focused_image_rendered_pos[1]
         #rendering the name
         self.deckname_rendered_and_positions = graphics.render_page_from_chars_color(
                                                                                         font=self.font,
@@ -624,10 +632,6 @@ class RenderableCardListviewer(Frame):
 
 
     def recalculate_main_list_positions(self):
-
-        #clearing caches#
-        self.card_render_cache = {}
-        self.text_render_cache = {}
 
         #getting the separator width
         self.main_list_hseparator_width = int(self.inner_main_list_frame.width * self.main_list_separator_h_percentage)
@@ -823,9 +827,21 @@ class RenderableCardListviewer(Frame):
             self.menu_label_surface.blit(self.menu_label_highlighted_surface, (self.decksize_frame.x, self.decksize_frame.y))
         #widgets
         #button
-        button_img = (self.menu_button_focused_image_rendered if self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED else self.menu_button_unfocused_image_rendered)
-        button_pos = (self.menu_button_focused_image_rendered_pos if self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED else self.menu_button_unfocused_image_rendered_pos)
-        self.menu_label_surface.blit(button_img, self.menu_button_frame)
+        button_img = (self.menu_button_focused_image_rendered if self.state in\
+
+                        [RenderableCardListviewer.MENU_BUTTON_FOCUSED,
+                        RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION]\
+
+                        else self.menu_button_unfocused_image_rendered)
+
+        button_pos = (self.menu_button_focused_image_rendered_pos if self.state in\
+
+                        [RenderableCardListviewer.MENU_BUTTON_FOCUSED,
+                        RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION]\
+
+                        else self.menu_button_unfocused_image_rendered_pos)
+
+        self.menu_label_surface.blit(button_img, button_pos)
         #deckname
         for surf, pos in self.deckname_rendered_and_positions:
             self.menu_label_surface.blit(surf, pos)
@@ -876,7 +892,8 @@ class RenderableCardListviewer(Frame):
                 self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
         elif self.state == RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION:
             self.deckname_selected_animation()
-
+        elif self.state == RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION:
+            self.menu_button_selected_animation()
         elif self.state == RenderableCardListviewer.INITIALIZE_DECK_RENAMING_FRAME:
             self.initialize_deck_renaming_frame()
 
@@ -886,10 +903,11 @@ class RenderableCardListviewer(Frame):
             if ret is None:
 
                 #setting the groupname
-                data_cp = deepcopy(self.groups[self.shown_group])
-                del self.groups[self.shown_group]
-                self.shown_group = self.rename_deck_subframe.get_input_text()
-                self.groups[self.shown_group] = data_cp
+                if self.rename_deck_subframe.get_input_text() not in self.groups:
+                    data_cp = deepcopy(self.groups[self.shown_group])
+                    del self.groups[self.shown_group]
+                    self.shown_group = self.rename_deck_subframe.get_input_text()
+                    self.groups[self.shown_group] = data_cp
                 self.rename_deck_subframe = None
                 self.focus()
                 self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
@@ -1037,6 +1055,9 @@ class RenderableCardListviewer(Frame):
         if self.state == RenderableCardListviewer.MENU_DECKNAME_FOCUSED:
             self.state = RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION
             self.initialize_deckname_selected_animation()
+        elif self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED:
+            self.state = RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION
+            self.initialize_menu_button_selected_animation()
 
     def back_pressed(self):
         pass
@@ -1178,6 +1199,46 @@ class RenderableCardListviewer(Frame):
 
         self.deckname_rendered_and_positions = self.deckname_rendered_and_positions_copy
         self.state = RenderableCardListviewer.INITIALIZE_DECK_RENAMING_FRAME
+
+
+    def initialize_menu_button_selected_animation(self):
+
+        self.menu_button_focused_image_rendered_copy = self.menu_button_focused_image_rendered.copy()
+        self.menu_button_focused_image_rendered_pos_copy = self.menu_button_focused_image_rendered_pos
+        self.menu_button_frame_copy = self.menu_button_frame.copy()
+        self.menu_button_selected_animation_clock.start()
+
+    def menu_button_selected_animation(self):
+
+        percentage = self.menu_button_selected_animation_clock.elapsed() / self.menu_button_selected_animation_duration
+
+        menu_button_animation_frame = None
+
+        if percentage >= 1.0:
+            self.finalize_menu_button_selected_animation()
+            return
+
+        elif percentage <= 0.5:
+
+            rp = percentage * 2
+            menu_button_animation_frame = graphics.apply_margins(self.menu_button_frame_copy, 0.5 * rp, 0.5 * rp)
+
+        else:
+
+            rp = (percentage - 0.5) * 2
+            menu_button_animation_frame = graphics.apply_margins(self.menu_button_frame_copy, 0.5 * (1.0 - rp), 0.5 * (1.0 - rp))
+
+
+
+        self.menu_button_frame = menu_button_animation_frame
+        self.menu_button_focused_image_rendered, self.menu_button_focused_image_rendered_pos = graphics.img_load_and_position(self.menu_button_focused_image, self.menu_button_frame)
+
+    def finalize_menu_button_selected_animation(self):
+
+        self.menu_button_focused_image_rendered = self.menu_button_focused_image_rendered_copy
+        self.menu_button_focused_image_rendered_pos = self.menu_button_focused_image_rendered_pos_copy
+        self.menu_button_frame = self.menu_button_frame_copy
+        self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
 
     def prerender_full_image(self):
 
