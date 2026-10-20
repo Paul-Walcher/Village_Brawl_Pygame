@@ -35,6 +35,8 @@ class Modules:
         modules.village_cards_module = importlib.import_module(f"{playset}.village_cards")
         modules.village_module = importlib.import_module(f"{playset}.village")
         modules.villagers_module = importlib.import_module(f"{playset}.villagers")
+        modules.terrain_module = importlib.import_module(f"{playset}.terrain")
+        modules.tiles_module = importlib.import_module(f"{playset}.tiles")
 
         modules.tags = importlib.import_module(f"{playset}.tags")
         modules.mappings = importlib.import_module(f"{playset}.mappings")

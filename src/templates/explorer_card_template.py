@@ -29,6 +29,7 @@ class CardInfo(Renderable_Card):
                 card_image_path: str = "",
                 standard_image_path: str = "",
                 max_per_deck: int = 4,
+                playable_locations = None,
                 activation_phases: list = None,
                 keep_duration=0
                     ):
@@ -41,6 +42,7 @@ class CardInfo(Renderable_Card):
         self.tags = (tags if tags is not None else [])
         self.max_per_deck = max_per_deck
         self.activation_phases = (activation_phases if activation_phases is not None else [])
+        self.playable_locations = (playable_locations if playable_locations is not None else [])
         self.keep_duration = keep_duration
 
     def get_info_page_parts(self, frame_dim,

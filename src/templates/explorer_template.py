@@ -41,7 +41,9 @@ class ExplorerInfo(Renderable_Card):
                 unlocked_packs: dict = None,
                 unlockable_packs: dict = None,
                 starting_buildings: dict = None,
-                starting_villagers: dict = None):
+                starting_villagers: dict = None,
+                starting_village_terrain = None
+                ):
 
 
         super().__init__(name, name_color, description, description_color, card_image_path, standard_image_path)
@@ -80,6 +82,8 @@ class ExplorerInfo(Renderable_Card):
         self.inventory_size = inventory_size
         #ability_activation_phases
         self.activation_phases = (ability_activation_phases if ability_activation_phases is not None else [])
+        #the starting terrain for the village
+        self.starting_village_terrain = starting_village_terrain
 
     def get_info_page_parts(self, frame_dim,
                                 font=Fonts.MINECRAFT,

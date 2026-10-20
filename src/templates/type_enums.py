@@ -27,3 +27,13 @@ class TypeEnums(Enum):
     VILLAGE_CARD = auto()
     VILLAGE = auto()
     VILLAGER = auto()
+
+class Locations(Enum):
+
+    ANY = auto()
+
+    VILLAGE = auto()
+    OUTSIDE = auto() #any biome
+
+    #example biomes
+    PLAINS = auto()

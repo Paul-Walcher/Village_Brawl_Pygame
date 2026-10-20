@@ -43,8 +43,12 @@ class RenderableCardListviewer(Frame):
     GROUP_SELECTION = R_ID() #displays the groups available (Should show if a group is a copy group or not)
     FULL_IMAGE_SHOWN = R_ID() #if the main list is focused, the selected image is shown on fullscreen
 
+
     INITIALIZE_DECK_RENAMING_FRAME = R_ID()
     DECK_RENAMING_FRAME_ACTIVE = R_ID()
+
+    INITIALIZE_MENU_FRAME = R_ID()
+    MENU_FRAME_ACTIVE = R_ID()
 
     #animation states
     MOVING_ONE_ROW_UP = R_ID()
@@ -187,6 +191,40 @@ class RenderableCardListviewer(Frame):
 
             screen.blit(self.surface, (self.x, self.y))
 
+    class MenuFrame(Frame):
+
+        def __init__(
+                        self,
+                        frame_dim,
+                        focus_group="",
+                        menu_options=None
+                    ):
+
+            #initializing
+            Frame.__init__(self, FrameEnums.UNDEFINED, None, frame_dim, focus_group=focus_group)
+
+            self.menu_options = (menu_options if menu_options is not None else {})
+
+            self.surface = None
+            self.menu_dropdown = None
+
+            self.rerender()
+
+        def rerender(self):
+            pass
+
+        def bind_events(self):
+            self.clear_event_callbacks()
+
+        def tick(self):
+
+            self.manage_pygame_events()
+
+            if self.exit_flag_raised():
+                return None
+
+        def render(self, screen):
+            pass
 
     def __init__(self,
                 frame_dim,  #frame dimension, into which it is rendered into

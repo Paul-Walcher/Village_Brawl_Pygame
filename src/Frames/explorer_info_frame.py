@@ -35,10 +35,11 @@ class ExplorerInfoFrame(Frame):
 
         self.icon_imgs = [IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
                         IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"),
-                        IIMAGE("Pack_Icon.png"), IIMAGE("Villager_Icon.png")
+                        IIMAGE("Pack_Icon.png"), IIMAGE("Villager_Icon.png"),
+                        IIMAGE("Terrain_Icon.png")
                 ]
 
-        self.slider_labels = [["Deck"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"], ["Villagers"]]
+        self.slider_labels = [["Deck"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"], ["Villagers"], ["Terrain"]]
 
 
         self.key_delay = 200#ms
