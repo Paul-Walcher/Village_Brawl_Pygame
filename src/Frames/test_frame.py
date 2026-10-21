@@ -5,6 +5,7 @@ from Frames.frame_enums import FrameEnums
 
 from Frames.widgets.dropdown_menu import DropdownMenu
 from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu
+from Frames.widgets.scrollable_dropdown_menu import ScrollableDropdownMenu
 from constants import Colors, KeyAlternatives
 from clock import Clock
 import time
@@ -34,17 +35,24 @@ class TestFrame(EmptyFrame):
                                                 ("E",): None,
                                                 ("RT", "TZ", "IO"): {
                                                                         ("ERERER", "BZTT"): None,
-                                                                        ("HBEDZG",): None
+                                                                        ("HBEDZG",): None,
+                                                                        ("EE", "RR"): None,
+                                                                        ("WWW", "TT"): None,
+
+                                                                        "n_options_shown": 2
                                                                             }
                                             },
                     ("LINE",): None,
-                    ("JJ", "JJ", "JJ", "JJ"): None
+                    ("JJ", "JJ", "JJ", "JJ"): None,
+                    ("GGG",): None,
+                    ("JKIJI", "IJUHU"): None,
+                    "n_options_shown": 3
 
                     }
 
         start_options = [["AAA"], ["BBB", "CCC"], ["DDD", "EEE", "FFF"]]
 
-        self.dropdown = ExpandableDropdownMenu(     self.dropdown_frame,
+        self.dropdown = ScrollableDropdownMenu(     self.dropdown_frame,
                                                     options
                                                     )
 

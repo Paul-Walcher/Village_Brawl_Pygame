@@ -28,6 +28,7 @@ class DropdownMenu(Frame):
                 frame_dim, #dimensions into which the dropdown menu gets rendered
                 options=None,   #list of lines of options, where each line is a list of sentences
                                 #example: options=[["Option 1"], ["This line is long", "so it gets broken up"]]
+                focus_group="",
                 font=Fonts.MINECRAFT, #font for the option text
                 background_color=Colors.T(Colors.BLACK), #background color for unhighlighted option boxes
                 highlighted_background_color=Colors.T(Colors.WHITE), #background color for highlighted option boxes
@@ -49,7 +50,7 @@ class DropdownMenu(Frame):
         if options is None or len(options) == 0:
             raise RuntimeError("No options provided")
 
-        super().__init__(FrameEnums.DROPDOWN_MENU_WIDGET, None, frame_dim)
+        super().__init__(FrameEnums.DROPDOWN_MENU_WIDGET, None, frame_dim, focus_group=focus_group)
 
         #Assigning the initial values
         self.options = options

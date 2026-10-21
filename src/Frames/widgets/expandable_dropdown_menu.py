@@ -51,6 +51,7 @@ class ExpandableDropdownMenu(DropdownMenu):
 
 
                 #for the rest see dropdown_menu.py
+                focus_group="",
                 font=Fonts.MINECRAFT,
                 background_color=Colors.T(Colors.BLACK),
                 highlighted_background_color=Colors.T(Colors.WHITE),
@@ -92,6 +93,7 @@ class ExpandableDropdownMenu(DropdownMenu):
         DropdownMenu.__init__(self,
                         frame_dim,
                         options=list(options.keys()),
+                        focus_group=focus_group,
                         font=font,
                         background_color=background_color,
                         highlighted_background_color=highlighted_background_color,
