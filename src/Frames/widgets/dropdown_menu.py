@@ -214,6 +214,7 @@ class DropdownMenu(Frame):
             return
         #selects the current selected option
         self.state = DropdownMenu.SELECT_ANIMATION_PLAYING
+        self.rtext_copy = self.rendered_highlighted_texts[self.selected_index]
         self.select_clock.start()
 
     def unfocus(self):
@@ -303,8 +304,9 @@ class DropdownMenu(Frame):
         data = self.selected_index
         fevent = Event(DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED, data)
         self.event_queue.append(fevent)
+        self.rendered_highlighted_texts[self.selected_index] = self.rtext_copy
         self.state = DropdownMenu.OPTION_SELECTED
-        self.rerender()
+
 
     def render(self, screen):
         #renders onto the screen

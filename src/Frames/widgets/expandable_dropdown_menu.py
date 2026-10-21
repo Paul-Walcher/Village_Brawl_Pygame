@@ -239,6 +239,7 @@ class ExpandableDropdownMenu(DropdownMenu):
         else:
             #selects the current selected option
             self.state = DropdownMenu.SELECT_ANIMATION_PLAYING
+            self.rtext_copy = self.rendered_highlighted_texts[self.selected_index]
             self.select_clock.start()
 
     def unfocus(self):
@@ -330,10 +331,11 @@ class ExpandableDropdownMenu(DropdownMenu):
         fevent = ExpandableDropdownMenu.SelectionFinishedEvent([self.options[self.selected_index]])
         self.event_queue.append(fevent)
 
+        self.rendered_highlighted_texts[self.selected_index] = self.rtext_copy
+
         if self.deferred_dropdown_menu is None:
             self.state = DropdownMenu.OPTION_SELECTED
 
-        self.rerender()
 
 
     def prerender(self):
