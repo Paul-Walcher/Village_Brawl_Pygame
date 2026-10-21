@@ -502,10 +502,6 @@ class RenderableCardListviewer(Frame):
         self.rerender()
 
     def rerender(self):
-
-        #clearing caches#
-        self.card_render_cache = {}
-        self.text_render_cache = {}
         #resetting card index
         self.selected_card_index = 0
         #creating the full image surface
@@ -670,6 +666,10 @@ class RenderableCardListviewer(Frame):
 
 
     def recalculate_main_list_positions(self):
+
+        #clearing caches#
+        self.card_render_cache = {}
+        self.text_render_cache = {}
 
         #getting the separator width
         self.main_list_hseparator_width = int(self.inner_main_list_frame.width * self.main_list_separator_h_percentage)
