@@ -242,7 +242,7 @@ class ExpandableDropdownMenu(DropdownMenu):
             self.rtext_copy = self.rendered_highlighted_texts[self.selected_index]
             self.select_clock.start()
 
-    def unfocus(self):
+    def unselect(self):
 
         self.deferred_dropdown_menu = None
         self.selected_index = -1
@@ -251,7 +251,7 @@ class ExpandableDropdownMenu(DropdownMenu):
 
         self.prerender()
 
-    def focus_on(self, index):
+    def select_option(self, index):
 
         self.deferred_dropdown_menu = None
         self.selected_index = index

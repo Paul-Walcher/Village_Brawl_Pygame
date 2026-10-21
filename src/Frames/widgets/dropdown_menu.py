@@ -50,7 +50,7 @@ class DropdownMenu(Frame):
         if options is None or len(options) == 0:
             raise RuntimeError("No options provided")
 
-        super().__init__(FrameEnums.DROPDOWN_MENU_WIDGET, None, frame_dim, focus_group=focus_group)
+        super().__init__(FrameEnums.DROPDOWN_MENU_WIDGET, None, frame_dim, focus_group=focus_group, has_focus=False)
 
         #Assigning the initial values
         self.options = options

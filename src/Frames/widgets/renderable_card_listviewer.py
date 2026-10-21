@@ -72,6 +72,29 @@ class RenderableCardListviewer(Frame):
     SHOW_WITH_AMOUNT = R_ID()
     SHOW_EACH_CARD = R_ID()
 
+    class MENU_OPTIONS:
+
+        @staticmethod
+        def get_option_from_traceback(traceback):
+            return traceback[-1]
+
+        SHOWN_AMOUNT = 10
+
+        #sorting
+        SORTING_OPTION_KEY = ("Sort Group",)
+        #suboptions
+        NO_ORDER_SORTING = ("No Order",)
+        NAME_DESCENDING_SORTING = ("Name Descending",)
+        NAME_ASCENDING_SORTING = ("Name Ascending",)
+        AMOUNT_DESCENDING_SORTING = ("Amount Descending",)
+        AMOUNT_ASCENDING_SORTING = ("Amount Ascending",)
+        #shown_amount
+        SORTING_OPTIONS_SHOWN_AMOUNT = 10
+
+
+
+
+
     class SortingFunctions:
 
         """
@@ -319,6 +342,9 @@ class RenderableCardListviewer(Frame):
                 info_text_color = None,
                 info_text_warning_color=None,
                 info_text_error_color=None,
+                #dropdown menu
+                dropdown_menu_hlen_p=0.4,
+                dropdown_menu_vlen_p=0.4,
                 #delay between inputs
                 key_delay=200,#ms
                 rowscrolling_duration=300,#ms when scrolling one row upor down, this is the duration it takes
@@ -532,6 +558,12 @@ class RenderableCardListviewer(Frame):
         #fadeout time saved
         self.current_info_text_fadeout_duration = 0
         self.info_text_fading_clock = Clock()
+        #dropdown menu
+        self.dropdown_menu = None
+        self.dropdown_menu_frame = None
+        self.dropdown_menu_hlen_p = dropdown_menu_hlen_p
+        self.dropdown_menu_vlen_p = dropdown_menu_vlen_p
+        self.dropdown_menu_options_dict = None
 
         self.key_clock.start()
         self.rerender()
@@ -699,6 +731,8 @@ class RenderableCardListviewer(Frame):
         #getting the inner main list
         self.inner_main_list_frame = graphics.apply_margins(self.main_list_frame, self.main_list_hmargin, self.main_list_vmargin)
 
+        #creating the cardmenu
+        self.create_dropdown_menu()
         #now getting the card positions
         self.recalculate_main_list_positions()
         #prerendering
@@ -990,6 +1024,56 @@ class RenderableCardListviewer(Frame):
         else:
             fade = int((1.0 - percentage) * 255)
             self.info_text_surface.set_alpha(fade)
+
+    """
+    --------------------------------------
+            DROPDOWN_MENU_CREATION
+    --------------------------------------
+    """
+    def create_dropdown_menu_dict(self):
+
+        mdict = {
+                    ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.SHOWN_AMOUNT
+                }
+
+        sorting_options_dict = {
+                                    RenderableCardListviewer.MENU_OPTIONS.NO_ORDER_SORTING: None,
+                                    RenderableCardListviewer.MENU_OPTIONS.NAME_DESCENDING_SORTING: None,
+                                    RenderableCardListviewer.MENU_OPTIONS.NAME_ASCENDING_SORTING: None,
+                                    ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.SORTING_OPTIONS_SHOWN_AMOUNT
+                                }
+
+        if self.state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
+
+            sorting_options_dict[RenderableCardListviewer.MENU_OPTIONS.AMOUNT_DESCENDING_SORTING] = None
+            sorting_options_dict[RenderableCardListviewer.MENU_OPTIONS.AMOUNT_ASCENDING_SORTING] = None
+
+        mdict[RenderableCardListviewer.MENU_OPTIONS.SORTING_OPTION_KEY] = sorting_options_dict
+
+        return mdict
+
+
+
+
+
+
+    def create_dropdown_menu(self):
+
+        self.dropdown_menu_options_dict = self.create_dropdown_menu_dict()
+
+        #creating the dropdown menu
+        self.dropdown_menu_frame = pygame.Rect(
+                                                    self.menu_button_frame.x,
+                                                    self.menu_label_frame.y + self.menu_label_frame.height,
+                                                    int(self.dropdown_menu_hlen_p * self.inner_area.width),
+                                                    int(self.dropdown_menu_vlen_p * self.inner_area.height)
+                                            )
+
+        self.dropdown_menu = ScrollableDropdownMenu(
+                                                        self.dropdown_menu_frame,
+                                                        self.dropdown_menu_options_dict
+                                                    )
+
 
 
     def bind_events(self):
