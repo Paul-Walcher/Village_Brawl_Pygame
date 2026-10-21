@@ -24,14 +24,25 @@ from copy import deepcopy
 
 #widgets
 from Frames.widgets.text_input import TextInput
+from Frames.widgets.dropdown_menu import DropdownMenu
+from Frames.widgets.expendable_dropdown_menu import ExpendableDropdownMenu
+from Frames.widgets.scrollable_dropdown_menu import ScrollableDropdownMenu
 
 class RenderableCardListviewer(Frame):
 
     IS_COPYLIST_KEY = "is_copylist"
     MUTABLE_KEY = "mutable"
+    RENAMABLE_KEY = "renamable" #if the group is renamable or not
     CARDLIST_KEY = "cardlist"
 
     FULL_CARDLIST_NAME = "Full Cardlist"
+    #info text colors
+    INFO_TEXT_STANDARD_COLOR = Colors.BLACK
+    INFO_TEXT_WARNING_COLOR = Colors.YELLOW
+    INFO_TEXT_ERROR_COLOR = Colors.RED
+    #Fading durations for the info text
+    RENAMING_NOT_POSSIBLE_FADING_DURATION = 5000#ms
+    RENAMING_NOT_POSSIBLE_INFO_TEXT = "Renaming for this group is disabled"
 
     NOTHING_FOCUSED = R_ID() #nothing is focused
     MAIN_LIST_FOCUSED = R_ID() #the cards in the list are focused
@@ -301,6 +312,13 @@ class RenderableCardListviewer(Frame):
                 selected_cardshadow_alpha=120,
                 #margin between timage and any text rendered below
                 subtext_margin=0.2,
+                #info text specifications
+                info_text_hlen_p = 0.3,#horizontal length percentage
+                info_text_vlen_p = 0.15,#vertical length percentage
+                info_text_surface_alpha=192,
+                info_text_color = None,
+                info_text_warning_color=None,
+                info_text_error_color=None,
                 #delay between inputs
                 key_delay=200,#ms
                 rowscrolling_duration=300,#ms when scrolling one row upor down, this is the duration it takes
@@ -473,7 +491,9 @@ class RenderableCardListviewer(Frame):
         #adding the full cardlist
         self.groups[RenderableCardListviewer.FULL_CARDLIST_NAME] = {RenderableCardListviewer.CARDLIST_KEY: self.full_cardlist,
                                                                     RenderableCardListviewer.MUTABLE_KEY: False,
-                                                                    RenderableCardListviewer.IS_COPYLIST_KEY: True}
+                                                                    RenderableCardListviewer.IS_COPYLIST_KEY: True,
+                                                                    RenderableCardListviewer.RENAMABLE_KEY: False #not renamable
+                                                                    }
         self.shown_group = (shown_group if shown_group is not None else list(self.groups.keys())[0])
 
         #deckname subframe
@@ -498,10 +518,34 @@ class RenderableCardListviewer(Frame):
         self.menu_button_frame_copy = None
         self.menu_button_selected_animation_duration = menu_button_selected_animation_duration
 
+        #info text, for displaying information
+        self.info_text_frame = None
+        self.info_text_surface = None
+        self.info_text_rendered = None #actual rendered text
+        self.info_text_surface_alpha = info_text_surface_alpha
+        self.info_text_hlen_p = info_text_hlen_p
+        self.info_text_vlen_p = info_text_vlen_p
+        #info text colors
+        self.info_text_color = info_text_color
+        self.info_text_warning_color = info_text_warning_color
+        self.info_text_error_color = info_text_error_color
+        #fadeout time saved
+        self.current_info_text_fadeout_duration = 0
+        self.info_text_fading_clock = Clock()
+
         self.key_clock.start()
         self.rerender()
 
     def rerender(self):
+        #info text calc
+        iheight = int(self.height * self.info_text_vlen_p)
+        self.info_text_frame = pygame.Rect( 0,
+                                            self.height - iheight,
+                                            int(self.width * self.info_text_hlen_p),
+                                            iheight
+                                            )
+        self.info_text_surface = pygame.Surface((self.info_text_frame.width, self.info_text_frame.height), pygame.SRCALPHA)
+        self.info_text_rendered = None
         #resetting card index
         self.selected_card_index = 0
         #creating the full image surface
@@ -659,11 +703,6 @@ class RenderableCardListviewer(Frame):
         self.recalculate_main_list_positions()
         #prerendering
         self.prerender()
-
-    #gets the size of the currently shown deck
-    def get_shown_group_decksize(self):
-        return sum(self.groups[self.shown_group][RenderableCardListviewer.CARDLIST_KEY].values())
-
 
     def recalculate_main_list_positions(self):
 
@@ -889,6 +928,11 @@ class RenderableCardListviewer(Frame):
         #bliting the widgets onto the label
         self.surface.blit(self.menu_label_surface, self.menu_label_surface_pos)
 
+        if self.info_text_active():
+            self.info_text_surface.fill((*Colors.BLACK, self.info_text_surface_alpha))
+            for surf, pos in self.info_text_rendered:
+                self.info_text_surface.blit(surf, pos)
+            self.surface.blit(self.info_text_surface, (self.info_text_frame.x, self.info_text_frame.y))
 
         if self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN:
             self.surface.blit(self.full_image_surface, (0, 0))
@@ -909,6 +953,45 @@ class RenderableCardListviewer(Frame):
         self.full_image_surface.fill((*Colors.BLACK, 200))
         self.full_image_surface.blit(cimage, cpos)
 
+    #gets the size of the currently shown deck
+    def get_shown_group_decksize(self):
+        return sum(self.groups[self.shown_group][RenderableCardListviewer.CARDLIST_KEY].values())
+
+    """
+    ------------------------------------------------
+                        INFO TEXT
+    ------------------------------------------------
+    """
+
+    #for getting the info text flag
+    def info_text_active(self):
+        return (self.info_text_rendered is not None)
+
+    def print_info_text(self, text_page, text_color, fade_duration):
+        #text needs to be a colored page
+        self.info_text_rendered = graphics.render_page_from_chars_color(
+                                                                        self.font,
+                                                                        text_page,
+                                                                        pygame.Rect(0, 0, self.info_text_frame.width, self.info_text_frame.height),
+                                                                        text_color=text_color,
+                                                                        centered=True,
+                                                                        vertical_centered=True
+                                                                        )
+
+        self.current_info_text_fadeout_duration = fade_duration
+        self.info_text_fading_clock.start()
+
+    def info_text_tick(self):
+
+        percentage = self.info_text_fading_clock.elapsed() / self.current_info_text_fadeout_duration
+
+        if percentage >= 1.0:
+            self.info_text_rendered = None
+        else:
+            fade = int((1.0 - percentage) * 255)
+            self.info_text_surface.set_alpha(fade)
+
+
     def bind_events(self):
         self.clear_event_callbacks()
 
@@ -917,6 +1000,9 @@ class RenderableCardListviewer(Frame):
 
         if self.exit_flag_raised():
             return None
+
+        if self.info_text_active():
+            self.info_text_tick()
 
         #non input accepting states
         if self.state == RenderableCardListviewer.MOVING_ONE_ROW_UP:
@@ -1091,8 +1177,19 @@ class RenderableCardListviewer(Frame):
 
         #checking for deck renaming
         if self.state == RenderableCardListviewer.MENU_DECKNAME_FOCUSED:
-            self.state = RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION
-            self.initialize_deckname_selected_animation()
+            if self.groups[self.shown_group][RenderableCardListviewer.RENAMABLE_KEY]:
+                self.state = RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION
+                self.initialize_deckname_selected_animation()
+            else:
+                tcolor = (RenderableCardListviewer.INFO_TEXT_WARNING_COLOR if self.info_text_warning_color is None else self.info_text_warning_color)
+
+
+                self.print_info_text(
+                                        [[(RenderableCardListviewer.RENAMING_NOT_POSSIBLE_INFO_TEXT, tcolor)]],
+                                        tcolor,
+                                        RenderableCardListviewer.RENAMING_NOT_POSSIBLE_FADING_DURATION
+                                    )
+
         elif self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED:
             self.state = RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION
             self.initialize_menu_button_selected_animation()

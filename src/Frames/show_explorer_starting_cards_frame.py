@@ -59,7 +59,9 @@ class ShowExplorerStartingCardsFrame(Frame):
 
                                                         },
 
-                                                        "mutable": True, "is_copylist": False}},
+                                                        "mutable": True, "is_copylist": False,
+                                                        "renamable": False
+                                                        }},
 
                                                         shown_group="Deck"
                                                         )
