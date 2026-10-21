@@ -25,7 +25,7 @@ from copy import deepcopy
 #widgets
 from Frames.widgets.text_input import TextInput
 from Frames.widgets.dropdown_menu import DropdownMenu
-from Frames.widgets.expendable_dropdown_menu import ExpendableDropdownMenu
+from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu
 from Frames.widgets.scrollable_dropdown_menu import ScrollableDropdownMenu
 
 class RenderableCardListviewer(Frame):
