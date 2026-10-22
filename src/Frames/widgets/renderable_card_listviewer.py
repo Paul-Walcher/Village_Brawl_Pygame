@@ -1094,22 +1094,27 @@ class RenderableCardListviewer(Frame):
                 if selection == RenderableCardListviewer.MENU_OPTIONS.RANDOMIZED_SORTING:
                     self.sorting_function = RenderableCardListviewer.SortingFunctions.randomized
                     self.main_list_cards = self.sorting_function(self.main_list_cards)
+                    self.recalculate_main_list_positions()
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.NAME_DESCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.name_descending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.name_descending
                         self.main_list_cards = self.sorting_function(self.main_list_cards)
+                        self.recalculate_main_list_positions()
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.NAME_ASCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.name_ascending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.name_ascending
                         self.main_list_cards = self.sorting_function(self.main_list_cards)
+                        self.recalculate_main_list_positions()
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.AMOUNT_DESCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.amount_descending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_descending
                         self.main_list_cards = self.sorting_function(self.main_list_cards)
+                        self.recalculate_main_list_positions()
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.AMOUNT_ASCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.amount_ascending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_ascending
                         self.main_list_cards = self.sorting_function(self.main_list_cards)
+                        self.recalculate_main_list_positions()
 
                 #display types
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.SHOW_EACH_CARD_DISPLAY_TYPE:
