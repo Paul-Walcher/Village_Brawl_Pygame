@@ -79,7 +79,7 @@ class RenderableCardListviewer(Frame):
         def get_option_from_traceback(traceback):
             return traceback[-1]
 
-        SHOWN_AMOUNT = 10
+        SHOWN_AMOUNT = 5
 
         #sorting
         SORTING_OPTION_KEY = ("Sort Group",)
@@ -90,7 +90,7 @@ class RenderableCardListviewer(Frame):
         AMOUNT_DESCENDING_SORTING = ("Amount Descending",)
         AMOUNT_ASCENDING_SORTING = ("Amount Ascending",)
         #shown_amount
-        SORTING_OPTIONS_SHOWN_AMOUNT = 10
+        SORTING_OPTIONS_SHOWN_AMOUNT = 5
 
         #display type
         DISPLAY_TYPE_KEY = ("Display Type",)
@@ -98,7 +98,11 @@ class RenderableCardListviewer(Frame):
         SHOW_EACH_CARD_DISPLAY_TYPE = ("Show Each Card",)
         SHOW_WITH_AMOUNT_DISPLAY_TYPE = ("Show With Amount",)
         #shown amount
-        DISPLAY_OPTIONS_SHOWN_AMOUNT = 10
+        DISPLAY_OPTIONS_SHOWN_AMOUNT = 5
+
+        #group selection
+        SELECT_GROUP_OPTION_KEY = ("Select Deck",)
+        SELECT_GROUP_OPTIONS_SHOWN_AMOUNT = 5
 
 
 
@@ -361,6 +365,9 @@ class RenderableCardListviewer(Frame):
                 #dropdown menu
                 dropdown_menu_hlen_p=0.5,
                 dropdown_menu_vlen_p=0.2,
+                #group menu stuff
+                group_selection_enabled=True,
+                group_creation_enabled=False,
                 #delay between inputs
                 key_delay=200,#ms
                 rowscrolling_duration=300,#ms when scrolling one row upor down, this is the duration it takes
@@ -585,6 +592,9 @@ class RenderableCardListviewer(Frame):
         self.dropdown_menu_vlen_p = dropdown_menu_vlen_p
         self.dropdown_menu_options_dict = None
 
+        self.group_creation_enabled = group_creation_enabled
+        self.group_selection_enabled = group_selection_enabled
+
         self.key_clock.start()
         self.rerender()
 
@@ -714,27 +724,6 @@ class RenderableCardListviewer(Frame):
         self.menu_button_unfocused_image_rendered_pos = graphics.img_load_and_position(self.menu_button_unfocused_image, self.menu_button_frame)
         self.menu_button_focused_image_rendered,\
         self.menu_button_focused_image_rendered_pos = graphics.img_load_and_position(self.menu_button_focused_image, self.menu_button_frame)
-        #rendering the name
-        self.deckname_rendered_and_positions = graphics.render_page_from_chars_color(
-                                                                                        font=self.font,
-                                                                                        page=[[(self.shown_group, self.menu_label_text_color)]],
-                                                                                        frame=self.deckname_frame,
-                                                                                        text_color=self.menu_label_text_color,
-                                                                                        centered=True,
-                                                                                        vertical_centered=True
-                                                                                    )
-        #rendering the decksize
-        self.decksize_rendered_and_positions = graphics.render_page_from_chars_color(
-                                                                                        font=self.font,
-                                                                                        page=[
-                                                                                            [("Decksize:", self.menu_label_text_color)],
-                                                                                            [(str(self.get_shown_group_decksize()), self.menu_label_text_color)]
-                                                                                        ],
-                                                                                        frame=self.decksize_frame,
-                                                                                        text_color=self.menu_label_text_color,
-                                                                                        centered=True,
-                                                                                        vertical_centered=True
-                                                                                    )
 
         """
         -----------------------------------------
@@ -751,12 +740,45 @@ class RenderableCardListviewer(Frame):
         #getting the inner main list
         self.inner_main_list_frame = graphics.apply_margins(self.main_list_frame, self.main_list_hmargin, self.main_list_vmargin)
 
+        #rendering the name
+        self.render_deckname_text()
+        #rendering the decksize
+        self.render_decksize_text()
         #creating the cardmenu
         self.create_dropdown_menu()
         #now getting the card positions
         self.recalculate_main_list_positions()
         #prerendering
         self.prerender()
+
+    def render_deckname_text(self):
+
+        self.deckname_rendered_and_positions = graphics.render_page_from_chars_color(
+                                                                                        font=self.font,
+                                                                                        page=[[(self.shown_group, self.menu_label_text_color)]],
+                                                                                        frame=self.deckname_frame,
+                                                                                        text_color=self.menu_label_text_color,
+                                                                                        centered=True,
+                                                                                        vertical_centered=True
+                                                                                    )
+    def render_decksize_text(self):
+
+        self.decksize_rendered_and_positions = graphics.render_page_from_chars_color(
+                                                                                        font=self.font,
+                                                                                        page=[
+                                                                                            [("Decksize:", self.menu_label_text_color)],
+                                                                                            [(str(self.get_shown_group_decksize()), self.menu_label_text_color)]
+                                                                                        ],
+                                                                                        frame=self.decksize_frame,
+                                                                                        text_color=self.menu_label_text_color,
+                                                                                        centered=True,
+                                                                                        vertical_centered=True
+                                                                                    )
+    def reload_current_group(self):
+
+        self.render_deckname_text()
+        self.render_decksize_text()
+        self.recalculate_main_list_positions()
 
     def recalculate_main_list_positions(self):
 
@@ -810,6 +832,10 @@ class RenderableCardListviewer(Frame):
         self.main_list_cards_rects = {}
 
         for cardclass, amount in self.main_list_cards:
+
+            if amount == 0:
+                main_list_cards_index += 1
+                continue
 
             if self.main_list_view_state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
 
@@ -1060,6 +1086,13 @@ class RenderableCardListviewer(Frame):
                     ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.SHOWN_AMOUNT
                 }
 
+        if self.group_selection_enabled:
+
+            selection_groups_dict = {(G,): None for G in self.groups.keys() if G != ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY}
+            selection_groups_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] : RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTIONS_SHOWN_AMOUNT
+
+            mdict[RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTION_KEY] = selection_groups_dict
+
         #sorting types
         sorting_options_dict = {
                                     RenderableCardListviewer.MENU_OPTIONS.RANDOMIZED_SORTING: None,
@@ -1093,6 +1126,7 @@ class RenderableCardListviewer(Frame):
             #selection was done
             if self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
                 #getting the selected instance
+                full_trace = event.data
                 selection = RenderableCardListviewer.MENU_OPTIONS.get_option_from_traceback(event.data)
 
                 if selection == RenderableCardListviewer.MENU_OPTIONS.RANDOMIZED_SORTING:
@@ -1130,6 +1164,12 @@ class RenderableCardListviewer(Frame):
                     if self.main_list_view_state != RenderableCardListviewer.SHOW_WITH_AMOUNT:
                         self.main_list_view_state = RenderableCardListviewer.SHOW_WITH_AMOUNT
                         self.recalculate_main_list_positions()
+
+                #group selection
+                elif full_trace[:-1] == [RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTION_KEY]:
+
+                    self.shown_group = selection[0]
+                    self.reload_current_group()
 
                 self.reload_dropdown_menu_with_progress()
 
@@ -1215,7 +1255,8 @@ class RenderableCardListviewer(Frame):
                 self.rename_deck_subframe = None
                 self.focus()
                 self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
-                self.rerender()
+                self.render_deckname_text()
+                self.create_dropdown_menu()
                 self.key_clock.start()
 
         else:
