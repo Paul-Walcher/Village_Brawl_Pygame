@@ -534,6 +534,10 @@ class Frame(EventQueueManager):
         #focus group, and only if this frame has the focus
         self.__exit_flag_raised = True
 
+    def reset_exit_flag(self):
+
+        self.__exit_flag_raised = False
+
 
 
     def exit_flag_raised(self):
