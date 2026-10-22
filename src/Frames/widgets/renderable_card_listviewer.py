@@ -1,6 +1,7 @@
 import os
 import pygame
 import threading
+import random
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -83,7 +84,7 @@ class RenderableCardListviewer(Frame):
         #sorting
         SORTING_OPTION_KEY = ("Sort Group",)
         #suboptions
-        NO_ORDER_SORTING = ("No Order",)
+        RANDOMIZED_SORTING = ("Randomized",)
         NAME_DESCENDING_SORTING = ("Name Descending",)
         NAME_ASCENDING_SORTING = ("Name Ascending",)
         AMOUNT_DESCENDING_SORTING = ("Amount Descending",)
@@ -104,19 +105,25 @@ class RenderableCardListviewer(Frame):
 
         @staticmethod
         def no_order(cardlist):
-            return [(key, value) for key, value in cardlist.items()]
+            return cardlist
+
+        @staticmethod
+        def randomized(cardlist):
+            cardlist_copy = cardlist.copy()
+            random.shuffle(cardlist_copy)
+            return cardlist_copy
 
         @staticmethod
         def name_descending(cardlist):
 
-            clist = [(key, value) for key, value in cardlist.items()]
+            clist = cardlist.copy()
             clist.sort(key=lambda x: x[0].info().name)
             return clist
 
         @staticmethod
         def name_ascending(cardlist):
 
-            clist = [(key, value) for key, value in cardlist.items()]
+            clist = cardlist.copy()
             clist.sort(key=lambda x: x[0].info().name)
             clist.reverse()
             return clist
@@ -124,14 +131,14 @@ class RenderableCardListviewer(Frame):
         @staticmethod
         def amount_descending(cardlist):
 
-            clist = [(key, value) for key, value in cardlist.items()]
+            clist = cardlist.copy()
             clist.sort(key=lambda x: x[1])
             return clist
 
         @staticmethod
         def amount_ascending(cardlist):
 
-            clist = [(key, value) for key, value in cardlist.items()]
+            clist = cardlist.copy()
             clist.sort(key=lambda x: x[1])
             clist.reverse()
             return clist
@@ -755,6 +762,7 @@ class RenderableCardListviewer(Frame):
         self.main_list_cheight = (self.inner_main_list_frame.height - self.main_list_vseparator_height) // self.cards_per_column
 
         gcards = self.groups[self.shown_group][RenderableCardListviewer.CARDLIST_KEY]
+        gcards = [(key, value) for key, value in gcards.items()]
         self.main_list_cards = self.sorting_function(gcards)
 
         #rendering all cards, and adding their position
@@ -1040,7 +1048,7 @@ class RenderableCardListviewer(Frame):
                 }
 
         sorting_options_dict = {
-                                    RenderableCardListviewer.MENU_OPTIONS.NO_ORDER_SORTING: None,
+                                    RenderableCardListviewer.MENU_OPTIONS.RANDOMIZED_SORTING: None,
                                     RenderableCardListviewer.MENU_OPTIONS.NAME_DESCENDING_SORTING: None,
                                     RenderableCardListviewer.MENU_OPTIONS.NAME_ASCENDING_SORTING: None,
                                     ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.SORTING_OPTIONS_SHOWN_AMOUNT
@@ -1057,7 +1065,28 @@ class RenderableCardListviewer(Frame):
 
 
     def handle_dropdown_menu_selection(self, event):
-        pass
+
+        if event.type == ScrollableDropdownMenu.EventTypes.SELECTION_FINISHED_EVENT:
+            #selection was done
+            if self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+                #getting the selected instance
+                selection = RenderableCardListviewer.MENU_OPTIONS.get_option_from_traceback(event.data)
+
+                if selection == RenderableCardListviewer.MENU_OPTIONS.RANDOMIZED_SORTING:
+                    self.sorting_function = RenderableCardListviewer.SortingFunctions.randomized
+                    self.main_list_cards = self.sorting_function(self.main_list_cards)
+                elif selection == RenderableCardListviewer.MENU_OPTIONS.NAME_DESCENDING_SORTING:
+                    self.sorting_function = RenderableCardListviewer.SortingFunctions.name_descending
+                    self.main_list_cards = self.sorting_function(self.main_list_cards)
+                elif selection == RenderableCardListviewer.MENU_OPTIONS.NAME_ASCENDING_SORTING:
+                    self.sorting_function = RenderableCardListviewer.SortingFunctions.name_ascending
+                    self.main_list_cards = self.sorting_function(self.main_list_cards)
+                elif selection == RenderableCardListviewer.MENU_OPTIONS.AMOUNT_DESCENDING_SORTING:
+                    self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_descending
+                    self.main_list_cards = self.sorting_function(self.main_list_cards)
+                elif selection == RenderableCardListviewer.MENU_OPTIONS.AMOUNT_ASCENDING_SORTING:
+                    self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_ascending
+                    self.main_list_cards = self.sorting_function(self.main_list_cards)
 
 
 
