@@ -187,6 +187,9 @@ class DropdownMenu(Frame):
             pygame.draw.rect(self.surface, self.outline_color, pygame.Rect(0, 0, self.width, self.height), width=self.outline_size)
 
 
+    def bind_events(self):
+        self.clear_event_callbacks()
+
     def move_up(self):
         #moves the selected option one up, wraps around if necessary
 
@@ -201,7 +204,7 @@ class DropdownMenu(Frame):
         #moves the selected option one down, wraps around if necessary
 
         if self.state == DropdownMenu.NOTHING_SELECTED:
-            self.selected_index = self.n_options-1
+            self.selected_index = 0
             self.state = DropdownMenu.OPTION_SELECTED
             return
         if self.state in self.move_states:

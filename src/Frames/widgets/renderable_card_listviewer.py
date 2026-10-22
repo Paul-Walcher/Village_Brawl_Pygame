@@ -53,7 +53,7 @@ class RenderableCardListviewer(Frame):
     SEARCHBAR_FOCUSED = R_ID() #the textinput is focused
     GROUP_SELECTION = R_ID() #displays the groups available (Should show if a group is a copy group or not)
     FULL_IMAGE_SHOWN = R_ID() #if the main list is focused, the selected image is shown on fullscreen
-
+    DROPDOWN_MENU_ACTIVE = R_ID()
 
     INITIALIZE_DECK_RENAMING_FRAME = R_ID()
     DECK_RENAMING_FRAME_ACTIVE = R_ID()
@@ -343,8 +343,8 @@ class RenderableCardListviewer(Frame):
                 info_text_warning_color=None,
                 info_text_error_color=None,
                 #dropdown menu
-                dropdown_menu_hlen_p=0.4,
-                dropdown_menu_vlen_p=0.4,
+                dropdown_menu_hlen_p=0.5,
+                dropdown_menu_vlen_p=0.2,
                 #delay between inputs
                 key_delay=200,#ms
                 rowscrolling_duration=300,#ms when scrolling one row upor down, this is the duration it takes
@@ -968,6 +968,9 @@ class RenderableCardListviewer(Frame):
                 self.info_text_surface.blit(surf, pos)
             self.surface.blit(self.info_text_surface, (self.info_text_frame.x, self.info_text_frame.y))
 
+        if self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+            self.dropdown_menu.render(self.surface)
+
         if self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN:
             self.surface.blit(self.full_image_surface, (0, 0))
         elif self.state == RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE:
@@ -1053,7 +1056,8 @@ class RenderableCardListviewer(Frame):
         return mdict
 
 
-
+    def handle_dropdown_menu_selection(self, event):
+        pass
 
 
 
@@ -1063,8 +1067,8 @@ class RenderableCardListviewer(Frame):
 
         #creating the dropdown menu
         self.dropdown_menu_frame = pygame.Rect(
-                                                    self.menu_button_frame.x,
-                                                    self.menu_label_frame.y + self.menu_label_frame.height,
+                                                    self.inner_area.x,
+                                                    self.inner_area.y + self.menu_label_height,
                                                     int(self.dropdown_menu_hlen_p * self.inner_area.width),
                                                     int(self.dropdown_menu_vlen_p * self.inner_area.height)
                                             )
@@ -1088,6 +1092,15 @@ class RenderableCardListviewer(Frame):
         if self.info_text_active():
             self.info_text_tick()
 
+        #dropdown events
+        dropdown_events = self.dropdown_menu.poll_events()
+
+        if self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+            self.dropdown_menu.tick()
+
+        for event in dropdown_events:
+            self.handle_dropdown_menu_selection(event)
+
         #non input accepting states
         if self.state == RenderableCardListviewer.MOVING_ONE_ROW_UP:
             self.move_one_row_up()
@@ -1104,7 +1117,6 @@ class RenderableCardListviewer(Frame):
             self.menu_button_selected_animation()
         elif self.state == RenderableCardListviewer.INITIALIZE_DECK_RENAMING_FRAME:
             self.initialize_deck_renaming_frame()
-
         elif self.state == RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE:
             ret = self.rename_deck_subframe.tick()
 
@@ -1121,7 +1133,6 @@ class RenderableCardListviewer(Frame):
                 self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
                 self.rerender()
                 self.key_clock.start()
-
 
         else:
             #accept inputs
@@ -1183,6 +1194,8 @@ class RenderableCardListviewer(Frame):
             self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
         elif self.state == RenderableCardListviewer.MENU_DECKNAME_FOCUSED:
             self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
+        elif self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+            self.dropdown_menu.move_left()
 
     def right_pressed(self):
 
@@ -1202,6 +1215,8 @@ class RenderableCardListviewer(Frame):
             self.state = RenderableCardListviewer.MENU_DECKSIZE_FOCUSED
         elif self.state == RenderableCardListviewer.MENU_DECKSIZE_FOCUSED:
             self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
+        elif self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+            self.dropdown_menu.move_right()
 
     def up_pressed(self):
 
@@ -1223,6 +1238,9 @@ class RenderableCardListviewer(Frame):
                 self.initialize_move_one_row_up()
             else:
                 self.selected_card_index -= self.cards_per_line
+
+        elif self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+            self.dropdown_menu.move_up()
 
     def down_pressed(self):
 
@@ -1256,6 +1274,9 @@ class RenderableCardListviewer(Frame):
             else:
                 self.selected_card_index += self.cards_per_line
 
+        elif self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+            self.dropdown_menu.move_down()
+
 
     def enter_pressed(self):
 
@@ -1277,9 +1298,13 @@ class RenderableCardListviewer(Frame):
         elif self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED:
             self.state = RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION
             self.initialize_menu_button_selected_animation()
+        elif self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+            self.dropdown_menu.select()
 
     def back_pressed(self):
-        pass
+
+        if self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+            self.state = RenderableCardListviewer.NOTHING_FOCUSED
 
     def escape_pressed(self):
         if self.state == RenderableCardListviewer.NOTHING_FOCUSED:
@@ -1457,7 +1482,8 @@ class RenderableCardListviewer(Frame):
         self.menu_button_focused_image_rendered = self.menu_button_focused_image_rendered_copy
         self.menu_button_focused_image_rendered_pos = self.menu_button_focused_image_rendered_pos_copy
         self.menu_button_frame = self.menu_button_frame_copy
-        self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
+        self.state = RenderableCardListviewer.DROPDOWN_MENU_ACTIVE
+        self.dropdown_menu.unselect()
 
     def prerender_full_image(self):
 

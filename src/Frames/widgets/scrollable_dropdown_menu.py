@@ -64,6 +64,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
                 ):
 
+
         #since we need to reduce the height to show the image arrows,
         #we need to save the full height
         self.arrow_frame_margin = arrow_frame_margin
@@ -96,6 +97,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
 
         self.full_options = list(options.keys())
+        self.full_options_dict = deepcopy(options)
         if ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY in self.full_options:
             self.full_options.remove(ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY)
         self.n_options_shown = -1
@@ -210,7 +212,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         expanded_frame_dim.x = self.frame_dim.x + self.frame_dim.width
         expanded_frame_dim.width -= self.frame_dim.width
         #adding dropdown menus recursively
-        for key, eoptions in self.dictionary_options.items():
+        for key, eoptions in self.full_options_dict.items():
             if type(eoptions) == dict:
 
                 new_dropdown = ScrollableDropdownMenu(
