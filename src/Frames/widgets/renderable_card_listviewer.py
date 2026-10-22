@@ -1337,7 +1337,7 @@ class RenderableCardListviewer(Frame):
 
         elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
             #check for going off, and if the index is in rendered rows
-            if self.selected_card_index > (self.n_cards_shown - self.cards_per_line):
+            if self.selected_card_index >= (self.n_cards_shown - self.cards_per_line):
                 self.selected_card_index += self.cards_per_line
                 self.selected_card_index %= (self.n_cards_shown)
                 self.selected_card_index -= (self.cards_per_line - self.n_cards_shown % self.cards_per_line)
