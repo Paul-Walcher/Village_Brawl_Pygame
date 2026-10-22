@@ -393,7 +393,7 @@ class RenderableCardListviewer(Frame):
                 info_text_error_color=None,
                 #dropdown menu
                 dropdown_menu_hlen_p=0.5,
-                dropdown_menu_vlen_p=0.2,
+                dropdown_menu_vlen_p=0.4,
                 #group menu stuff
                 group_selection_enabled=True,
                 group_creation_enabled=True,
@@ -807,6 +807,7 @@ class RenderableCardListviewer(Frame):
 
         self.render_deckname_text()
         self.render_decksize_text()
+        self.create_dropdown_menu()
         self.recalculate_main_list_positions()
 
     def recalculate_main_list_positions(self):
@@ -1136,7 +1137,7 @@ class RenderableCardListviewer(Frame):
         if self.group_selection_enabled:
 
             selection_groups_dict = {(G,): None for G in self.groups.keys() if G != ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY}
-            selection_groups_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] : RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTIONS_SHOWN_AMOUNT
+            selection_groups_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTIONS_SHOWN_AMOUNT
 
             mdict[RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTION_KEY] = selection_groups_dict
 
@@ -1301,16 +1302,37 @@ class RenderableCardListviewer(Frame):
             if ret is None:
 
                 #setting the groupname
-                if self.focused_text_input_subframe.get_input_text() not in self.groups and self.focused_text_input_subframe.exit_with_enter():
-                    data_cp = deepcopy(self.groups[self.shown_group])
-                    del self.groups[self.shown_group]
-                    self.shown_group = self.focused_text_input_subframe.get_input_text()
-                    self.groups[self.shown_group] = data_cp
-                self.focused_text_input_subframe = None
-                self.focus()
-                self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
-                self.render_deckname_text()
-                self.create_dropdown_menu()
+                if self.focused_text_input_subframe.exit_with_enter():
+
+                    text = self.focused_text_input_subframe.get_input_text()
+
+                    if not text or text in list(self.groups.keys()):
+                        tcolor = (RenderableCardListviewer.INFO_TEXT_ERROR_COLOR if self.info_text_error_color is None else self.info_text_error_color)
+
+                        self.print_info_text(
+                                                [[(RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_INFO_TEXT, tcolor)]],
+                                                tcolor,
+                                                RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_FADING_DURATION
+                                            )
+
+                        self.focused_text_input_subframe.reset_exit_flag()
+                        self.focused_text_input_subframe.reset_exit_type()
+
+                    else:
+
+                        data_cp = deepcopy(self.groups[self.shown_group])
+                        del self.groups[self.shown_group]
+                        self.shown_group = self.focused_text_input_subframe.get_input_text()
+                        self.groups[self.shown_group] = data_cp
+                        self.focused_text_input_subframe = None
+                        self.focus()
+                        self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
+                        self.render_deckname_text()
+                        self.create_dropdown_menu()
+
+                elif self.focused_text_input_subframe.exit_with_escape():
+                    self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
+
                 self.key_clock.start()
 
         elif self.state == RenderableCardListviewer.DECK_CREATION_FRAME_ACTIVE:
@@ -1761,4 +1783,4 @@ class RenderableCardListviewer(Frame):
                 self.shown_group = text
                 self.reload_current_group()
 
-                self.state = RenderableCardListviewer.DROPDOWN_MENU_ACTIVE
+                self.state = RenderableCardListviewer.NOTHING_FOCUSED

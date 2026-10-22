@@ -172,7 +172,7 @@ class DropdownMenu(Frame):
         lwidth = self.inner_frame_dim.width
         lstart = 0
         for i in range(1, self.n_options):
-            cy = (self.inner_frame_dim.y - self.y) + i*self.option_box_height
+            cy = (self.inner_frame_dim.y - self.y) + i*self.full_box_height
             pygame.draw.line(self.surface, self.line_color, (lstart, cy), (lstart + lwidth, cy), width=int(0.025 * self.option_box_height))
         #rendering the text
         for i in range(self.n_options):
