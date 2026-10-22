@@ -365,6 +365,7 @@ class RenderableCardListviewer(Frame):
                 key_delay=200,#ms
                 rowscrolling_duration=300,#ms when scrolling one row upor down, this is the duration it takes
                 rowscrolling_all_duration=500,#ms #rowscrolling all rows up
+                fastscroll_duration=50,#ms for fast scrolling
                 deckname_selected_animation_duration=400,#ms
                 menu_button_selected_animation_duration=400#ms
                 ):
@@ -549,6 +550,9 @@ class RenderableCardListviewer(Frame):
         self.rowscrolling_clock = Clock()
         self.rowscrolling_duration = rowscrolling_duration
         self.rowscrolling_all_duration = rowscrolling_all_duration
+        self.fastscroll_enabled = False
+        self.fastscroll_duration = fastscroll_duration
+        self.rowscroll_copy = None
 
         self.deckname_selected_animation_clock = Clock()
         self.deckname_selected_animation_duration = deckname_selected_animation_duration
@@ -1310,6 +1314,15 @@ class RenderableCardListviewer(Frame):
             self.state = RenderableCardListviewer.NOTHING_FOCUSED
 
         elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+
+            if self.key_pressed(pygame.K_LSHIFT):
+                if not self.fastscroll_enabled:
+                    self.fastscroll_enabled = True
+                    self.rowscroll_copy = self.rowscrolling_duration
+                    self.rowscrolling_duration = self.fastscroll_duration
+            elif self.fastscroll_enabled:
+                self.fastscroll_enabled = False
+                self.rowscrolling_duration = self.rowscroll_copy
             #check for going off, and if the index is in rendered rows
             if self.selected_card_index < self.cards_per_line:
                 self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
@@ -1337,6 +1350,15 @@ class RenderableCardListviewer(Frame):
 
         elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
             #check for going off, and if the index is in rendered rows
+            if self.key_pressed(pygame.K_LSHIFT):
+                if not self.fastscroll_enabled:
+                    self.fastscroll_enabled = True
+                    self.rowscroll_copy = self.rowscrolling_duration
+                    self.rowscrolling_duration = self.fastscroll_duration
+            elif self.fastscroll_enabled:
+                self.fastscroll_enabled = False
+                self.rowscrolling_duration = self.rowscroll_copy
+
             if self.selected_card_index >= (self.n_cards_shown - self.cards_per_line):
                 self.selected_card_index += self.cards_per_line
                 self.selected_card_index %= (self.n_cards_shown)

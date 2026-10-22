@@ -37,25 +37,25 @@ class ShowExplorerStartingCardsFrame(Frame):
         self.cardlistviewer = RenderableCardListviewer(
                                                         self.frame_dim.copy(),
                                                         {self.card: 100,
-                                                        self.modules.explorer_cards_module.Example_Card_1: 5,
-                                                        self.modules.explorer_cards_module.Example_Card_2: 2,
-                                                        self.modules.explorer_cards_module.Example_Card_4: 5,
-                                                        self.modules.explorer_cards_module.Example_Card_3: 3,
-                                                        self.modules.explorer_cards_module.Example_Card_5: 5,
-                                                        self.modules.explorer_cards_module.Example_Card_6: 1,
-                                                        self.modules.explorer_cards_module.Example_Card_7: 7
+                                                        self.modules.explorer_cards_module.Example_Card_1: 500,
+                                                        self.modules.explorer_cards_module.Example_Card_2: 200,
+                                                        self.modules.explorer_cards_module.Example_Card_4: 500,
+                                                        self.modules.explorer_cards_module.Example_Card_3: 300,
+                                                        self.modules.explorer_cards_module.Example_Card_5: 500,
+                                                        self.modules.explorer_cards_module.Example_Card_6: 100,
+                                                        self.modules.explorer_cards_module.Example_Card_7: 700
 
                                                         },
                                                         {"Deck": {
                                                         "cardlist": {
                                                                         self.card: 100,
-                                                                        self.modules.explorer_cards_module.Example_Card_1: 5,
-                                                                        self.modules.explorer_cards_module.Example_Card_2: 2,
-                                                                        self.modules.explorer_cards_module.Example_Card_3: 3,
-                                                                        self.modules.explorer_cards_module.Example_Card_4: 5,
-                                                                        self.modules.explorer_cards_module.Example_Card_5: 5,
-                                                                        self.modules.explorer_cards_module.Example_Card_6: 1,
-                                                                        self.modules.explorer_cards_module.Example_Card_7: 7
+                                                                        self.modules.explorer_cards_module.Example_Card_1: 500,
+                                                                        self.modules.explorer_cards_module.Example_Card_2: 200,
+                                                                        self.modules.explorer_cards_module.Example_Card_3: 300,
+                                                                        self.modules.explorer_cards_module.Example_Card_4: 500,
+                                                                        self.modules.explorer_cards_module.Example_Card_5: 500,
+                                                                        self.modules.explorer_cards_module.Example_Card_6: 100,
+                                                                        self.modules.explorer_cards_module.Example_Card_7: 700
 
                                                         },
 
