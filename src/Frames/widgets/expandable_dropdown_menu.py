@@ -259,6 +259,35 @@ class ExpandableDropdownMenu(DropdownMenu):
         self.state = DropdownMenu.OPTION_SELECTED
         self.prerender()
 
+    def select_option_expanded(self, option_trace):
+        if not option_trace:
+            return
+        #selects the option with subselecting deferred dropdown menus
+        coption, state = option_trace[0]
+        self.selected_index = self.options.index(coption)
+        if type(self.full_options_dict[coption]) == dict:
+            self.deferred_dropdown_menu = self.expanded_dropdown_menus[coption]
+            #getting if it is a full end or not
+            self.deferred_dropdown_menu.select_option_expanded(option_trace[1:])
+
+        self.state = state
+
+    def get_option_trace(self):
+
+        if self.state == ExpandableDropdownMenu.NOTHING_SELECTED:
+            return None
+        else:
+
+            trace = [(self.options[self.selected_index], self.state)]
+            if self.deferred_dropdown_menu is not None:
+                ext = self.deferred_dropdown_menu.get_option_trace()
+                if ext is not None:
+                    trace.extend(ext)
+
+            return trace
+
+
+
     def render_select_animation(self):
 
         #select animation: first half decreases the size to normal text margin, then goes back up

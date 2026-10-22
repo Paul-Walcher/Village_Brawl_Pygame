@@ -36,7 +36,7 @@ class ShowExplorerStartingCardsFrame(Frame):
 
         self.cardlistviewer = RenderableCardListviewer(
                                                         self.frame_dim.copy(),
-                                                        {self.card: 10,
+                                                        {self.card: 100,
                                                         self.modules.explorer_cards_module.Example_Card_1: 5,
                                                         self.modules.explorer_cards_module.Example_Card_2: 2,
                                                         self.modules.explorer_cards_module.Example_Card_4: 5,
@@ -48,7 +48,7 @@ class ShowExplorerStartingCardsFrame(Frame):
                                                         },
                                                         {"Deck": {
                                                         "cardlist": {
-                                                                        self.card: 10,
+                                                                        self.card: 100,
                                                                         self.modules.explorer_cards_module.Example_Card_1: 5,
                                                                         self.modules.explorer_cards_module.Example_Card_2: 2,
                                                                         self.modules.explorer_cards_module.Example_Card_3: 3,

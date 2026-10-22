@@ -92,6 +92,15 @@ class RenderableCardListviewer(Frame):
         #shown_amount
         SORTING_OPTIONS_SHOWN_AMOUNT = 10
 
+        #display type
+        DISPLAY_TYPE_KEY = ("Display Type",)
+        #options for display type
+        SHOW_EACH_CARD_DISPLAY_TYPE = ("Show Each Card",)
+        SHOW_WITH_AMOUNT_DISPLAY_TYPE = ("Show With Amount",)
+        #shown amount
+        DISPLAY_OPTIONS_SHOWN_AMOUNT = 10
+
+
 
 
 
@@ -1047,6 +1056,7 @@ class RenderableCardListviewer(Frame):
                     ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.SHOWN_AMOUNT
                 }
 
+        #sorting types
         sorting_options_dict = {
                                     RenderableCardListviewer.MENU_OPTIONS.RANDOMIZED_SORTING: None,
                                     RenderableCardListviewer.MENU_OPTIONS.NAME_DESCENDING_SORTING: None,
@@ -1054,12 +1064,21 @@ class RenderableCardListviewer(Frame):
                                     ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.SORTING_OPTIONS_SHOWN_AMOUNT
                                 }
 
-        if self.state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
+        if self.main_list_view_state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
 
             sorting_options_dict[RenderableCardListviewer.MENU_OPTIONS.AMOUNT_DESCENDING_SORTING] = None
             sorting_options_dict[RenderableCardListviewer.MENU_OPTIONS.AMOUNT_ASCENDING_SORTING] = None
 
         mdict[RenderableCardListviewer.MENU_OPTIONS.SORTING_OPTION_KEY] = sorting_options_dict
+
+        #display types
+        display_options_dict = {
+                                    RenderableCardListviewer.MENU_OPTIONS.SHOW_EACH_CARD_DISPLAY_TYPE: None,
+                                    RenderableCardListviewer.MENU_OPTIONS.SHOW_WITH_AMOUNT_DISPLAY_TYPE: None,
+                                    ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.DISPLAY_OPTIONS_SHOWN_AMOUNT
+                                }
+
+        mdict[RenderableCardListviewer.MENU_OPTIONS.DISPLAY_TYPE_KEY] = display_options_dict
 
         return mdict
 
@@ -1076,17 +1095,34 @@ class RenderableCardListviewer(Frame):
                     self.sorting_function = RenderableCardListviewer.SortingFunctions.randomized
                     self.main_list_cards = self.sorting_function(self.main_list_cards)
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.NAME_DESCENDING_SORTING:
-                    self.sorting_function = RenderableCardListviewer.SortingFunctions.name_descending
-                    self.main_list_cards = self.sorting_function(self.main_list_cards)
+                    if self.sorting_function is not RenderableCardListviewer.SortingFunctions.name_descending:
+                        self.sorting_function = RenderableCardListviewer.SortingFunctions.name_descending
+                        self.main_list_cards = self.sorting_function(self.main_list_cards)
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.NAME_ASCENDING_SORTING:
-                    self.sorting_function = RenderableCardListviewer.SortingFunctions.name_ascending
-                    self.main_list_cards = self.sorting_function(self.main_list_cards)
+                    if self.sorting_function is not RenderableCardListviewer.SortingFunctions.name_ascending:
+                        self.sorting_function = RenderableCardListviewer.SortingFunctions.name_ascending
+                        self.main_list_cards = self.sorting_function(self.main_list_cards)
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.AMOUNT_DESCENDING_SORTING:
-                    self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_descending
-                    self.main_list_cards = self.sorting_function(self.main_list_cards)
+                    if self.sorting_function is not RenderableCardListviewer.SortingFunctions.amount_descending:
+                        self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_descending
+                        self.main_list_cards = self.sorting_function(self.main_list_cards)
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.AMOUNT_ASCENDING_SORTING:
-                    self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_ascending
-                    self.main_list_cards = self.sorting_function(self.main_list_cards)
+                    if self.sorting_function is not RenderableCardListviewer.SortingFunctions.amount_ascending:
+                        self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_ascending
+                        self.main_list_cards = self.sorting_function(self.main_list_cards)
+
+                #display types
+                elif selection == RenderableCardListviewer.MENU_OPTIONS.SHOW_EACH_CARD_DISPLAY_TYPE:
+                    if self.main_list_view_state != RenderableCardListviewer.SHOW_EACH_CARD:
+                        self.main_list_view_state = RenderableCardListviewer.SHOW_EACH_CARD
+                        self.recalculate_main_list_positions()
+
+                elif selection == RenderableCardListviewer.MENU_OPTIONS.SHOW_WITH_AMOUNT_DISPLAY_TYPE:
+                    if self.main_list_view_state != RenderableCardListviewer.SHOW_WITH_AMOUNT:
+                        self.main_list_view_state = RenderableCardListviewer.SHOW_WITH_AMOUNT
+                        self.recalculate_main_list_positions()
+
+                self.reload_dropdown_menu_with_progress()
 
 
 
@@ -1106,6 +1142,16 @@ class RenderableCardListviewer(Frame):
                                                         self.dropdown_menu_frame,
                                                         self.dropdown_menu_options_dict
                                                     )
+
+    def reload_dropdown_menu_with_progress(self):
+
+        if self.dropdown_menu is not None:
+
+            trace = self.dropdown_menu.get_option_trace()
+            self.create_dropdown_menu()
+            self.dropdown_menu.select_option_expanded(trace)
+
+
 
 
 

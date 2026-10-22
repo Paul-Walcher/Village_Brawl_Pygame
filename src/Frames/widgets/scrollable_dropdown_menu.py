@@ -331,6 +331,37 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             screen.blit(self.top_arrow_surface, self.top_arrow_surface_pos)
             screen.blit(self.bottom_arrow_surface, self.bottom_arrow_surface_pos)
 
+    def select_option_expanded(self, option_trace):
+        if not option_trace:
+            return
+        #selects the option with subselecting deferred dropdown menus
+        coption, state, sindex = option_trace[0]
+        self.scroll_index = sindex
+        self.options = self.get_options_n_showed()
+        self.selected_index = self.options.index(coption)
+
+        if type(self.full_options_dict[coption]) == dict:
+            self.deferred_dropdown_menu = self.expanded_dropdown_menus[coption]
+            #getting if it is a full end or not
+            full_end = self.deferred_dropdown_menu.select_option_expanded(option_trace[1:])
+
+        self.state = state
+
+    def get_option_trace(self):
+        #returns the scroll index as well
+
+        if self.state == ScrollableDropdownMenu.NOTHING_SELECTED:
+            return None
+        else:
+
+            trace = [(self.options[self.selected_index], self.state, self.scroll_index)]
+            if self.deferred_dropdown_menu is not None:
+                ext = self.deferred_dropdown_menu.get_option_trace()
+                if ext is not None:
+                    trace.extend(ext)
+
+            return trace
+
 
     def tick(self):
 
