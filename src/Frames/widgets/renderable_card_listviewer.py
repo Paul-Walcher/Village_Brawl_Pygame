@@ -255,7 +255,7 @@ class RenderableCardListviewer(Frame):
                     self.text_input.focus()
 
                 if (self.key_pressed(KeyAlternatives.BACK_KEY) or self.key_pressed(pygame.K_ESCAPE)) and self.escape_released:
-                    self._exit_type = FocusedTextInputFrame.ESCAPE
+                    self._exit_type = RenderableCardListviewer.FocusedTextInputFrame.ESCAPE
                     self.raise_exit_flag()
 
                 if not (self.key_pressed(KeyAlternatives.BACK_KEY) and self.key_pressed(pygame.K_ESCAPE)) and not self.escape_released:
@@ -1331,6 +1331,7 @@ class RenderableCardListviewer(Frame):
                         self.create_dropdown_menu()
 
                 elif self.focused_text_input_subframe.exit_with_escape():
+                    self.focused_text_input_subframe = None
                     self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
 
                 self.key_clock.start()
