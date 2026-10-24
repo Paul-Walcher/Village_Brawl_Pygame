@@ -6,6 +6,7 @@ import random
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from constants import (
+    fequal,
     PLAYSETS_FOLDER,
     Colors,
     Fonts,
@@ -28,6 +29,16 @@ from Frames.widgets.text_input import TextInput
 from Frames.widgets.dropdown_menu import DropdownMenu
 from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu
 from Frames.widgets.scrollable_dropdown_menu import ScrollableDropdownMenu
+
+
+#TODO
+#
+#1.) Create detection and state for long enter pressed
+#2.) Add Card state to main list (preview, normal)
+#3.) Create Card animation when card clicked
+#4.) Create Info shown frame when card clicked
+#5.) Create card amount increase/decrease when card selected via long enter pressed
+#6.) Create search menu
 
 class RenderableCardListviewer(Frame):
 
@@ -59,6 +70,9 @@ class RenderableCardListviewer(Frame):
     GROUP_SELECTION = R_ID() #displays the groups available (Should show if a group is a copy group or not)
     FULL_IMAGE_SHOWN = R_ID() #if the main list is focused, the selected image is shown on fullscreen
     DROPDOWN_MENU_ACTIVE = R_ID()
+    #enter states
+    ENTER_PRESSED = R_ID()
+    CARD_SNAPBACK_ANIMATION = R_ID() #if a card was pressed, it needs to animate back into its original state
 
     INITIALIZE_DECK_RENAMING_FRAME = R_ID()
     DECK_RENAMING_FRAME_ACTIVE = R_ID()
@@ -397,13 +411,18 @@ class RenderableCardListviewer(Frame):
                 #group menu stuff
                 group_selection_enabled=True,
                 group_creation_enabled=True,
+                #enter states
+                time_until_long_enter_pressed=500,#ms, how long until the long enter state is reached
+                #percentage when card is selected
+                card_pressed_size_change_percentage=0.25,
                 #delay between inputs
                 key_delay=200,#ms
                 rowscrolling_duration=300,#ms when scrolling one row upor down, this is the duration it takes
                 rowscrolling_all_duration=500,#ms #rowscrolling all rows up
                 fastscroll_duration=50,#ms for fast scrolling
                 deckname_selected_animation_duration=400,#ms
-                menu_button_selected_animation_duration=400#ms
+                menu_button_selected_animation_duration=400,#ms
+                card_snapback_duration=250#ms, time it takes for a card to snap back and do the card pressed animation in reverse
                 ):
 
         if len(groups) == 0:
@@ -475,7 +494,7 @@ class RenderableCardListviewer(Frame):
         #index of the selected card
         self.selected_card_index = 0
         #setting the state of the widget
-        self.state = RenderableCardListviewer.NOTHING_FOCUSED
+        self._state = RenderableCardListviewer.NOTHING_FOCUSED
         #saved scroll amount
         self.main_list_yscroll = 0
         #cache for rendering cards
@@ -624,8 +643,33 @@ class RenderableCardListviewer(Frame):
         self.group_creation_enabled = group_creation_enabled
         self.group_selection_enabled = group_selection_enabled
 
+        #long enter
+        self.time_until_long_enter_pressed = time_until_long_enter_pressed
+        self.enter_clock = Clock()
+
+        self.card_snapback_duration = card_snapback_duration
+        self.card_snapback_clock = Clock()
+        self.enter_pressed_on_card_percentage = 0
+        self.card_pressed_size_change_percentage = card_pressed_size_change_percentage
+
+        self.cards_dict_before_enter = None
+        self.cards_rects_before_enter = None
+        self.cards_rects_before_enter_index = -1
+
+        self.prev_state = None
+
         self.key_clock.start()
         self.rerender()
+
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, new_state):
+        self.prev_state = self._state
+        self._state = new_state
+
 
     def rerender(self):
         #info text calc
@@ -878,7 +922,7 @@ class RenderableCardListviewer(Frame):
                     self.main_list_cards_rects[cy] = []
 
                 self.main_list_cards_rects[cy].append((card_id_index, main_list_cards_index, img_rect, text_rect))
-                self.main_list_cards_dict[card_id_index] = (main_list_cards_index, img_rect, text_rect)
+                self.main_list_cards_dict[card_id_index] = (main_list_cards_index, img_rect, text_rect, cy)
 
                 main_list_cards_index += 1
                 card_id_index += 1
@@ -901,7 +945,7 @@ class RenderableCardListviewer(Frame):
                         self.main_list_cards_rects[cy] = []
 
                     self.main_list_cards_rects[cy].append((card_id_index, main_list_cards_index, img_rect, text_rect))
-                    self.main_list_cards_dict[card_id_index] = (main_list_cards_index, img_rect, text_rect)
+                    self.main_list_cards_dict[card_id_index] = (main_list_cards_index, img_rect, text_rect, cy)
 
                     card_id_index += 1
 
@@ -937,13 +981,16 @@ class RenderableCardListviewer(Frame):
                 self.rendered_rows.append((cy, id_index, main_list_cards_idx, img_rect, text_rect))
                 cinfo = self.main_list_cards[main_list_cards_idx][0].info()
 
+                img_rerender_needed = True
                 img, img_pos = None, None
                 if cinfo.card_image_path in self.card_render_cache:
-                    img, img_pos = self.card_render_cache[cinfo.card_image_path]
-                else:
+                    img, img_pos, cached_img_rect = self.card_render_cache[cinfo.card_image_path]
+                    if cached_img_rect == img_rect:
+                        img_rerender_needed = False
 
+                if img_rerender_needed:
                     img, img_pos = graphics.img_load_and_position(cinfo.card_image_path, pygame.Rect(0, 0, img_rect.width, img_rect.height))
-                    self.card_render_cache[cinfo.card_image_path] = (img, img_pos)
+                    self.card_render_cache[cinfo.card_image_path] = (img, img_pos, img_rect.copy())
 
                 img_render_pos = (img_rect.x + img_pos[0], img_rect.y + img_pos[1] + self.main_list_yscroll)
 
@@ -976,13 +1023,16 @@ class RenderableCardListviewer(Frame):
 
                     trend = None
 
+                    txt_rerender_needed = True
                     if amount in self.text_render_cache:
-                        trend = self.text_render_cache[amount]
-                    else:
+                        trend, cached_txt_rect = self.text_render_cache[amount]
+                        if cached_txt_rect == text_rect:
+                            txt_rerender_needed = False
+                    if txt_rerender_needed:
                         trend = graphics.render_page_from_chars(self.font, [f"x{amount}"], pygame.Rect(0, 0, text_rect.width, text_rect.height),
                                                                 self.card_text_description_color, centered=True, vertical_centered=True
                                                                 )
-                        self.text_render_cache[amount] = trend
+                        self.text_render_cache[amount] = (trend, text_rect.copy())
 
                     for surf, pos in trend:
                         self.surface.blit(surf, (pos[0] + text_rect.x, pos[1] + text_rect.y + self.main_list_yscroll))
@@ -1296,6 +1346,24 @@ class RenderableCardListviewer(Frame):
             self.menu_button_selected_animation()
         elif self.state == RenderableCardListviewer.INITIALIZE_DECK_RENAMING_FRAME:
             self.initialize_deck_renaming_frame()
+        elif self.state == RenderableCardListviewer.CARD_SNAPBACK_ANIMATION:
+            self.card_snapback_animation()
+        elif self.state == RenderableCardListviewer.ENTER_PRESSED:
+            if not (self.key_pressed(pygame.K_RETURN) or self.key_pressed(KeyAlternatives.ENTER_ALTERNATIVE)):
+                if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+                    #if a card was focused, we need to animate putting it back in its original state
+                    self.state = RenderableCardListviewer.CARD_SNAPBACK_ANIMATION
+                    self.initialize_card_snapback_animation()
+                else:
+                    self.state = self.prev_state
+                    if self.enter_clock.elapsed() >= self.time_until_long_enter_pressed:
+                        self.long_enter_pressed()
+                    else:
+                        self.enter_pressed()
+                    self.key_clock.start()
+            else:
+                if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+                    self.card_pressed_animation()
         elif self.state == RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE:
             ret = self.focused_text_input_subframe.tick()
 
@@ -1375,7 +1443,12 @@ class RenderableCardListviewer(Frame):
                     self.key_clock.start()
 
                 if self.key_pressed(pygame.K_RETURN) or self.key_pressed(KeyAlternatives.ENTER_ALTERNATIVE):
-                    self.enter_pressed()
+
+                    self.state = RenderableCardListviewer.ENTER_PRESSED
+                    self.cards_dict_before_enter = self.main_list_cards_dict[self.selected_card_index]
+                    self.cards_rects_before_enter = self.main_list_cards_rects[self.cards_dict_before_enter[3]]#the cy
+                    self.cards_rects_before_enter_index = [i for i in range(len(self.cards_rects_before_enter)) if self.cards_rects_before_enter[i][0] == self.selected_card_index][0]
+                    self.enter_clock.start()
                     self.key_clock.start()
 
                 if self.key_pressed(pygame.K_BACKSPACE) or self.key_pressed(KeyAlternatives.BACK_KEY):
@@ -1536,6 +1609,9 @@ class RenderableCardListviewer(Frame):
             self.initialize_menu_button_selected_animation()
         elif self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
             self.dropdown_menu.select()
+
+    def long_enter_pressed(self):
+        pass
 
     def back_pressed(self):
 
@@ -1785,3 +1861,59 @@ class RenderableCardListviewer(Frame):
                 self.reload_current_group()
 
                 self.state = RenderableCardListviewer.NOTHING_FOCUSED
+
+    def card_pressed_animation(self):
+
+        percentage = self.enter_clock.elapsed() / self.time_until_long_enter_pressed
+        percentage = min(percentage, 1.0)
+
+        self.enter_pressed_on_card_percentage = percentage
+        #changing the frame dimensions
+
+        main_list_index, img_rect, txt_rect, cy = self.cards_dict_before_enter
+        card_id_index, main_list_cards_index, _1, _2 = self.cards_rects_before_enter[self.cards_rects_before_enter_index]
+
+        size_margin = self.card_pressed_size_change_percentage * percentage
+        img_rect = graphics.apply_margins(img_rect, size_margin, size_margin)
+        txt_rect = graphics.apply_margins(txt_rect, size_margin, size_margin)
+
+        self.main_list_cards_dict[card_id_index] = (main_list_index, img_rect, txt_rect, cy)
+        self.main_list_cards_rects[cy][self.cards_rects_before_enter_index] = (card_id_index, main_list_cards_index, img_rect, txt_rect)
+
+
+    def initialize_card_snapback_animation(self):
+        self.card_snapback_clock.start()
+
+    def card_snapback_animation(self):
+
+        percentage = self.card_snapback_clock.elapsed() / self.card_snapback_duration
+
+        if percentage >= 1.0:
+            self.finalize_card_snapback_animation()
+        else:
+
+            main_list_index, img_rect, txt_rect, cy = self.cards_dict_before_enter
+            card_id_index, main_list_cards_index, _1, _2 = self.cards_rects_before_enter[self.cards_rects_before_enter_index]
+
+            size_margin = (self.enter_pressed_on_card_percentage * self.card_pressed_size_change_percentage) * (1.0 - percentage)
+            img_rect = graphics.apply_margins(img_rect, size_margin, size_margin)
+            txt_rect = graphics.apply_margins(txt_rect, size_margin, size_margin)
+
+            self.main_list_cards_dict[card_id_index] = (main_list_index, img_rect, txt_rect, cy)
+            self.main_list_cards_rects[cy][self.cards_rects_before_enter_index] = (card_id_index, main_list_cards_index, img_rect, txt_rect)
+
+
+    def finalize_card_snapback_animation(self):
+
+        main_list_index, img_rect, txt_rect, cy = self.cards_dict_before_enter
+        card_id_index, main_list_cards_index, _1, _2 = self.cards_rects_before_enter[self.cards_rects_before_enter_index]
+
+        self.main_list_cards_dict[card_id_index] = self.cards_dict_before_enter
+        self.main_list_cards_rects[cy][self.cards_rects_before_enter_index] = (card_id_index, main_list_cards_index, img_rect, txt_rect)
+
+        self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+        if fequal(self.enter_pressed_on_card_percentage, 1.0):
+            self.long_enter_pressed()
+        else:
+            self.enter_pressed()
