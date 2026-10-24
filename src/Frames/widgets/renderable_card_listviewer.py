@@ -422,7 +422,7 @@ class RenderableCardListviewer(Frame):
                 fastscroll_duration=50,#ms for fast scrolling
                 deckname_selected_animation_duration=400,#ms
                 menu_button_selected_animation_duration=400,#ms
-                card_snapback_duration=250#ms, time it takes for a card to snap back and do the card pressed animation in reverse
+                card_snapback_duration=200#ms, time it takes for a card to snap back and do the card pressed animation in reverse
                 ):
 
         if len(groups) == 0:
@@ -1350,7 +1350,7 @@ class RenderableCardListviewer(Frame):
             self.card_snapback_animation()
         elif self.state == RenderableCardListviewer.ENTER_PRESSED:
             if not (self.key_pressed(pygame.K_RETURN) or self.key_pressed(KeyAlternatives.ENTER_ALTERNATIVE)):
-                if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+                if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED and self.n_cards_shown > 0:
                     #if a card was focused, we need to animate putting it back in its original state
                     self.state = RenderableCardListviewer.CARD_SNAPBACK_ANIMATION
                     self.initialize_card_snapback_animation()
@@ -1362,7 +1362,7 @@ class RenderableCardListviewer(Frame):
                         self.enter_pressed()
                     self.key_clock.start()
             else:
-                if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+                if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED and self.n_cards_shown > 0:
                     self.card_pressed_animation()
         elif self.state == RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE:
             ret = self.focused_text_input_subframe.tick()
@@ -1444,10 +1444,11 @@ class RenderableCardListviewer(Frame):
 
                 if self.key_pressed(pygame.K_RETURN) or self.key_pressed(KeyAlternatives.ENTER_ALTERNATIVE):
 
+                    if self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED and self.n_cards_shown > 0:
+                        self.cards_dict_before_enter = self.main_list_cards_dict[self.selected_card_index]
+                        self.cards_rects_before_enter = self.main_list_cards_rects[self.cards_dict_before_enter[3]]#the cy
+                        self.cards_rects_before_enter_index = [i for i in range(len(self.cards_rects_before_enter)) if self.cards_rects_before_enter[i][0] == self.selected_card_index][0]
                     self.state = RenderableCardListviewer.ENTER_PRESSED
-                    self.cards_dict_before_enter = self.main_list_cards_dict[self.selected_card_index]
-                    self.cards_rects_before_enter = self.main_list_cards_rects[self.cards_dict_before_enter[3]]#the cy
-                    self.cards_rects_before_enter_index = [i for i in range(len(self.cards_rects_before_enter)) if self.cards_rects_before_enter[i][0] == self.selected_card_index][0]
                     self.enter_clock.start()
                     self.key_clock.start()
 
