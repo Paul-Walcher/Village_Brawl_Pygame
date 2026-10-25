@@ -1325,143 +1325,144 @@ class RenderableCardListviewer(Frame):
         if self.exit_flag_raised():
             return None
 
-        if self.info_text_active():
-            self.info_text_tick()
+        if self.is_focused():
+            if self.info_text_active():
+                self.info_text_tick()
 
-        #dropdown events
-        dropdown_events = self.dropdown_menu.poll_events()
+            #dropdown events
+            dropdown_events = self.dropdown_menu.poll_events()
 
-        if self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
-            self.dropdown_menu.tick()
+            if self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+                self.dropdown_menu.tick()
 
-        for event in dropdown_events:
-            self.handle_dropdown_menu_selection(event)
+            for event in dropdown_events:
+                self.handle_dropdown_menu_selection(event)
 
-        #non input accepting states
-        if self.state == RenderableCardListviewer.MOVING_ONE_ROW_UP:
-            self.move_one_row_up()
-        elif self.state == RenderableCardListviewer.MOVING_ONE_ROW_DOWN:
-            self.move_one_row_down()
-        elif self.state == RenderableCardListviewer.MOVING_ALL_ROWS_UP:
-            self.move_all_rows_up()
-        elif self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN:
-            if not self.key_pressed(KeyAlternatives.SHOW_IMAGE_KEY):
-                self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
-        elif self.state == RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION:
-            self.deckname_selected_animation()
-        elif self.state == RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION:
-            self.menu_button_selected_animation()
-        elif self.state == RenderableCardListviewer.INITIALIZE_DECK_RENAMING_FRAME:
-            self.initialize_deck_renaming_frame()
-        elif self.state == RenderableCardListviewer.CARD_SNAPBACK_ANIMATION:
-            self.card_snapback_animation()
-        elif self.state == RenderableCardListviewer.ENTER_PRESSED:
-            if not (self.key_pressed(pygame.K_RETURN) or self.key_pressed(KeyAlternatives.ENTER_ALTERNATIVE)):
-                if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED and self.n_cards_shown > 0:
-                    #if a card was focused, we need to animate putting it back in its original state
-                    self.state = RenderableCardListviewer.CARD_SNAPBACK_ANIMATION
-                    self.initialize_card_snapback_animation()
+            #non input accepting states
+            if self.state == RenderableCardListviewer.MOVING_ONE_ROW_UP:
+                self.move_one_row_up()
+            elif self.state == RenderableCardListviewer.MOVING_ONE_ROW_DOWN:
+                self.move_one_row_down()
+            elif self.state == RenderableCardListviewer.MOVING_ALL_ROWS_UP:
+                self.move_all_rows_up()
+            elif self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN:
+                if not self.key_pressed(KeyAlternatives.SHOW_IMAGE_KEY):
+                    self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+            elif self.state == RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION:
+                self.deckname_selected_animation()
+            elif self.state == RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION:
+                self.menu_button_selected_animation()
+            elif self.state == RenderableCardListviewer.INITIALIZE_DECK_RENAMING_FRAME:
+                self.initialize_deck_renaming_frame()
+            elif self.state == RenderableCardListviewer.CARD_SNAPBACK_ANIMATION:
+                self.card_snapback_animation()
+            elif self.state == RenderableCardListviewer.ENTER_PRESSED:
+                if not (self.key_pressed(pygame.K_RETURN) or self.key_pressed(KeyAlternatives.ENTER_ALTERNATIVE)):
+                    if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED and self.n_cards_shown > 0:
+                        #if a card was focused, we need to animate putting it back in its original state
+                        self.state = RenderableCardListviewer.CARD_SNAPBACK_ANIMATION
+                        self.initialize_card_snapback_animation()
+                    else:
+                        self.state = self.prev_state
+                        if self.enter_clock.elapsed() >= self.time_until_long_enter_pressed:
+                            self.long_enter_pressed()
+                        else:
+                            self.enter_pressed()
+                        self.key_clock.start()
                 else:
-                    self.state = self.prev_state
-                    if self.enter_clock.elapsed() >= self.time_until_long_enter_pressed:
-                        self.long_enter_pressed()
-                    else:
-                        self.enter_pressed()
-                    self.key_clock.start()
-            else:
-                if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED and self.n_cards_shown > 0:
-                    self.card_pressed_animation()
-        elif self.state == RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE:
-            ret = self.focused_text_input_subframe.tick()
+                    if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED and self.n_cards_shown > 0:
+                        self.card_pressed_animation()
+            elif self.state == RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE:
+                ret = self.focused_text_input_subframe.tick()
 
-            if ret is None:
+                if ret is None:
 
-                #setting the groupname
-                if self.focused_text_input_subframe.exit_with_enter():
+                    #setting the groupname
+                    if self.focused_text_input_subframe.exit_with_enter():
 
-                    text = self.focused_text_input_subframe.get_input_text()
+                        text = self.focused_text_input_subframe.get_input_text()
 
-                    if not text or text in list(self.groups.keys()):
-                        tcolor = (RenderableCardListviewer.INFO_TEXT_ERROR_COLOR if self.info_text_error_color is None else self.info_text_error_color)
+                        if not text or text in list(self.groups.keys()):
+                            tcolor = (RenderableCardListviewer.INFO_TEXT_ERROR_COLOR if self.info_text_error_color is None else self.info_text_error_color)
 
-                        self.print_info_text(
-                                                [[(RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_INFO_TEXT, tcolor)]],
-                                                tcolor,
-                                                RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_FADING_DURATION
-                                            )
+                            self.print_info_text(
+                                                    [[(RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_INFO_TEXT, tcolor)]],
+                                                    tcolor,
+                                                    RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_FADING_DURATION
+                                                )
 
-                        self.focused_text_input_subframe.reset_exit_flag()
-                        self.focused_text_input_subframe.reset_exit_type()
+                            self.focused_text_input_subframe.reset_exit_flag()
+                            self.focused_text_input_subframe.reset_exit_type()
 
-                    else:
+                        else:
 
-                        data_cp = deepcopy(self.groups[self.shown_group])
-                        del self.groups[self.shown_group]
-                        self.shown_group = self.focused_text_input_subframe.get_input_text()
-                        self.groups[self.shown_group] = data_cp
+                            data_cp = deepcopy(self.groups[self.shown_group])
+                            del self.groups[self.shown_group]
+                            self.shown_group = self.focused_text_input_subframe.get_input_text()
+                            self.groups[self.shown_group] = data_cp
+                            self.focused_text_input_subframe = None
+                            self.focus()
+                            self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
+                            self.render_deckname_text()
+                            self.create_dropdown_menu()
+
+                    elif self.focused_text_input_subframe.exit_with_escape():
                         self.focused_text_input_subframe = None
-                        self.focus()
                         self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
-                        self.render_deckname_text()
-                        self.create_dropdown_menu()
 
-                elif self.focused_text_input_subframe.exit_with_escape():
-                    self.focused_text_input_subframe = None
-                    self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
+                    self.key_clock.start()
+
+            elif self.state == RenderableCardListviewer.DECK_CREATION_FRAME_ACTIVE:
+                ret = self.focused_text_input_subframe.tick()
+
+                if ret is None:
+                    self.finalize_deck_creation_frame()
 
                 self.key_clock.start()
 
-        elif self.state == RenderableCardListviewer.DECK_CREATION_FRAME_ACTIVE:
-            ret = self.focused_text_input_subframe.tick()
+            else:
+                #accept inputs
 
-            if ret is None:
-                self.finalize_deck_creation_frame()
+                if self.key_clock.elapsed() > self.key_delay:
 
-            self.key_clock.start()
+                    if self.key_pressed(pygame.K_ESCAPE):
+                        self.escape_pressed()
+                        self.key_clock.start()
 
-        else:
-            #accept inputs
+                    if self.key_pressed(pygame.K_LEFT) or self.key_pressed(KeyAlternatives.LEFT_ALTERNATIVE):
+                        self.left_pressed()
+                        self.key_clock.start()
 
-            if self.key_clock.elapsed() > self.key_delay:
+                    if self.key_pressed(pygame.K_RIGHT) or self.key_pressed(KeyAlternatives.RIGHT_ALTERNATIVE):
+                        self.right_pressed()
+                        self.key_clock.start()
 
-                if self.key_pressed(pygame.K_ESCAPE):
-                    self.escape_pressed()
-                    self.key_clock.start()
+                    if self.key_pressed(pygame.K_UP) or self.key_pressed(KeyAlternatives.UP_ALTERNATIVE):
+                        self.up_pressed()
+                        self.key_clock.start()
 
-                if self.key_pressed(pygame.K_LEFT) or self.key_pressed(KeyAlternatives.LEFT_ALTERNATIVE):
-                    self.left_pressed()
-                    self.key_clock.start()
+                    if self.key_pressed(pygame.K_DOWN) or self.key_pressed(KeyAlternatives.DOWN_ALTERNATIVE):
+                        self.down_pressed()
+                        self.key_clock.start()
 
-                if self.key_pressed(pygame.K_RIGHT) or self.key_pressed(KeyAlternatives.RIGHT_ALTERNATIVE):
-                    self.right_pressed()
-                    self.key_clock.start()
+                    if self.key_pressed(KeyAlternatives.SHOW_IMAGE_KEY):
+                        self.state = RenderableCardListviewer.FULL_IMAGE_SHOWN
+                        self.prerender_full_image()
+                        self.key_clock.start()
 
-                if self.key_pressed(pygame.K_UP) or self.key_pressed(KeyAlternatives.UP_ALTERNATIVE):
-                    self.up_pressed()
-                    self.key_clock.start()
+                    if self.key_pressed(pygame.K_RETURN) or self.key_pressed(KeyAlternatives.ENTER_ALTERNATIVE):
 
-                if self.key_pressed(pygame.K_DOWN) or self.key_pressed(KeyAlternatives.DOWN_ALTERNATIVE):
-                    self.down_pressed()
-                    self.key_clock.start()
+                        if self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED and self.n_cards_shown > 0:
+                            self.cards_dict_before_enter = self.main_list_cards_dict[self.selected_card_index]
+                            self.cards_rects_before_enter = self.main_list_cards_rects[self.cards_dict_before_enter[3]]#the cy
+                            self.cards_rects_before_enter_index = [i for i in range(len(self.cards_rects_before_enter)) if self.cards_rects_before_enter[i][0] == self.selected_card_index][0]
+                        self.state = RenderableCardListviewer.ENTER_PRESSED
+                        self.enter_clock.start()
+                        self.key_clock.start()
 
-                if self.key_pressed(KeyAlternatives.SHOW_IMAGE_KEY):
-                    self.state = RenderableCardListviewer.FULL_IMAGE_SHOWN
-                    self.prerender_full_image()
-                    self.key_clock.start()
-
-                if self.key_pressed(pygame.K_RETURN) or self.key_pressed(KeyAlternatives.ENTER_ALTERNATIVE):
-
-                    if self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED and self.n_cards_shown > 0:
-                        self.cards_dict_before_enter = self.main_list_cards_dict[self.selected_card_index]
-                        self.cards_rects_before_enter = self.main_list_cards_rects[self.cards_dict_before_enter[3]]#the cy
-                        self.cards_rects_before_enter_index = [i for i in range(len(self.cards_rects_before_enter)) if self.cards_rects_before_enter[i][0] == self.selected_card_index][0]
-                    self.state = RenderableCardListviewer.ENTER_PRESSED
-                    self.enter_clock.start()
-                    self.key_clock.start()
-
-                if self.key_pressed(pygame.K_BACKSPACE) or self.key_pressed(KeyAlternatives.BACK_KEY):
-                    self.back_pressed()
-                    self.key_clock.start()
+                    if self.key_pressed(pygame.K_BACKSPACE) or self.key_pressed(KeyAlternatives.BACK_KEY):
+                        self.back_pressed()
+                        self.key_clock.start()
 
         return self
     """
