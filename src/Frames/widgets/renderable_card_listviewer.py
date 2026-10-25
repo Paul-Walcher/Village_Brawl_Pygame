@@ -1302,6 +1302,8 @@ class RenderableCardListviewer(Frame):
                                                         parent_frame=self
                                                     )
 
+        self.focus()
+
     def reload_dropdown_menu_with_progress(self):
 
         if self.dropdown_menu is not None:
