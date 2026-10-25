@@ -36,8 +36,8 @@ from Frames.widgets.scrollable_dropdown_menu import ScrollableDropdownMenu
 #1.) Create detection and state for long enter pressed | DONE
 #2.) Create Card animation when card clicked | DONE
 #--------------------------------------------------------------
-#3.) Add Card state to main list (preview, normal)
-#4.) Create Info shown frame when card clicked
+#3.) Create Info shown frame when card clicked
+#4.) Add Card state to main list (preview, normal)
 #5.) Create card amount increase/decrease when card selected via long enter pressed
 #6.) Create search menu
 

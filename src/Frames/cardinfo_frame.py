@@ -19,7 +19,6 @@ class CardinfoFrame(Frame):
                 cardinfo,
                 font=Fonts.MINECRAFT,
                 alpha=Alpha.LEVEL_5,
-                has_focus=True,
                 hmargin=0.1, vmargin=0.1,
                 chars_per_line=50, lines_per_page=5,
                 slide_duration=800,
@@ -31,8 +30,6 @@ class CardinfoFrame(Frame):
 
         self.slide_endpos = None
         self.slide_startpos = None
-
-        self._has_focus = has_focus
 
         self.cardinfo = cardinfo
         self.alpha = alpha
@@ -54,44 +51,38 @@ class CardinfoFrame(Frame):
 
     def bind_events(self):
 
-        data = {"frame_ref": self}
-
-        if self.has_focus:
+        if self.is_focused():
 
             for key in [pygame.K_RIGHT, KeyAlternatives.RIGHT_ALTERNATIVE]:
-                cb = self.add_pygame_key_callback(key, data.copy(),  False, self.next_page)
+                cb = self.add_pygame_key_callback(key, None,  False, self.next_page)
             for key in [pygame.K_LEFT, KeyAlternatives.LEFT_ALTERNATIVE]:
-                cb = self.add_pygame_key_callback(key, data.copy(),  False, self.prev_page)
+                cb = self.add_pygame_key_callback(key, None,  False, self.prev_page)
 
-            cb_kd = self.add_pygame_event_callback(pygame.KEYDOWN, data.copy(), False, self.alt_down)
-            cb_ku = self.add_pygame_event_callback(pygame.KEYUP, data.copy(), False, self.alt_up)
+            cb_kd = self.add_pygame_event_callback(pygame.KEYDOWN, None, False, self.alt_down)
+            cb_ku = self.add_pygame_event_callback(pygame.KEYUP, None, False, self.alt_up)
 
 
     def next_page(self, event, data):
 
-        ref = data["frame_ref"]
-        ref.description_textbox.next_page()
+        self.description_textbox.next_page()
 
     def prev_page(self, event, data):
 
-        ref = data["frame_ref"]
-        ref.description_textbox.prev_page()
+        self.description_textbox.prev_page()
 
     def alt_down(self, event, data):
 
         if event.key != KeyAlternatives.SHOW_IMAGE_KEY:
             return Frame.CallbackEvent.FAILURE
 
-        ref = data["frame_ref"]
-        ref.full_image_shown = True
+        self.full_image_shown = True
 
     def alt_up(self, event, data):
 
         if event.key != KeyAlternatives.SHOW_IMAGE_KEY:
             return Frame.CallbackEvent.FAILURE
 
-        ref = data["frame_ref"]
-        ref.full_image_shown = False
+        self.full_image_shown = False
 
     def slide_to(self, position=(0, 0), duration=800):
 
@@ -110,8 +101,6 @@ class CardinfoFrame(Frame):
 
     def rerender(self):
 
-        self.widgets = []
-
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
         self.page_parts = self.cardinfo.get_info_page_parts(pygame.Rect(0, 0, self.width, self.height),
@@ -121,7 +110,7 @@ class CardinfoFrame(Frame):
                                                         chars_per_line=self.chars_per_line,
                                                         lines_per_page=self.lines_per_page
                                                         )
-        self.description_textbox = self.page_parts[2][0]
+        self.description_textbox = self.page_parts.textbox
 
 
     def move_slide(self):
@@ -159,7 +148,6 @@ class CardinfoFrame(Frame):
             return None
 
         self.description_textbox.tick()
-        self.widgets_tick()
 
         if self.is_sliding:
             self.move_slide()

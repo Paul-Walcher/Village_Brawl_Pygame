@@ -21,6 +21,34 @@ from copy import deepcopy
 
 class ExplorerInfo(Renderable_Card):
 
+    class ExplorerInfoPagePartContainer(Renderable_Card.InfoPagePartContainer):
+
+        def __init__(self,
+                    info_page_parts,
+                    rendered_stats
+                    ):
+
+            Renderable_Card.InfoPagePartContainer.__init__(
+                                                            self,
+                                                            frame_dim=info_page_parts.frame_dim,
+
+                                                            headline_surface=info_page_parts.headline_surface,
+                                                            headline_pos=info_page_parts.headline_pos,
+
+                                                            image_surface=info_page_parts.image_surface,
+                                                            image_pos=info_page_parts.image_pos,
+
+                                                            textbox=info_page_parts.textbox,
+                                                            textbox_pos=info_page_parts.textbox_pos,
+
+                                                            full_image_surface=info_page_parts.full_image_surface,
+                                                            full_image_pos=info_page_parts.full_image_pos,
+
+                                                            areas=info_page_parts.areas
+
+                                                            )
+            self.rendered_stats = rendered_stats
+
     def __init__(self,
                 name: str = "",
                 name_color: tuple = (255, 255, 255),
@@ -107,7 +135,8 @@ class ExplorerInfo(Renderable_Card):
                                 font=Fonts.MINECRAFT,
                                 hmargin=0, vmargin = 0,
                                 chars_per_line=50, lines_per_page=5,
-                                height_distributions=[0.1, 0.05, 0.45, 0.1, 0.25, 0.05]):#equals: headline area, distance, card image area, distance, textbox area, distance)
+                                height_distributions=[0.1, 0.05, 0.45, 0.1, 0.25, 0.05]
+                                ):#equals: headline area, distance, card image area, distance, textbox area, distance)
 
 
         stats_hp = 0.2
@@ -144,8 +173,8 @@ class ExplorerInfo(Renderable_Card):
                                                         height_distributions=height_distributions
                                                         )
 
-        tbox = page_parts[2][1][0]
-        textbox_ref = page_parts[2][0]
+        tbox = page_parts.areas[4]
+        textbox_ref = page_parts.textbox
 
         tag_headline_page = [[[("Tags", Colors.STANDARD_TEXT_COLOR)]]]
 
@@ -161,15 +190,13 @@ class ExplorerInfo(Renderable_Card):
 
         tag_pages = graphics.page_by_chars_color(tag_pages, line_length=chars_per_line, paragraph_length=lines_per_page)
 
-        last_page = tag_pages[-1]
-        if len(last_page) < lines_per_page:
-            last_page.extend([[]] * (lines_per_page - len(last_page)))
+        if tag_pages:
+            last_page = tag_pages[-1]
+            if len(last_page) < lines_per_page:
+                last_page.extend([[]] * (lines_per_page - len(last_page)))
 
-        textbox_ref.add_pages(tag_headline_page)
-        textbox_ref.add_pages(tag_pages)
-
-
-
+            textbox_ref.add_pages(tag_headline_page)
+            textbox_ref.add_pages(tag_pages)
 
         rendered_stats_page = graphics.render_page_from_chars_color(
                                     font,
@@ -182,15 +209,15 @@ class ExplorerInfo(Renderable_Card):
         rstats = []
 
         for surf, (x, y) in rendered_stats_page:
-            rstats.append((surf, (x + tbox - stats_text_area.x, y)))
+            rstats.append((surf, (x + tbox.x - stats_text_area.x, y)))
 
-        page_parts.append(rstats)
+        page_parts_container = ExplorerInfo.ExplorerInfoPagePartContainer(page_parts, rstats)
 
-        return page_parts
+        return page_parts_container
 
     def render_info_page_parts(self,
                                 screen,
-                                page_parts,
+                                info_page_part_container,
                                 page_index=-1,
                                 background_color=Colors.BLACK,
                                 outline_size=None,
@@ -200,7 +227,7 @@ class ExplorerInfo(Renderable_Card):
 
         Renderable_Card.render_info_page_parts(self,
                                     screen,
-                                    page_parts=page_parts[:-1],
+                                    info_page_part_container=info_page_part_container,
                                     page_index=page_index,
                                     background_color=background_color,
                                     outline_size=outline_size,
@@ -208,14 +235,14 @@ class ExplorerInfo(Renderable_Card):
                                     full_image_shown=False
                                     )
 
-        stats_page = page_parts[-1]
+        stats_page = info_page_part_container.rendered_stats
 
         for surf, pos in stats_page:
             screen.blit(surf, pos)
 
         if full_image_shown:
 
-            full_image, full_image_pos = page_parts[3]
+            full_image, full_image_pos = info_page_part_container.full_image_surface, info_page_part_container.full_image_pos
 
             tsurf = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
             tsurf.fill((*Colors.BLACK, 180))

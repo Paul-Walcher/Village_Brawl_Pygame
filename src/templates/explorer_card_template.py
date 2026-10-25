@@ -51,18 +51,17 @@ class ExplorerCardInfo(Renderable_Card):
                                 font=Fonts.MINECRAFT,
                                 hmargin=0, vmargin = 0,
                                 chars_per_line=50, lines_per_page=5,
-                                height_distributions=[0.1, 0.05, 0.45, 0.1, 0.25, 0.05],
-
+                                height_distributions=[0.1, 0.05, 0.45, 0.1, 0.25, 0.05]
                                 ):#equals: headline area, distance, card image area, distance, textbox area, distance)
 
         #extra info
 
-        page_parts = Renderable_Card.get_info_page_parts(self, frame_dim, dont, hmargin, vmargin, chars_per_line, lines_per_page, height_distributions)
+        page_parts = Renderable_Card.get_info_page_parts(self, frame_dim, font, hmargin, vmargin, chars_per_line, lines_per_page, height_distributions)
 
 
         #creating extra info pages
         einfo_text = [  graphics.NP(0),
-                        (f"Max. per Deck: {str(self.max_per_deck)}", COLORS.MAX_PER_DECK_COLOR), graphics.NL,
+                        (f"Max. per Deck: {str(self.max_per_deck)}", Colors.MAX_PER_DECK_COLOR), graphics.NL,
                         (f"Keep Duration:{str(self.keep_duration)}", Colors.KEEP_DURATION_COLOR), graphics.NL,
                         graphics.NP(lines_per_page-2),
                         (f"Activation Phases:", Colors.STANDARD_TEXT_COLOR), graphics.NL, graphics.NL
@@ -85,7 +84,7 @@ class ExplorerCardInfo(Renderable_Card):
         einfo_pages = graphics.page_by_chars_color(einfo_text, chars_per_line, lines_per_page)
 
 
-        textbox_ref = page_parts[2][0]
+        textbox_ref = page_parts.textbox
 
         textbox_ref.add_pages(einfo_pages)
 
@@ -101,13 +100,13 @@ class ExplorerCardInfo(Renderable_Card):
                 tag_pages.append(graphics.NL)
 
         tag_pages = graphics.page_by_chars_color(tag_pages, line_length=chars_per_line, paragraph_length=lines_per_page)
+        if tag_pages:
+            last_page = tag_pages[-1]
+            if len(last_page) < lines_per_page:
+                last_page.extend([[]] * (lines_per_page - len(last_page)))
 
-        last_page = tag_pages[-1]
-        if len(last_page) < lines_per_page:
-            last_page.extend([[]] * (lines_per_page - len(last_page)))
-
-        textbox_ref.add_pages(tag_headline_page)
-        textbox_ref.add_pages(tag_pages)
+            textbox_ref.add_pages(tag_headline_page)
+            textbox_ref.add_pages(tag_pages)
 
         return page_parts
 

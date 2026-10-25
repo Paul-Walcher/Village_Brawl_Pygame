@@ -6,6 +6,44 @@ from Frames.widgets.textbox import Textbox
 
 class Renderable_Card:
 
+    class InfoPagePartContainer:
+
+        def __init__(
+                    self,
+                    frame_dim,
+                    headline_surface,
+                    headline_pos,
+                    image_surface,
+                    image_pos,
+                    textbox,
+                    textbox_pos,
+                    full_image_surface,
+                    full_image_pos,
+                    areas
+                    ):
+
+            self.frame_dim = frame_dim
+            self.headline_surface = headline_surface
+            self.headline_pos = headline_pos
+            self.image_surface = image_surface
+            self.image_pos = image_pos
+            self.textbox = textbox
+            self.textbox_pos = textbox_pos
+            self.full_image_surface = full_image_surface
+            self.full_image_pos = full_image_pos
+            self.areas = areas
+
+        def get_blit_surface_position_tuples(self):
+            #returns all tuples of surface, position for the surfaces that need to be blit
+
+            sp_list =   [
+                        (self.headline_surface, self.headline_pos),
+                        (self.image_surface, self.image_pos)
+                        ]
+
+            return sp_list
+
+
     def __init__(self,
                 name="",
                 name_color=Colors.BLACK,
@@ -177,8 +215,7 @@ class Renderable_Card:
                                 chars_per_line=50, lines_per_page=5,
                                 description_textbox_text=None,
                                 height_distributions=[0.1, 0.05, 0.45, 0.1, 0.25, 0.05],#equals: headline area, distance, card image area, distance, textbox area, distance
-                                rendered_image_path=None,
-                                focus_group=""
+                                rendered_image_path=None
                                 ):
 
         if not fequal(1.0, sum(height_distributions)):
@@ -257,17 +294,27 @@ class Renderable_Card:
                                             line_length=chars_per_line,
                                             paragraph_length=lines_per_page,
                                             wmargin=int(0.2 * true_description_area.w),
-                                            hmargin=int(0.2 *  true_description_area.h),
-                                            focus_group=focus_group
+                                            hmargin=int(0.2 *  true_description_area.h)
                                             )
 
         description_textbox.show_pagenumber()
 
-        return [(headline, headline_pos), (image, image_pos), (description_textbox, (line_rect.x, line_rect.y)), (full_image, full_image_pos)]
+        return Renderable_Card.InfoPagePartContainer(
+                                                        frame_dim=frame_dim.copy(),
+                                                        headline_surface=headline,
+                                                        headline_pos=headline_pos,
+                                                        image_surface=image,
+                                                        image_pos=image_pos,
+                                                        textbox=description_textbox,
+                                                        textbox_pos=(line_rect.x, line_rect.y),
+                                                        full_image_surface=full_image,
+                                                        full_image_pos=full_image_pos,
+                                                        areas=self.get_areas(frame_dim, height_distributions, hmargin, vmargin)
+                                                    )
 
     def render_info_page_parts(self,
                                 screen,
-                                page_parts,
+                                info_page_part_container,
                                 page_index=-1,
                                 background_color=Colors.BLACK,
                                 outline_size=None,
@@ -275,8 +322,9 @@ class Renderable_Card:
                                 full_image_shown=False
                                 ):
 
-        tbox = page_parts[2][0]
-        full_image, full_image_pos = page_parts[3]
+        tbox = info_page_part_container.textbox
+        full_image, full_image_pos = info_page_part_container.full_image_surface, info_page_part_container.full_image_pos
+
         if page_index != -1:
             tbox.skip_to_page(page_index)
 
@@ -287,11 +335,12 @@ class Renderable_Card:
 
         screen.fill(background_color)
 
-        for surf, pos in page_parts[:2]:
+        tbox.render(screen)
+
+        for surf, pos in info_page_part_container.get_blit_surface_position_tuples():
             screen.blit(surf, pos)
 
-        for surf, pos in tbox.get_surfaces_with_position():
-            screen.blit(surf, pos)
+        tbox.render(screen)
 
         if full_image_shown:
 

@@ -83,7 +83,7 @@ class ChooseExplorerFrame(Frame):
 
 
         iframe = pygame.Rect(self.width, 0, self.width // 2, self.height)
-        info_frame = ExplorerInfoFrame(self.explorer_enums[self.explorer_index], self.data, iframe, self)
+        info_frame = ExplorerInfoFrame(self.explorer_enums[self.explorer_index], self.modules, self.data, iframe, self)
         self.info_frame = info_frame
 
         for key in [pygame.K_LEFT, pygame.K_RIGHT, KeyAlternatives.LEFT_ALTERNATIVE, KeyAlternatives.RIGHT_ALTERNATIVE]:
@@ -205,6 +205,11 @@ class ChooseExplorerFrame(Frame):
 
         nframe = self
 
+        self.manage_pygame_events()
+
+        if self.exit_flag_raised():
+            return None
+
         if self.info_frame is not None:
             nframe = self.info_frame.tick()
 
@@ -236,11 +241,6 @@ class ChooseExplorerFrame(Frame):
                 self.shift = - int((self.rotation_clock.elapsed() / self.rotation_duration) * self.width)
             elif self.rotating_right:
                 self.shift = int((self.rotation_clock.elapsed() / self.rotation_duration) * self.width)
-
-        self.manage_pygame_events()
-
-        if self.exit_flag_raised():
-            return None
 
         return nframe
 
