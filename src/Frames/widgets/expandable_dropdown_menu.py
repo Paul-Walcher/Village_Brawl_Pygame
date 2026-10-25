@@ -47,7 +47,7 @@ class ExpandableDropdownMenu(DropdownMenu):
                                                         #max_length == number of options in the dropdown menu with the most options
                                                         #only the first dropdown menu needs to calculate this,
                                                         #and can pass the information on
-                dropdown_parent=None, #since this class works recursively, each expandable dropdown menu needs to know which menu it is attached to
+                parent_frame=None, #since this class works recursively, each expandable dropdown menu needs to know which menu it is attached to
 
 
                 #for the rest see dropdown_menu.py
@@ -76,7 +76,7 @@ class ExpandableDropdownMenu(DropdownMenu):
                                             #the option tuple is the key and the follow up dropdown menu is the value
         self.deferred_dropdown_menu = None  #if no follow up dropdown menu is open, this is None.
                                             #Otherwise contains a reference to the follow up dropdown menu
-        self.dropdown_parent = dropdown_parent #parent dropdown menu. is None for the first dropdown menu
+        self.dropdown_parent = parent_frame #parent dropdown menu. is None for the first dropdown menu
 
         self.dictionary_options = options   #since we use a list to give the options to the parent class to initialize, we need to save the
                                             #dictionary for ourselves
@@ -94,6 +94,7 @@ class ExpandableDropdownMenu(DropdownMenu):
                         frame_dim,
                         options=list(options.keys()),
                         focus_group=focus_group,
+                        parent_frame=self.dropdown_parent,
                         font=font,
                         background_color=background_color,
                         highlighted_background_color=highlighted_background_color,
@@ -161,7 +162,7 @@ class ExpandableDropdownMenu(DropdownMenu):
                                                             self.max_depth - 1,
                                                             self.max_length
                                                         ),
-                                                        dropdown_parent=self,
+                                                        parent_frame=self,
                                                         font=self.font,
                                                         background_color=self.background_color,
                                                         highlighted_background_color=self.highlighted_background_color,

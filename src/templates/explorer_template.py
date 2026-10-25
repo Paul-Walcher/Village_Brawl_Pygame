@@ -34,15 +34,21 @@ class ExplorerInfo(Renderable_Card):
                 ability_activation_phases = None,
                 inventory_size: float = 10.0,
                 starting_items: dict = None,
+                unlockable_items: dict = None,
                 starting_supporters: dict = None,
+                unlockable_supporters: dict = None,
                 starting_cards: dict = None,
+                unlockable_cards: dict = None,
                 starting_blueprints: dict = None,
+                unlockable_blueprints: dict = None,
                 starting_packs: dict = None,
-                unlocked_packs: dict = None,
+                unlocked_packs: list = None,
                 unlockable_packs: dict = None,
                 starting_buildings: dict = None,
+                unlockable_buildings: dict = None,
                 starting_villagers: dict = None,
-                starting_village_terrain = None
+                unlockable_villagers: dict = None,
+                starting_village_terrain: dict = None
                 ):
 
 
@@ -53,14 +59,22 @@ class ExplorerInfo(Renderable_Card):
         #starting items. these need to be the enums from items_mappings.
         #starting items are {name_enum: amount}
         self.starting_items = (starting_items if starting_items is not None else {})
+        #unlockables are treated like (class: (UnlockCondition, amount))
+        self.unlockable_items = (unlockable_items if unlockable_items is not None else {})
         #starting supporters.
         #starting supporters are: {name_enum, amount}
         self.starting_supporters = (starting_supporters if starting_supporters is not None else {})
+        #unlockables are treated like (class: (UnlockCondition, amount))
+        self.unlockable_supporters = (unlockable_supporters if unlockable_supporters is not None else {})
         #starting cards
         #{card_enum: amount}
         self.starting_cards = (starting_cards if starting_cards is not None else {})
+        #unlockables are treated like (class: (UnlockCondition, amount))
+        self.unlockable_cards = (unlockable_cards if unlockable_cards is not None else {})
         #blueprints, {card_enum: amount}
         self.starting_blueprints = (starting_blueprints if starting_blueprints is not None else {})
+        #unlockables are treated like (class: (UnlockCondition, amount))
+        self.unlockable_blueprints = (unlockable_blueprints if unlockable_blueprints is not None else {})
         #starting_packs
         #starting packs. these need to be the enums from pack_mappings
         #starting packs are {name_enum: amount}
@@ -68,11 +82,17 @@ class ExplorerInfo(Renderable_Card):
         #unlocked packs
         self.unlocked_packs = (unlocked_packs if unlocked_packs is not None else [])
         #unlockable_packs
-        self.unlockable_packs = (unlockable_packs if unlockable_packs is not None else [])
+        self.unlockable_packs = (unlockable_packs if unlockable_packs is not None else {})
         #buildings
         self.starting_buildings = (starting_buildings if starting_buildings is not None else {})
+        #unlockables are treated like (class: (UnlockCondition, amount))
+        self.unlockable_buildings = (unlockable_buildings if unlockable_buildings is not None else {})
         #villagers
         self.starting_villagers = (starting_villagers if starting_villagers is not None else {})
+        #unlockables are treated like (class: (UnlockCondition, amount))
+        self.unlockable_villagers = (unlockable_villagers if unlockable_villagers is not None else {})
+        #the starting terrain for the village
+        self.starting_village_terrain = starting_village_terrain #no unlockables, gets set once at beginning
         #stats
         #lives
         self.lives = lives
@@ -82,8 +102,6 @@ class ExplorerInfo(Renderable_Card):
         self.inventory_size = inventory_size
         #ability_activation_phases
         self.activation_phases = (ability_activation_phases if ability_activation_phases is not None else [])
-        #the starting terrain for the village
-        self.starting_village_terrain = starting_village_terrain
 
     def get_info_page_parts(self, frame_dim,
                                 font=Fonts.MINECRAFT,

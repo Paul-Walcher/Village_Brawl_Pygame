@@ -6,6 +6,24 @@ import re
 
 NL = (None,)
 
+
+class _NewPage:
+    """Marker requesting a page break after a given number of blank lines."""
+
+    def __init__(self, empty_lines=0):
+        if not isinstance(empty_lines, int) or empty_lines < 0:
+            raise ValueError("NP(x) requires a non-negative integer")
+        self.empty_lines = empty_lines
+
+
+def NP(x=0):
+    """Insert x empty lines, then start a new page."""
+    return _NewPage(x)
+
+
+def _is_newline(item):
+    return isinstance(item, (tuple, list)) and len(item) == 1 and item[0] is None
+
 def render_text(font, fontsize, text, color=constants.Colors.WHITE):
 
     f = pygame.font.Font(font, fontsize)
@@ -77,46 +95,69 @@ def get_fontsize(font, lines, frame, line_margin=5, min_size=1, max_size=1024):
     return high
 
 def page_by_chars(text, line_length=40, paragraph_length=5, one_page=False):
-
-
+    """Wrap plain text into pages; accepts NL and NP(x) markers in a list."""
     if one_page:
         paragraph_length = constants.INFINITE
 
-    tsplit = [x.split(" ") for x in text.splitlines()]
+    if paragraph_length <= 0:
+        raise ValueError("paragraph_length must be positive")
+
+    # Strings retain the original interface. Lists/iterables may contain
+    # strings, NL, and NP(x) markers.
+    if isinstance(text, str):
+        items = []
+        for i, line in enumerate(text.splitlines()):
+            if i:
+                items.append(NL)
+            items.append(line)
+    else:
+        items = list(text)
 
     pages = []
-    cpage = []
-    cline = ""
+    current_page = []
+    current_line = ""
 
+    def finish_line():
+        nonlocal current_line, current_page, pages
+        current_page.append(current_line)
+        current_line = ""
+        if len(current_page) >= paragraph_length:
+            pages.append(current_page)
+            current_page = []
 
-    for textline in tsplit:
-        for word in textline:
-
-            if len(cline) + len(word) <= line_length:
-                cline += word + " "
+    def add_text(value):
+        nonlocal current_line
+        for word in value.split(" "):
+            if len(current_line) + len(word) <= line_length:
+                current_line += word + " "
             else:
-                if len(cpage) < paragraph_length:
-                    cpage.append(cline)
-                    cline = word
-                else:
-                    pages.append(cpage)
-                    cpage = []
-                    cpage.append(cline)
-                    cline = word
+                finish_line()
+                current_line = word
 
-    if cline:
-
-        if len(cpage) < paragraph_length:
-            cpage.append(cline)
-            cline = ""
+    for item in items:
+        if isinstance(item, _NewPage):
+            if current_line or current_page:
+                finish_line()
+            for _ in range(item.empty_lines):
+                current_page.append("")
+                if len(current_page) >= paragraph_length:
+                    pages.append(current_page)
+                    current_page = []
+            if current_page:
+                pages.append(current_page)
+                current_page = []
+            current_line = ""
+        elif _is_newline(item):
+            finish_line()
+        elif isinstance(item, str):
+            add_text(item)
         else:
-            pages.append(cpage)
-            cpage = []
-            cpage.append(cline)
-            cline = ""
+            raise TypeError("Expected text, NL, or NP(x) marker")
 
-    if cpage:
-        pages.append(cpage)
+    if current_line:
+        current_page.append(current_line)
+    if current_page:
+        pages.append(current_page)
 
     return pages
 
@@ -233,29 +274,11 @@ def page_by_chars_color(
     paragraph_length=5,
     one_page=False
 ):
+    """Convert colored text into pages; accepts NL and NP(x) markers.
+
+    Text segments use (text, color). NL starts a new line. NP(x) inserts
+    x empty lines before forcing a page break.
     """
-    Convert colored text into pages.
-
-    Input:
-        [
-            ("Hello ", RED),
-            ("world!", BLUE),
-            (None,),
-            ("Another line.", GREEN)
-        ]
-
-    Output:
-        [
-            [
-                [("Hello ", RED), ("world!", BLUE)],
-                [("Another line.", GREEN)]
-            ]
-        ]
-
-    Structure:
-        pages -> lines -> (text, color) segments
-    """
-
     if line_length < 1:
         raise ValueError("line_length must be at least 1")
 
@@ -268,54 +291,52 @@ def page_by_chars_color(
     if not text:
         return []
 
-    # First, reconstruct logical lines from all text segments.
-    # Colors are assigned per character so even a word can have
-    # multiple colors.
     logical_lines = [[]]
+    forced_breaks = set()
 
     for item in text:
-        if not isinstance(item, (tuple, list)):
-            raise TypeError(
-                "Each text element must be a tuple (text, color) "
-                "or a newline marker (None,)"
-            )
-
-        if len(item) == 1 and item[0] is None:
+        if isinstance(item, _NewPage):
+            for _ in range(item.empty_lines):
+                logical_lines.append([])
+            forced_breaks.add(len(logical_lines))
             logical_lines.append([])
             continue
 
+        if _is_newline(item):
+            logical_lines.append([])
+            continue
+
+        if not isinstance(item, (tuple, list)):
+            raise TypeError(
+                "Each element must be (text, color), NL, or NP(x)"
+            )
+
         if len(item) != 2:
             raise ValueError(
-                "Each text segment must be (text, color), "
-                "or a newline marker (None,)"
+                "Each text segment must be (text, color), or use NL/NP(x)"
             )
 
         segment_text, color = item
-
         if not isinstance(segment_text, str):
             raise TypeError("Segment text must be a string")
 
-        logical_lines[-1].extend(
-            (char, color) for char in segment_text
-        )
+        logical_lines[-1].extend((char, color) for char in segment_text)
 
-    # Wrap each logical line, then combine adjacent characters
-    # with the same color into rendering-friendly segments.
     colored_lines = []
+    break_before = set()
+    for logical_index, chars in enumerate(logical_lines):
+        if logical_index in forced_breaks:
+            break_before.add(len(colored_lines))
+        for wrapped_line in _wrap_colored_chars(chars, line_length):
+            colored_lines.append(_color_chars_to_runs(wrapped_line))
 
-    for chars in logical_lines:
-        wrapped_lines = _wrap_colored_chars(chars, line_length)
-
-        for wrapped_line in wrapped_lines:
-            colored_lines.append(
-                _color_chars_to_runs(wrapped_line)
-            )
-
-    # Divide the lines into pages.
     pages = []
     current_page = []
+    for index, line in enumerate(colored_lines):
+        if index in break_before and current_page:
+            pages.append(current_page)
+            current_page = []
 
-    for line in colored_lines:
         if len(current_page) >= paragraph_length:
             pages.append(current_page)
             current_page = []
@@ -326,7 +347,6 @@ def page_by_chars_color(
         pages.append(current_page)
 
     return pages
-
 
 def render_page_from_chars_color(
     font,

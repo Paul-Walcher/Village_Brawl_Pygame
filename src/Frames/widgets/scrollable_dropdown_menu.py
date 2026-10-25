@@ -40,7 +40,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                             #max_length == number of options in the dropdown menu with the most options
                                                             #only the first dropdown menu needs to calculate this,
                                                             #and can pass the information on
-                    dropdown_parent=None, #since this class works recursively, each expandable dropdown menu needs to know which menu it is attached to
+                    parent_frame=None, #since this class works recursively, each expandable dropdown menu needs to know which menu it is attached to
 
 
                     #for the rest see dropdown_menu.py
@@ -129,7 +129,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                             frame_dim=frame_dim,
                                             options=options,
                                             precalculated_depth_and_max_length=precalculated_depth_and_max_length,
-                                            dropdown_parent=dropdown_parent,
+                                            parent_frame=parent_frame,
                                             focus_group=focus_group,
                                             font=font,
                                             background_color=background_color,
@@ -224,7 +224,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                             self.max_depth - 1,
                                                             self.max_length
                                                         ),
-                                                        dropdown_parent=self,
+                                                        parent_frame=self,
                                                         font=self.font,
                                                         background_color=self.background_color,
                                                         highlighted_background_color=self.highlighted_background_color,

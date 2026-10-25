@@ -59,7 +59,7 @@ class TextSlider(Frame):
                 "You need more images for this image span."
             )
 
-        super().__init__(FrameEnums.TEXTSLIDER_WIDGET, None, frame_dim)
+        super().__init__(FrameEnums.TEXTSLIDER_WIDGET, None, frame_dim, focus_group=None)
 
         self.text = text
         self.font = font

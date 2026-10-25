@@ -143,13 +143,15 @@ class Renderable_Card:
         cimage = pygame.transform.smoothscale(cimage, (w, h))
         return cimage
 
-    def get_description_textbox(self, frame_dim, colored=True, font=Fonts.MINECRAFT, text_color=Colors.STANDARD_TEXT_COLOR,line_margin=5, wmargin=5, hmargin=5):
+    def get_description_textbox(self, frame_dim, colored=True, font=Fonts.MINECRAFT, text_color=Colors.STANDARD_TEXT_COLOR,line_margin=5, wmargin=5, hmargin=5, focus_group=""):
 
         return Textbox(frame_dim,
                         font, (self.description_color if colored else self.description),
                         line_length=self.description_line_length, paragraph_length=self.description_paragraph_length,
-                        wmargin=wmargin, hmargin=hmargin, text_color=text_color, centered=True, text_colored=colored
+                        wmargin=wmargin, hmargin=hmargin, text_color=text_color, centered=True, text_colored=colored,
+                        focus_group=focus_group
                         )
+
     def get_areas(self, frame_dim, height_distributions, hmargin=0.2, vmargin=0.2):
 
 
@@ -174,15 +176,19 @@ class Renderable_Card:
                                 hmargin=0.1, vmargin = 0.1,
                                 chars_per_line=50, lines_per_page=5,
                                 description_textbox_text=None,
-                                height_distributions=[0.1, 0.05, 0.45, 0.1, 0.25, 0.05]#equals: headline area, distance, card image area, distance, textbox area, distance
+                                height_distributions=[0.1, 0.05, 0.45, 0.1, 0.25, 0.05],#equals: headline area, distance, card image area, distance, textbox area, distance
+                                rendered_image_path=None,
+                                focus_group=""
                                 ):
-
 
         if not fequal(1.0, sum(height_distributions)):
             raise RuntimeError("Height Distributions must add up to 1")
 
         if description_textbox_text == None:
             description_textbox_text = self.description_color
+
+        if rendered_image_path is None:
+            rendered_image_path = self.card_image_path
         #returns a part list, should be used by the render_info_page_parts method
         x, y, w, h = frame_dim.x, frame_dim.y, frame_dim.width, frame_dim.height
 
@@ -210,7 +216,11 @@ class Renderable_Card:
         headline = graphics.render_text(font, fsize, self.name, self.name_color)
         headline_pos = graphics.get_center_with_surface(headline, headline_area)
 
-        image = self.get_card_image_rendered(image_area)
+        if rendered_image_path == self.card_image_path:
+            image = self.get_card_image_rendered(image_area)
+        elif rendered_image_path == self.standard_image_path:
+            image = self.get_standard_image_rendered(image_area)
+
         image_pos = graphics.get_center_with_surface(image, image_area)
 
         fw, fh = 0, 0
@@ -247,7 +257,8 @@ class Renderable_Card:
                                             line_length=chars_per_line,
                                             paragraph_length=lines_per_page,
                                             wmargin=int(0.2 * true_description_area.w),
-                                            hmargin=int(0.2 *  true_description_area.h)
+                                            hmargin=int(0.2 *  true_description_area.h),
+                                            focus_group=focus_group
                                             )
 
         description_textbox.show_pagenumber()

@@ -61,7 +61,7 @@ class LabeledImageSlider(Frame):
         flipping_animation_duration = 500#ms
     ):
 
-        super().__init__(FrameEnums.LABELED_IMAGE_SLIDER_WIDGET, None, frame_dim)
+        super().__init__(FrameEnums.LABELED_IMAGE_SLIDER_WIDGET, None, frame_dim, focus_group=None)
         self.images = images
         self.back_images = (back_images if back_images is not None else self.images.copy())
         self.text = text

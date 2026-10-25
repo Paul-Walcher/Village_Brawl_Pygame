@@ -15,7 +15,9 @@ class CardinfoFrame(Frame):
 
         SLIDING_FINISHED = 0
 
-    def __init__(self, cardinfo, font=Fonts.MINECRAFT,
+    def __init__(self,
+                cardinfo,
+                font=Fonts.MINECRAFT,
                 alpha=Alpha.LEVEL_5,
                 has_focus=True,
                 hmargin=0.1, vmargin=0.1,

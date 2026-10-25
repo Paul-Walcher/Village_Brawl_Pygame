@@ -20,7 +20,7 @@ class Textbox(Frame):
 
                 ):
 
-        super().__init__(FrameEnums.TEXTBOX_WIDGET, None, frame_dim)
+        super().__init__(FrameEnums.TEXTBOX_WIDGET, None, frame_dim, focus_group=None)
 
         self.text = text
         self.line_length = line_length

@@ -33,9 +33,10 @@ from Frames.widgets.scrollable_dropdown_menu import ScrollableDropdownMenu
 
 #TODO
 #
-#1.) Create detection and state for long enter pressed
-#2.) Add Card state to main list (preview, normal)
-#3.) Create Card animation when card clicked
+#1.) Create detection and state for long enter pressed | DONE
+#2.) Create Card animation when card clicked | DONE
+#--------------------------------------------------------------
+#3.) Add Card state to main list (preview, normal)
 #4.) Create Info shown frame when card clicked
 #5.) Create card amount increase/decrease when card selected via long enter pressed
 #6.) Create search menu
@@ -327,6 +328,8 @@ class RenderableCardListviewer(Frame):
                 frame_dim,  #frame dimension, into which it is rendered into
                 full_cardlist, #a dictionary of {RenderableCard(Class): amount}
                 groups,  #must include at least one group. is {name: {"cardlist": {renderable_card: amount}, "mutable": (False/True), "is_copylist": (False/True)}}
+                special_info_frames=None,   #a dictionary like: {cardclass: (list_of_groups_this_info_frame_will_be_used, instantiated frame)}
+                                            #for the card as key, when it is clicked the frame given as value[1] will be used in all groups in value[0] instead of the normal infopage
 
                 #focus group
                 focus_group="",
@@ -437,6 +440,7 @@ class RenderableCardListviewer(Frame):
         #deepcopying, to avoid altering the references
         self.full_cardlist = full_cardlist.copy()
         self.groups = deepcopy(groups)
+        self.special_info_frames = (special_info_frames if special_info_frames is not None else {})
         #adding the trunk group
         self.shown_group = shown_group
         self.group_name_color = group_name_color
@@ -1294,7 +1298,8 @@ class RenderableCardListviewer(Frame):
 
         self.dropdown_menu = ScrollableDropdownMenu(
                                                         self.dropdown_menu_frame,
-                                                        self.dropdown_menu_options_dict
+                                                        self.dropdown_menu_options_dict,
+                                                        parent_frame=self
                                                     )
 
     def reload_dropdown_menu_with_progress(self):

@@ -94,6 +94,8 @@ class Colors:
     LILAC = (253, 61, 245)
 
     STANDARD_TEXT_COLOR = WHITE
+    MAX_PER_DECK_COLOR = YELLOW
+    KEEP_DURATION_COLOR = BLUE
 
 
 class Fonts:

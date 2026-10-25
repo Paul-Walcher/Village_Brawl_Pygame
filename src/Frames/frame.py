@@ -133,16 +133,8 @@ class Frame(EventQueueManager):
 
         #the focus group this frame is assigned to
         self.focus_group = focus_group
-        if not self.focus_group:
+        if not self.focus_group and self.focus_group is not None:
             self.focus_group = Frame.STANDARD_FOCUS_GROUP
-
-        #indicates if the frame has the focus in its group
-        #this variable should be changed using
-        #self.has_focus = x
-        #or self.focus(), self.unfocus()
-        #since this class handles the focus group
-        self._has_focus = not has_focus
-        self.has_focus = has_focus
 
         #the event callbacks that used in self.manage_pygame_events()
         self.__event_callbacks = []
@@ -179,17 +171,16 @@ class Frame(EventQueueManager):
         self.widgets = [] #own widgets
 
         #adding escape key
-        self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT, key_delay=0)
 
         self.bind_events()
 
-    def __del__(self):
-        self.raise_exit_flag()
-
-        #removing from exit group
-        if self.focus_group in Frame.FOCUS_GROUPS and Frame.FOCUS_GROUPS[self.focus_group] == self:
-            #even if parent is None, its ok
-            Frame.FOCUS_GROUPS[self.focus_group] = self.parent_frame
+        #indicates if the frame has the focus in its group
+        #this variable should be changed using
+        #self.has_focus = x
+        #or self.focus(), self.unfocus()
+        #since this class handles the focus group
+        if has_focus:
+            self.focus()
 
 
 
@@ -251,56 +242,16 @@ class Frame(EventQueueManager):
         if pre_h != self.height:
             self.rerender()
 
-
-
     @property
     def has_focus(self):
-        return self._has_focus
+        return self.is_focused()
 
     @has_focus.setter
-    def has_focus(self, x):
-        #if the focus changes:
-        #
-        #if focus is gained:
-        #the current frame reference owning the focus in the focus group
-        #loses the focus, then this frame gains the focus and inserts
-        #itself as the active reference in the focus group
-        #After that, on_focus_gained is called
-        #
-        #if focus is lost:
-        #if this frame is the frame currently owning the focus,
-        #the focus reference is set to None
-        #if this was triggered by another frame gaining focus, the focus
-        #wont stay None, but instead will be overwritten.
-        #After that on_focus_lost is called
-        if x != self._has_focus:
-            self._has_focus = x
-
-            if self.focus_group is not None:
-
-                if self.focus_group not in Frame.FOCUS_GROUPS:
-                    Frame.FOCUS_GROUPS[self.focus_group] = None
-
-                fd = Frame.FOCUS_GROUPS[self.focus_group]
-
-                if not x:
-                    if fd == self:
-                        Frame.FOCUS_GROUPS[self.focus_group] = None
-                else:
-
-                    if fd is not None:
-                        fd.has_focus = False
-
-                    Frame.FOCUS_GROUPS[self.focus_group] = self
-
-
-            self.clear_event_callbacks()
-            self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT, key_delay=0)
-            self.bind_events()
-            if self._has_focus:
-                self.on_focus_gained()
-            else:
-                self.on_focus_lost()
+    def has_focus(self, v):
+        if v:
+            self.focus()
+        else:
+            self.unfocus()
 
     def __prune_parent_frames(self):
 
@@ -363,18 +314,51 @@ class Frame(EventQueueManager):
 
         self.frame_dim = r
 
+    def _on_focus_changed(self):
+
+        self.clear_event_callbacks()
+        self.bind_events()
+        if self.is_focused():
+            self.on_focus_gained()
+        else:
+            self.on_focus_lost()
+
+
 
     def focus(self):
-        #sets the focus
-        self.has_focus = True
+
+        if self.focus_group is None:
+            return
+
+        if self.focus_group not in Frame.FOCUS_GROUPS:
+            Frame.FOCUS_GROUPS[self.focus_group] = None
+
+        pre = Frame.FOCUS_GROUPS[self.focus_group]
+        Frame.FOCUS_GROUPS[self.focus_group] = self
+
+        if pre != self:
+            if pre is not None:
+                pre._on_focus_changed()
+            self._on_focus_changed()
+
 
     def unfocus(self):
-        #takes the focus away
-        self.has_focus = False
+
+        if self.focus_group is not None and self.focus_group in Frame.FOCUS_GROUPS and Frame.FOCUS_GROUPS[self.focus_group] == self:
+            pre = Frame.FOCUS_GROUPS[self.focus_group]
+            Frame.FOCUS_GROUPS[self.focus_group] = None
+
+            if pre == self:
+                self._on_focus_changed()
+
+            if self.parent_frame is not None and self.parent_frame.focus_group == self.focus_group:
+                self.parent_frame.focus()
 
     def is_focused(self):
         #just for style
-        return self.has_focus
+        if self.focus_group is None or self.focus_group not in Frame.FOCUS_GROUPS:
+            return False
+        return (Frame.FOCUS_GROUPS[self.focus_group] == self)
 
     def bind_events(self):
         #This is called in the constructor and every time this frames
@@ -387,6 +371,9 @@ class Frame(EventQueueManager):
             return False
         else:
             return self.__key_scancodes[scancode]
+
+    def add_escape_callback(self):
+        self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT, key_delay=0)
 
     def manage_pygame_events(self):
 
@@ -533,12 +520,11 @@ class Frame(EventQueueManager):
         #The focus can only be given if the next focused frame is in the same
         #focus group, and only if this frame has the focus
         self.__exit_flag_raised = True
+        self.unfocus()
 
     def reset_exit_flag(self):
 
         self.__exit_flag_raised = False
-
-
 
     def exit_flag_raised(self):
         return self.__exit_flag_raised
