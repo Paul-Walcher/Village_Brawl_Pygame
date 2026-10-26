@@ -1,5 +1,5 @@
 from Frames.frame import Frame
-from Frames.frame_enum import FrameEnums
+from Frames.frame_enums import FrameEnums
 
 class Interaction(Frame):
 

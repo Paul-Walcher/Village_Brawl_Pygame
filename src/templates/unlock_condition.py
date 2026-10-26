@@ -2,7 +2,7 @@
 Unlock condition.
 Gets the state of the game, then checks for unlock.
 """
-from abc import ABC, abstractclass
+from abc import ABC, abstractmethod
 from Frames.frame import Frame
 from constants import R_ID
 
