@@ -68,23 +68,36 @@ clock    </h1>
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Clock</span><span class="p">:</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>    <span class="c1">#does time in milliseconds</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="sd">    Clock class.</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">    This class stores the time it was activated via start(),</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="sd">    then you can get the time in milliseconds that passed since the last</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">    activation via elapsed()</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="sd">    """</span>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="c1">#does time in milliseconds</span>
 </span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">elapsed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>            <span class="k">return</span> <span class="mi">0</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>        <span class="k">return</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span><span class="p">)</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">        stores the last activated timestamp</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">        """</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="sd">        stores the current time as a timestamp</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">        """</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">elapsed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="sd">        returns the milliseconds elapsed</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="sd">        since the last start call</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="sd">        """</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>            <span class="k">return</span> <span class="mi">0</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>        <span class="k">return</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -101,46 +114,68 @@ clock    </h1>
     </div>
     <a class="headerlink" href="#Clock"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="Clock-4"><a href="#Clock-4"><span class="linenos"> 4</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Clock</span><span class="p">:</span>
-</span><span id="Clock-5"><a href="#Clock-5"><span class="linenos"> 5</span></a>
-</span><span id="Clock-6"><a href="#Clock-6"><span class="linenos"> 6</span></a>    <span class="c1">#does time in milliseconds</span>
-</span><span id="Clock-7"><a href="#Clock-7"><span class="linenos"> 7</span></a>
-</span><span id="Clock-8"><a href="#Clock-8"><span class="linenos"> 8</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Clock-9"><a href="#Clock-9"><span class="linenos"> 9</span></a>
-</span><span id="Clock-10"><a href="#Clock-10"><span class="linenos">10</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="Clock-5"><a href="#Clock-5"><span class="linenos"> 5</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="Clock-6"><a href="#Clock-6"><span class="linenos"> 6</span></a><span class="sd">    Clock class.</span>
+</span><span id="Clock-7"><a href="#Clock-7"><span class="linenos"> 7</span></a><span class="sd">    This class stores the time it was activated via start(),</span>
+</span><span id="Clock-8"><a href="#Clock-8"><span class="linenos"> 8</span></a><span class="sd">    then you can get the time in milliseconds that passed since the last</span>
+</span><span id="Clock-9"><a href="#Clock-9"><span class="linenos"> 9</span></a><span class="sd">    activation via elapsed()</span>
+</span><span id="Clock-10"><a href="#Clock-10"><span class="linenos">10</span></a><span class="sd">    """</span>
 </span><span id="Clock-11"><a href="#Clock-11"><span class="linenos">11</span></a>
-</span><span id="Clock-12"><a href="#Clock-12"><span class="linenos">12</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Clock-12"><a href="#Clock-12"><span class="linenos">12</span></a>    <span class="c1">#does time in milliseconds</span>
 </span><span id="Clock-13"><a href="#Clock-13"><span class="linenos">13</span></a>
-</span><span id="Clock-14"><a href="#Clock-14"><span class="linenos">14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span>
-</span><span id="Clock-15"><a href="#Clock-15"><span class="linenos">15</span></a>
-</span><span id="Clock-16"><a href="#Clock-16"><span class="linenos">16</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">elapsed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Clock-17"><a href="#Clock-17"><span class="linenos">17</span></a>
-</span><span id="Clock-18"><a href="#Clock-18"><span class="linenos">18</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Clock-19"><a href="#Clock-19"><span class="linenos">19</span></a>            <span class="k">return</span> <span class="mi">0</span>
-</span><span id="Clock-20"><a href="#Clock-20"><span class="linenos">20</span></a>
-</span><span id="Clock-21"><a href="#Clock-21"><span class="linenos">21</span></a>        <span class="k">return</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span><span class="p">)</span>
+</span><span id="Clock-14"><a href="#Clock-14"><span class="linenos">14</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Clock-15"><a href="#Clock-15"><span class="linenos">15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="Clock-16"><a href="#Clock-16"><span class="linenos">16</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Clock-17"><a href="#Clock-17"><span class="linenos">17</span></a><span class="sd">        stores the last activated timestamp</span>
+</span><span id="Clock-18"><a href="#Clock-18"><span class="linenos">18</span></a><span class="sd">        """</span>
+</span><span id="Clock-19"><a href="#Clock-19"><span class="linenos">19</span></a>
+</span><span id="Clock-20"><a href="#Clock-20"><span class="linenos">20</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Clock-21"><a href="#Clock-21"><span class="linenos">21</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Clock-22"><a href="#Clock-22"><span class="linenos">22</span></a><span class="sd">        stores the current time as a timestamp</span>
+</span><span id="Clock-23"><a href="#Clock-23"><span class="linenos">23</span></a><span class="sd">        """</span>
+</span><span id="Clock-24"><a href="#Clock-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span>
+</span><span id="Clock-25"><a href="#Clock-25"><span class="linenos">25</span></a>
+</span><span id="Clock-26"><a href="#Clock-26"><span class="linenos">26</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">elapsed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="Clock-27"><a href="#Clock-27"><span class="linenos">27</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Clock-28"><a href="#Clock-28"><span class="linenos">28</span></a><span class="sd">        returns the milliseconds elapsed</span>
+</span><span id="Clock-29"><a href="#Clock-29"><span class="linenos">29</span></a><span class="sd">        since the last start call</span>
+</span><span id="Clock-30"><a href="#Clock-30"><span class="linenos">30</span></a><span class="sd">        """</span>
+</span><span id="Clock-31"><a href="#Clock-31"><span class="linenos">31</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Clock-32"><a href="#Clock-32"><span class="linenos">32</span></a>            <span class="k">return</span> <span class="mi">0</span>
+</span><span id="Clock-33"><a href="#Clock-33"><span class="linenos">33</span></a>
+</span><span id="Clock-34"><a href="#Clock-34"><span class="linenos">34</span></a>        <span class="k">return</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span><span class="p">)</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Clock class.
+This class stores the time it was activated via start(),
+then you can get the time in milliseconds that passed since the last
+activation via elapsed()</p>
+</div>
+
 
                             <div id="Clock.start" class="classattr">
                                         <input id="Clock.start-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">start</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+        <span class="name">start</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
 
                 <label class="view-source-button" for="Clock.start-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#Clock.start"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Clock.start-12"><a href="#Clock.start-12"><span class="linenos">12</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Clock.start-13"><a href="#Clock.start-13"><span class="linenos">13</span></a>
-</span><span id="Clock.start-14"><a href="#Clock.start-14"><span class="linenos">14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Clock.start-20"><a href="#Clock.start-20"><span class="linenos">20</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Clock.start-21"><a href="#Clock.start-21"><span class="linenos">21</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Clock.start-22"><a href="#Clock.start-22"><span class="linenos">22</span></a><span class="sd">        stores the current time as a timestamp</span>
+</span><span id="Clock.start-23"><a href="#Clock.start-23"><span class="linenos">23</span></a><span class="sd">        """</span>
+</span><span id="Clock.start-24"><a href="#Clock.start-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>stores the current time as a timestamp</p>
+</div>
+
 
                             </div>
                             <div id="Clock.elapsed" class="classattr">
@@ -148,22 +183,28 @@ clock    </h1>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">elapsed</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+        <span class="name">elapsed</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="nb">float</span>:</span></span>
 
                 <label class="view-source-button" for="Clock.elapsed-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#Clock.elapsed"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Clock.elapsed-16"><a href="#Clock.elapsed-16"><span class="linenos">16</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">elapsed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Clock.elapsed-17"><a href="#Clock.elapsed-17"><span class="linenos">17</span></a>
-</span><span id="Clock.elapsed-18"><a href="#Clock.elapsed-18"><span class="linenos">18</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Clock.elapsed-19"><a href="#Clock.elapsed-19"><span class="linenos">19</span></a>            <span class="k">return</span> <span class="mi">0</span>
-</span><span id="Clock.elapsed-20"><a href="#Clock.elapsed-20"><span class="linenos">20</span></a>
-</span><span id="Clock.elapsed-21"><a href="#Clock.elapsed-21"><span class="linenos">21</span></a>        <span class="k">return</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Clock.elapsed-26"><a href="#Clock.elapsed-26"><span class="linenos">26</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">elapsed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="Clock.elapsed-27"><a href="#Clock.elapsed-27"><span class="linenos">27</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Clock.elapsed-28"><a href="#Clock.elapsed-28"><span class="linenos">28</span></a><span class="sd">        returns the milliseconds elapsed</span>
+</span><span id="Clock.elapsed-29"><a href="#Clock.elapsed-29"><span class="linenos">29</span></a><span class="sd">        since the last start call</span>
+</span><span id="Clock.elapsed-30"><a href="#Clock.elapsed-30"><span class="linenos">30</span></a><span class="sd">        """</span>
+</span><span id="Clock.elapsed-31"><a href="#Clock.elapsed-31"><span class="linenos">31</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Clock.elapsed-32"><a href="#Clock.elapsed-32"><span class="linenos">32</span></a>            <span class="k">return</span> <span class="mi">0</span>
+</span><span id="Clock.elapsed-33"><a href="#Clock.elapsed-33"><span class="linenos">33</span></a>
+</span><span id="Clock.elapsed-34"><a href="#Clock.elapsed-34"><span class="linenos">34</span></a>        <span class="k">return</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stime</span><span class="p">)</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>returns the milliseconds elapsed
+since the last start call</p>
+</div>
+
 
                             </div>
                 </section>

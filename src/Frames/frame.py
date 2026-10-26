@@ -118,7 +118,7 @@ class Frame(EventQueueManager):
                                                 #focus group away
                 ):
 
-
+        EventQueueManager.__init__(self)
         #identifier
         self.frame_enum = frame_enum
         #passed on data

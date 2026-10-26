@@ -3,6 +3,10 @@ import pygame
 
 class Phases(Enum):
 
+    """
+    Enum for phases in the current game.
+    """
+
     START_OF_GAME = auto()
     START_OF_ROUND = auto()
     END_OF_ROUND = auto()
@@ -47,7 +51,10 @@ all_phases = list(Phases)
 
 class PhaseInfo:
 
-    #gets the data passed from the frames
+    """
+    Instances of this class get passed to playset entities
+    during tick()
+    """
 
     def __init__(self, phase=None, data=None, parent_frame=None):
 

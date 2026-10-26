@@ -851,7 +851,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span><span id="L-563"><a href="#L-563"><span class="linenos">563</span></a>
 </span><span id="L-564"><a href="#L-564"><span class="linenos">564</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">slides</span> <span class="o">+=</span> <span class="mi">1</span>
 </span><span id="L-565"><a href="#L-565"><span class="linenos">565</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="L-566"><a href="#L-566"><span class="linenos">566</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="L-566"><a href="#L-566"><span class="linenos">566</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="L-567"><a href="#L-567"><span class="linenos">567</span></a>
 </span><span id="L-568"><a href="#L-568"><span class="linenos">568</span></a>        <span class="c1"># Rebuild everything from the actual logical state.</span>
 </span><span id="L-569"><a href="#L-569"><span class="linenos">569</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rerender_images</span><span class="p">()</span>
@@ -1008,7 +1008,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span><span id="L-720"><a href="#L-720"><span class="linenos">720</span></a>
 </span><span id="L-721"><a href="#L-721"><span class="linenos">721</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
 </span><span id="L-722"><a href="#L-722"><span class="linenos">722</span></a>
-</span><span id="L-723"><a href="#L-723"><span class="linenos">723</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="L-723"><a href="#L-723"><span class="linenos">723</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="L-724"><a href="#L-724"><span class="linenos">724</span></a>
 </span><span id="L-725"><a href="#L-725"><span class="linenos">725</span></a>        <span class="c1"># Rebuild everything from the actual logical state.</span>
 </span><span id="L-726"><a href="#L-726"><span class="linenos">726</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rerender_images</span><span class="p">()</span>
@@ -1026,7 +1026,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span><span id="L-738"><a href="#L-738"><span class="linenos">738</span></a>
 </span><span id="L-739"><a href="#L-739"><span class="linenos">739</span></a>        <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
 </span><span id="L-740"><a href="#L-740"><span class="linenos">740</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="L-741"><a href="#L-741"><span class="linenos">741</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECT_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="L-741"><a href="#L-741"><span class="linenos">741</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECT_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="L-742"><a href="#L-742"><span class="linenos">742</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">rerender_images</span><span class="p">()</span>
 </span><span id="L-743"><a href="#L-743"><span class="linenos">743</span></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="L-744"><a href="#L-744"><span class="linenos">744</span></a>
@@ -1066,7 +1066,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span><span id="L-778"><a href="#L-778"><span class="linenos">778</span></a>
 </span><span id="L-779"><a href="#L-779"><span class="linenos">779</span></a>        <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
 </span><span id="L-780"><a href="#L-780"><span class="linenos">780</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="L-781"><a href="#L-781"><span class="linenos">781</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="L-781"><a href="#L-781"><span class="linenos">781</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="L-782"><a href="#L-782"><span class="linenos">782</span></a>            <span class="c1">#changing images</span>
 </span><span id="L-783"><a href="#L-783"><span class="linenos">783</span></a>            <span class="n">save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_index</span><span class="p">]</span>
 </span><span id="L-784"><a href="#L-784"><span class="linenos">784</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_index</span><span class="p">]</span>
@@ -1105,7 +1105,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span><span id="L-817"><a href="#L-817"><span class="linenos">817</span></a>
 </span><span id="L-818"><a href="#L-818"><span class="linenos">818</span></a>        <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
 </span><span id="L-819"><a href="#L-819"><span class="linenos">819</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="L-820"><a href="#L-820"><span class="linenos">820</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="L-820"><a href="#L-820"><span class="linenos">820</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="L-821"><a href="#L-821"><span class="linenos">821</span></a>            <span class="c1">#changing images</span>
 </span><span id="L-822"><a href="#L-822"><span class="linenos">822</span></a>            <span class="n">save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span>
 </span><span id="L-823"><a href="#L-823"><span class="linenos">823</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span>
@@ -1787,7 +1787,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span><span id="Slider-564"><a href="#Slider-564"><span class="linenos">564</span></a>
 </span><span id="Slider-565"><a href="#Slider-565"><span class="linenos">565</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">slides</span> <span class="o">+=</span> <span class="mi">1</span>
 </span><span id="Slider-566"><a href="#Slider-566"><span class="linenos">566</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="Slider-567"><a href="#Slider-567"><span class="linenos">567</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="Slider-567"><a href="#Slider-567"><span class="linenos">567</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="Slider-568"><a href="#Slider-568"><span class="linenos">568</span></a>
 </span><span id="Slider-569"><a href="#Slider-569"><span class="linenos">569</span></a>        <span class="c1"># Rebuild everything from the actual logical state.</span>
 </span><span id="Slider-570"><a href="#Slider-570"><span class="linenos">570</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rerender_images</span><span class="p">()</span>
@@ -1944,7 +1944,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span><span id="Slider-721"><a href="#Slider-721"><span class="linenos">721</span></a>
 </span><span id="Slider-722"><a href="#Slider-722"><span class="linenos">722</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
 </span><span id="Slider-723"><a href="#Slider-723"><span class="linenos">723</span></a>
-</span><span id="Slider-724"><a href="#Slider-724"><span class="linenos">724</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="Slider-724"><a href="#Slider-724"><span class="linenos">724</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="Slider-725"><a href="#Slider-725"><span class="linenos">725</span></a>
 </span><span id="Slider-726"><a href="#Slider-726"><span class="linenos">726</span></a>        <span class="c1"># Rebuild everything from the actual logical state.</span>
 </span><span id="Slider-727"><a href="#Slider-727"><span class="linenos">727</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rerender_images</span><span class="p">()</span>
@@ -1962,7 +1962,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span><span id="Slider-739"><a href="#Slider-739"><span class="linenos">739</span></a>
 </span><span id="Slider-740"><a href="#Slider-740"><span class="linenos">740</span></a>        <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
 </span><span id="Slider-741"><a href="#Slider-741"><span class="linenos">741</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="Slider-742"><a href="#Slider-742"><span class="linenos">742</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECT_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="Slider-742"><a href="#Slider-742"><span class="linenos">742</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECT_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="Slider-743"><a href="#Slider-743"><span class="linenos">743</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">rerender_images</span><span class="p">()</span>
 </span><span id="Slider-744"><a href="#Slider-744"><span class="linenos">744</span></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="Slider-745"><a href="#Slider-745"><span class="linenos">745</span></a>
@@ -2002,7 +2002,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span><span id="Slider-779"><a href="#Slider-779"><span class="linenos">779</span></a>
 </span><span id="Slider-780"><a href="#Slider-780"><span class="linenos">780</span></a>        <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
 </span><span id="Slider-781"><a href="#Slider-781"><span class="linenos">781</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="Slider-782"><a href="#Slider-782"><span class="linenos">782</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="Slider-782"><a href="#Slider-782"><span class="linenos">782</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="Slider-783"><a href="#Slider-783"><span class="linenos">783</span></a>            <span class="c1">#changing images</span>
 </span><span id="Slider-784"><a href="#Slider-784"><span class="linenos">784</span></a>            <span class="n">save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_index</span><span class="p">]</span>
 </span><span id="Slider-785"><a href="#Slider-785"><span class="linenos">785</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_index</span><span class="p">]</span>
@@ -2041,7 +2041,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span><span id="Slider-818"><a href="#Slider-818"><span class="linenos">818</span></a>
 </span><span id="Slider-819"><a href="#Slider-819"><span class="linenos">819</span></a>        <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
 </span><span id="Slider-820"><a href="#Slider-820"><span class="linenos">820</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="Slider-821"><a href="#Slider-821"><span class="linenos">821</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="Slider-821"><a href="#Slider-821"><span class="linenos">821</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="Slider-822"><a href="#Slider-822"><span class="linenos">822</span></a>            <span class="c1">#changing images</span>
 </span><span id="Slider-823"><a href="#Slider-823"><span class="linenos">823</span></a>            <span class="n">save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span>
 </span><span id="Slider-824"><a href="#Slider-824"><span class="linenos">824</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span>
@@ -2173,8 +2173,7 @@ Frames<wbr>.widgets<wbr>.slider    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
 </div>
 
 
@@ -2193,7 +2192,7 @@ inheritance.</p>
                             <div id="Slider.SLIDING_LEFT" class="classattr">
                                 <div class="attr variable">
             <span class="name">SLIDING_LEFT</span>        =
-<span class="default_value">-1863896975625439017</span>
+<span class="default_value">2493466425630426620</span>
 
         
     </div>
@@ -2205,7 +2204,7 @@ inheritance.</p>
                             <div id="Slider.SLIDING_RIGHT" class="classattr">
                                 <div class="attr variable">
             <span class="name">SLIDING_RIGHT</span>        =
-<span class="default_value">5568341343148602219</span>
+<span class="default_value">2561837099939426028</span>
 
         
     </div>
@@ -2217,7 +2216,7 @@ inheritance.</p>
                             <div id="Slider.NOT_SLIDING" class="classattr">
                                 <div class="attr variable">
             <span class="name">NOT_SLIDING</span>        =
-<span class="default_value">4980898766496621622</span>
+<span class="default_value">3545178714568717013</span>
 
         
     </div>
@@ -2229,7 +2228,7 @@ inheritance.</p>
                             <div id="Slider.SELECT_ANIMATION_PLAYING" class="classattr">
                                 <div class="attr variable">
             <span class="name">SELECT_ANIMATION_PLAYING</span>        =
-<span class="default_value">-3170598020992932274</span>
+<span class="default_value">-2726002041400967667</span>
 
         
     </div>
@@ -2241,7 +2240,7 @@ inheritance.</p>
                             <div id="Slider.FLIPPING_ANIMATION_PLAYING" class="classattr">
                                 <div class="attr variable">
             <span class="name">FLIPPING_ANIMATION_PLAYING</span>        =
-<span class="default_value">-4828184023972158625</span>
+<span class="default_value">-4914246485209034006</span>
 
         
     </div>
@@ -2253,7 +2252,7 @@ inheritance.</p>
                             <div id="Slider.FLIPPING_ALL_ANIMATION_PLAYING" class="classattr">
                                 <div class="attr variable">
             <span class="name">FLIPPING_ALL_ANIMATION_PLAYING</span>        =
-<span class="default_value">7558172869855936273</span>
+<span class="default_value">7337917274172974160</span>
 
         
     </div>
@@ -3305,7 +3304,7 @@ inheritance.</p>
 </span><span id="Slider.finalize_slide_left-564"><a href="#Slider.finalize_slide_left-564"><span class="linenos">564</span></a>
 </span><span id="Slider.finalize_slide_left-565"><a href="#Slider.finalize_slide_left-565"><span class="linenos">565</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">slides</span> <span class="o">+=</span> <span class="mi">1</span>
 </span><span id="Slider.finalize_slide_left-566"><a href="#Slider.finalize_slide_left-566"><span class="linenos">566</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="Slider.finalize_slide_left-567"><a href="#Slider.finalize_slide_left-567"><span class="linenos">567</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="Slider.finalize_slide_left-567"><a href="#Slider.finalize_slide_left-567"><span class="linenos">567</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="Slider.finalize_slide_left-568"><a href="#Slider.finalize_slide_left-568"><span class="linenos">568</span></a>
 </span><span id="Slider.finalize_slide_left-569"><a href="#Slider.finalize_slide_left-569"><span class="linenos">569</span></a>        <span class="c1"># Rebuild everything from the actual logical state.</span>
 </span><span id="Slider.finalize_slide_left-570"><a href="#Slider.finalize_slide_left-570"><span class="linenos">570</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rerender_images</span><span class="p">()</span>
@@ -3523,7 +3522,7 @@ inheritance.</p>
 </span><span id="Slider.finalize_slide_right-721"><a href="#Slider.finalize_slide_right-721"><span class="linenos">721</span></a>
 </span><span id="Slider.finalize_slide_right-722"><a href="#Slider.finalize_slide_right-722"><span class="linenos">722</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
 </span><span id="Slider.finalize_slide_right-723"><a href="#Slider.finalize_slide_right-723"><span class="linenos">723</span></a>
-</span><span id="Slider.finalize_slide_right-724"><a href="#Slider.finalize_slide_right-724"><span class="linenos">724</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="Slider.finalize_slide_right-724"><a href="#Slider.finalize_slide_right-724"><span class="linenos">724</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SLIDING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="Slider.finalize_slide_right-725"><a href="#Slider.finalize_slide_right-725"><span class="linenos">725</span></a>
 </span><span id="Slider.finalize_slide_right-726"><a href="#Slider.finalize_slide_right-726"><span class="linenos">726</span></a>        <span class="c1"># Rebuild everything from the actual logical state.</span>
 </span><span id="Slider.finalize_slide_right-727"><a href="#Slider.finalize_slide_right-727"><span class="linenos">727</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rerender_images</span><span class="p">()</span>
@@ -3554,7 +3553,7 @@ inheritance.</p>
 </span><span id="Slider.render_select_animation-739"><a href="#Slider.render_select_animation-739"><span class="linenos">739</span></a>
 </span><span id="Slider.render_select_animation-740"><a href="#Slider.render_select_animation-740"><span class="linenos">740</span></a>        <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
 </span><span id="Slider.render_select_animation-741"><a href="#Slider.render_select_animation-741"><span class="linenos">741</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="Slider.render_select_animation-742"><a href="#Slider.render_select_animation-742"><span class="linenos">742</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECT_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="Slider.render_select_animation-742"><a href="#Slider.render_select_animation-742"><span class="linenos">742</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECT_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="Slider.render_select_animation-743"><a href="#Slider.render_select_animation-743"><span class="linenos">743</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">rerender_images</span><span class="p">()</span>
 </span><span id="Slider.render_select_animation-744"><a href="#Slider.render_select_animation-744"><span class="linenos">744</span></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="Slider.render_select_animation-745"><a href="#Slider.render_select_animation-745"><span class="linenos">745</span></a>
@@ -3610,7 +3609,7 @@ inheritance.</p>
 </span><span id="Slider.render_flipping_animation-779"><a href="#Slider.render_flipping_animation-779"><span class="linenos">779</span></a>
 </span><span id="Slider.render_flipping_animation-780"><a href="#Slider.render_flipping_animation-780"><span class="linenos">780</span></a>        <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
 </span><span id="Slider.render_flipping_animation-781"><a href="#Slider.render_flipping_animation-781"><span class="linenos">781</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="Slider.render_flipping_animation-782"><a href="#Slider.render_flipping_animation-782"><span class="linenos">782</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="Slider.render_flipping_animation-782"><a href="#Slider.render_flipping_animation-782"><span class="linenos">782</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="Slider.render_flipping_animation-783"><a href="#Slider.render_flipping_animation-783"><span class="linenos">783</span></a>            <span class="c1">#changing images</span>
 </span><span id="Slider.render_flipping_animation-784"><a href="#Slider.render_flipping_animation-784"><span class="linenos">784</span></a>            <span class="n">save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_index</span><span class="p">]</span>
 </span><span id="Slider.render_flipping_animation-785"><a href="#Slider.render_flipping_animation-785"><span class="linenos">785</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_index</span><span class="p">]</span>
@@ -3665,7 +3664,7 @@ inheritance.</p>
 </span><span id="Slider.render_flipping_all_animation-818"><a href="#Slider.render_flipping_all_animation-818"><span class="linenos">818</span></a>
 </span><span id="Slider.render_flipping_all_animation-819"><a href="#Slider.render_flipping_all_animation-819"><span class="linenos">819</span></a>        <span class="k">if</span> <span class="n">percentage</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
 </span><span id="Slider.render_flipping_all_animation-820"><a href="#Slider.render_flipping_all_animation-820"><span class="linenos">820</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">Slider</span><span class="o">.</span><span class="n">NOT_SLIDING</span>
-</span><span id="Slider.render_flipping_all_animation-821"><a href="#Slider.render_flipping_all_animation-821"><span class="linenos">821</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="Slider.render_flipping_all_animation-821"><a href="#Slider.render_flipping_all_animation-821"><span class="linenos">821</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">Slider</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">FLIPPING_ANIMATION_ENDED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="Slider.render_flipping_all_animation-822"><a href="#Slider.render_flipping_all_animation-822"><span class="linenos">822</span></a>            <span class="c1">#changing images</span>
 </span><span id="Slider.render_flipping_all_animation-823"><a href="#Slider.render_flipping_all_animation-823"><span class="linenos">823</span></a>            <span class="n">save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span>
 </span><span id="Slider.render_flipping_all_animation-824"><a href="#Slider.render_flipping_all_animation-824"><span class="linenos">824</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span>
@@ -3959,7 +3958,7 @@ inheritance.</p>
                             <div id="Slider.EventTypes.SELECT_ANIMATION_ENDED" class="classattr">
                                 <div class="attr variable">
             <span class="name">SELECT_ANIMATION_ENDED</span>        =
-<span class="default_value">-5314939991525314071</span>
+<span class="default_value">-7437927648405900294</span>
 
         
     </div>
@@ -3971,7 +3970,7 @@ inheritance.</p>
                             <div id="Slider.EventTypes.FLIPPING_ANIMATION_ENDED" class="classattr">
                                 <div class="attr variable">
             <span class="name">FLIPPING_ANIMATION_ENDED</span>        =
-<span class="default_value">-1798094362727553006</span>
+<span class="default_value">4966600392943443559</span>
 
         
     </div>
@@ -3983,7 +3982,7 @@ inheritance.</p>
                             <div id="Slider.EventTypes.SLIDING_ANIMATION_ENDED" class="classattr">
                                 <div class="attr variable">
             <span class="name">SLIDING_ANIMATION_ENDED</span>        =
-<span class="default_value">-435108107987248332</span>
+<span class="default_value">3035397080503082895</span>
 
         
     </div>

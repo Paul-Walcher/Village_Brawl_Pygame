@@ -42,9 +42,6 @@
                                 <a class="variable" href="#Gamehandler.running">running</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Gamehandler.main_frame">main_frame</a>
-                        </li>
-                        <li>
                                 <a class="variable" href="#Gamehandler.current_frame">current_frame</a>
                         </li>
                         <li>
@@ -79,38 +76,60 @@ gamehandler    </h1>
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a><span class="sd">Gamehandler class, handles the gameloop</span>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="sd">"""</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Gamehandler</span><span class="p">:</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">)</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_frame</span><span class="p">):</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">start_frame</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>            <span class="n">frame_back</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>            <span class="k">if</span> <span class="n">frame_back</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>                <span class="k">break</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>            <span class="k">else</span><span class="p">:</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">frame_back</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">)</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">Frames.frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">Frame</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Gamehandler</span><span class="p">:</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">    This class handles the gameloop in run().</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    """</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">)</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">        The screen everything will be rendered onto. Is set to fullscreen.</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">        """</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="sd">        Size of the screen.</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">        """</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="sd">        If the gameloop is running.</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="sd">        """</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="sd">        References the current frame. Each frame returns its next frame (or itself)</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="sd">        via Frame.tick()</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="sd">        """</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starting_frame</span><span class="p">:</span> <span class="n">Frame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="sd">        This is the main gameloop.</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a><span class="sd">        """</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">starting_frame</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>            <span class="n">frame_back</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>            <span class="k">if</span> <span class="n">frame_back</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>                <span class="k">break</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>            <span class="k">else</span><span class="p">:</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">frame_back</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>
+</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>
+</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">)</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -126,83 +145,99 @@ gamehandler    </h1>
 
     </div>
     <a class="headerlink" href="#Gamehandler"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Gamehandler-7"><a href="#Gamehandler-7"><span class="linenos"> 7</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Gamehandler</span><span class="p">:</span>
-</span><span id="Gamehandler-8"><a href="#Gamehandler-8"><span class="linenos"> 8</span></a>
-</span><span id="Gamehandler-9"><a href="#Gamehandler-9"><span class="linenos"> 9</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Gamehandler-10"><a href="#Gamehandler-10"><span class="linenos">10</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">)</span>
-</span><span id="Gamehandler-11"><a href="#Gamehandler-11"><span class="linenos">11</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
-</span><span id="Gamehandler-12"><a href="#Gamehandler-12"><span class="linenos">12</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="Gamehandler-13"><a href="#Gamehandler-13"><span class="linenos">13</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">main_frame</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
-</span><span id="Gamehandler-14"><a href="#Gamehandler-14"><span class="linenos">14</span></a>
-</span><span id="Gamehandler-15"><a href="#Gamehandler-15"><span class="linenos">15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="Gamehandler-16"><a href="#Gamehandler-16"><span class="linenos">16</span></a>
-</span><span id="Gamehandler-17"><a href="#Gamehandler-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_frame</span><span class="p">):</span>
-</span><span id="Gamehandler-18"><a href="#Gamehandler-18"><span class="linenos">18</span></a>
-</span><span id="Gamehandler-19"><a href="#Gamehandler-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">start_frame</span>
-</span><span id="Gamehandler-20"><a href="#Gamehandler-20"><span class="linenos">20</span></a>
-</span><span id="Gamehandler-21"><a href="#Gamehandler-21"><span class="linenos">21</span></a>        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
-</span><span id="Gamehandler-22"><a href="#Gamehandler-22"><span class="linenos">22</span></a>
-</span><span id="Gamehandler-23"><a href="#Gamehandler-23"><span class="linenos">23</span></a>            <span class="n">frame_back</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
-</span><span id="Gamehandler-24"><a href="#Gamehandler-24"><span class="linenos">24</span></a>
-</span><span id="Gamehandler-25"><a href="#Gamehandler-25"><span class="linenos">25</span></a>            <span class="k">if</span> <span class="n">frame_back</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Gamehandler-26"><a href="#Gamehandler-26"><span class="linenos">26</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="Gamehandler-27"><a href="#Gamehandler-27"><span class="linenos">27</span></a>                <span class="k">break</span>
-</span><span id="Gamehandler-28"><a href="#Gamehandler-28"><span class="linenos">28</span></a>
-</span><span id="Gamehandler-29"><a href="#Gamehandler-29"><span class="linenos">29</span></a>            <span class="k">else</span><span class="p">:</span>
-</span><span id="Gamehandler-30"><a href="#Gamehandler-30"><span class="linenos">30</span></a>
-</span><span id="Gamehandler-31"><a href="#Gamehandler-31"><span class="linenos">31</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">frame_back</span>
-</span><span id="Gamehandler-32"><a href="#Gamehandler-32"><span class="linenos">32</span></a>
-</span><span id="Gamehandler-33"><a href="#Gamehandler-33"><span class="linenos">33</span></a>
-</span><span id="Gamehandler-34"><a href="#Gamehandler-34"><span class="linenos">34</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-</span><span id="Gamehandler-35"><a href="#Gamehandler-35"><span class="linenos">35</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">)</span>
-</span><span id="Gamehandler-36"><a href="#Gamehandler-36"><span class="linenos">36</span></a>            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Gamehandler-11"><a href="#Gamehandler-11"><span class="linenos">11</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Gamehandler</span><span class="p">:</span>
+</span><span id="Gamehandler-12"><a href="#Gamehandler-12"><span class="linenos">12</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="Gamehandler-13"><a href="#Gamehandler-13"><span class="linenos">13</span></a><span class="sd">    This class handles the gameloop in run().</span>
+</span><span id="Gamehandler-14"><a href="#Gamehandler-14"><span class="linenos">14</span></a><span class="sd">    """</span>
+</span><span id="Gamehandler-15"><a href="#Gamehandler-15"><span class="linenos">15</span></a>
+</span><span id="Gamehandler-16"><a href="#Gamehandler-16"><span class="linenos">16</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Gamehandler-17"><a href="#Gamehandler-17"><span class="linenos">17</span></a>
+</span><span id="Gamehandler-18"><a href="#Gamehandler-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">)</span>
+</span><span id="Gamehandler-19"><a href="#Gamehandler-19"><span class="linenos">19</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Gamehandler-20"><a href="#Gamehandler-20"><span class="linenos">20</span></a><span class="sd">        The screen everything will be rendered onto. Is set to fullscreen.</span>
+</span><span id="Gamehandler-21"><a href="#Gamehandler-21"><span class="linenos">21</span></a><span class="sd">        """</span>
+</span><span id="Gamehandler-22"><a href="#Gamehandler-22"><span class="linenos">22</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+</span><span id="Gamehandler-23"><a href="#Gamehandler-23"><span class="linenos">23</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Gamehandler-24"><a href="#Gamehandler-24"><span class="linenos">24</span></a><span class="sd">        Size of the screen.</span>
+</span><span id="Gamehandler-25"><a href="#Gamehandler-25"><span class="linenos">25</span></a><span class="sd">        """</span>
+</span><span id="Gamehandler-26"><a href="#Gamehandler-26"><span class="linenos">26</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="Gamehandler-27"><a href="#Gamehandler-27"><span class="linenos">27</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Gamehandler-28"><a href="#Gamehandler-28"><span class="linenos">28</span></a><span class="sd">        If the gameloop is running.</span>
+</span><span id="Gamehandler-29"><a href="#Gamehandler-29"><span class="linenos">29</span></a><span class="sd">        """</span>
+</span><span id="Gamehandler-30"><a href="#Gamehandler-30"><span class="linenos">30</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="Gamehandler-31"><a href="#Gamehandler-31"><span class="linenos">31</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Gamehandler-32"><a href="#Gamehandler-32"><span class="linenos">32</span></a><span class="sd">        References the current frame. Each frame returns its next frame (or itself)</span>
+</span><span id="Gamehandler-33"><a href="#Gamehandler-33"><span class="linenos">33</span></a><span class="sd">        via Frame.tick()</span>
+</span><span id="Gamehandler-34"><a href="#Gamehandler-34"><span class="linenos">34</span></a><span class="sd">        """</span>
+</span><span id="Gamehandler-35"><a href="#Gamehandler-35"><span class="linenos">35</span></a>
+</span><span id="Gamehandler-36"><a href="#Gamehandler-36"><span class="linenos">36</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starting_frame</span><span class="p">:</span> <span class="n">Frame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Gamehandler-37"><a href="#Gamehandler-37"><span class="linenos">37</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Gamehandler-38"><a href="#Gamehandler-38"><span class="linenos">38</span></a><span class="sd">        This is the main gameloop.</span>
+</span><span id="Gamehandler-39"><a href="#Gamehandler-39"><span class="linenos">39</span></a><span class="sd">        """</span>
+</span><span id="Gamehandler-40"><a href="#Gamehandler-40"><span class="linenos">40</span></a>
+</span><span id="Gamehandler-41"><a href="#Gamehandler-41"><span class="linenos">41</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">starting_frame</span>
+</span><span id="Gamehandler-42"><a href="#Gamehandler-42"><span class="linenos">42</span></a>
+</span><span id="Gamehandler-43"><a href="#Gamehandler-43"><span class="linenos">43</span></a>        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+</span><span id="Gamehandler-44"><a href="#Gamehandler-44"><span class="linenos">44</span></a>
+</span><span id="Gamehandler-45"><a href="#Gamehandler-45"><span class="linenos">45</span></a>            <span class="n">frame_back</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
+</span><span id="Gamehandler-46"><a href="#Gamehandler-46"><span class="linenos">46</span></a>
+</span><span id="Gamehandler-47"><a href="#Gamehandler-47"><span class="linenos">47</span></a>            <span class="k">if</span> <span class="n">frame_back</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Gamehandler-48"><a href="#Gamehandler-48"><span class="linenos">48</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="Gamehandler-49"><a href="#Gamehandler-49"><span class="linenos">49</span></a>                <span class="k">break</span>
+</span><span id="Gamehandler-50"><a href="#Gamehandler-50"><span class="linenos">50</span></a>
+</span><span id="Gamehandler-51"><a href="#Gamehandler-51"><span class="linenos">51</span></a>            <span class="k">else</span><span class="p">:</span>
+</span><span id="Gamehandler-52"><a href="#Gamehandler-52"><span class="linenos">52</span></a>
+</span><span id="Gamehandler-53"><a href="#Gamehandler-53"><span class="linenos">53</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">frame_back</span>
+</span><span id="Gamehandler-54"><a href="#Gamehandler-54"><span class="linenos">54</span></a>
+</span><span id="Gamehandler-55"><a href="#Gamehandler-55"><span class="linenos">55</span></a>
+</span><span id="Gamehandler-56"><a href="#Gamehandler-56"><span class="linenos">56</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span><span id="Gamehandler-57"><a href="#Gamehandler-57"><span class="linenos">57</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">)</span>
+</span><span id="Gamehandler-58"><a href="#Gamehandler-58"><span class="linenos">58</span></a>            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>This class handles the gameloop in run().</p>
+</div>
+
 
                             <div id="Gamehandler.screen" class="classattr">
                                 <div class="attr variable">
-            <span class="name">screen</span>
+            <span class="name">screen</span><span class="annotation">: pygame.surface.Surface</span>
 
         
     </div>
     <a class="headerlink" href="#Gamehandler.screen"></a>
     
-    
+            <div class="docstring"><p>The screen everything will be rendered onto. Is set to fullscreen.</p>
+</div>
+
 
                             </div>
                             <div id="Gamehandler.running" class="classattr">
                                 <div class="attr variable">
-            <span class="name">running</span>
+            <span class="name">running</span><span class="annotation">: bool</span>
 
         
     </div>
     <a class="headerlink" href="#Gamehandler.running"></a>
     
-    
+            <div class="docstring"><p>If the gameloop is running.</p>
+</div>
 
-                            </div>
-                            <div id="Gamehandler.main_frame" class="classattr">
-                                <div class="attr variable">
-            <span class="name">main_frame</span>
-
-        
-    </div>
-    <a class="headerlink" href="#Gamehandler.main_frame"></a>
-    
-    
 
                             </div>
                             <div id="Gamehandler.current_frame" class="classattr">
                                 <div class="attr variable">
-            <span class="name">current_frame</span>
+            <span class="name">current_frame</span><span class="annotation">: <a href="Frames/frame.html#Frame">Frames.frame.Frame</a></span>
 
         
     </div>
     <a class="headerlink" href="#Gamehandler.current_frame"></a>
     
-    
+            <div class="docstring"><p>References the current frame. Each frame returns its next frame (or itself)
+via Frame.tick()</p>
+</div>
+
 
                             </div>
                             <div id="Gamehandler.run" class="classattr">
@@ -210,36 +245,41 @@ gamehandler    </h1>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">run</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">start_frame</span></span><span class="return-annotation">):</span></span>
+        <span class="name">run</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">starting_frame</span><span class="p">:</span> <span class="n"><a href="Frames/frame.html#Frame">Frames.frame.Frame</a></span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
 
                 <label class="view-source-button" for="Gamehandler.run-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#Gamehandler.run"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Gamehandler.run-17"><a href="#Gamehandler.run-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_frame</span><span class="p">):</span>
-</span><span id="Gamehandler.run-18"><a href="#Gamehandler.run-18"><span class="linenos">18</span></a>
-</span><span id="Gamehandler.run-19"><a href="#Gamehandler.run-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">start_frame</span>
-</span><span id="Gamehandler.run-20"><a href="#Gamehandler.run-20"><span class="linenos">20</span></a>
-</span><span id="Gamehandler.run-21"><a href="#Gamehandler.run-21"><span class="linenos">21</span></a>        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
-</span><span id="Gamehandler.run-22"><a href="#Gamehandler.run-22"><span class="linenos">22</span></a>
-</span><span id="Gamehandler.run-23"><a href="#Gamehandler.run-23"><span class="linenos">23</span></a>            <span class="n">frame_back</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
-</span><span id="Gamehandler.run-24"><a href="#Gamehandler.run-24"><span class="linenos">24</span></a>
-</span><span id="Gamehandler.run-25"><a href="#Gamehandler.run-25"><span class="linenos">25</span></a>            <span class="k">if</span> <span class="n">frame_back</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Gamehandler.run-26"><a href="#Gamehandler.run-26"><span class="linenos">26</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="Gamehandler.run-27"><a href="#Gamehandler.run-27"><span class="linenos">27</span></a>                <span class="k">break</span>
-</span><span id="Gamehandler.run-28"><a href="#Gamehandler.run-28"><span class="linenos">28</span></a>
-</span><span id="Gamehandler.run-29"><a href="#Gamehandler.run-29"><span class="linenos">29</span></a>            <span class="k">else</span><span class="p">:</span>
-</span><span id="Gamehandler.run-30"><a href="#Gamehandler.run-30"><span class="linenos">30</span></a>
-</span><span id="Gamehandler.run-31"><a href="#Gamehandler.run-31"><span class="linenos">31</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">frame_back</span>
-</span><span id="Gamehandler.run-32"><a href="#Gamehandler.run-32"><span class="linenos">32</span></a>
-</span><span id="Gamehandler.run-33"><a href="#Gamehandler.run-33"><span class="linenos">33</span></a>
-</span><span id="Gamehandler.run-34"><a href="#Gamehandler.run-34"><span class="linenos">34</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-</span><span id="Gamehandler.run-35"><a href="#Gamehandler.run-35"><span class="linenos">35</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">)</span>
-</span><span id="Gamehandler.run-36"><a href="#Gamehandler.run-36"><span class="linenos">36</span></a>            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Gamehandler.run-36"><a href="#Gamehandler.run-36"><span class="linenos">36</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">starting_frame</span><span class="p">:</span> <span class="n">Frame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Gamehandler.run-37"><a href="#Gamehandler.run-37"><span class="linenos">37</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Gamehandler.run-38"><a href="#Gamehandler.run-38"><span class="linenos">38</span></a><span class="sd">        This is the main gameloop.</span>
+</span><span id="Gamehandler.run-39"><a href="#Gamehandler.run-39"><span class="linenos">39</span></a><span class="sd">        """</span>
+</span><span id="Gamehandler.run-40"><a href="#Gamehandler.run-40"><span class="linenos">40</span></a>
+</span><span id="Gamehandler.run-41"><a href="#Gamehandler.run-41"><span class="linenos">41</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">starting_frame</span>
+</span><span id="Gamehandler.run-42"><a href="#Gamehandler.run-42"><span class="linenos">42</span></a>
+</span><span id="Gamehandler.run-43"><a href="#Gamehandler.run-43"><span class="linenos">43</span></a>        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+</span><span id="Gamehandler.run-44"><a href="#Gamehandler.run-44"><span class="linenos">44</span></a>
+</span><span id="Gamehandler.run-45"><a href="#Gamehandler.run-45"><span class="linenos">45</span></a>            <span class="n">frame_back</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
+</span><span id="Gamehandler.run-46"><a href="#Gamehandler.run-46"><span class="linenos">46</span></a>
+</span><span id="Gamehandler.run-47"><a href="#Gamehandler.run-47"><span class="linenos">47</span></a>            <span class="k">if</span> <span class="n">frame_back</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Gamehandler.run-48"><a href="#Gamehandler.run-48"><span class="linenos">48</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="Gamehandler.run-49"><a href="#Gamehandler.run-49"><span class="linenos">49</span></a>                <span class="k">break</span>
+</span><span id="Gamehandler.run-50"><a href="#Gamehandler.run-50"><span class="linenos">50</span></a>
+</span><span id="Gamehandler.run-51"><a href="#Gamehandler.run-51"><span class="linenos">51</span></a>            <span class="k">else</span><span class="p">:</span>
+</span><span id="Gamehandler.run-52"><a href="#Gamehandler.run-52"><span class="linenos">52</span></a>
+</span><span id="Gamehandler.run-53"><a href="#Gamehandler.run-53"><span class="linenos">53</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="n">frame_back</span>
+</span><span id="Gamehandler.run-54"><a href="#Gamehandler.run-54"><span class="linenos">54</span></a>
+</span><span id="Gamehandler.run-55"><a href="#Gamehandler.run-55"><span class="linenos">55</span></a>
+</span><span id="Gamehandler.run-56"><a href="#Gamehandler.run-56"><span class="linenos">56</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span><span id="Gamehandler.run-57"><a href="#Gamehandler.run-57"><span class="linenos">57</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">)</span>
+</span><span id="Gamehandler.run-58"><a href="#Gamehandler.run-58"><span class="linenos">58</span></a>            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>This is the main gameloop.</p>
+</div>
+
 
                             </div>
                 </section>

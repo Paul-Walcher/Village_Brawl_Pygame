@@ -5,6 +5,9 @@ import importlib
 from constants import PLAYSETS_FOLDER
 
 class Modules:
+    """
+    Class that contains all relevant modules for a playset.
+    """
 
     @staticmethod
     def load_playset(playset_name):

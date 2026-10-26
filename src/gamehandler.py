@@ -1,25 +1,47 @@
 """
 Gamehandler class, handles the gameloop
 """
+from __future__ import annotations
+from typing import Callable
+
 import pygame
+from Frames.frame import Frame
 
 class Gamehandler:
+    """
+    This class handles the gameloop in run().
+    """
 
     def __init__(self):
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+
+        self.screen: pygame.Surface = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        """
+        The screen everything will be rendered onto. Is set to fullscreen.
+        """
         self.width, self.height = self.screen.get_size()
-        self.running = 1
-        self.main_frame = pygame.Rect(0, 0, self.width, self.height)
+        """
+        Size of the screen.
+        """
+        self.running: bool = True
+        """
+        If the gameloop is running.
+        """
+        self.current_frame: Frame = None
+        """
+        References the current frame. Each frame returns its next frame (or itself)
+        via Frame.tick()
+        """
 
-        self.current_frame = None
+    def run(self, starting_frame: Frame) -> None:
+        """
+        This is the main gameloop.
+        """
 
-    def run(self, start_frame):
-
-        self.current_frame = start_frame
+        self.current_frame = starting_frame
 
         while self.running:
 
-            frame_back = self.current_frame.tick()
+            frame_back: Frame = self.current_frame.tick()
 
             if frame_back is None:
                 self.running = False

@@ -7,7 +7,6 @@ from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
 from gameinfo import Gameinfo
-
 from Frames.choose_save_name_frame import ChooseSaveNameFrame
 
 class ChoosePlaysetFrame(Frame):

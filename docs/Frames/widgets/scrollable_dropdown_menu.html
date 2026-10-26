@@ -608,7 +608,7 @@ Frames<wbr>.widgets<wbr>.scrollable_dropdown_menu    </h1>
 </span><span id="L-406"><a href="#L-406"><span class="linenos">406</span></a>                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ExpandableDropdownMenu</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECTION_FINISHED_EVENT</span><span class="p">:</span>
 </span><span id="L-407"><a href="#L-407"><span class="linenos">407</span></a>                    <span class="c1">#if we got a selection finished event, append the own current option, then add it to the event queue</span>
 </span><span id="L-408"><a href="#L-408"><span class="linenos">408</span></a>                    <span class="n">event</span><span class="o">.</span><span class="n">add_selected_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_index</span><span class="p">])</span>
-</span><span id="L-409"><a href="#L-409"><span class="linenos">409</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="L-409"><a href="#L-409"><span class="linenos">409</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </span><span id="L-410"><a href="#L-410"><span class="linenos">410</span></a>
 </span><span id="L-411"><a href="#L-411"><span class="linenos">411</span></a>
 </span><span id="L-412"><a href="#L-412"><span class="linenos">412</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_scrolling_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1190,7 +1190,7 @@ Frames<wbr>.widgets<wbr>.scrollable_dropdown_menu    </h1>
 </span><span id="ScrollableDropdownMenu-407"><a href="#ScrollableDropdownMenu-407"><span class="linenos">407</span></a>                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ExpandableDropdownMenu</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECTION_FINISHED_EVENT</span><span class="p">:</span>
 </span><span id="ScrollableDropdownMenu-408"><a href="#ScrollableDropdownMenu-408"><span class="linenos">408</span></a>                    <span class="c1">#if we got a selection finished event, append the own current option, then add it to the event queue</span>
 </span><span id="ScrollableDropdownMenu-409"><a href="#ScrollableDropdownMenu-409"><span class="linenos">409</span></a>                    <span class="n">event</span><span class="o">.</span><span class="n">add_selected_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_index</span><span class="p">])</span>
-</span><span id="ScrollableDropdownMenu-410"><a href="#ScrollableDropdownMenu-410"><span class="linenos">410</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="ScrollableDropdownMenu-410"><a href="#ScrollableDropdownMenu-410"><span class="linenos">410</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </span><span id="ScrollableDropdownMenu-411"><a href="#ScrollableDropdownMenu-411"><span class="linenos">411</span></a>
 </span><span id="ScrollableDropdownMenu-412"><a href="#ScrollableDropdownMenu-412"><span class="linenos">412</span></a>
 </span><span id="ScrollableDropdownMenu-413"><a href="#ScrollableDropdownMenu-413"><span class="linenos">413</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_scrolling_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1365,8 +1365,7 @@ Frames<wbr>.widgets<wbr>.scrollable_dropdown_menu    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
 </div>
 
 
@@ -1514,7 +1513,7 @@ inheritance.</p>
                             <div id="ScrollableDropdownMenu.SCROLLING_UP" class="classattr">
                                 <div class="attr variable">
             <span class="name">SCROLLING_UP</span>        =
-<span class="default_value">8146061874717367087</span>
+<span class="default_value">-3160454575696979159</span>
 
         
     </div>
@@ -1526,7 +1525,7 @@ inheritance.</p>
                             <div id="ScrollableDropdownMenu.SCROLLING_DOWN" class="classattr">
                                 <div class="attr variable">
             <span class="name">SCROLLING_DOWN</span>        =
-<span class="default_value">-9010461522546345539</span>
+<span class="default_value">6746726557273590883</span>
 
         
     </div>
@@ -2216,7 +2215,7 @@ inheritance.</p>
 </span><span id="ScrollableDropdownMenu.tick-407"><a href="#ScrollableDropdownMenu.tick-407"><span class="linenos">407</span></a>                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ExpandableDropdownMenu</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECTION_FINISHED_EVENT</span><span class="p">:</span>
 </span><span id="ScrollableDropdownMenu.tick-408"><a href="#ScrollableDropdownMenu.tick-408"><span class="linenos">408</span></a>                    <span class="c1">#if we got a selection finished event, append the own current option, then add it to the event queue</span>
 </span><span id="ScrollableDropdownMenu.tick-409"><a href="#ScrollableDropdownMenu.tick-409"><span class="linenos">409</span></a>                    <span class="n">event</span><span class="o">.</span><span class="n">add_selected_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_index</span><span class="p">])</span>
-</span><span id="ScrollableDropdownMenu.tick-410"><a href="#ScrollableDropdownMenu.tick-410"><span class="linenos">410</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span><span id="ScrollableDropdownMenu.tick-410"><a href="#ScrollableDropdownMenu.tick-410"><span class="linenos">410</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </span></pre></div>
 
 

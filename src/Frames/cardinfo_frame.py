@@ -129,7 +129,7 @@ class CardinfoFrame(Frame):
     def finalize_slide(self):
 
         self.is_sliding = False
-        self.event_queue.append(Event(CardinfoFrame.EventTypes.SLIDING_FINISHED, None))
+        self.push_event(Event(CardinfoFrame.EventTypes.SLIDING_FINISHED, None))
 
         self.move_to(x=self.slide_endpos[0], y=self.slide_endpos[1])
 

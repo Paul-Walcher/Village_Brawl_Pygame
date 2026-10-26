@@ -518,7 +518,7 @@ Frames<wbr>.widgets<wbr>.dropdown_menu    </h1>
 </span><span id="L-307"><a href="#L-307"><span class="linenos">307</span></a>
 </span><span id="L-308"><a href="#L-308"><span class="linenos">308</span></a>        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_index</span>
 </span><span id="L-309"><a href="#L-309"><span class="linenos">309</span></a>        <span class="n">fevent</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="n">DropdownMenu</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECT_ANIMATION_ENDED</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</span><span id="L-310"><a href="#L-310"><span class="linenos">310</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fevent</span><span class="p">)</span>
+</span><span id="L-310"><a href="#L-310"><span class="linenos">310</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">fevent</span><span class="p">)</span>
 </span><span id="L-311"><a href="#L-311"><span class="linenos">311</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rendered_highlighted_texts</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtext_copy</span>
 </span><span id="L-312"><a href="#L-312"><span class="linenos">312</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">DropdownMenu</span><span class="o">.</span><span class="n">OPTION_SELECTED</span>
 </span><span id="L-313"><a href="#L-313"><span class="linenos">313</span></a>
@@ -855,7 +855,7 @@ Frames<wbr>.widgets<wbr>.dropdown_menu    </h1>
 </span><span id="DropdownMenu-308"><a href="#DropdownMenu-308"><span class="linenos">308</span></a>
 </span><span id="DropdownMenu-309"><a href="#DropdownMenu-309"><span class="linenos">309</span></a>        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_index</span>
 </span><span id="DropdownMenu-310"><a href="#DropdownMenu-310"><span class="linenos">310</span></a>        <span class="n">fevent</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="n">DropdownMenu</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECT_ANIMATION_ENDED</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</span><span id="DropdownMenu-311"><a href="#DropdownMenu-311"><span class="linenos">311</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fevent</span><span class="p">)</span>
+</span><span id="DropdownMenu-311"><a href="#DropdownMenu-311"><span class="linenos">311</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">fevent</span><span class="p">)</span>
 </span><span id="DropdownMenu-312"><a href="#DropdownMenu-312"><span class="linenos">312</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rendered_highlighted_texts</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtext_copy</span>
 </span><span id="DropdownMenu-313"><a href="#DropdownMenu-313"><span class="linenos">313</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">DropdownMenu</span><span class="o">.</span><span class="n">OPTION_SELECTED</span>
 </span><span id="DropdownMenu-314"><a href="#DropdownMenu-314"><span class="linenos">314</span></a>
@@ -881,8 +881,7 @@ Frames<wbr>.widgets<wbr>.dropdown_menu    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
 </div>
 
 
@@ -990,7 +989,7 @@ inheritance.</p>
                             <div id="DropdownMenu.NOTHING_SELECTED" class="classattr">
                                 <div class="attr variable">
             <span class="name">NOTHING_SELECTED</span>        =
-<span class="default_value">-4398382467833395169</span>
+<span class="default_value">-4281630695895452497</span>
 
         
     </div>
@@ -1002,7 +1001,7 @@ inheritance.</p>
                             <div id="DropdownMenu.OPTION_SELECTED" class="classattr">
                                 <div class="attr variable">
             <span class="name">OPTION_SELECTED</span>        =
-<span class="default_value">8310080443917983720</span>
+<span class="default_value">-4277481970807185056</span>
 
         
     </div>
@@ -1014,7 +1013,7 @@ inheritance.</p>
                             <div id="DropdownMenu.SELECT_ANIMATION_PLAYING" class="classattr">
                                 <div class="attr variable">
             <span class="name">SELECT_ANIMATION_PLAYING</span>        =
-<span class="default_value">-5545838672255023518</span>
+<span class="default_value">-1964197470726432128</span>
 
         
     </div>
@@ -1714,7 +1713,7 @@ inheritance.</p>
 </span><span id="DropdownMenu.finalize_select_animation-308"><a href="#DropdownMenu.finalize_select_animation-308"><span class="linenos">308</span></a>
 </span><span id="DropdownMenu.finalize_select_animation-309"><a href="#DropdownMenu.finalize_select_animation-309"><span class="linenos">309</span></a>        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_index</span>
 </span><span id="DropdownMenu.finalize_select_animation-310"><a href="#DropdownMenu.finalize_select_animation-310"><span class="linenos">310</span></a>        <span class="n">fevent</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="n">DropdownMenu</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">SELECT_ANIMATION_ENDED</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</span><span id="DropdownMenu.finalize_select_animation-311"><a href="#DropdownMenu.finalize_select_animation-311"><span class="linenos">311</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fevent</span><span class="p">)</span>
+</span><span id="DropdownMenu.finalize_select_animation-311"><a href="#DropdownMenu.finalize_select_animation-311"><span class="linenos">311</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">fevent</span><span class="p">)</span>
 </span><span id="DropdownMenu.finalize_select_animation-312"><a href="#DropdownMenu.finalize_select_animation-312"><span class="linenos">312</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rendered_highlighted_texts</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_index</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtext_copy</span>
 </span><span id="DropdownMenu.finalize_select_animation-313"><a href="#DropdownMenu.finalize_select_animation-313"><span class="linenos">313</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">DropdownMenu</span><span class="o">.</span><span class="n">OPTION_SELECTED</span>
 </span></pre></div>
@@ -1854,7 +1853,7 @@ inheritance.</p>
                             <div id="DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED" class="classattr">
                                 <div class="attr variable">
             <span class="name">SELECT_ANIMATION_ENDED</span>        =
-<span class="default_value">-223383859939161446</span>
+<span class="default_value">7046920884612000452</span>
 
         
     </div>

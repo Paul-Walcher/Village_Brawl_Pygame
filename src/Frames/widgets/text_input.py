@@ -232,7 +232,7 @@ class TextInput(Frame):
                             self.unfocus()
 
                         if event.key == pygame.K_RETURN:
-                            self.event_queue.append(Event(TextInput.EventTypes.ENTER_PRESSED, None))
+                            self.push_event(Event(TextInput.EventTypes.ENTER_PRESSED, None))
 
 
             for event in events_processed:

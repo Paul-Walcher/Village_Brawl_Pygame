@@ -307,7 +307,7 @@ class DropdownMenu(Frame):
 
         data = self.selected_index
         fevent = Event(DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED, data)
-        self.event_queue.append(fevent)
+        self.push_event(fevent)
         self.rendered_highlighted_texts[self.selected_index] = self.rtext_copy
         self.state = DropdownMenu.OPTION_SELECTED
 

@@ -1,6 +1,9 @@
 """
 Global constants
 """
+from __future__ import annotations
+from typing import Callable, Any
+
 import os
 import sys
 import pygame
@@ -8,45 +11,99 @@ import pygame
 pygame.init()
 
 EPSILON = 10E-6
+"""
+constant for small differences, e.g.
+two floats are considered equal when
+their difference is less than EPSILON
+"""
 
-fequal = lambda a, b: (abs(a-b) <= EPSILON)
+fequal: Callable[[float, float], bool] = lambda a, b: (abs(a-b) <= EPSILON)
+"""
+Returns True if the two floats are considered equal.
+This is true when abs(a -b) <= EPSILON
+"""
 
 WIDTH, HEIGHT = pygame.display.get_desktop_sizes()[0]
-FULLSCREEN = pygame.Rect(0, 0, WIDTH, HEIGHT)
+"""
+Full dimensions of the screen.
+"""
 
-__ADDITIONAL_LOAD_TIME__ = 500#ms
-BASE_ASSET_PATH = "BaseAssets"
-STANDARD_IMAGE_PATH = os.path.join(BASE_ASSET_PATH, "StandardImages")
-CARD_IMAGE_PATH = os.path.join(BASE_ASSET_PATH, "CardImages")
-ICON_IMAGE_PATH = os.path.join(BASE_ASSET_PATH, "Icons")
-FONT_PATH = os.path.join(BASE_ASSET_PATH, "Fonts")
+FULLSCREEN: pygame.Rect = pygame.Rect(0, 0, WIDTH, HEIGHT)
+"""
+The pygame.Rect that specifies the fullscreen dimension.
+"""
 
-SIMAGE = lambda x: os.path.join(STANDARD_IMAGE_PATH, x)
-CIMAGE = lambda x: os.path.join(CARD_IMAGE_PATH, x)
-IIMAGE = lambda x: os.path.join(ICON_IMAGE_PATH, x)
+__ADDITIONAL_LOAD_TIME__: float = 500#ms
+"""
+The additional time that the loading screen will be loading.
+"""
 
-INFINITE = sys.maxsize
+BASE_ASSET_PATH: str = "BaseAssets"
+STANDARD_IMAGE_PATH: str = os.path.join(BASE_ASSET_PATH, "StandardImages")
+CARD_IMAGE_PATH: str = os.path.join(BASE_ASSET_PATH, "CardImages")
+ICON_IMAGE_PATH: str = os.path.join(BASE_ASSET_PATH, "Icons")
+FONT_PATH: str = os.path.join(BASE_ASSET_PATH, "Fonts")
 
-PLAYSETS_FOLDER = "playsets"
 
-INTRO_IMAGES = [SIMAGE(x) for x in ["Wood.png", "Stone.png", "Pebble.png", "Twig.png"]]
-STANDARD_BACKSIDES = lambda x: [CIMAGE("standard_backside.png") for i in range(x)]
+SIMAGE: Callable[[str], str] = lambda x: os.path.join(STANDARD_IMAGE_PATH, x)
+"""
+SIMAGE(x.png) gives you the path to the file x.png,
+where x.png is stored in STANDARD_IMAGE_PATH.
+"""
+CIMAGE: Callable[[str], str] = lambda x: os.path.join(CARD_IMAGE_PATH, x)
+"""
+CIMAGE(x.png) gives you the path to the file x.png,
+where x.png is stored in CARD_IMAGE_PATH.
+"""
+IIMAGE: Callable[[str], str] = lambda x: os.path.join(ICON_IMAGE_PATH, x)
+"""
+IIMAGE(x.png) gives you the path to the file x.png,
+where x.png is stored in ICON_IMAGE_PATH.
+"""
+
+INFINITE: int = sys.maxsize
+"""
+Value considered infinite.
+"""
+
+PLAYSETS_FOLDER: str = "playsets"
+
+INTRO_IMAGES: list[str] = [SIMAGE(x) for x in ["Wood.png", "Stone.png", "Pebble.png", "Twig.png"]]
+"""
+Paths to the images shown on the intro screen.
+"""
+
+STANDARD_BACKSIDES: Callable[[str], str] = lambda x: [CIMAGE("standard_backside.png") for i in range(x)]
+"""
+Function that returns a list of n standard image backsides.
+"""
 
 #Icon images
-MENU_BUTTON_UNFOCUSED_IMAGE = os.path.join(ICON_IMAGE_PATH, "Menu_Button_Unfocused.png")
-MENU_BUTTON_FOCUSED_IMAGE = os.path.join(ICON_IMAGE_PATH, "Menu_Button_Focused.png")
+MENU_BUTTON_UNFOCUSED_IMAGE: str = os.path.join(ICON_IMAGE_PATH, "Menu_Button_Unfocused.png")
+MENU_BUTTON_FOCUSED_IMAGE: str = os.path.join(ICON_IMAGE_PATH, "Menu_Button_Focused.png")
 
 
-HASH_VALUE = 1
+HASH_VALUE: int = 1
+"""
+constant internal value for R_ID hash function.
+"""
 
-def R_ID():
+def R_ID() -> int:
+    """
+    Returns a unique ID.
+    """
     global HASH_VALUE
-    x = HASH_VALUE
+
+    x: int = HASH_VALUE
     HASH_VALUE += 1
+
     return hash(str(x))
 
 
 class Alpha:
+    """
+    Stores standardized alpha values.
+    """
 
     ZERO = 0
 
@@ -63,6 +120,9 @@ class Alpha:
     FULL = 255
 
 class FrameDataID:
+    """
+    Keys for the data dictionary.
+    """
 
     GAMEINFO = "Gameinfo"
     MODULES = "Modules"
@@ -70,8 +130,14 @@ class FrameDataID:
     CURRENT_FRAME = "Current Frame"
 
 class Colors:
+    """
+    Stored Colors.
+    """
 
     T = lambda c: (*c, 255)
+    """
+    Gives a color an alpha dimension.
+    """
 
     TRANSPARENT = (0, 0, 0, 0)
 
@@ -99,10 +165,17 @@ class Colors:
 
 
 class Fonts:
+    """
+    saved fonts.
+    """
 
     MINECRAFT = os.path.join(FONT_PATH, "Minecraft.ttf")
 
 class Fontsizes:
+
+    """
+    Standardized fontsizes.
+    """
 
     fscale = lambda x: int(x * HEIGHT * (1/1080))
 
@@ -116,6 +189,10 @@ class Fontsizes:
     BIG_HEADLINE = fscale(200)
 
 class KeyAlternatives:
+
+    """
+    Bindable Keys used as alternatives.
+    """
 
     ENTER_ALTERNATIVE = pygame.K_o
     BACK_KEY = pygame.K_k

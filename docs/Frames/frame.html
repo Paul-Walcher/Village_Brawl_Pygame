@@ -401,7 +401,7 @@ Frames<wbr>.frame    </h1>
 </span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>                                                <span class="c1">#focus group away</span>
 </span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>                <span class="p">):</span>
 </span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>
-</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>        <span class="n">EventQueueManager</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>        <span class="c1">#identifier</span>
 </span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">frame_enum</span> <span class="o">=</span> <span class="n">frame_enum</span>
 </span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>        <span class="c1">#passed on data</span>
@@ -985,7 +985,7 @@ Frames<wbr>.frame    </h1>
 </span><span id="Frame-119"><a href="#Frame-119"><span class="linenos">119</span></a>                                                <span class="c1">#focus group away</span>
 </span><span id="Frame-120"><a href="#Frame-120"><span class="linenos">120</span></a>                <span class="p">):</span>
 </span><span id="Frame-121"><a href="#Frame-121"><span class="linenos">121</span></a>
-</span><span id="Frame-122"><a href="#Frame-122"><span class="linenos">122</span></a>
+</span><span id="Frame-122"><a href="#Frame-122"><span class="linenos">122</span></a>        <span class="n">EventQueueManager</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </span><span id="Frame-123"><a href="#Frame-123"><span class="linenos">123</span></a>        <span class="c1">#identifier</span>
 </span><span id="Frame-124"><a href="#Frame-124"><span class="linenos">124</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">frame_enum</span> <span class="o">=</span> <span class="n">frame_enum</span>
 </span><span id="Frame-125"><a href="#Frame-125"><span class="linenos">125</span></a>        <span class="c1">#passed on data</span>
@@ -1443,8 +1443,7 @@ Frames<wbr>.frame    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
 </div>
 
 
@@ -1535,9 +1534,7 @@ inheritance.</p>
     </div>
     <a class="headerlink" href="#Frame.event_queue"></a>
     
-            <div class="docstring"><p>the event queue</p>
-</div>
-
+    
 
                             </div>
                             <div id="Frame.center" class="classattr">
@@ -2776,7 +2773,10 @@ inheritance.</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Generic Event class. Contains a type and the
+data for the event.</p>
+</div>
+
 
                             <div id="Frame.CallbackEvent.__init__" class="classattr">
                                         <input id="Frame.CallbackEvent.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">

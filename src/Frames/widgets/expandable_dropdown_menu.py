@@ -359,7 +359,7 @@ class ExpandableDropdownMenu(DropdownMenu):
         #create the event
         data = self.selected_index
         fevent = ExpandableDropdownMenu.SelectionFinishedEvent([self.options[self.selected_index]])
-        self.event_queue.append(fevent)
+        self.push_event(fevent)
 
         self.rendered_highlighted_texts[self.selected_index] = self.rtext_copy
 
@@ -413,4 +413,4 @@ class ExpandableDropdownMenu(DropdownMenu):
                 if event.type == ExpandableDropdownMenu.EventTypes.SELECTION_FINISHED_EVENT:
                     #if we got a selection finished event, append the own current option, then add it to the event queue
                     event.add_selected_name(self.options[self.selected_index])
-                    self.event_queue.append(event)
+                    self.push_event(event)

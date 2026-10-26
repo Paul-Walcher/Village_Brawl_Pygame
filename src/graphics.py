@@ -1,51 +1,72 @@
+from __future__ import annotations
+from typing import Callable
+
 import pygame
 import constants
 from constants import fequal
 from collections import deque
 import re
 
-NL = (None,)
+"""
+This module handles graphical rendering
+and graphical calculations.
+"""
+
+NL: tuple = (None,)
 
 
 class _NewPage:
     """Marker requesting a page break after a given number of blank lines."""
 
-    def __init__(self, empty_lines=0):
+    def __init__(self, empty_lines: int = 0):
         if not isinstance(empty_lines, int) or empty_lines < 0:
             raise ValueError("NP(x) requires a non-negative integer")
         self.empty_lines = empty_lines
 
 
-def NP(x=0):
+def NP(x: int = 0):
     """Insert x empty lines, then start a new page."""
     return _NewPage(x)
 
 
 def _is_newline(item):
+    """checks if item is graphics.NL"""
     return isinstance(item, (tuple, list)) and len(item) == 1 and item[0] is None
 
-def render_text(font, fontsize, text, color=constants.Colors.WHITE):
+def render_text(font: pygame.font.Font, fontsize: int, text: str, color: tuple[int, int, int]=constants.Colors.WHITE):
+    """
+    Gives back a rendered text surface.
+    """
 
     f = pygame.font.Font(font, fontsize)
     surface = f.render(text, False, color)
 
     return surface
 
-def text_size(font, fontsize, text):
-
+def text_size(font: pygame.font.Font, fontsize: int, text: str) -> tuple[int, int]:
+    """
+    Returns the (width, height) of text if rendered by font with fontsize.
+    """
     f = pygame.font.Font(font, fontsize)
     return f.size(text)
 
 
 
-def get_fontsize(font, lines, frame, line_margin=5, min_size=1, max_size=1024):
+def get_fontsize(font: pygame.font.Font, lines: list[str], frame: pygame.Rect, line_margin: int=5, min_size: int=1, max_size: int=1024) -> int:
     """
     Returns the largest font size for which all lines fit inside frame.
 
-    `font`      : Pygame font path / filename
-    `lines`     : list of strings representing the current page
-    `frame`     : pygame.Rect
-    `line_margin`: vertical distance added between lines
+    font      : Pygame font path / filename
+
+    lines     : list of strings representing the current page
+
+    frame     : pygame.Rect
+
+    line_margin: vertical distance added between lines
+
+    min_size: minimal size of the font
+
+    max_size: maximal size of the font
     """
 
     def fits(fontsize):
@@ -94,8 +115,12 @@ def get_fontsize(font, lines, frame, line_margin=5, min_size=1, max_size=1024):
 
     return high
 
-def page_by_chars(text, line_length=40, paragraph_length=5, one_page=False):
-    """Wrap plain text into pages; accepts NL and NP(x) markers in a list."""
+def page_by_chars(text: str, line_length: int=40, paragraph_length: int=5, one_page: bool=False) -> list[list[str]]:
+    """
+    Wrap plain text into pages; accepts NL and NP(x) markers in a list.
+    line_length is how many characters are added per line,
+    paragraph_length how many lines per page are shown.
+    """
     if one_page:
         paragraph_length = constants.INFINITE
 
@@ -162,14 +187,25 @@ def page_by_chars(text, line_length=40, paragraph_length=5, one_page=False):
     return pages
 
 def render_page_from_chars(
-    font,
-    page,
-    frame,
-    text_color=constants.Colors.STANDARD_TEXT_COLOR,
-    centered=False,
-    vertical_centered=False,
-    line_margin=5
-):
+    font: pygame.font.Font,
+    page: list[str],
+    frame: pygame.Rect,
+    text_color: tuple[int, int, int]=constants.Colors.STANDARD_TEXT_COLOR,
+    centered: bool=False,
+    vertical_centered: bool=False,
+    line_margin: int=5
+) -> list[tuple[pygame.Surface, tuple[int, int]]]:
+    """
+    font: the the page will be rendered in
+    page: the list of strings that constitutes the page
+    frame: the rect the text will be rendered into
+    text_color: color of the text
+    centered: if the text should be centered horizontally
+    vertical_centered: if the text should be centererd vertically
+    line_margin: distance between lines
+
+    returns a list of (surface, position) tuples where position = (x, y)
+    """
     fsize = get_fontsize(font, page, frame, line_margin=line_margin)
     trend = []
     cy = 0
@@ -202,7 +238,7 @@ def render_page_from_chars(
 
     return trend
 
-def _wrap_colored_chars(chars, line_length):
+def _wrap_colored_chars(chars, line_length: int):
     """Wrap a line of (character, color) pairs, preserving word boundaries."""
     if not chars:
         return [[]]
@@ -269,12 +305,13 @@ def _color_chars_to_runs(chars):
 
 
 def page_by_chars_color(
-    text,
-    line_length=40,
-    paragraph_length=5,
-    one_page=False
+    text: list[tuple[str, tuple[int, int, int]]],
+    line_length: int=40,
+    paragraph_length: int=5,
+    one_page: bool=False
 ):
-    """Convert colored text into pages; accepts NL and NP(x) markers.
+    """
+    Convert colored text into pages; accepts NL and NP(x) markers.
 
     Text segments use (text, color). NL starts a new line. NP(x) inserts
     x empty lines before forcing a page break.
@@ -362,6 +399,8 @@ def render_page_from_chars_color(
 
     Returns a list of (pygame.Surface, position) pairs.
     Each colored text segment is rendered separately.
+
+    See render_page_from_chars.
     """
 
     if not page:
@@ -459,18 +498,21 @@ def render_page_from_chars_color(
     return trend
 
 
-def render_image(img_path, dimensions=None):
-
-    #dimensions = (width, height)
+def render_image(img_path: str, dimensions: tuple[float, float]=None) -> pygame.Surface:
+    """
+    Renders the image onto a surface, then scales it up or down to dimensions.
+    if dimensions is not None.
+    """
 
     img = pygame.image.load(img_path).convert_alpha()
     if dimensions is not None:
         img = pygame.transform.scale(img, dimensions)
     return img
 
-def render_image_scale(img_path, scale):
-
-    #dimensions = (width, height)
+def render_image_scale(img_path: str, scale: tuple[float, float]) -> pygame.Surface:
+    """
+    scales the loaded image by scale.
+    """
 
     img = pygame.image.load(img_path).convert_alpha()
     img = pygame.transform.scale(img,
@@ -478,26 +520,35 @@ def render_image_scale(img_path, scale):
     )
     return img
 
-def scale_surface(img, scale):
-
+def scale_surface(img: pygame.Surface, scale: float) ->  pygame.Surface:
+    """
+    scales the surface by scale.
+    """
     return pygame.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
 
 
-def center_horizontally(surface, frame_rect):
-
+def center_horizontally(surface: pygame.Surface, frame_rect: pygame.Rect) -> pygame.Rect:
+    """
+    Returns the x value if surface was to be centered in frame_rect.
+    """
     #frame is a pygame.Rect, and defines the area to center in
     width, height = surface.get_size()
     x = (frame_rect.w - width) // 2 + frame_rect.x
     return x
 
-def center_vertically(surface, frame_rect):
-
+def center_vertically(surface: pygame.Surface, frame_rect: pygame.Rect) -> pygame.Rect:
+    """
+    Returns the y value if surface was to be centered in frame_rect.
+    """
     #frame is a pygame.Rect, and defines the area to center in
     width, height = surface.get_size()
     y = (frame_rect.h - height) // 2 + frame_rect.y
     return y
 
-def center_at(surface, pos):
+def center_at(surface: pygame.Surface, pos: tuple[int, int]) -> tuple[int, int]:
+    """
+    Returns the (x, y) if surface was to be centered at center point pos.
+    """
 
     px, py = pos
     width, height = surface.get_size()
@@ -507,27 +558,38 @@ def center_at(surface, pos):
 
     return (x, y)
 
-def get_center(rect):
-
+def get_center(rect: pygame.Rect) -> tuple[int, int]:
+    """
+    Returns the center of rect as (x, y)
+    """
     x, y, w, h = rect.x, rect.y, rect.w, rect.h
 
     return (x + w//2, y + h//2)
 
-def get_center_with_surface(surface, rect):
+def get_center_with_surface(surface: pygame.Surface, rect: pygame.Rect) -> tuple[int, int]:
+    """
+    Returns the position surface needs to be rendered at to be centered at the rects center.
+    """
 
     x, y = get_center(rect)
     w, h = surface.get_size()
 
     return (x - w//2, y - h//2)
 
-def get_center_with_rect(outer_rect, inner_rect):
+def get_center_with_rect(outer_rect: pygame.Rect, inner_rect: pygame.Rect) -> tuple[int, int]:
+    """
+    Returns the position inner_rect needs to be rendered at to be centered at the rects center.
+    """
 
     x, y = get_center(outer_rect)
     w, h = inner_rect.width, inner_rect.height
 
     return (x - w//2, y - h//2)
 
-def apply_margins(rect, h_margin_percentage=0.0, v_margin_percentage=0.0):
+def apply_margins(rect: pygame.Rect, h_margin_percentage: float=0.0, v_margin_percentage: float=0.0) -> pygame.Rect:
+    """
+    Returns rect after applying the margin percentages.
+    """
 
     margin_rect = pygame.Rect(int(rect.width * h_margin_percentage / 2 + rect.x),
                                             int(rect.height * v_margin_percentage / 2 + rect.y),
@@ -536,8 +598,22 @@ def apply_margins(rect, h_margin_percentage=0.0, v_margin_percentage=0.0):
                                         )
     return margin_rect
 
-def split_rect_horizontally(rect, percentages):
-    #percentages isa list of percentages. the percentages must add up to 1
+def split_rect_horizontally(rect: pygame.Rect, percentages: list[float]) -> list[pygame.Rect]:
+    """
+    Splits the given rect into rects where each rect starts where the last ends,
+    and has length: int(percentages[rect_index] * rect.width).
+    Returns a list of the split rects going to the right.
+    Percentages must sum close to 1.0.
+
+    Example:
+
+    rect = pygame.Rect(100, 100, 1000, 300)
+    percentages = [0.2, 0.7, 0.1]
+
+    result = split_rect_horizontally(rect, percentages)
+
+    result = [pygame.Rect(100, 100, 200, 300), pygame.Rect(300, 100, 700, 300), pygame.Rect(1000, 100, 100, 300)]
+    """
     if not fequal(sum(percentages), 1.0):
         raise RuntimeError("The percentages must sum up to 1 to split the pygame.Rect")
 
@@ -560,8 +636,22 @@ def split_rect_horizontally(rect, percentages):
 
     return split_rects
 
-def split_rect_vertically(rect, percentages):
-    #percentages isa list of percentages. the percentages must add up to 1
+def split_rect_vertically(rect: pygame.Rect, percentages: list[float]) -> list[pygame.Rect]:
+    """
+    Splits the given rect into rects where each rect starts where the last ends,
+    and has height: int(percentages[rect_index] * rect.height).
+    Returns a list of the split rects going down.
+    Percentages must sum close to 1.0.
+
+    Example:
+
+    rect = pygame.Rect(100, 100, 1000, 300)
+    percentages = [0.2, 0.7, 0.1]
+
+    result = split_rect_horizontally(rect, percentages)
+
+    result = [pygame.Rect(100, 100, 1000, 60), pygame.Rect(100, 160, 1000, 210), pygame.Rect(1000, 370, 1000, 30)]
+    """
     if not fequal(sum(percentages), 1.0):
         raise RuntimeError("The percentages must sum up to 1 to split the pygame.Rect")
 
@@ -584,9 +674,12 @@ def split_rect_vertically(rect, percentages):
 
     return split_rects
 
-def scale_image_to_frame(img_surf, frame):
+def scale_image_to_frame(img_surf: pygame.Surface, frame: pygame.Rect) -> pygame.Surface:
+    """
+    Returns a version of img_surf that is scaled to fit into frame.
+    """
 
-    w, h = frame.width, frame.h
+    w, h = frame.width, frame.height
     w2h = img_surf.get_width() / img_surf.get_height()
     sw, sh = 0, 0
 
@@ -617,7 +710,12 @@ def scale_image_to_frame(img_surf, frame):
 
     return pygame.transform.smoothscale(img_surf, (sw, sh))
 
-def img_load_and_position(img_path, frame):
+def img_load_and_position(img_path: str, frame: pygame.Rect) -> tuple[pygame.Surface, tuple[int, int]]:
+    """
+    Given the image path and the frame it should be rendered into,
+    this function returns the surface, scaled to fit into the frame and the position
+    for which it will be centered at frame.
+    """
 
     img = render_image(img_path)
     img = scale_image_to_frame(img, frame)

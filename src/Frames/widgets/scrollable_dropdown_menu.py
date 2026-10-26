@@ -406,7 +406,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                 if event.type == ExpandableDropdownMenu.EventTypes.SELECTION_FINISHED_EVENT:
                     #if we got a selection finished event, append the own current option, then add it to the event queue
                     event.add_selected_name(self.options[self.selected_index])
-                    self.event_queue.append(event)
+                    self.push_event(event)
 
 
     def initialize_scrolling_up(self):

@@ -428,7 +428,7 @@ Frames<wbr>.widgets<wbr>.text_input    </h1>
 </span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a>                            <span class="bp">self</span><span class="o">.</span><span class="n">unfocus</span><span class="p">()</span>
 </span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a>
 </span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a>                        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">:</span>
-</span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a>                            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">TextInput</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">ENTER_PRESSED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a>                            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">TextInput</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">ENTER_PRESSED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a>
 </span><span id="L-237"><a href="#L-237"><span class="linenos">237</span></a>
 </span><span id="L-238"><a href="#L-238"><span class="linenos">238</span></a>            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events_processed</span><span class="p">:</span>
@@ -730,7 +730,7 @@ Frames<wbr>.widgets<wbr>.text_input    </h1>
 </span><span id="TextInput-233"><a href="#TextInput-233"><span class="linenos">233</span></a>                            <span class="bp">self</span><span class="o">.</span><span class="n">unfocus</span><span class="p">()</span>
 </span><span id="TextInput-234"><a href="#TextInput-234"><span class="linenos">234</span></a>
 </span><span id="TextInput-235"><a href="#TextInput-235"><span class="linenos">235</span></a>                        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">:</span>
-</span><span id="TextInput-236"><a href="#TextInput-236"><span class="linenos">236</span></a>                            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">TextInput</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">ENTER_PRESSED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="TextInput-236"><a href="#TextInput-236"><span class="linenos">236</span></a>                            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">TextInput</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">ENTER_PRESSED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="TextInput-237"><a href="#TextInput-237"><span class="linenos">237</span></a>
 </span><span id="TextInput-238"><a href="#TextInput-238"><span class="linenos">238</span></a>
 </span><span id="TextInput-239"><a href="#TextInput-239"><span class="linenos">239</span></a>            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events_processed</span><span class="p">:</span>
@@ -809,8 +809,7 @@ Frames<wbr>.widgets<wbr>.text_input    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
 </div>
 
 
@@ -1390,7 +1389,7 @@ inheritance.</p>
 </span><span id="TextInput.tick-233"><a href="#TextInput.tick-233"><span class="linenos">233</span></a>                            <span class="bp">self</span><span class="o">.</span><span class="n">unfocus</span><span class="p">()</span>
 </span><span id="TextInput.tick-234"><a href="#TextInput.tick-234"><span class="linenos">234</span></a>
 </span><span id="TextInput.tick-235"><a href="#TextInput.tick-235"><span class="linenos">235</span></a>                        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">:</span>
-</span><span id="TextInput.tick-236"><a href="#TextInput.tick-236"><span class="linenos">236</span></a>                            <span class="bp">self</span><span class="o">.</span><span class="n">event_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">TextInput</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">ENTER_PRESSED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+</span><span id="TextInput.tick-236"><a href="#TextInput.tick-236"><span class="linenos">236</span></a>                            <span class="bp">self</span><span class="o">.</span><span class="n">push_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="n">TextInput</span><span class="o">.</span><span class="n">EventTypes</span><span class="o">.</span><span class="n">ENTER_PRESSED</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 </span><span id="TextInput.tick-237"><a href="#TextInput.tick-237"><span class="linenos">237</span></a>
 </span><span id="TextInput.tick-238"><a href="#TextInput.tick-238"><span class="linenos">238</span></a>
 </span><span id="TextInput.tick-239"><a href="#TextInput.tick-239"><span class="linenos">239</span></a>            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events_processed</span><span class="p">:</span>
@@ -1710,7 +1709,7 @@ inheritance.</p>
                             <div id="TextInput.EventTypes.ENTER_PRESSED" class="classattr">
                                 <div class="attr variable">
             <span class="name">ENTER_PRESSED</span>        =
-<span class="default_value">-8141566937370037219</span>
+<span class="default_value">-1896309175094428398</span>
 
         
     </div>

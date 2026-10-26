@@ -99,7 +99,6 @@ class LabeledImageSlider(Frame):
         self.image_slider = None
         self.text_slider = None
 
-        self.event_queue = []
         self.queued_slides = 0
         self.is_sliding = False
 
@@ -237,11 +236,11 @@ class LabeledImageSlider(Frame):
 
         for event in ievents:
             if event.type == Slider.EventTypes.SLIDING_ANIMATION_ENDED:
-                self.event_queue.append(Event(LabeledImageSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
+                self.push_event(Event(LabeledImageSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
             elif event.type == Slider.EventTypes.SELECT_ANIMATION_ENDED:
-                self.event_queue.append(Event(LabeledImageSlider.EventTypes.SELECT_ANIMATION_ENDED, None))
+                self.push_event(Event(LabeledImageSlider.EventTypes.SELECT_ANIMATION_ENDED, None))
             elif event.type == Slider.EventTypes.FLIPPING_ANIMATION_ENDED:
-                self.event_queue.append(Event(LabeledImageSlider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
+                self.push_event(Event(LabeledImageSlider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
 
 
 

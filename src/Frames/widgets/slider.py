@@ -563,7 +563,7 @@ class Slider(Frame):
 
         self.slides += 1
         self.state = Slider.NOT_SLIDING
-        self.event_queue.append(Event(Slider.EventTypes.SLIDING_ANIMATION_ENDED, None))
+        self.push_event(Event(Slider.EventTypes.SLIDING_ANIMATION_ENDED, None))
 
         # Rebuild everything from the actual logical state.
         self.rerender_images()
@@ -720,7 +720,7 @@ class Slider(Frame):
 
         self.state = Slider.NOT_SLIDING
 
-        self.event_queue.append(Event(Slider.EventTypes.SLIDING_ANIMATION_ENDED, None))
+        self.push_event(Event(Slider.EventTypes.SLIDING_ANIMATION_ENDED, None))
 
         # Rebuild everything from the actual logical state.
         self.rerender_images()
@@ -738,7 +738,7 @@ class Slider(Frame):
 
         if percentage >= 1.0:
             self.state = Slider.NOT_SLIDING
-            self.event_queue.append(Event(Slider.EventTypes.SELECT_ANIMATION_ENDED, None))
+            self.push_event(Event(Slider.EventTypes.SELECT_ANIMATION_ENDED, None))
             self.rerender_images()
         else:
 
@@ -778,7 +778,7 @@ class Slider(Frame):
 
         if percentage >= 1.0:
             self.state = Slider.NOT_SLIDING
-            self.event_queue.append(Event(Slider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
+            self.push_event(Event(Slider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
             #changing images
             save = self.surfaces[self.surface_index]
             self.surfaces[self.surface_index] = self.back_surfaces[self.surface_index]
@@ -817,7 +817,7 @@ class Slider(Frame):
 
         if percentage >= 1.0:
             self.state = Slider.NOT_SLIDING
-            self.event_queue.append(Event(Slider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
+            self.push_event(Event(Slider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
             #changing images
             save = self.surfaces
             self.surfaces = self.back_surfaces
