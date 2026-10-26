@@ -86,9 +86,6 @@ class ChooseExplorerFrame(Frame):
         info_frame = ExplorerInfoFrame(self.explorer_enums[self.explorer_index], self.modules, self.data, iframe, self)
         self.info_frame = info_frame
 
-        for key in [pygame.K_LEFT, pygame.K_RIGHT, KeyAlternatives.LEFT_ALTERNATIVE, KeyAlternatives.RIGHT_ALTERNATIVE]:
-            self.disable_pygame_key(key)
-
         self.info_frame_state = self.INFO_FRAME_SLIDING_IN
         self.info_frame_clock.start()
 
@@ -96,9 +93,6 @@ class ChooseExplorerFrame(Frame):
 
         self.info_frame_state = self.INFO_FRAME_INACTIVE
         self.info_frame = None
-
-        for key in [pygame.K_LEFT, pygame.K_RIGHT, KeyAlternatives.LEFT_ALTERNATIVE, KeyAlternatives.RIGHT_ALTERNATIVE]:
-            self.enable_pygame_key(key)
 
     def finalize_info_frame(self):
 
@@ -157,15 +151,16 @@ class ChooseExplorerFrame(Frame):
 
         cdata = {"frame_ref": self}
 
-        self.add_pygame_key_callback(pygame.K_ESCAPE, cdata, putback=False, func=self.escape_pressed)
+        if self.is_focused():
+            self.add_pygame_key_callback(pygame.K_ESCAPE, cdata, putback=False, func=self.escape_pressed)
 
-        self.add_pygame_key_callback(pygame.K_LEFT, cdata, putback=False, func=self.left_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, cdata, putback=False, func=self.left_pressed)
+            self.add_pygame_key_callback(pygame.K_LEFT, cdata, putback=False, func=self.left_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, cdata, putback=False, func=self.left_pressed)
 
-        self.add_pygame_key_callback(pygame.K_RIGHT, cdata, putback=False, func=self.right_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, cdata, putback=False, func=self.right_pressed)
+            self.add_pygame_key_callback(pygame.K_RIGHT, cdata, putback=False, func=self.right_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, cdata, putback=False, func=self.right_pressed)
 
-        self.add_pygame_key_callback(pygame.K_i, cdata, putback=False, func=self.i_pressed)
+            self.add_pygame_key_callback(pygame.K_i, cdata, putback=False, func=self.i_pressed)
 
     def escape_pressed(self, event, data):
         return Frame.CallbackEvent.EXIT
@@ -195,9 +190,6 @@ class ChooseExplorerFrame(Frame):
 
         if ref.info_frame_state == ref.INFO_FRAME_INACTIVE:
             ref.initialize_info_frame()
-        elif ref.info_frame_state == ref.INFO_FRAME_ACTIVE:
-            ref.info_frame_state = ref.INFO_FRAME_SLIDING_OUT
-            ref.info_frame_clock.start()
 
 
 
@@ -210,13 +202,17 @@ class ChooseExplorerFrame(Frame):
         if self.exit_flag_raised():
             return None
 
-        if self.info_frame is not None:
+        if self.info_frame is not None and self.info_frame_state != self.INFO_FRAME_SLIDING_OUT:
             nframe = self.info_frame.tick()
 
             if nframe is self.info_frame:
                 nframe = self
             elif nframe is not None:
                 nframe.set_parent_frame(self)
+            elif nframe is None:
+                self.info_frame_state = self.INFO_FRAME_SLIDING_OUT
+                self.info_frame_clock.start()
+                nframe = self
 
         if self.info_frame_state == self.INFO_FRAME_SLIDING_IN:
 

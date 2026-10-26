@@ -486,20 +486,26 @@ class Frame(EventQueueManager):
 
     def __key_callback_wrapper(self, event, key, data, putback, func, key_delay):
 
-        #wrapper for the keycallbacks, adds a delay between key_down detection
-
-        if event.type == pygame.KEYDOWN and data["clock"].elapsed() > key_delay and event.key == key and not self.pygame_key_is_disabled(key):
-            back = func(event, data)
-            data["clock"].start()
-            if back is None:
-                return Frame.CallbackEvent.SUCCESS
-            else:
-                return back
-
-        else:
+        # This callback should only receive matching KEYDOWN events.
+        if event.type != pygame.KEYDOWN or event.key != key:
             return Frame.CallbackEvent.FAILURE
 
-    def add_pygame_key_callback(self, key, data, putback, func, key_delay=300):#ms
+        # Ignore these events rather than deferring them.
+        if self.pygame_key_is_disabled(key):
+            return Frame.CallbackEvent.SUCCESS
+
+        if data["clock"].elapsed() <= key_delay:
+            return Frame.CallbackEvent.SUCCESS
+
+        back = func(event, data)
+        data["clock"].start()
+
+        if back is None:
+            return Frame.CallbackEvent.SUCCESS
+
+        return back
+
+    def add_pygame_key_callback(self, key, data, putback, func, key_delay=100):#ms
         #adds a callback for a pygame.KEYDOWN event with event.key == key
         if data is None:
             data = {}

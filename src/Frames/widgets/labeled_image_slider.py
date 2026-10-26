@@ -10,7 +10,8 @@ from constants import (
     Fonts,
     Fontsizes,
     KeyAlternatives,
-    FrameDataID
+    FrameDataID,
+    R_ID
 )
 import graphics
 from clock import Clock
@@ -19,20 +20,21 @@ import constants
 
 from Frames.widgets.image_slider import ImageSlider
 from Frames.widgets.text_slider import TextSlider
+from Frames.widgets.slider import Slider
 from event_queue_manager import Event
 
 class LabeledImageSlider(Frame):
 
-    LEFT = 0
-    RIGHT = 1
-    TOP = 2
-    BOTTOM = 3
+    LEFT = R_ID()
+    RIGHT = R_ID()
+    TOP = R_ID()
+    BOTTOM = R_ID()
 
     class EventTypes:
 
-        SELECT_ANIMATION_ENDED = 0
-        FLIPPING_ANIMATION_ENDED = 1
-        SLIDING_ANIMATION_ENDED = 2
+        SELECT_ANIMATION_ENDED = R_ID()
+        FLIPPING_ANIMATION_ENDED = R_ID()
+        SLIDING_ANIMATION_ENDED = R_ID()
 
     def __init__(
         self,
@@ -46,7 +48,6 @@ class LabeledImageSlider(Frame):
         alphas=None,
         span=1,
         background_color=Colors.TRANSPARENT,
-        size_distribution=0.6,
         size_decrease_scale=0.5,
         image_to_text_distribution=0.8,
         image_text_distance_percentage=0.1,
@@ -57,33 +58,37 @@ class LabeledImageSlider(Frame):
         font_startsize=30,
         line_margin_percentage=0.05,
         text_color=Colors.BLACK,
+        text_is_colored=False,
         back_images = None,
+        back_text=None,
+        text_width_to_height_ratio=7/5,
         flipping_animation_duration = 500#ms
     ):
 
         super().__init__(FrameEnums.LABELED_IMAGE_SLIDER_WIDGET, None, frame_dim, focus_group=None)
         self.images = images
-        self.back_images = (back_images if back_images is not None else self.images.copy())
+        self.back_images = back_images
+        self.back_text = back_text
         self.text = text
         self.font = font
+        self.text_is_colored = text_is_colored
         self.text_location = (text_location if text_location is not None else LabeledImageSlider.BOTTOM)
         self.sliding_duration = sliding_duration
         self.select_animation_duration = select_animation_duration
         self.alphas = alphas
         self.span = span
         self.background_color = background_color
-        self.size_distribution = size_distribution
         self.size_decrease_scale = size_decrease_scale
         self.horizontal = horizontal
         self.start_index = start_index
         self.cutoff = cutoff
         self.max_slides = max_slides
-        self.font_startsize = font_startsize
         self.line_margin_percentage = line_margin_percentage
         self.text_color = text_color
         self.image_to_text_distribution = image_to_text_distribution
         self.image_text_distance_percentage = image_text_distance_percentage
         self.flipping_animation_duration = flipping_animation_duration
+        self.text_width_to_height_ratio = text_width_to_height_ratio
 
         if self.horizontal and self.text_location not in [LabeledImageSlider.BOTTOM, LabeledImageSlider.TOP]:
             raise RuntimeError("Text Location not appropriate")
@@ -107,34 +112,14 @@ class LabeledImageSlider(Frame):
 
         self.rerender()
 
-    @Frame.frame_dim.setter
-    def frame_dim(self, oframe):
-
-        self.is_sliding = False
-
-        Frame.frame_dim.fset(self, oframe)
-
-        self.image_slider.dim_frame = oframe
-        self.text_slider.dim_frame = oframe
-
-    @Frame.x.setter
-    def x(self, v):
-
-        self.image_slider.x += (v - self.x)
-        self.text_slider.x += (v - self.x)
-
-        Frame.x.fset(self, v)
-
-    @Frame.y.setter
-    def y(self, v):
-
-        self.image_slider.y += (v - self.y)
-        self.text_slider.y += (v - self.y)
-
-        Frame.y.fset(self, v)
-
     def play_select_animation(self):
         self.select_animation_queued = True
+
+    def flip_card(self):
+        self.cardflip_queued = True
+
+    def flip_all_cards(self):
+        self.cardflips_queued = True
 
     def select_animation_playing(self):
         return self.image_slider.select_animation_playing()
@@ -201,117 +186,63 @@ class LabeledImageSlider(Frame):
         self.trect = trect
 
         self.image_slider = ImageSlider(
-                                        self.images,
-                                        irect,
-                                        self.sliding_duration,  # ms
-                                        self.select_animation_duration,
-                                        self.alphas,
-                                        self.span,
-                                        self.background_color,
-                                        self.size_distribution,
-                                        self.size_decrease_scale,
-                                        self.horizontal,
-                                        self.start_index,
-                                        self.cutoff,
-                                        self.max_slides,
-                                        self.back_images,
-                                        self.flipping_animation_duration
+                                        images=self.images,
+                                        frame_dim=irect,
+                                        back_images=self.back_images,
+                                        sliding_duration=self.sliding_duration,  # ms
+                                        select_animation_duration=self.select_animation_duration,
+                                        images_alphas=self.alphas,
+                                        images_span=self.span,
+                                        background_color=self.background_color,
+                                        size_decrease_scale=self.size_decrease_scale,
+                                        horizontal=self.horizontal,
+                                        start_index=self.start_index,
+                                        cutoff=self.cutoff,
+                                        max_slides=self.max_slides,
+                                        flip_duration=self.flipping_animation_duration
                                         )
+
         self.text_slider = TextSlider(
-                                        self.text,
-                                        trect,
-                                        self.font,
-                                        self.sliding_duration,  # ms
-                                        self.alphas,
-                                        self.span,
-                                        self.background_color,
-                                        self.size_distribution,
-                                        self.size_decrease_scale,
-                                        self.horizontal,
-                                        self.start_index,
-                                        self.cutoff,
-                                        self.max_slides,
-                                        self.font_startsize,
-                                        self.line_margin_percentage,
-                                        self.text_color
+                                        text=self.text,
+                                        frame_dim=trect,
+                                        back_text=self.back_text,
+                                        font=self.font,
+                                        sliding_duration=self.sliding_duration,  # ms
+                                        select_animation_duration=self.select_animation_duration,
+                                        flip_duration=self.flipping_animation_duration,
+                                        images_alphas=self.alphas,
+                                        images_span=self.span,
+                                        background_color=self.background_color,
+                                        size_decrease_scale=self.size_decrease_scale,
+                                        horizontal=self.horizontal,
+                                        start_index=self.start_index,
+                                        cutoff=self.cutoff,
+                                        max_slides=self.max_slides,
+                                        line_margin_percentage=self.line_margin_percentage,
+                                        text_color=self.text_color,
+                                        text_is_colored=self.text_is_colored,
+                                        text_width_to_height_ratio=self.text_width_to_height_ratio
                                         )
 
         self.background_surface = pygame.Surface((self.frame_dim.width , self.frame_dim.height), pygame.SRCALPHA)
         self.background_surface.fill(self.background_color)
-
-
-
-
-    def get_image_surfaces(self):
-        return self.image_slider.get_surfaces()
-
-    def get_text_surfaces(self):
-        return self.text_slider.get_surfaces()
-
-    def get_surfaces(self):
-        ims = self.image_slider.get_surfaces()
-        ims.extend(self.text_slider.get_surfaces()).extend([self.background_surface])
-        return ims
-
-    def get_surfaces_with_position(self):
-
-        #returns a list of [(surface, (x, y))]
-        back = [(self.background_surface, (self.x, self.y))]
-        ix, iy = self.imagepos
-        tx, ty = self.textpos
-        back.append((self.image_slider.top_surface, self.imagepos))
-        back.append((self.text_slider.top_surface, self.textpos))
-
-        return back
 
     def prerender(self):
         pass
 
     def tick(self):
 
-        if self.queued_slides != 0 and not self.is_sliding and not self.image_slider.select_animation_playing() and not self.image_slider.flipping_animation_playing():
-            self.is_sliding = True
-            self.isliding_finished = False
-            self.tsliding_finished = False
-            if self.queued_slides < 0:
-                self.image_slider.slide_left()
-                self.text_slider.slide_left()
-                self.queued_slides += 1
-            else:
-                self.image_slider.slide_right()
-                self.text_slider.slide_right()
-                self.queued_slides -= 1
-
-        if not self.is_sliding and self.select_animation_queued and not self.cardflip_queued and not self.cardflips_queued:
-            self.select_animation_queued = False
-            self.image_slider.play_select_animation()
-        elif not self.is_sliding and self.cardflips_queued:
-            self.cardflips_queued = False
-            self.image_slider.flip_all_cards()
-        elif not self.is_sliding and self.cardflip_queued:
-            self.cardflip_queued = False
-            self.image_slider.flip_card()
-
-        if self.is_sliding and self.isliding_finished and self.tsliding_finished:
-            self.is_sliding = False
-            self.isliding_finished = False
-            self.tsliding_finished = False
-
         ievents = self.image_slider.poll_events()
         tevents = self.text_slider.poll_events()
 
         for event in ievents:
-            if event.type == ImageSlider.EventTypes.SLIDING_ANIMATION_ENDED:
-                self.isliding_finished = True
+            if event.type == Slider.EventTypes.SLIDING_ANIMATION_ENDED:
                 self.event_queue.append(Event(LabeledImageSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
-            elif event.type == ImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
+            elif event.type == Slider.EventTypes.SELECT_ANIMATION_ENDED:
                 self.event_queue.append(Event(LabeledImageSlider.EventTypes.SELECT_ANIMATION_ENDED, None))
-            elif event.type == ImageSlider.EventTypes.FLIPPING_ANIMATION_ENDED:
+            elif event.type == Slider.EventTypes.FLIPPING_ANIMATION_ENDED:
                 self.event_queue.append(Event(LabeledImageSlider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
 
-        for event in tevents:
-            if event.type == TextSlider.EventTypes.SLIDING_ANIMATION_ENDED:
-                self.tsliding_finished = True
 
 
         self.image_slider.tick()
@@ -323,25 +254,28 @@ class LabeledImageSlider(Frame):
         self.text_slider.render(screen)
 
     def flip_card(self):
-        self.cardflip_queued = True
+        self.image_slider.flip_card()
 
     def flip_all_cards(self):
+        self.image_slider.flip_all_cards()
 
-        self.cardflips_queued = True
+    def play_select_animation(self):
+        self.image_slider.play_select_animation()
 
     def slide_left(self):
 
-        self.queued_slides -= 1
+        self.image_slider.slide_left()
+        self.text_slider.slide_left()
 
     def slide_right(self):
 
-        self.queued_slides += 1
+        self.image_slider.slide_right()
+        self.text_slider.slide_right()
 
     def reset_slides(self):
 
-        self.image_slider-reset_slides()
+        self.image_slider.reset_slides()
         self.text_slider.reset_slides()
-        self.queued_slides = 0
 
 
     def get_selected_index(self):

@@ -18,1227 +18,134 @@ from modules import Modules
 import constants
 from event_queue_manager import Event
 
-class TextSlider(Frame):
+from Frames.widgets.slider import Slider
 
-    SLIDING_LEFT = 0
-    SLIDING_RIGHT = 1
-    NOT_SLIDING = 2
-
-    # pygame.transform.scale() should not receive a zero scale.
-    MIN_SCALE = 0.001
-
-    class EventTypes:
-
-        SELECT_ANIMATION_ENDED = 0
-        FLIPPING_ANIMATION_ENDED = 1
-        SLIDING_ANIMATION_ENDED = 2
-
+class TextSlider(Slider):
 
     def __init__(
         self,
         text,
         frame_dim,
+        back_text=None,
         font=Fonts.MINECRAFT,
         sliding_duration=500,  # ms
+        select_animation_duration=800,#ms
+        flip_duration=400,#ms
         images_alphas=None,
         images_span=1,
         background_color=Colors.TRANSPARENT,
-        size_distribution=0.6,
         size_decrease_scale=0.5,
         horizontal=True,
         start_index=0,
         cutoff=False,
         max_slides=10,
-        font_startsize=30,
         line_margin_percentage=0.05,
-        text_color=Colors.BLACK
+        text_color=Colors.BLACK,
+        text_is_colored=False,
+        text_width_to_height_ratio=7/5
     ):
 
-        if len(text) < (1 + 2 * images_span):
-            raise RuntimeError(
-                "You need more images for this image span."
-            )
-
-        super().__init__(FrameEnums.TEXTSLIDER_WIDGET, None, frame_dim, focus_group=None)
-
         self.text = text
+        self.back_text = (back_text if back_text is not None else text)
         self.font = font
-        self.font_startsize = font_startsize
+        self.text_is_colored = text_is_colored
         self.text_color = text_color
-
-        self.image_index = start_index
-        self.line_margin_percentage = line_margin_percentage
-        self.line_margin = int(self.line_margin_percentage * self.height)
-        self.cutoff = cutoff
-        self.max_slides = max_slides
-
-        self.sliding_duration = sliding_duration
-        self.images_span = images_span
-        self.event_queue = []
-
-        # ---------------------------------------------------------
-        # Alpha values
-        # ---------------------------------------------------------
-
-        self.images_alphas = images_alphas
-
-        if self.images_alphas is None:
-
-            self.images_alphas = [255]
-            aval = 255
-
-            for _ in range(self.images_span):
-                aval >>= 1
-                self.images_alphas.insert(0, aval)
-                self.images_alphas.append(aval)
-
-        if len(self.images_alphas) != 1 + 2 * self.images_span:
-            raise ValueError(
-                "images_alphas must contain exactly "
-                f"{1 + 2 * self.images_span} values."
-            )
-
-        # ---------------------------------------------------------
-        # Slot scale multipliers
-        # ---------------------------------------------------------
-
-        self.scale_mults = [1.0]
-        last_scale = 1.0
-
-        for _ in range(self.images_span):
-            last_scale *= size_decrease_scale
-
-            self.scale_mults.insert(
-                0,
-                last_scale
-            )
-
-            self.scale_mults.append(
-                last_scale
-            )
-
-        self.scale_factors = []
-
-        self.background_color = background_color
-        self.size_distribution = size_distribution
-        self.size_decrease_scale = size_decrease_scale
-        self.horizontal = horizontal
-
-        # -1 = slide left
-        # +1 = slide right
-        self.slides = 0
-
-        self.rendered_images = []
-        self.extra_image = None
-
-        self.state = TextSlider.NOT_SLIDING
-
-        self.fixed_image_positions = (
-            self.get_fixed_image_positions()
-        )
-
-        self.alphas = self.images_alphas[:]
-
-        self.rerender_images()
-
-        self.sliding_clock = Clock()
-
-    # =============================================================
-    # General
-    # =============================================================
-
-
-    def get_selected_index(self):
-        return self.image_index - self.slides
-
-    def set_background_color(self, color):
-        self.background_color = color
-        self.prerender()
-
-    def get_focus_index(self):
-        return self.image_index
-
-    def get_focus_image(self):
-        return self.text[self.image_index]
-
-    def slide_left(self):
-
-        if self.cutoff and (
-            self.image_index - self.slides
-            >= len(self.text) - 1
-        ):
-            return
-
-        if self.slides > -self.max_slides:
-            self.slides -= 1
-
-    def slide_right(self):
-
-        if self.cutoff and (
-            self.image_index - self.slides <= 0
-        ):
-            return
-
-        if self.slides < self.max_slides:
-            self.slides += 1
-
-    def reset_slides(self):
-
-        if self.state == TextSlider.SLIDING_LEFT:
-            self.slides = -1
-
-        elif self.state == TextSlider.SLIDING_RIGHT:
-            self.slides = 1
-
-        elif self.state == TextSlider.NOT_SLIDING:
-            self.slides = 0
-
-    def get_surfaces(self):
-        return [
-            self.bottom_surface,
-            self.top_surface
-        ]
-
-    def get_surfaces_with_position(self):
-        return [(surf, (self.frame_dim.x, self.frame_dim.y)) for surf in self.get_surfaces()]
-
-    # =============================================================
-    # Text rendering
-    # =============================================================
-
-    def render_text_as_surface(self, text):
-
-        # text is a list of lines
-
-        imgs = []
-
-        for line in text:
-
-            imgs.append(
-                graphics.render_text(
-                    self.font,
-                    self.font_startsize,
-                    line,
-                    color=self.text_color
-                )
-            )
-
-        rwidth = max(
-            img.get_width()
-            for img in imgs
-        )
-
-        rheight = (
-            sum(
-                img.get_height()
-                for img in imgs
-            )
-            + (len(imgs) - 1) * self.line_margin
-        )
-
-        img = pygame.Surface(
-            (rwidth, rheight),
-            pygame.SRCALPHA
-        )
-
-        img.fill(
-            Colors.TRANSPARENT
-        )
-
-        cy = 0
-
-        for surf in imgs:
-
-            img.blit(
-                surf,
-                (0, cy)
-            )
-
-            cy += (
-                surf.get_height()
-                + self.line_margin
-            )
-
-        return img
-
-    # =============================================================
-    # Scaling
-    # =============================================================
-
-    def get_scale_fraction(self, img, rect):
-
-        iw, ih = img.get_size()
-
-        width_scale = rect.width / iw
-        height_scale = rect.height / ih
-
-        return min(width_scale, height_scale)
-
-    def get_absolute_scale(self, img, rect, slot_index):
-
-        return (
-            self.get_scale_fraction(
-                img,
-                rect
-            )
-            * self.scale_mults[slot_index]
-        )
-
-    # =============================================================
-    # Initial rendering
-    # =============================================================
-
-    def rerender_images(self):
-
-        self.top_surface = pygame.Surface(
-            (self.width, self.height),
-            pygame.SRCALPHA
-        )
-
-        self.bottom_surface = pygame.Surface(
-            (self.width, self.height),
-            pygame.SRCALPHA
-        )
-
-        self.rendered_images = []
-        self.rects = []
-        self.scale_factors = []
-
-        self.alphas = (
-            self.images_alphas[:]
-        )
-
-        self.indices = (
-            [
-                (
-                    self.image_index
-                    - i
-                    - 1
-                ) % len(self.text)
-                for i in range(self.images_span)
-            ]
-            + [
-                self.image_index
-            ]
-            + [
-                (
-                    self.image_index
-                    + i
-                    + 1
-                ) % len(self.text)
-                for i in range(self.images_span)
-            ]
-        )
-
-        self.original_indices = (
-            [
-                self.image_index - i - 1
-                for i in range(self.images_span)
-            ]
-            + [
-                self.image_index
-            ]
-            + [
-                self.image_index + i + 1
-                for i in range(self.images_span)
-            ]
-        )
-
-        for i in range(
-            1 + 2 * self.images_span
-        ):
-
-            pixel_pos = (
-                self.fixed_image_positions[i]
-            )
-
-            if self.horizontal:
-
-                rect = pygame.Rect(
-                    pixel_pos[0],
-                    0,
-                    pixel_pos[1],
-                    self.height
-                )
-
-            else:
-
-                rect = pygame.Rect(
-                    0,
-                    pixel_pos[0],
-                    self.width,
-                    pixel_pos[1]
-                )
-
-            img = self.render_text_as_surface(
-                self.text[self.indices[i]]
-            )
-
-            base_scale = (
-                self.get_scale_fraction(
-                    img,
-                    rect
-                )
-            )
-
-            self.scale_factors.append(
-                base_scale
-            )
-
-            scale = (
-                base_scale
-                * self.scale_mults[i]
-            )
-
-            img = graphics.scale_image(
-                img,
-                scale
-            )
-
-            img.set_alpha(
-                int(self.images_alphas[i])
-            )
-
-            img_pos = (
-                graphics.get_center_with_surface(
-                    img,
-                    rect
-                )
-            )
-
-            rendered = not (
-                self.cutoff
-                and (
-                    self.original_indices[i] < 0
-                    or self.original_indices[i]
-                    >= len(self.text)
-                )
-            )
-
-            self.rendered_images.append(
-                [
-                    img,
-                    img_pos[0],
-                    img_pos[1],
-                    rendered
-                ]
-            )
-
-            self.rects.append(rect)
-
-        self.prerender()
-
-    # =============================================================
-    # Layout
-    # =============================================================
-
-
-    def get_fixed_image_positions(self):
-
-        dpixels = (
-            self.width
-            if self.horizontal
-            else self.height
-        )
-
-        dspaces = []
-
-        if self.images_span <= 0:
-
-            dspaces.append(
-                dpixels
-            )
+        self.text_width_to_height_ratio = text_width_to_height_ratio
+        self.line_margin_width = int(line_margin_percentage * frame_dim.height)
+
+        Slider.__init__(
+                        self,
+                        frame_dim=frame_dim,
+                        sliding_duration=sliding_duration,
+                        select_animation_duration=select_animation_duration,
+                        alphas=images_alphas,
+                        span=images_span,
+                        background_color=background_color,
+                        size_decrease_scale=size_decrease_scale,
+                        horizontal=horizontal,
+                        start_index=start_index,
+                        cutoff=cutoff,
+                        max_slides=max_slides,
+                        flip_duration=flip_duration
+                        )
+
+    def create_surfaces(self):
+
+        self.surfaces = []
+
+        ssize = (int(100 * self.text_width_to_height_ratio), 100)
+
+        if self.text_is_colored:
+
+            for i in range(len(self.text)):
+                surf = pygame.Surface(ssize, pygame.SRCALPHA)
+                txt = graphics.render_page_from_chars_color(self.font, self.text[i],
+                                                            pygame.Rect(0, 0, *ssize),
+                                                            text_color=self.text_color,
+                                                            centered=True,
+                                                            vertical_centered=True,
+                                                            line_margin=self.line_margin_width
+                                                            )
+
+                for s, pos in txt:
+                    surf.blit(s, pos)
+
+                self.surfaces.append(surf)
 
         else:
 
-            frontspace = int(
-                self.size_distribution
-                * dpixels
-            )
+            for i in range(len(self.text)):
+                surf = pygame.Surface(ssize, pygame.SRCALPHA)
+                txt = graphics.render_page_from_chars(self.font, self.text[i],
+                                                            pygame.Rect(0, 0, *ssize),
+                                                            text_color=self.text_color,
+                                                            centered=True,
+                                                            vertical_centered=True,
+                                                            line_margin=self.line_margin_width
+                                                            )
 
-            frontstart = (
-                dpixels - frontspace
-            ) // 2
+                for s, pos in txt:
+                    surf.blit(s, pos)
 
-            dspaces.append(
-                (
-                    frontstart,
-                    frontspace
-                )
-            )
+                self.surfaces.append(surf)
 
-            dpixels = frontstart
-            midspace_occupied = frontspace
 
-            for _ in range(
-                self.images_span - 1
-            ):
+    def create_back_surfaces(self):
 
-                space = int(
-                    self.size_distribution
-                    * dpixels
-                )
+        self.back_surfaces = []
 
-                dspaces.insert(
-                    0,
-                    (
-                        dpixels - space,
-                        space
-                    )
-                )
+        ssize = (int(100 * self.text_width_to_height_ratio), 100)
 
-                dspaces.append(
-                    (
-                        dpixels + midspace_occupied,
-                        space
-                    )
-                )
+        if self.text_is_colored:
 
-                dpixels -= space
+            for i in range(len(self.back_text)):
+                surf = pygame.Surface(ssize, pygame.SRCALPHA)
+                txt = graphics.render_page_from_chars_color(self.font, self.back_text[i],
+                                                            pygame.Rect(0, 0, *ssize),
+                                                            text_color=self.text_color,
+                                                            centered=True,
+                                                            vertical_centered=True,
+                                                            line_margin=self.line_margin_width
+                                                            )
 
-                midspace_occupied += (
-                    2 * space
-                )
+                for s, pos in txt:
+                    surf.blit(s, pos)
 
-            dspaces.insert(
-                0,
-                (
-                    0,
-                    dpixels
-                )
-            )
+                self.back_surfaces.append(surf)
 
-            dspaces.append(
-                (
-                    dpixels + midspace_occupied,
-                    dpixels
-                )
-            )
+        else:
 
-        return dspaces
+            for i in range(len(self.back_text)):
+                surf = pygame.Surface(ssize, pygame.SRCALPHA)
+                txt = graphics.render_page_from_chars(self.font, self.back_text[i],
+                                                            pygame.Rect(0, 0, *ssize),
+                                                            text_color=self.text_color,
+                                                            centered=True,
+                                                            vertical_centered=True,
+                                                            line_margin=self.line_margin_width
+                                                            )
 
-    # =============================================================
-    # Rendering
-    # =============================================================
+                for s, pos in txt:
+                    surf.blit(s, pos)
 
-    def prerender(self):
-
-        self.bottom_surface.fill(
-            self.background_color
-        )
-
-        self.top_surface.fill(
-            Colors.TRANSPARENT
-        )
-
-        for (
-            img,
-            x,
-            y,
-            rendered
-        ) in self.rendered_images:
-
-            if rendered:
-
-                self.top_surface.blit(
-                    img,
-                    (x, y)
-                )
-
-    def render(self, screen):
-
-        self.prerender()
-        screen.blit(self.bottom_surface, (self.x, self.y))
-        screen.blit(self.top_surface, (self.x, self.y))
-
-    # =============================================================
-    # LEFT SLIDE
-    # =============================================================
-
-    def initialize_slide_left(self):
-
-        visible_count = (
-            1 + 2 * self.images_span
-        )
-
-        # ---------------------------------------------------------
-        # New image entering from the right
-        # ---------------------------------------------------------
-
-        img_index = (
-            self.indices[-1] + 1
-        ) % len(self.text)
-
-        self.extra_image = (
-            self.render_text_as_surface(
-                self.text[img_index]
-            )
-        )
-
-        self.indices.append(
-            img_index
-        )
-
-        self.original_indices.append(
-            self.indices[-2] + 1
-        )
-
-        # ---------------------------------------------------------
-        # Absolute scale at start and end.
-        #
-        # There are visible_count + 1 images:
-        #
-        # old[0]   -> disappears
-        # old[1]   -> slot 0
-        # old[2]   -> slot 1
-        # ...
-        # extra    -> last slot
-        # ---------------------------------------------------------
-
-        self.start_scales = []
-        self.target_scales = []
-
-        self.start_alphas = (
-            self.images_alphas[:]
-            + [0]
-        )
-
-        self.target_alphas = (
-            [0]
-            + self.images_alphas[:]
-        )
-
-        self.target_positions = []
-        self.start_positions = []
-
-        # ---------------------------------------------------------
-        # Old first image disappearing
-        # ---------------------------------------------------------
-
-        self.start_scales.append(
-            self.scale_factors[0]
-            * self.scale_mults[0]
-        )
-
-        self.target_scales.append(
-            self.MIN_SCALE
-        )
-
-        x = self.rendered_images[0][1]
-        y = self.rendered_images[0][2]
-
-        cx, cy = graphics.get_center(
-            self.rects[0]
-        )
-
-        self.start_positions.append(
-            [x, y]
-        )
-
-        self.target_positions.append(
-            [cx, cy]
-        )
-
-        # ---------------------------------------------------------
-        # Existing images moving left
-        # ---------------------------------------------------------
-
-        for old_i in range(
-            1,
-            visible_count
-        ):
-
-            new_slot = old_i - 1
-
-            img = self.render_text_as_surface(
-                self.text[self.indices[old_i]]
-            )
-
-            # IMPORTANT:
-            # Calculate the destination scale using the
-            # ORIGINAL unscaled image.
-            target_base_scale = (
-                self.get_scale_fraction(
-                    img,
-                    self.rects[new_slot]
-                )
-            )
-
-            target_scale = (
-                target_base_scale
-                * self.scale_mults[new_slot]
-            )
-
-            start_scale = (
-                self.scale_factors[old_i]
-                * self.scale_mults[old_i]
-            )
-
-            self.start_scales.append(
-                start_scale
-            )
-
-            self.target_scales.append(
-                target_scale
-            )
-
-            x = self.rendered_images[old_i][1]
-            y = self.rendered_images[old_i][2]
-
-            start_img = graphics.scale_image(
-                img,
-                start_scale
-            )
-
-            target_img = graphics.scale_image(
-                img,
-                target_scale
-            )
-
-            # start_img isn't strictly necessary for position,
-            # because rendered_images already contains its
-            # current position, but keeping the calculation
-            # conceptually explicit is useful.
-            _ = start_img
-
-            nx, ny = (
-                graphics.get_center_with_surface(
-                    target_img,
-                    self.rects[new_slot]
-                )
-            )
-
-            self.start_positions.append(
-                [x, y]
-            )
-
-            self.target_positions.append(
-                [nx, ny]
-            )
-
-        # ---------------------------------------------------------
-        # Extra image entering from the right
-        # ---------------------------------------------------------
-
-        last_slot = (
-            visible_count - 1
-        )
-
-        target_base_scale = (
-            self.get_scale_fraction(
-                self.extra_image,
-                self.rects[last_slot]
-            )
-        )
-
-        target_scale = (
-            target_base_scale
-            * self.scale_mults[last_slot]
-        )
-
-        self.start_scales.append(
-            self.MIN_SCALE
-        )
-
-        self.target_scales.append(
-            target_scale
-        )
-
-        target_img = graphics.scale_image(
-            self.extra_image,
-            target_scale
-        )
-
-        nx, ny = (
-            graphics.get_center_with_surface(
-                target_img,
-                self.rects[last_slot]
-            )
-        )
-
-        # Zero-size image is naturally centered at the same point.
-        self.start_positions.append(
-            [nx, ny]
-        )
-
-        self.target_positions.append(
-            [nx, ny]
-        )
-
-        self.sliding_clock.start()
-
-    def render_slide_left(self):
-
-        progress = (
-            self.sliding_clock.elapsed()
-            / self.sliding_duration
-        )
-
-        progress = min(
-            1.0,
-            progress
-        )
-
-        rimages = []
-
-        for i in range(
-            len(self.indices)
-        ):
-
-            img = self.render_text_as_surface(
-                self.text[self.indices[i]]
-            )
-
-            scale = (
-                self.start_scales[i]
-                + (
-                    self.target_scales[i]
-                    - self.start_scales[i]
-                )
-                * progress
-            )
-
-            alpha = (
-                self.start_alphas[i]
-                + (
-                    self.target_alphas[i]
-                    - self.start_alphas[i]
-                )
-                * progress
-            )
-
-            x = (
-                self.start_positions[i][0]
-                + (
-                    self.target_positions[i][0]
-                    - self.start_positions[i][0]
-                )
-                * progress
-            )
-
-            y = (
-                self.start_positions[i][1]
-                + (
-                    self.target_positions[i][1]
-                    - self.start_positions[i][1]
-                )
-                * progress
-            )
-
-            img = graphics.scale_image(
-                img,
-                max(
-                    scale,
-                    self.MIN_SCALE
-                )
-            )
-
-            img.set_alpha(
-                int(alpha)
-            )
-
-            rendered = not (
-                self.cutoff
-                and (
-                    self.original_indices[i] < 0
-                    or self.original_indices[i]
-                    >= len(self.text)
-                )
-            )
-
-            rimages.append(
-                [
-                    img,
-                    int(x),
-                    int(y),
-                    rendered
-                ]
-            )
-
-        self.rendered_images = rimages
-
-        self.prerender()
-
-    def finalize_slide_left(self):
-
-        # The second image becomes the new first image,
-        # so just update image_index and reconstruct the
-        # ordinary state from scratch.
-        self.image_index = (self.image_index + 1) % len(self.text)
-
-        self.slides += 1
-
-        self.state = (
-            TextSlider.NOT_SLIDING
-        )
-
-        self.event_queue.append(Event(TextSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
-
-        self.rerender_images()
-
-    # =============================================================
-    # RIGHT SLIDE
-    # =============================================================
-
-    def initialize_slide_right(self):
-
-        visible_count = (
-            1 + 2 * self.images_span
-        )
-
-        # ---------------------------------------------------------
-        # New image entering from the left
-        # ---------------------------------------------------------
-
-        img_index = (
-            self.indices[0] - 1
-        ) % len(self.text)
-
-        self.extra_image = (
-            self.render_text_as_surface(
-                self.text[img_index]
-            )
-        )
-
-        self.indices.insert(
-            0,
-            img_index
-        )
-
-        self.original_indices.insert(
-            0,
-            self.original_indices[0] - 1
-        )
-
-        # ---------------------------------------------------------
-        # New ordering:
-        #
-        # extra    -> slot 0
-        # old[0]   -> slot 1
-        # old[1]   -> slot 2
-        # ...
-        # old[-1]  -> disappears
-        # ---------------------------------------------------------
-
-        self.start_scales = []
-        self.target_scales = []
-
-        self.start_alphas = (
-            [0]
-            + self.images_alphas[:]
-        )
-
-        self.target_alphas = (
-            self.images_alphas[:]
-            + [0]
-        )
-
-        self.start_positions = []
-        self.target_positions = []
-
-        # ---------------------------------------------------------
-        # Extra image entering from the left
-        # ---------------------------------------------------------
-
-        target_base_scale = (
-            self.get_scale_fraction(
-                self.extra_image,
-                self.rects[0]
-            )
-        )
-
-        target_scale = (
-            target_base_scale
-            * self.scale_mults[0]
-        )
-
-        self.start_scales.append(
-            self.MIN_SCALE
-        )
-
-        self.target_scales.append(
-            target_scale
-        )
-
-        target_img = graphics.scale_image(
-            self.extra_image,
-            target_scale
-        )
-
-        nx, ny = (
-            graphics.get_center_with_surface(
-                target_img,
-                self.rects[0]
-            )
-        )
-
-        self.start_positions.append(
-            [nx, ny]
-        )
-
-        self.target_positions.append(
-            [nx, ny]
-        )
-
-        # ---------------------------------------------------------
-        # Existing images moving right
-        # ---------------------------------------------------------
-
-        for old_i in range(
-            visible_count - 1
-        ):
-
-            new_slot = old_i + 1
-
-            img = self.render_text_as_surface(
-                self.text[self.indices[old_i + 1]]
-            )
-
-            target_base_scale = (
-                self.get_scale_fraction(
-                    img,
-                    self.rects[new_slot]
-                )
-            )
-
-            target_scale = (
-                target_base_scale
-                * self.scale_mults[new_slot]
-            )
-
-            # Old image's current absolute scale.
-            start_scale = (
-                self.scale_factors[old_i]
-                * self.scale_mults[old_i]
-            )
-
-            self.start_scales.append(
-                start_scale
-            )
-
-            self.target_scales.append(
-                target_scale
-            )
-
-            x = self.rendered_images[old_i][1]
-            y = self.rendered_images[old_i][2]
-
-            target_img = graphics.scale_image(
-                img,
-                target_scale
-            )
-
-            nx, ny = (
-                graphics.get_center_with_surface(
-                    target_img,
-                    self.rects[new_slot]
-                )
-            )
-
-            self.start_positions.append(
-                [x, y]
-            )
-
-            self.target_positions.append(
-                [nx, ny]
-            )
-
-        # ---------------------------------------------------------
-        # Rightmost old image disappearing
-        # ---------------------------------------------------------
-
-        disappearing_old_i = (
-            visible_count - 1
-        )
-
-        x = self.rendered_images[
-            disappearing_old_i
-        ][1]
-
-        y = self.rendered_images[
-            disappearing_old_i
-        ][2]
-
-        self.start_scales.append(
-            self.scale_factors[-1]
-            * self.scale_mults[-1]
-        )
-
-        self.target_scales.append(
-            self.MIN_SCALE
-        )
-
-        cx, cy = graphics.get_center(
-            self.rects[-1]
-        )
-
-        self.start_positions.append(
-            [x, y]
-        )
-
-        self.target_positions.append(
-            [cx, cy]
-        )
-
-        self.sliding_clock.start()
-
-    def render_slide_right(self):
-
-        progress = (
-            self.sliding_clock.elapsed()
-            / self.sliding_duration
-        )
-
-        progress = min(
-            1.0,
-            progress
-        )
-
-        rimages = []
-
-        for i in range(
-            len(self.indices)
-        ):
-
-            img = self.render_text_as_surface(
-                self.text[self.indices[i]]
-            )
-
-            scale = (
-                self.start_scales[i]
-                + (
-                    self.target_scales[i]
-                    - self.start_scales[i]
-                )
-                * progress
-            )
-
-            alpha = (
-                self.start_alphas[i]
-                + (
-                    self.target_alphas[i]
-                    - self.start_alphas[i]
-                )
-                * progress
-            )
-
-            x = (
-                self.start_positions[i][0]
-                + (
-                    self.target_positions[i][0]
-                    - self.start_positions[i][0]
-                )
-                * progress
-            )
-
-            y = (
-                self.start_positions[i][1]
-                + (
-                    self.target_positions[i][1]
-                    - self.start_positions[i][1]
-                )
-                * progress
-            )
-
-            img = graphics.scale_image(
-                img,
-                max(
-                    scale,
-                    self.MIN_SCALE
-                )
-            )
-
-            img.set_alpha(
-                int(alpha)
-            )
-
-            rendered = not (
-                self.cutoff
-                and (
-                    self.original_indices[i] < 0
-                    or self.original_indices[i]
-                    >= len(self.text)
-                )
-            )
-
-            rimages.append(
-                [
-                    img,
-                    int(x),
-                    int(y),
-                    rendered
-                ]
-            )
-
-        self.rendered_images = rimages
-
-        self.prerender()
-
-    def finalize_slide_right(self):
-
-        self.image_index = ((self.image_index - 1) % len(self.text))
-
-        self.slides -= 1
-
-        self.state = (
-            TextSlider.NOT_SLIDING
-        )
-
-        self.event_queue.append(Event(TextSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
-
-        self.rerender_images()
-
-    # =============================================================
-    # Update
-    # =============================================================
-
-    def rerender(self):
-        self.rerender_images()
-
-    def tick(self):
-
-        if self.state == TextSlider.SLIDING_LEFT:
-
-            if (
-                self.sliding_clock.elapsed()
-                >= self.sliding_duration
-            ):
-
-                self.finalize_slide_left()
-
-            else:
-
-                self.render_slide_left()
-
-        elif self.state == TextSlider.SLIDING_RIGHT:
-
-            if (
-                self.sliding_clock.elapsed()
-                >= self.sliding_duration
-            ):
-
-                self.finalize_slide_right()
-
-            else:
-
-                self.render_slide_right()
-
-        if self.state == TextSlider.NOT_SLIDING:
-
-            if self.slides != 0:
-
-                if self.slides > 0:
-
-                    self.state = (
-                        TextSlider.SLIDING_RIGHT
-                    )
-
-                    self.initialize_slide_right()
-
-                else:
-
-                    self.state = (
-                        TextSlider.SLIDING_LEFT
-                    )
-
-                    self.initialize_slide_left()
+                self.back_surfaces.append(surf)

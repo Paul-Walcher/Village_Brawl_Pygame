@@ -87,7 +87,9 @@ class ExplorerInfoFrame(Frame):
                                                 self.slider_labels,
                                                 self.slider_frame,
                                                 text_location=LabeledImageSlider.BOTTOM,
-                                                max_slides=2
+                                                text_color=Colors.WHITE,
+                                                max_slides=3,
+                                                text_width_to_height_ratio=9/5
                                                 )
 
 
@@ -110,6 +112,8 @@ class ExplorerInfoFrame(Frame):
 
     def bind_events(self):
 
+        self.clear_event_callbacks()
+
         if self.is_focused():
             self.add_pygame_key_callback(pygame.K_LEFT, None, putback=False, func=self.left_pressed)
             self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, None, putback=False, func=self.left_pressed)
@@ -126,9 +130,14 @@ class ExplorerInfoFrame(Frame):
             self.add_pygame_key_callback(pygame.K_RETURN, None, putback=False, func=self.enter_pressed)
             self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, None, putback=False, func=self.enter_pressed)
 
+            self.add_pygame_key_callback(pygame.K_ESCAPE, None, putback=False, func=self.escape_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.BACK_KEY, None, putback=False, func=self.escape_pressed)
 
             self.add_pygame_event_callback(pygame.KEYDOWN, None, False, self.keydown)
             self.add_pygame_event_callback(pygame.KEYUP, None, False, self.keyup)
+
+    def escape_pressed(self, event, data):
+        self.raise_exit_flag()
 
     def left_pressed(self, event, data):
 
@@ -204,7 +213,7 @@ class ExplorerInfoFrame(Frame):
 
         for event in slider_events:
 
-            if event.type == ImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
+            if event.type == LabeledImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
 
                 if self.slider_menu.get_selected_index() == 0:
 
