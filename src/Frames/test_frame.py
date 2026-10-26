@@ -68,7 +68,11 @@ class TestFrame(EmptyFrame):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_ESCAPE]:
-            return self.parent_frame
+            self.focus()
+            self.raise_exit_flag()
+
+        if self.exit_flag_raised():
+            return None
 
         for event in self.dropdown.poll_events():
             if event.type == ExpandableDropdownMenu.EventTypes.SELECTION_FINISHED_EVENT:

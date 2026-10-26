@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 
 class Event:
 
-    def __init__(self, type, data):
+    def __init__(self, etype, data):
 
-        self.type = type
+        self.type = etype
         self.data = data
 
     def copy(self):
@@ -15,6 +15,7 @@ class EventQueueManager(ABC):
 
     def __init__(self):
         self.event_queue = []
+        """the event queue"""
 
     def push_event(self, event):
         self.event_queue.append(event)

@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="pdoc 16.0.0"/>
+    <title>Frames.widgets.text_slider API documentation</title>
+
+    <style>/*! * Bootstrap Reboot v5.0.0 (https://getbootstrap.com/) * Copyright 2011-2021 The Bootstrap Authors * Copyright 2011-2021 Twitter, Inc. * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE) * Forked from Normalize.css, licensed MIT (https://github.com/necolas/normalize.css/blob/master/LICENSE.md) */*,::after,::before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#fff;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}hr{margin:1rem 0;color:inherit;background-color:currentColor;border:0;opacity:.25}hr:not([size]){height:1px}h1,h2,h3,h4,h5,h6{margin-top:0;margin-bottom:.5rem;font-weight:500;line-height:1.2}h1{font-size:calc(1.375rem + 1.5vw)}@media (min-width:1200px){h1{font-size:2.5rem}}h2{font-size:calc(1.325rem + .9vw)}@media (min-width:1200px){h2{font-size:2rem}}h3{font-size:calc(1.3rem + .6vw)}@media (min-width:1200px){h3{font-size:1.75rem}}h4{font-size:calc(1.275rem + .3vw)}@media (min-width:1200px){h4{font-size:1.5rem}}h5{font-size:1.25rem}h6{font-size:1rem}p{margin-top:0;margin-bottom:1rem}abbr[data-bs-original-title],abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted;cursor:help;-webkit-text-decoration-skip-ink:none;text-decoration-skip-ink:none}address{margin-bottom:1rem;font-style:normal;line-height:inherit}ol,ul{padding-left:2rem}dl,ol,ul{margin-top:0;margin-bottom:1rem}ol ol,ol ul,ul ol,ul ul{margin-bottom:0}dt{font-weight:700}dd{margin-bottom:.5rem;margin-left:0}blockquote{margin:0 0 1rem}b,strong{font-weight:bolder}small{font-size:.875em}mark{padding:.2em;background-color:#fcf8e3}sub,sup{position:relative;font-size:.75em;line-height:0;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}a{color:#0d6efd;text-decoration:underline}a:hover{color:#0a58ca}a:not([href]):not([class]),a:not([href]):not([class]):hover{color:inherit;text-decoration:none}code,kbd,pre,samp{font-family:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:1em;direction:ltr;unicode-bidi:bidi-override}pre{display:block;margin-top:0;margin-bottom:1rem;overflow:auto;font-size:.875em}pre code{font-size:inherit;color:inherit;word-break:normal}code{font-size:.875em;color:#d63384;word-wrap:break-word}a>code{color:inherit}kbd{padding:.2rem .4rem;font-size:.875em;color:#fff;background-color:#212529;border-radius:.2rem}kbd kbd{padding:0;font-size:1em;font-weight:700}figure{margin:0 0 1rem}img,svg{vertical-align:middle}table{caption-side:bottom;border-collapse:collapse}caption{padding-top:.5rem;padding-bottom:.5rem;color:#6c757d;text-align:left}th{text-align:inherit;text-align:-webkit-match-parent}tbody,td,tfoot,th,thead,tr{border-color:inherit;border-style:solid;border-width:0}label{display:inline-block}button{border-radius:0}button:focus:not(:focus-visible){outline:0}button,input,optgroup,select,textarea{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}button,select{text-transform:none}[role=button]{cursor:pointer}select{word-wrap:normal}select:disabled{opacity:1}[list]::-webkit-calendar-picker-indicator{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:not(:disabled),[type=reset]:not(:disabled),[type=submit]:not(:disabled),button:not(:disabled){cursor:pointer}::-moz-focus-inner{padding:0;border-style:none}textarea{resize:vertical}fieldset{min-width:0;padding:0;margin:0;border:0}legend{float:left;width:100%;padding:0;margin-bottom:.5rem;font-size:calc(1.275rem + .3vw);line-height:inherit}@media (min-width:1200px){legend{font-size:1.5rem}}legend+*{clear:left}::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-fields-wrapper,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-text,::-webkit-datetime-edit-year-field{padding:0}::-webkit-inner-spin-button{height:auto}[type=search]{outline-offset:-2px;-webkit-appearance:textfield}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-color-swatch-wrapper{padding:0}::file-selector-button{font:inherit}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}output{display:inline-block}iframe{border:0}summary{display:list-item;cursor:pointer}progress{vertical-align:baseline}[hidden]{display:none!important}</style>
+    <style>/*! syntax-highlighting.css */pre{line-height:125%;}span.linenos{color:inherit; background-color:transparent; padding-left:5px; padding-right:20px;}.pdoc-code .hll{background-color:#ffffcc}.pdoc-code{background:#f8f8f8;}.pdoc-code .c{color:#3D7B7B; font-style:italic}.pdoc-code .err{border:1px solid #FF0000}.pdoc-code .k{color:#008000; font-weight:bold}.pdoc-code .o{color:#666666}.pdoc-code .ch{color:#3D7B7B; font-style:italic}.pdoc-code .cm{color:#3D7B7B; font-style:italic}.pdoc-code .cp{color:#9C6500}.pdoc-code .cpf{color:#3D7B7B; font-style:italic}.pdoc-code .c1{color:#3D7B7B; font-style:italic}.pdoc-code .cs{color:#3D7B7B; font-style:italic}.pdoc-code .gd{color:#A00000}.pdoc-code .ge{font-style:italic}.pdoc-code .gr{color:#E40000}.pdoc-code .gh{color:#000080; font-weight:bold}.pdoc-code .gi{color:#008400}.pdoc-code .go{color:#717171}.pdoc-code .gp{color:#000080; font-weight:bold}.pdoc-code .gs{font-weight:bold}.pdoc-code .gu{color:#800080; font-weight:bold}.pdoc-code .gt{color:#0044DD}.pdoc-code .kc{color:#008000; font-weight:bold}.pdoc-code .kd{color:#008000; font-weight:bold}.pdoc-code .kn{color:#008000; font-weight:bold}.pdoc-code .kp{color:#008000}.pdoc-code .kr{color:#008000; font-weight:bold}.pdoc-code .kt{color:#B00040}.pdoc-code .m{color:#666666}.pdoc-code .s{color:#BA2121}.pdoc-code .na{color:#687822}.pdoc-code .nb{color:#008000}.pdoc-code .nc{color:#0000FF; font-weight:bold}.pdoc-code .no{color:#880000}.pdoc-code .nd{color:#AA22FF}.pdoc-code .ni{color:#717171; font-weight:bold}.pdoc-code .ne{color:#CB3F38; font-weight:bold}.pdoc-code .nf{color:#0000FF}.pdoc-code .nl{color:#767600}.pdoc-code .nn{color:#0000FF; font-weight:bold}.pdoc-code .nt{color:#008000; font-weight:bold}.pdoc-code .nv{color:#19177C}.pdoc-code .ow{color:#AA22FF; font-weight:bold}.pdoc-code .w{color:#bbbbbb}.pdoc-code .mb{color:#666666}.pdoc-code .mf{color:#666666}.pdoc-code .mh{color:#666666}.pdoc-code .mi{color:#666666}.pdoc-code .mo{color:#666666}.pdoc-code .sa{color:#BA2121}.pdoc-code .sb{color:#BA2121}.pdoc-code .sc{color:#BA2121}.pdoc-code .dl{color:#BA2121}.pdoc-code .sd{color:#BA2121; font-style:italic}.pdoc-code .s2{color:#BA2121}.pdoc-code .se{color:#AA5D1F; font-weight:bold}.pdoc-code .sh{color:#BA2121}.pdoc-code .si{color:#A45A77; font-weight:bold}.pdoc-code .sx{color:#008000}.pdoc-code .sr{color:#A45A77}.pdoc-code .s1{color:#BA2121}.pdoc-code .ss{color:#19177C}.pdoc-code .bp{color:#008000}.pdoc-code .fm{color:#0000FF}.pdoc-code .vc{color:#19177C}.pdoc-code .vg{color:#19177C}.pdoc-code .vi{color:#19177C}.pdoc-code .vm{color:#19177C}.pdoc-code .il{color:#666666}</style>
+    <style>/*! theme.css */:root{--pdoc-background:#fff;}.pdoc{--text:#212529;--muted:#6c757d;--link:#3660a5;--link-hover:#1659c5;--code:#f8f8f8;--active:#fff598;--accent:#eee;--accent2:#c1c1c1;--nav-hover:rgba(255, 255, 255, 0.5);--name:#0066BB;--def:#008800;--annotation:#007020;}</style>
+    <style>/*! layout.css */html, body{width:100%;height:100%;}html, main{scroll-behavior:smooth;}body{background-color:var(--pdoc-background);}@media (max-width:769px){#navtoggle{cursor:pointer;position:absolute;width:50px;height:40px;top:1rem;right:1rem;border-color:var(--text);color:var(--text);display:flex;opacity:0.8;z-index:999;}#navtoggle:hover{opacity:1;}#togglestate + div{display:none;}#togglestate:checked + div{display:inherit;}main, header{padding:2rem 3vw;}header + main{margin-top:-3rem;}.git-button{display:none !important;}nav input[type="search"]{max-width:77%;}nav input[type="search"]:first-child{margin-top:-6px;}nav input[type="search"]:valid ~ *{display:none !important;}}@media (min-width:770px){:root{--sidebar-width:clamp(12.5rem, 28vw, 22rem);}nav{position:fixed;overflow:auto;height:100vh;width:var(--sidebar-width);}main, header{padding:3rem 2rem 3rem calc(var(--sidebar-width) + 3rem);width:calc(54rem + var(--sidebar-width));max-width:100%;}header + main{margin-top:-4rem;}#navtoggle{display:none;}}#togglestate{position:absolute;height:0;opacity:0;}nav.pdoc{--pad:clamp(0.5rem, 2vw, 1.75rem);--indent:1.5rem;background-color:var(--accent);border-right:1px solid var(--accent2);box-shadow:0 0 20px rgba(50, 50, 50, .2) inset;padding:0 0 0 var(--pad);overflow-wrap:anywhere;scrollbar-width:thin; scrollbar-color:var(--accent2) transparent; z-index:1}nav.pdoc::-webkit-scrollbar{width:.4rem; }nav.pdoc::-webkit-scrollbar-thumb{background-color:var(--accent2); }nav.pdoc > div{padding:var(--pad) 0;}nav.pdoc .module-list-button{display:inline-flex;align-items:center;color:var(--text);border-color:var(--muted);margin-bottom:1rem;}nav.pdoc .module-list-button:hover{border-color:var(--text);}nav.pdoc input[type=search]{display:block;outline-offset:0;width:calc(100% - var(--pad));}nav.pdoc .logo{max-width:calc(100% - var(--pad));max-height:35vh;display:block;margin:0 auto 1rem;transform:translate(calc(-.5 * var(--pad)), 0);}nav.pdoc ul{list-style:none;padding-left:0;}nav.pdoc > div > ul{margin-left:calc(0px - var(--pad));}nav.pdoc li a{padding:.2rem 0 .2rem calc(var(--pad) + var(--indent));}nav.pdoc > div > ul > li > a{padding-left:var(--pad);}nav.pdoc li{transition:all 100ms;}nav.pdoc li:hover{background-color:var(--nav-hover);}nav.pdoc a, nav.pdoc a:hover{color:var(--text);}nav.pdoc a{display:block;}nav.pdoc > h2:first-of-type{margin-top:1.5rem;}nav.pdoc .class:before{content:"class ";color:var(--muted);}nav.pdoc .function:after{content:"()";color:var(--muted);}nav.pdoc footer:before{content:"";display:block;width:calc(100% - var(--pad));border-top:solid var(--accent2) 1px;margin-top:1.5rem;padding-top:.5rem;}nav.pdoc footer{font-size:small;}</style>
+    <style>/*! content.css */.pdoc{color:var(--text);box-sizing:border-box;line-height:1.5;background:none;}.pdoc .pdoc-button{cursor:pointer;display:inline-block;border:solid black 1px;border-radius:2px;font-size:.75rem;padding:calc(0.5em - 1px) 1em;transition:100ms all;}.pdoc .alert{padding:1rem 1rem 1rem calc(1.5rem + 24px);border:1px solid transparent;border-radius:.25rem;background-repeat:no-repeat;background-position:.75rem center;margin-bottom:1rem;}.pdoc .alert > em{display:none;}.pdoc .alert > *:last-child{margin-bottom:0;}.pdoc .alert.note{color:#084298;background-color:#cfe2ff;border-color:#b6d4fe;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23084298%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M8%2016A8%208%200%201%200%208%200a8%208%200%200%200%200%2016zm.93-9.412-1%204.705c-.07.34.029.533.304.533.194%200%20.487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703%200-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381%202.29-.287zM8%205.5a1%201%200%201%201%200-2%201%201%200%200%201%200%202z%22/%3E%3C/svg%3E");}.pdoc .alert.tip{color:#0a3622;background-color:#d1e7dd;border-color:#a3cfbb;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%230a3622%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M2%206a6%206%200%201%201%2010.174%204.31c-.203.196-.359.4-.453.619l-.762%201.769A.5.5%200%200%201%2010.5%2013a.5.5%200%200%201%200%201%20.5.5%200%200%201%200%201l-.224.447a1%201%200%200%201-.894.553H6.618a1%201%200%200%201-.894-.553L5.5%2015a.5.5%200%200%201%200-1%20.5.5%200%200%201%200-1%20.5.5%200%200%201-.46-.302l-.761-1.77a2%202%200%200%200-.453-.618A5.98%205.98%200%200%201%202%206m6-5a5%205%200%200%200-3.479%208.592c.263.254.514.564.676.941L5.83%2012h4.342l.632-1.467c.162-.377.413-.687.676-.941A5%205%200%200%200%208%201%22/%3E%3C/svg%3E");}.pdoc .alert.important{color:#055160;background-color:#cff4fc;border-color:#9eeaf9;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23055160%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M2%200a2%202%200%200%200-2%202v12a2%202%200%200%200%202%202h12a2%202%200%200%200%202-2V2a2%202%200%200%200-2-2zm6%204c.535%200%20.954.462.9.995l-.35%203.507a.552.552%200%200%201-1.1%200L7.1%204.995A.905.905%200%200%201%208%204m.002%206a1%201%200%201%201%200%202%201%201%200%200%201%200-2%22/%3E%3C/svg%3E");}.pdoc .alert.warning{color:#664d03;background-color:#fff3cd;border-color:#ffecb5;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23664d03%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M8.982%201.566a1.13%201.13%200%200%200-1.96%200L.165%2013.233c-.457.778.091%201.767.98%201.767h13.713c.889%200%201.438-.99.98-1.767L8.982%201.566zM8%205c.535%200%20.954.462.9.995l-.35%203.507a.552.552%200%200%201-1.1%200L7.1%205.995A.905.905%200%200%201%208%205zm.002%206a1%201%200%201%201%200%202%201%201%200%200%201%200-2z%22/%3E%3C/svg%3E");}.pdoc .alert.caution{color:#842029;background-color:#f8d7da;border-color:#f5c2c7;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23842029%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M11.46.146A.5.5%200%200%200%2011.107%200H4.893a.5.5%200%200%200-.353.146L.146%204.54A.5.5%200%200%200%200%204.893v6.214a.5.5%200%200%200%20.146.353l4.394%204.394a.5.5%200%200%200%20.353.146h6.214a.5.5%200%200%200%20.353-.146l4.394-4.394a.5.5%200%200%200%20.146-.353V4.893a.5.5%200%200%200-.146-.353zM8%204c.535%200%20.954.462.9.995l-.35%203.507a.552.552%200%200%201-1.1%200L7.1%204.995A.905.905%200%200%201%208%204m.002%206a1%201%200%201%201%200%202%201%201%200%200%201%200-2%22/%3E%3C/svg%3E");}.pdoc .alert.danger{color:#842029;background-color:#f8d7da;border-color:#f5c2c7;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23842029%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M5.52.359A.5.5%200%200%201%206%200h4a.5.5%200%200%201%20.474.658L8.694%206H12.5a.5.5%200%200%201%20.395.807l-7%209a.5.5%200%200%201-.873-.454L6.823%209.5H3.5a.5.5%200%200%201-.48-.641l2.5-8.5z%22/%3E%3C/svg%3E");}.pdoc .visually-hidden{position:absolute !important;width:1px !important;height:1px !important;padding:0 !important;margin:-1px !important;overflow:hidden !important;clip:rect(0, 0, 0, 0) !important;white-space:nowrap !important;border:0 !important;}.pdoc h1, .pdoc h2, .pdoc h3{font-weight:300;margin:.3em 0;padding:.2em 0;}.pdoc > section:not(.module-info) h1{font-size:1.5rem;font-weight:500;}.pdoc > section:not(.module-info) h2{font-size:1.4rem;font-weight:500;}.pdoc > section:not(.module-info) h3{font-size:1.3rem;font-weight:500;}.pdoc > section:not(.module-info) h4{font-size:1.2rem;}.pdoc > section:not(.module-info) h5{font-size:1.1rem;}.pdoc a{text-decoration:none;color:var(--link);}.pdoc a:hover{color:var(--link-hover);}.pdoc blockquote{margin-left:2rem;}.pdoc pre{border-top:1px solid var(--accent2);border-bottom:1px solid var(--accent2);margin-top:0;margin-bottom:1em;padding:.5rem 0 .5rem .5rem;overflow-x:auto;background-color:var(--code);}.pdoc code{color:var(--text);padding:.2em .4em;margin:0;font-size:85%;background-color:var(--accent);border-radius:6px;}.pdoc a > code{color:inherit;}.pdoc pre > code{display:inline-block;font-size:inherit;background:none;border:none;padding:0;}.pdoc > section:not(.module-info){margin-bottom:1.5rem;}.pdoc .modulename{margin-top:0;font-weight:bold;}.pdoc .modulename a{color:var(--link);transition:100ms all;}.pdoc .git-button{float:right;border:solid var(--link) 1px;}.pdoc .git-button:hover{background-color:var(--link);color:var(--pdoc-background);}.view-source-toggle-state,.view-source-toggle-state ~ .pdoc-code{display:none;}.view-source-toggle-state:checked ~ .pdoc-code{display:block;}.view-source-button{display:inline-block;float:right;font-size:.75rem;line-height:1.5rem;color:var(--muted);padding:0 .4rem 0 1.3rem;cursor:pointer;text-indent:-2px;}.view-source-button > span{visibility:hidden;}.module-info .view-source-button{float:none;display:flex;justify-content:flex-end;margin:-1.2rem .4rem -.2rem 0;}.view-source-button::before{position:absolute;content:"View Source";display:list-item;list-style-type:disclosure-closed;}.view-source-toggle-state:checked ~ .attr .view-source-button::before,.view-source-toggle-state:checked ~ .view-source-button::before{list-style-type:disclosure-open;}.pdoc .docstring{margin-bottom:1.5rem;}.pdoc section:not(.module-info) .docstring{margin-left:clamp(0rem, 5vw - 2rem, 1rem);}.pdoc .docstring .pdoc-code{margin-left:1em;margin-right:1em;}.pdoc h1:target,.pdoc h2:target,.pdoc h3:target,.pdoc h4:target,.pdoc h5:target,.pdoc h6:target,.pdoc .pdoc-code > pre > span:target{background-color:var(--active);box-shadow:-1rem 0 0 0 var(--active);}.pdoc .pdoc-code > pre > span:target{display:block;}.pdoc div:target > .attr,.pdoc section:target > .attr,.pdoc dd:target > a{background-color:var(--active);}.pdoc *{scroll-margin:2rem;}.pdoc .pdoc-code .linenos{user-select:none;}.pdoc .attr:hover{filter:contrast(0.95);}.pdoc section, .pdoc .classattr{position:relative;}.pdoc .headerlink{--width:clamp(1rem, 3vw, 2rem);position:absolute;top:0;left:calc(0rem - var(--width));transition:all 100ms ease-in-out;opacity:0;}.pdoc .headerlink::before{content:"#";display:block;text-align:center;width:var(--width);height:2.3rem;line-height:2.3rem;font-size:1.5rem;}.pdoc .attr:hover ~ .headerlink,.pdoc *:target > .headerlink,.pdoc .headerlink:hover{opacity:1;}.pdoc .attr{display:block;margin:.5rem 0 .5rem;padding:.4rem .4rem .4rem 1rem;background-color:var(--accent);overflow-x:auto;}.pdoc .classattr{margin-left:2rem;}.pdoc .decorator-deprecated{color:#842029;}.pdoc .decorator-deprecated ~ span{filter:grayscale(1) opacity(0.8);}.pdoc .name{color:var(--name);font-weight:bold;}.pdoc .def{color:var(--def);font-weight:bold;}.pdoc .signature{background-color:transparent;}.pdoc .param, .pdoc .return-annotation{white-space:pre;}.pdoc .signature.multiline .param{display:block;}.pdoc .signature.condensed .param{display:inline-block;}.pdoc .annotation{color:var(--annotation);}.pdoc .view-value-toggle-state,.pdoc .view-value-toggle-state ~ .default_value{display:none;}.pdoc .view-value-toggle-state:checked ~ .default_value{display:inherit;}.pdoc .view-value-button{font-size:.5rem;vertical-align:middle;border-style:dashed;margin-top:-0.1rem;}.pdoc .view-value-button:hover{background:white;}.pdoc .view-value-button::before{content:"show";text-align:center;width:2.2em;display:inline-block;}.pdoc .view-value-toggle-state:checked ~ .view-value-button::before{content:"hide";}.pdoc .inherited{margin-left:2rem;}.pdoc .inherited dt{font-weight:700;}.pdoc .inherited dt, .pdoc .inherited dd{display:inline;margin-left:0;margin-bottom:.5rem;}.pdoc .inherited dd:not(:last-child):after{content:", ";}.pdoc .inherited .class:before{content:"class ";}.pdoc .inherited .function a:after{content:"()";}.pdoc .search-result .docstring{overflow:auto;max-height:25vh;}.pdoc .search-result.focused > .attr{background-color:var(--active);}.pdoc .attribution{margin-top:2rem;display:block;opacity:0.5;transition:all 200ms;filter:grayscale(100%);}.pdoc .attribution:hover{opacity:1;filter:grayscale(0%);}.pdoc .attribution img{margin-left:5px;height:27px;vertical-align:bottom;width:50px;transition:all 200ms;}.pdoc table{display:block;width:max-content;max-width:100%;overflow:auto;margin-bottom:1rem;}.pdoc table th{font-weight:600;}.pdoc table th, .pdoc table td{padding:6px 13px;border:1px solid var(--accent2);}</style>
+    <style>/*! custom.css */</style></head>
+<body>
+    <nav class="pdoc">
+        <label id="navtoggle" for="togglestate" class="pdoc-button"><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke-linecap='round' stroke="currentColor" stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg></label>
+        <input id="togglestate" type="checkbox" aria-hidden="true" tabindex="-1">
+        <div>            <a class="pdoc-button module-list-button" href="../../index.html">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-left" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0v-2z"/>
+  <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
+</svg>                &nbsp;
+                Module Index
+            </a>
+
+
+            <input type="search" placeholder="Search..." role="searchbox" aria-label="search"
+                   pattern=".+" required>
+
+
+
+            <h2>API Documentation</h2>
+                <ul class="memberlist">
+            <li>
+                    <a class="class" href="#TextSlider">TextSlider</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#TextSlider.__init__">TextSlider</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#TextSlider.text">text</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#TextSlider.back_text">back_text</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#TextSlider.font">font</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#TextSlider.text_is_colored">text_is_colored</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#TextSlider.text_color">text_color</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#TextSlider.text_width_to_height_ratio">text_width_to_height_ratio</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#TextSlider.line_margin_width">line_margin_width</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#TextSlider.create_surfaces">create_surfaces</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#TextSlider.create_back_surfaces">create_back_surfaces</a>
+                        </li>
+                </ul>
+
+            </li>
+    </ul>
+
+
+
+        <a class="attribution" title="pdoc: Python API documentation generator" href="https://pdoc.dev" target="_blank">
+            built with <span class="visually-hidden">pdoc</span><img
+                alt="pdoc logo"
+                src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20role%3D%22img%22%20aria-label%3D%22pdoc%20logo%22%20width%3D%22300%22%20height%3D%22160%22%20viewBox%3D%220%200%20150%2080%22%3E%3Ctitle%3Epdoc%3C/title%3E%3Cpath%20d%3D%22M132.316%2048.886c.276-4.679%202.342-6.698%204.409-7.982s4.27-1.165%206.751-1.055c1.586.07%203.044.156%204.222-.482%201.142-.619%202.026-1.932%202.162-3.739.268-3.576-1.929-5.368-5.006-5.551s-7.599.524-10.517%201.606c-4.455%201.652-8.588%206.606-9.552%208.992s-2.342%206.193-1.745%2010.873%202.664%209.221%205.878%2011.79%205.878%203.808%2010.103%204.312%203.444.229%206.062.229%205.006-2.202%204.914-4.909-2.296-5.001-4.501-4.863-3.077.505-5.281.229-7.715-2.064-7.899-9.451z%22%20fill%3D%22%23198754%22/%3E%3Ccircle%20cx%3D%22101.504%22%20cy%3D%2248.943%22%20r%3D%2214.208%22%20fill%3D%22none%22%20stroke%3D%22%23198754%22%20stroke-width%3D%229.354%22/%3E%3Cpath%20d%3D%22M87.81.002c-3.637.065-5.001.454-7.014%201.232s-3.443%201.363-6.3%204.282c-1.723%201.76-3.148%205.019-3.776%207.329-.413%201.521-.316%202.63-.316%202.63l-.195%2034.612c.065%205.774-6.755%208.305-9.612%208.37s-9.678-1.038-9.743-9.408%207.128-9.521%208.362-9.521c1.413-.13%202.526-.021%203.718-.016%202.071.009%204.157-.778%204.092-4.671s-4.157-4.736-4.157-4.736c-6.3-.843-11.43%202.206-11.43%202.206S40.917%2038.15%2041.372%2049.634%2051.568%2068.19%2061.311%2068.125s18.316-7.007%2018.445-17.193l.13-22.772c.046-2.291%202.683-3.644%204.476-4.203.745-.232%201.694-.274%201.694-.274l10.457-.13s4.871-.324%207.729-3.114%204.352-6.294%204.352-6.294.974-3.049.13-4.606-.195-1.233-2.792-3.309-8.573-4.477-8.573-4.477S91.447-.063%2087.81.002zM0%2047.169l.065%2028.417S0%2080.127%204.481%2079.997s5.072-3.866%205.049-4.152l-.113-28.482s1.624-7.656%209.937-7.721%2010.002%206.942%2010.002%208.499-.909%2010.51-9.093%2010.51c-.948%200-2.99-.567-4.145-.272-3.919%201-3.194%204.554-3.194%204.554s.065%205.061%207.404%204.996%2018.575-6.034%2018.575-19.074S26.953%2030.04%2019.549%2029.91%201.234%2035.296%200%2047.169z%22%20fill%3D%22%23198754%22/%3E%3Cg%20transform%3D%22matrix%28.325601%200%200%20.325256%20-10.32669%20-45.802786%29%22%3E%3Ccircle%20cx%3D%22297.554%22%20cy%3D%22172.286%22%20r%3D%2216.5%22%20fill%3D%22%23fff%22/%3E%3Cellipse%20cx%3D%22297.709%22%20cy%3D%22172.642%22%20rx%3D%2211.071%22%20ry%3D%2210.871%22%20fill%3D%22%23105a48%22/%3E%3Ccircle%20cx%3D%22304.104%22%20cy%3D%22167.667%22%20r%3D%224.5%22%20fill%3D%22%23fff%22/%3E%3C/g%3E%3Cpath%20d%3D%22M94.661%2017.032l.893-1.476s.99.714%201.916.925%201.575.114%202.955.114l14.565-.162c1.283-.032%203.085-.762%203.02-3.293s-.373-3.503-.373-3.503l1.283-.487s.52.503.877%201.573.309%201.995.292%202.66-.227%201.541-.227%201.541%201.564-.308%202.359-1.038.823-.779%201.489-1.508.812-.86.812-.86.552-.13.877.26.341.957.065%201.46-1.672%202.206-3.247%203.066-2.76%201.427-3.929%201.768-3.848.73-7.063.714l-10.944-.114s-2.143-.081-3.02-.373-2.241-.973-2.598-1.265z%22%20fill%3D%22%23d36d49%22/%3E%3Cg%20fill%3D%22%23105a48%22%3E%3Cellipse%20cx%3D%2293.052%22%20cy%3D%2243.567%22%20rx%3D%22.869%22%20ry%3D%221.014%22%20transform%3D%22rotate%28341.022%29%22/%3E%3Cellipse%20cx%3D%22104.3%22%20cy%3D%22-16.184%22%20rx%3D%22.865%22%20ry%3D%221.009%22%20transform%3D%22rotate%2814.786%29%22/%3E%3C/g%3E%3C/svg%3E"/>
+        </a>
+</div>
+    </nav>
+    <main class="pdoc">
+            <section class="module-info">
+                    <h1 class="modulename">
+Frames<wbr>.widgets<wbr>.text_slider    </h1>
+
+                
+                        <input id="mod-text_slider-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+
+                        <label class="view-source-button" for="mod-text_slider-view-source"><span>View Source</span></label>
+
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a>
+</span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">Frames.frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">Frame</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">Frames.frame_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrameEnums</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a>    <span class="n">PLAYSETS_FOLDER</span><span class="p">,</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a>    <span class="n">Colors</span><span class="p">,</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a>    <span class="n">Fonts</span><span class="p">,</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a>    <span class="n">Fontsizes</span><span class="p">,</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a>    <span class="n">KeyAlternatives</span><span class="p">,</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a>    <span class="n">FrameDataID</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="p">)</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">graphics</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">clock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clock</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">modules</span><span class="w"> </span><span class="kn">import</span> <span class="n">Modules</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">constants</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">event_queue_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">Event</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">Frames.widgets.slider</span><span class="w"> </span><span class="kn">import</span> <span class="n">Slider</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a>
+</span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TextSlider</span><span class="p">(</span><span class="n">Slider</span><span class="p">):</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>
+</span><span id="L-25"><a href="#L-25"><span class="linenos"> 25</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos"> 26</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos"> 27</span></a>        <span class="n">text</span><span class="p">,</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos"> 28</span></a>        <span class="n">frame_dim</span><span class="p">,</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos"> 29</span></a>        <span class="n">back_text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos"> 30</span></a>        <span class="n">font</span><span class="o">=</span><span class="n">Fonts</span><span class="o">.</span><span class="n">MINECRAFT</span><span class="p">,</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos"> 31</span></a>        <span class="n">sliding_duration</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>  <span class="c1"># ms</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos"> 32</span></a>        <span class="n">select_animation_duration</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span><span class="c1">#ms</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos"> 33</span></a>        <span class="n">flip_duration</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span><span class="c1">#ms</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a>        <span class="n">images_alphas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>        <span class="n">images_span</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>        <span class="n">background_color</span><span class="o">=</span><span class="n">Colors</span><span class="o">.</span><span class="n">TRANSPARENT</span><span class="p">,</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>        <span class="n">size_decrease_scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>        <span class="n">horizontal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>        <span class="n">start_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>        <span class="n">cutoff</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos"> 41</span></a>        <span class="n">max_slides</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos"> 42</span></a>        <span class="n">line_margin_percentage</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos"> 43</span></a>        <span class="n">text_color</span><span class="o">=</span><span class="n">Colors</span><span class="o">.</span><span class="n">BLACK</span><span class="p">,</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos"> 44</span></a>        <span class="n">text_is_colored</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>        <span class="n">text_width_to_height_ratio</span><span class="o">=</span><span class="mi">7</span><span class="o">/</span><span class="mi">5</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>    <span class="p">):</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_text</span> <span class="o">=</span> <span class="p">(</span><span class="n">back_text</span> <span class="k">if</span> <span class="n">back_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">text</span><span class="p">)</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">font</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_is_colored</span> <span class="o">=</span> <span class="n">text_is_colored</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span> <span class="o">=</span> <span class="n">text_color</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_width_to_height_ratio</span> <span class="o">=</span> <span class="n">text_width_to_height_ratio</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line_margin_percentage</span> <span class="o">*</span> <span class="n">frame_dim</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>        <span class="n">Slider</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>                        <span class="bp">self</span><span class="p">,</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>                        <span class="n">frame_dim</span><span class="o">=</span><span class="n">frame_dim</span><span class="p">,</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>                        <span class="n">sliding_duration</span><span class="o">=</span><span class="n">sliding_duration</span><span class="p">,</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>                        <span class="n">select_animation_duration</span><span class="o">=</span><span class="n">select_animation_duration</span><span class="p">,</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>                        <span class="n">alphas</span><span class="o">=</span><span class="n">images_alphas</span><span class="p">,</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>                        <span class="n">span</span><span class="o">=</span><span class="n">images_span</span><span class="p">,</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos"> 63</span></a>                        <span class="n">background_color</span><span class="o">=</span><span class="n">background_color</span><span class="p">,</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos"> 64</span></a>                        <span class="n">size_decrease_scale</span><span class="o">=</span><span class="n">size_decrease_scale</span><span class="p">,</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a>                        <span class="n">horizontal</span><span class="o">=</span><span class="n">horizontal</span><span class="p">,</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a>                        <span class="n">start_index</span><span class="o">=</span><span class="n">start_index</span><span class="p">,</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>                        <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>                        <span class="n">max_slides</span><span class="o">=</span><span class="n">max_slides</span><span class="p">,</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>                        <span class="n">flip_duration</span><span class="o">=</span><span class="n">flip_duration</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>                        <span class="p">)</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>
+</span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>        <span class="n">ssize</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_width_to_height_ratio</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>
+</span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_is_colored</span><span class="p">:</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>
+</span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)):</span>
+</span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>                                                            <span class="p">)</span>
+</span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>
+</span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>
+</span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)):</span>
+</span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="L-101"><a href="#L-101"><span class="linenos">101</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="L-102"><a href="#L-102"><span class="linenos">102</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="L-103"><a href="#L-103"><span class="linenos">103</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>                                                            <span class="p">)</span>
+</span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>
+</span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>
+</span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>
+</span><span id="L-113"><a href="#L-113"><span class="linenos">113</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_back_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-114"><a href="#L-114"><span class="linenos">114</span></a>
+</span><span id="L-115"><a href="#L-115"><span class="linenos">115</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="L-116"><a href="#L-116"><span class="linenos">116</span></a>
+</span><span id="L-117"><a href="#L-117"><span class="linenos">117</span></a>        <span class="n">ssize</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_width_to_height_ratio</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+</span><span id="L-118"><a href="#L-118"><span class="linenos">118</span></a>
+</span><span id="L-119"><a href="#L-119"><span class="linenos">119</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_is_colored</span><span class="p">:</span>
+</span><span id="L-120"><a href="#L-120"><span class="linenos">120</span></a>
+</span><span id="L-121"><a href="#L-121"><span class="linenos">121</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">)):</span>
+</span><span id="L-122"><a href="#L-122"><span class="linenos">122</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="L-123"><a href="#L-123"><span class="linenos">123</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="L-124"><a href="#L-124"><span class="linenos">124</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="L-125"><a href="#L-125"><span class="linenos">125</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="L-126"><a href="#L-126"><span class="linenos">126</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="L-127"><a href="#L-127"><span class="linenos">127</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="L-128"><a href="#L-128"><span class="linenos">128</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="L-129"><a href="#L-129"><span class="linenos">129</span></a>                                                            <span class="p">)</span>
+</span><span id="L-130"><a href="#L-130"><span class="linenos">130</span></a>
+</span><span id="L-131"><a href="#L-131"><span class="linenos">131</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>
+</span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>
+</span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">)):</span>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>                                                            <span class="p">)</span>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>
+</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span></pre></div>
+
+
+            </section>
+                <section id="TextSlider">
+                            <input id="TextSlider-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">TextSlider</span><wbr>(<span class="base"><a href="slider.html#Slider">Frames.widgets.slider.Slider</a></span>):
+
+                <label class="view-source-button" for="TextSlider-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#TextSlider"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TextSlider-24"><a href="#TextSlider-24"><span class="linenos"> 24</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TextSlider</span><span class="p">(</span><span class="n">Slider</span><span class="p">):</span>
+</span><span id="TextSlider-25"><a href="#TextSlider-25"><span class="linenos"> 25</span></a>
+</span><span id="TextSlider-26"><a href="#TextSlider-26"><span class="linenos"> 26</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="TextSlider-27"><a href="#TextSlider-27"><span class="linenos"> 27</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="TextSlider-28"><a href="#TextSlider-28"><span class="linenos"> 28</span></a>        <span class="n">text</span><span class="p">,</span>
+</span><span id="TextSlider-29"><a href="#TextSlider-29"><span class="linenos"> 29</span></a>        <span class="n">frame_dim</span><span class="p">,</span>
+</span><span id="TextSlider-30"><a href="#TextSlider-30"><span class="linenos"> 30</span></a>        <span class="n">back_text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="TextSlider-31"><a href="#TextSlider-31"><span class="linenos"> 31</span></a>        <span class="n">font</span><span class="o">=</span><span class="n">Fonts</span><span class="o">.</span><span class="n">MINECRAFT</span><span class="p">,</span>
+</span><span id="TextSlider-32"><a href="#TextSlider-32"><span class="linenos"> 32</span></a>        <span class="n">sliding_duration</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>  <span class="c1"># ms</span>
+</span><span id="TextSlider-33"><a href="#TextSlider-33"><span class="linenos"> 33</span></a>        <span class="n">select_animation_duration</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span><span class="c1">#ms</span>
+</span><span id="TextSlider-34"><a href="#TextSlider-34"><span class="linenos"> 34</span></a>        <span class="n">flip_duration</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span><span class="c1">#ms</span>
+</span><span id="TextSlider-35"><a href="#TextSlider-35"><span class="linenos"> 35</span></a>        <span class="n">images_alphas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="TextSlider-36"><a href="#TextSlider-36"><span class="linenos"> 36</span></a>        <span class="n">images_span</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="TextSlider-37"><a href="#TextSlider-37"><span class="linenos"> 37</span></a>        <span class="n">background_color</span><span class="o">=</span><span class="n">Colors</span><span class="o">.</span><span class="n">TRANSPARENT</span><span class="p">,</span>
+</span><span id="TextSlider-38"><a href="#TextSlider-38"><span class="linenos"> 38</span></a>        <span class="n">size_decrease_scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+</span><span id="TextSlider-39"><a href="#TextSlider-39"><span class="linenos"> 39</span></a>        <span class="n">horizontal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider-40"><a href="#TextSlider-40"><span class="linenos"> 40</span></a>        <span class="n">start_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span id="TextSlider-41"><a href="#TextSlider-41"><span class="linenos"> 41</span></a>        <span class="n">cutoff</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="TextSlider-42"><a href="#TextSlider-42"><span class="linenos"> 42</span></a>        <span class="n">max_slides</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+</span><span id="TextSlider-43"><a href="#TextSlider-43"><span class="linenos"> 43</span></a>        <span class="n">line_margin_percentage</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+</span><span id="TextSlider-44"><a href="#TextSlider-44"><span class="linenos"> 44</span></a>        <span class="n">text_color</span><span class="o">=</span><span class="n">Colors</span><span class="o">.</span><span class="n">BLACK</span><span class="p">,</span>
+</span><span id="TextSlider-45"><a href="#TextSlider-45"><span class="linenos"> 45</span></a>        <span class="n">text_is_colored</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="TextSlider-46"><a href="#TextSlider-46"><span class="linenos"> 46</span></a>        <span class="n">text_width_to_height_ratio</span><span class="o">=</span><span class="mi">7</span><span class="o">/</span><span class="mi">5</span>
+</span><span id="TextSlider-47"><a href="#TextSlider-47"><span class="linenos"> 47</span></a>    <span class="p">):</span>
+</span><span id="TextSlider-48"><a href="#TextSlider-48"><span class="linenos"> 48</span></a>
+</span><span id="TextSlider-49"><a href="#TextSlider-49"><span class="linenos"> 49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+</span><span id="TextSlider-50"><a href="#TextSlider-50"><span class="linenos"> 50</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_text</span> <span class="o">=</span> <span class="p">(</span><span class="n">back_text</span> <span class="k">if</span> <span class="n">back_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">text</span><span class="p">)</span>
+</span><span id="TextSlider-51"><a href="#TextSlider-51"><span class="linenos"> 51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">font</span>
+</span><span id="TextSlider-52"><a href="#TextSlider-52"><span class="linenos"> 52</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_is_colored</span> <span class="o">=</span> <span class="n">text_is_colored</span>
+</span><span id="TextSlider-53"><a href="#TextSlider-53"><span class="linenos"> 53</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span> <span class="o">=</span> <span class="n">text_color</span>
+</span><span id="TextSlider-54"><a href="#TextSlider-54"><span class="linenos"> 54</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_width_to_height_ratio</span> <span class="o">=</span> <span class="n">text_width_to_height_ratio</span>
+</span><span id="TextSlider-55"><a href="#TextSlider-55"><span class="linenos"> 55</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line_margin_percentage</span> <span class="o">*</span> <span class="n">frame_dim</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+</span><span id="TextSlider-56"><a href="#TextSlider-56"><span class="linenos"> 56</span></a>
+</span><span id="TextSlider-57"><a href="#TextSlider-57"><span class="linenos"> 57</span></a>        <span class="n">Slider</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="TextSlider-58"><a href="#TextSlider-58"><span class="linenos"> 58</span></a>                        <span class="bp">self</span><span class="p">,</span>
+</span><span id="TextSlider-59"><a href="#TextSlider-59"><span class="linenos"> 59</span></a>                        <span class="n">frame_dim</span><span class="o">=</span><span class="n">frame_dim</span><span class="p">,</span>
+</span><span id="TextSlider-60"><a href="#TextSlider-60"><span class="linenos"> 60</span></a>                        <span class="n">sliding_duration</span><span class="o">=</span><span class="n">sliding_duration</span><span class="p">,</span>
+</span><span id="TextSlider-61"><a href="#TextSlider-61"><span class="linenos"> 61</span></a>                        <span class="n">select_animation_duration</span><span class="o">=</span><span class="n">select_animation_duration</span><span class="p">,</span>
+</span><span id="TextSlider-62"><a href="#TextSlider-62"><span class="linenos"> 62</span></a>                        <span class="n">alphas</span><span class="o">=</span><span class="n">images_alphas</span><span class="p">,</span>
+</span><span id="TextSlider-63"><a href="#TextSlider-63"><span class="linenos"> 63</span></a>                        <span class="n">span</span><span class="o">=</span><span class="n">images_span</span><span class="p">,</span>
+</span><span id="TextSlider-64"><a href="#TextSlider-64"><span class="linenos"> 64</span></a>                        <span class="n">background_color</span><span class="o">=</span><span class="n">background_color</span><span class="p">,</span>
+</span><span id="TextSlider-65"><a href="#TextSlider-65"><span class="linenos"> 65</span></a>                        <span class="n">size_decrease_scale</span><span class="o">=</span><span class="n">size_decrease_scale</span><span class="p">,</span>
+</span><span id="TextSlider-66"><a href="#TextSlider-66"><span class="linenos"> 66</span></a>                        <span class="n">horizontal</span><span class="o">=</span><span class="n">horizontal</span><span class="p">,</span>
+</span><span id="TextSlider-67"><a href="#TextSlider-67"><span class="linenos"> 67</span></a>                        <span class="n">start_index</span><span class="o">=</span><span class="n">start_index</span><span class="p">,</span>
+</span><span id="TextSlider-68"><a href="#TextSlider-68"><span class="linenos"> 68</span></a>                        <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span>
+</span><span id="TextSlider-69"><a href="#TextSlider-69"><span class="linenos"> 69</span></a>                        <span class="n">max_slides</span><span class="o">=</span><span class="n">max_slides</span><span class="p">,</span>
+</span><span id="TextSlider-70"><a href="#TextSlider-70"><span class="linenos"> 70</span></a>                        <span class="n">flip_duration</span><span class="o">=</span><span class="n">flip_duration</span>
+</span><span id="TextSlider-71"><a href="#TextSlider-71"><span class="linenos"> 71</span></a>                        <span class="p">)</span>
+</span><span id="TextSlider-72"><a href="#TextSlider-72"><span class="linenos"> 72</span></a>
+</span><span id="TextSlider-73"><a href="#TextSlider-73"><span class="linenos"> 73</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="TextSlider-74"><a href="#TextSlider-74"><span class="linenos"> 74</span></a>
+</span><span id="TextSlider-75"><a href="#TextSlider-75"><span class="linenos"> 75</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="TextSlider-76"><a href="#TextSlider-76"><span class="linenos"> 76</span></a>
+</span><span id="TextSlider-77"><a href="#TextSlider-77"><span class="linenos"> 77</span></a>        <span class="n">ssize</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_width_to_height_ratio</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+</span><span id="TextSlider-78"><a href="#TextSlider-78"><span class="linenos"> 78</span></a>
+</span><span id="TextSlider-79"><a href="#TextSlider-79"><span class="linenos"> 79</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_is_colored</span><span class="p">:</span>
+</span><span id="TextSlider-80"><a href="#TextSlider-80"><span class="linenos"> 80</span></a>
+</span><span id="TextSlider-81"><a href="#TextSlider-81"><span class="linenos"> 81</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)):</span>
+</span><span id="TextSlider-82"><a href="#TextSlider-82"><span class="linenos"> 82</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="TextSlider-83"><a href="#TextSlider-83"><span class="linenos"> 83</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="TextSlider-84"><a href="#TextSlider-84"><span class="linenos"> 84</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="TextSlider-85"><a href="#TextSlider-85"><span class="linenos"> 85</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="TextSlider-86"><a href="#TextSlider-86"><span class="linenos"> 86</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider-87"><a href="#TextSlider-87"><span class="linenos"> 87</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider-88"><a href="#TextSlider-88"><span class="linenos"> 88</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="TextSlider-89"><a href="#TextSlider-89"><span class="linenos"> 89</span></a>                                                            <span class="p">)</span>
+</span><span id="TextSlider-90"><a href="#TextSlider-90"><span class="linenos"> 90</span></a>
+</span><span id="TextSlider-91"><a href="#TextSlider-91"><span class="linenos"> 91</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="TextSlider-92"><a href="#TextSlider-92"><span class="linenos"> 92</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="TextSlider-93"><a href="#TextSlider-93"><span class="linenos"> 93</span></a>
+</span><span id="TextSlider-94"><a href="#TextSlider-94"><span class="linenos"> 94</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span><span id="TextSlider-95"><a href="#TextSlider-95"><span class="linenos"> 95</span></a>
+</span><span id="TextSlider-96"><a href="#TextSlider-96"><span class="linenos"> 96</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="TextSlider-97"><a href="#TextSlider-97"><span class="linenos"> 97</span></a>
+</span><span id="TextSlider-98"><a href="#TextSlider-98"><span class="linenos"> 98</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)):</span>
+</span><span id="TextSlider-99"><a href="#TextSlider-99"><span class="linenos"> 99</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="TextSlider-100"><a href="#TextSlider-100"><span class="linenos">100</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="TextSlider-101"><a href="#TextSlider-101"><span class="linenos">101</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="TextSlider-102"><a href="#TextSlider-102"><span class="linenos">102</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="TextSlider-103"><a href="#TextSlider-103"><span class="linenos">103</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider-104"><a href="#TextSlider-104"><span class="linenos">104</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider-105"><a href="#TextSlider-105"><span class="linenos">105</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="TextSlider-106"><a href="#TextSlider-106"><span class="linenos">106</span></a>                                                            <span class="p">)</span>
+</span><span id="TextSlider-107"><a href="#TextSlider-107"><span class="linenos">107</span></a>
+</span><span id="TextSlider-108"><a href="#TextSlider-108"><span class="linenos">108</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="TextSlider-109"><a href="#TextSlider-109"><span class="linenos">109</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="TextSlider-110"><a href="#TextSlider-110"><span class="linenos">110</span></a>
+</span><span id="TextSlider-111"><a href="#TextSlider-111"><span class="linenos">111</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span><span id="TextSlider-112"><a href="#TextSlider-112"><span class="linenos">112</span></a>
+</span><span id="TextSlider-113"><a href="#TextSlider-113"><span class="linenos">113</span></a>
+</span><span id="TextSlider-114"><a href="#TextSlider-114"><span class="linenos">114</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_back_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="TextSlider-115"><a href="#TextSlider-115"><span class="linenos">115</span></a>
+</span><span id="TextSlider-116"><a href="#TextSlider-116"><span class="linenos">116</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="TextSlider-117"><a href="#TextSlider-117"><span class="linenos">117</span></a>
+</span><span id="TextSlider-118"><a href="#TextSlider-118"><span class="linenos">118</span></a>        <span class="n">ssize</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_width_to_height_ratio</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+</span><span id="TextSlider-119"><a href="#TextSlider-119"><span class="linenos">119</span></a>
+</span><span id="TextSlider-120"><a href="#TextSlider-120"><span class="linenos">120</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_is_colored</span><span class="p">:</span>
+</span><span id="TextSlider-121"><a href="#TextSlider-121"><span class="linenos">121</span></a>
+</span><span id="TextSlider-122"><a href="#TextSlider-122"><span class="linenos">122</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">)):</span>
+</span><span id="TextSlider-123"><a href="#TextSlider-123"><span class="linenos">123</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="TextSlider-124"><a href="#TextSlider-124"><span class="linenos">124</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="TextSlider-125"><a href="#TextSlider-125"><span class="linenos">125</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="TextSlider-126"><a href="#TextSlider-126"><span class="linenos">126</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="TextSlider-127"><a href="#TextSlider-127"><span class="linenos">127</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider-128"><a href="#TextSlider-128"><span class="linenos">128</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider-129"><a href="#TextSlider-129"><span class="linenos">129</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="TextSlider-130"><a href="#TextSlider-130"><span class="linenos">130</span></a>                                                            <span class="p">)</span>
+</span><span id="TextSlider-131"><a href="#TextSlider-131"><span class="linenos">131</span></a>
+</span><span id="TextSlider-132"><a href="#TextSlider-132"><span class="linenos">132</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="TextSlider-133"><a href="#TextSlider-133"><span class="linenos">133</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="TextSlider-134"><a href="#TextSlider-134"><span class="linenos">134</span></a>
+</span><span id="TextSlider-135"><a href="#TextSlider-135"><span class="linenos">135</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span><span id="TextSlider-136"><a href="#TextSlider-136"><span class="linenos">136</span></a>
+</span><span id="TextSlider-137"><a href="#TextSlider-137"><span class="linenos">137</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="TextSlider-138"><a href="#TextSlider-138"><span class="linenos">138</span></a>
+</span><span id="TextSlider-139"><a href="#TextSlider-139"><span class="linenos">139</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">)):</span>
+</span><span id="TextSlider-140"><a href="#TextSlider-140"><span class="linenos">140</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="TextSlider-141"><a href="#TextSlider-141"><span class="linenos">141</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="TextSlider-142"><a href="#TextSlider-142"><span class="linenos">142</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="TextSlider-143"><a href="#TextSlider-143"><span class="linenos">143</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="TextSlider-144"><a href="#TextSlider-144"><span class="linenos">144</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider-145"><a href="#TextSlider-145"><span class="linenos">145</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider-146"><a href="#TextSlider-146"><span class="linenos">146</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="TextSlider-147"><a href="#TextSlider-147"><span class="linenos">147</span></a>                                                            <span class="p">)</span>
+</span><span id="TextSlider-148"><a href="#TextSlider-148"><span class="linenos">148</span></a>
+</span><span id="TextSlider-149"><a href="#TextSlider-149"><span class="linenos">149</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="TextSlider-150"><a href="#TextSlider-150"><span class="linenos">150</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="TextSlider-151"><a href="#TextSlider-151"><span class="linenos">151</span></a>
+</span><span id="TextSlider-152"><a href="#TextSlider-152"><span class="linenos">152</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
+inheritance.</p>
+</div>
+
+
+                            <div id="TextSlider.__init__" class="classattr">
+                                        <input id="TextSlider.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="name">TextSlider</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">text</span>,</span><span class="param">	<span class="n">frame_dim</span>,</span><span class="param">	<span class="n">back_text</span><span class="o">=</span><span class="kc">None</span>,</span><span class="param">	<span class="n">font</span><span class="o">=</span><span class="s1">'BaseAssets</span><span class="se">\\</span><span class="s1">Fonts</span><span class="se">\\</span><span class="s1">Minecraft.ttf'</span>,</span><span class="param">	<span class="n">sliding_duration</span><span class="o">=</span><span class="mi">500</span>,</span><span class="param">	<span class="n">select_animation_duration</span><span class="o">=</span><span class="mi">800</span>,</span><span class="param">	<span class="n">flip_duration</span><span class="o">=</span><span class="mi">400</span>,</span><span class="param">	<span class="n">images_alphas</span><span class="o">=</span><span class="kc">None</span>,</span><span class="param">	<span class="n">images_span</span><span class="o">=</span><span class="mi">1</span>,</span><span class="param">	<span class="n">background_color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>,</span><span class="param">	<span class="n">size_decrease_scale</span><span class="o">=</span><span class="mf">0.5</span>,</span><span class="param">	<span class="n">horizontal</span><span class="o">=</span><span class="kc">True</span>,</span><span class="param">	<span class="n">start_index</span><span class="o">=</span><span class="mi">0</span>,</span><span class="param">	<span class="n">cutoff</span><span class="o">=</span><span class="kc">False</span>,</span><span class="param">	<span class="n">max_slides</span><span class="o">=</span><span class="mi">10</span>,</span><span class="param">	<span class="n">line_margin_percentage</span><span class="o">=</span><span class="mf">0.05</span>,</span><span class="param">	<span class="n">text_color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>,</span><span class="param">	<span class="n">text_is_colored</span><span class="o">=</span><span class="kc">False</span>,</span><span class="param">	<span class="n">text_width_to_height_ratio</span><span class="o">=</span><span class="mf">1.4</span></span>)</span>
+
+                <label class="view-source-button" for="TextSlider.__init__-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#TextSlider.__init__"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TextSlider.__init__-26"><a href="#TextSlider.__init__-26"><span class="linenos">26</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="TextSlider.__init__-27"><a href="#TextSlider.__init__-27"><span class="linenos">27</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-28"><a href="#TextSlider.__init__-28"><span class="linenos">28</span></a>        <span class="n">text</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-29"><a href="#TextSlider.__init__-29"><span class="linenos">29</span></a>        <span class="n">frame_dim</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-30"><a href="#TextSlider.__init__-30"><span class="linenos">30</span></a>        <span class="n">back_text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-31"><a href="#TextSlider.__init__-31"><span class="linenos">31</span></a>        <span class="n">font</span><span class="o">=</span><span class="n">Fonts</span><span class="o">.</span><span class="n">MINECRAFT</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-32"><a href="#TextSlider.__init__-32"><span class="linenos">32</span></a>        <span class="n">sliding_duration</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>  <span class="c1"># ms</span>
+</span><span id="TextSlider.__init__-33"><a href="#TextSlider.__init__-33"><span class="linenos">33</span></a>        <span class="n">select_animation_duration</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span><span class="c1">#ms</span>
+</span><span id="TextSlider.__init__-34"><a href="#TextSlider.__init__-34"><span class="linenos">34</span></a>        <span class="n">flip_duration</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span><span class="c1">#ms</span>
+</span><span id="TextSlider.__init__-35"><a href="#TextSlider.__init__-35"><span class="linenos">35</span></a>        <span class="n">images_alphas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-36"><a href="#TextSlider.__init__-36"><span class="linenos">36</span></a>        <span class="n">images_span</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-37"><a href="#TextSlider.__init__-37"><span class="linenos">37</span></a>        <span class="n">background_color</span><span class="o">=</span><span class="n">Colors</span><span class="o">.</span><span class="n">TRANSPARENT</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-38"><a href="#TextSlider.__init__-38"><span class="linenos">38</span></a>        <span class="n">size_decrease_scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-39"><a href="#TextSlider.__init__-39"><span class="linenos">39</span></a>        <span class="n">horizontal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-40"><a href="#TextSlider.__init__-40"><span class="linenos">40</span></a>        <span class="n">start_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-41"><a href="#TextSlider.__init__-41"><span class="linenos">41</span></a>        <span class="n">cutoff</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-42"><a href="#TextSlider.__init__-42"><span class="linenos">42</span></a>        <span class="n">max_slides</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-43"><a href="#TextSlider.__init__-43"><span class="linenos">43</span></a>        <span class="n">line_margin_percentage</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-44"><a href="#TextSlider.__init__-44"><span class="linenos">44</span></a>        <span class="n">text_color</span><span class="o">=</span><span class="n">Colors</span><span class="o">.</span><span class="n">BLACK</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-45"><a href="#TextSlider.__init__-45"><span class="linenos">45</span></a>        <span class="n">text_is_colored</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-46"><a href="#TextSlider.__init__-46"><span class="linenos">46</span></a>        <span class="n">text_width_to_height_ratio</span><span class="o">=</span><span class="mi">7</span><span class="o">/</span><span class="mi">5</span>
+</span><span id="TextSlider.__init__-47"><a href="#TextSlider.__init__-47"><span class="linenos">47</span></a>    <span class="p">):</span>
+</span><span id="TextSlider.__init__-48"><a href="#TextSlider.__init__-48"><span class="linenos">48</span></a>
+</span><span id="TextSlider.__init__-49"><a href="#TextSlider.__init__-49"><span class="linenos">49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+</span><span id="TextSlider.__init__-50"><a href="#TextSlider.__init__-50"><span class="linenos">50</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_text</span> <span class="o">=</span> <span class="p">(</span><span class="n">back_text</span> <span class="k">if</span> <span class="n">back_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">text</span><span class="p">)</span>
+</span><span id="TextSlider.__init__-51"><a href="#TextSlider.__init__-51"><span class="linenos">51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">font</span>
+</span><span id="TextSlider.__init__-52"><a href="#TextSlider.__init__-52"><span class="linenos">52</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_is_colored</span> <span class="o">=</span> <span class="n">text_is_colored</span>
+</span><span id="TextSlider.__init__-53"><a href="#TextSlider.__init__-53"><span class="linenos">53</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span> <span class="o">=</span> <span class="n">text_color</span>
+</span><span id="TextSlider.__init__-54"><a href="#TextSlider.__init__-54"><span class="linenos">54</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_width_to_height_ratio</span> <span class="o">=</span> <span class="n">text_width_to_height_ratio</span>
+</span><span id="TextSlider.__init__-55"><a href="#TextSlider.__init__-55"><span class="linenos">55</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line_margin_percentage</span> <span class="o">*</span> <span class="n">frame_dim</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+</span><span id="TextSlider.__init__-56"><a href="#TextSlider.__init__-56"><span class="linenos">56</span></a>
+</span><span id="TextSlider.__init__-57"><a href="#TextSlider.__init__-57"><span class="linenos">57</span></a>        <span class="n">Slider</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="TextSlider.__init__-58"><a href="#TextSlider.__init__-58"><span class="linenos">58</span></a>                        <span class="bp">self</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-59"><a href="#TextSlider.__init__-59"><span class="linenos">59</span></a>                        <span class="n">frame_dim</span><span class="o">=</span><span class="n">frame_dim</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-60"><a href="#TextSlider.__init__-60"><span class="linenos">60</span></a>                        <span class="n">sliding_duration</span><span class="o">=</span><span class="n">sliding_duration</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-61"><a href="#TextSlider.__init__-61"><span class="linenos">61</span></a>                        <span class="n">select_animation_duration</span><span class="o">=</span><span class="n">select_animation_duration</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-62"><a href="#TextSlider.__init__-62"><span class="linenos">62</span></a>                        <span class="n">alphas</span><span class="o">=</span><span class="n">images_alphas</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-63"><a href="#TextSlider.__init__-63"><span class="linenos">63</span></a>                        <span class="n">span</span><span class="o">=</span><span class="n">images_span</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-64"><a href="#TextSlider.__init__-64"><span class="linenos">64</span></a>                        <span class="n">background_color</span><span class="o">=</span><span class="n">background_color</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-65"><a href="#TextSlider.__init__-65"><span class="linenos">65</span></a>                        <span class="n">size_decrease_scale</span><span class="o">=</span><span class="n">size_decrease_scale</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-66"><a href="#TextSlider.__init__-66"><span class="linenos">66</span></a>                        <span class="n">horizontal</span><span class="o">=</span><span class="n">horizontal</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-67"><a href="#TextSlider.__init__-67"><span class="linenos">67</span></a>                        <span class="n">start_index</span><span class="o">=</span><span class="n">start_index</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-68"><a href="#TextSlider.__init__-68"><span class="linenos">68</span></a>                        <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-69"><a href="#TextSlider.__init__-69"><span class="linenos">69</span></a>                        <span class="n">max_slides</span><span class="o">=</span><span class="n">max_slides</span><span class="p">,</span>
+</span><span id="TextSlider.__init__-70"><a href="#TextSlider.__init__-70"><span class="linenos">70</span></a>                        <span class="n">flip_duration</span><span class="o">=</span><span class="n">flip_duration</span>
+</span><span id="TextSlider.__init__-71"><a href="#TextSlider.__init__-71"><span class="linenos">71</span></a>                        <span class="p">)</span>
+</span></pre></div>
+
+
+    
+
+                            </div>
+                            <div id="TextSlider.text" class="classattr">
+                                <div class="attr variable">
+            <span class="name">text</span>
+
+        
+    </div>
+    <a class="headerlink" href="#TextSlider.text"></a>
+    
+    
+
+                            </div>
+                            <div id="TextSlider.back_text" class="classattr">
+                                <div class="attr variable">
+            <span class="name">back_text</span>
+
+        
+    </div>
+    <a class="headerlink" href="#TextSlider.back_text"></a>
+    
+    
+
+                            </div>
+                            <div id="TextSlider.font" class="classattr">
+                                <div class="attr variable">
+            <span class="name">font</span>
+
+        
+    </div>
+    <a class="headerlink" href="#TextSlider.font"></a>
+    
+    
+
+                            </div>
+                            <div id="TextSlider.text_is_colored" class="classattr">
+                                <div class="attr variable">
+            <span class="name">text_is_colored</span>
+
+        
+    </div>
+    <a class="headerlink" href="#TextSlider.text_is_colored"></a>
+    
+    
+
+                            </div>
+                            <div id="TextSlider.text_color" class="classattr">
+                                <div class="attr variable">
+            <span class="name">text_color</span>
+
+        
+    </div>
+    <a class="headerlink" href="#TextSlider.text_color"></a>
+    
+    
+
+                            </div>
+                            <div id="TextSlider.text_width_to_height_ratio" class="classattr">
+                                <div class="attr variable">
+            <span class="name">text_width_to_height_ratio</span>
+
+        
+    </div>
+    <a class="headerlink" href="#TextSlider.text_width_to_height_ratio"></a>
+    
+    
+
+                            </div>
+                            <div id="TextSlider.line_margin_width" class="classattr">
+                                <div class="attr variable">
+            <span class="name">line_margin_width</span>
+
+        
+    </div>
+    <a class="headerlink" href="#TextSlider.line_margin_width"></a>
+    
+    
+
+                            </div>
+                            <div id="TextSlider.create_surfaces" class="classattr">
+                                        <input id="TextSlider.create_surfaces-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">create_surfaces</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="TextSlider.create_surfaces-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#TextSlider.create_surfaces"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TextSlider.create_surfaces-73"><a href="#TextSlider.create_surfaces-73"><span class="linenos"> 73</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="TextSlider.create_surfaces-74"><a href="#TextSlider.create_surfaces-74"><span class="linenos"> 74</span></a>
+</span><span id="TextSlider.create_surfaces-75"><a href="#TextSlider.create_surfaces-75"><span class="linenos"> 75</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="TextSlider.create_surfaces-76"><a href="#TextSlider.create_surfaces-76"><span class="linenos"> 76</span></a>
+</span><span id="TextSlider.create_surfaces-77"><a href="#TextSlider.create_surfaces-77"><span class="linenos"> 77</span></a>        <span class="n">ssize</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_width_to_height_ratio</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+</span><span id="TextSlider.create_surfaces-78"><a href="#TextSlider.create_surfaces-78"><span class="linenos"> 78</span></a>
+</span><span id="TextSlider.create_surfaces-79"><a href="#TextSlider.create_surfaces-79"><span class="linenos"> 79</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_is_colored</span><span class="p">:</span>
+</span><span id="TextSlider.create_surfaces-80"><a href="#TextSlider.create_surfaces-80"><span class="linenos"> 80</span></a>
+</span><span id="TextSlider.create_surfaces-81"><a href="#TextSlider.create_surfaces-81"><span class="linenos"> 81</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)):</span>
+</span><span id="TextSlider.create_surfaces-82"><a href="#TextSlider.create_surfaces-82"><span class="linenos"> 82</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="TextSlider.create_surfaces-83"><a href="#TextSlider.create_surfaces-83"><span class="linenos"> 83</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="TextSlider.create_surfaces-84"><a href="#TextSlider.create_surfaces-84"><span class="linenos"> 84</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="TextSlider.create_surfaces-85"><a href="#TextSlider.create_surfaces-85"><span class="linenos"> 85</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="TextSlider.create_surfaces-86"><a href="#TextSlider.create_surfaces-86"><span class="linenos"> 86</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider.create_surfaces-87"><a href="#TextSlider.create_surfaces-87"><span class="linenos"> 87</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider.create_surfaces-88"><a href="#TextSlider.create_surfaces-88"><span class="linenos"> 88</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="TextSlider.create_surfaces-89"><a href="#TextSlider.create_surfaces-89"><span class="linenos"> 89</span></a>                                                            <span class="p">)</span>
+</span><span id="TextSlider.create_surfaces-90"><a href="#TextSlider.create_surfaces-90"><span class="linenos"> 90</span></a>
+</span><span id="TextSlider.create_surfaces-91"><a href="#TextSlider.create_surfaces-91"><span class="linenos"> 91</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="TextSlider.create_surfaces-92"><a href="#TextSlider.create_surfaces-92"><span class="linenos"> 92</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="TextSlider.create_surfaces-93"><a href="#TextSlider.create_surfaces-93"><span class="linenos"> 93</span></a>
+</span><span id="TextSlider.create_surfaces-94"><a href="#TextSlider.create_surfaces-94"><span class="linenos"> 94</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span><span id="TextSlider.create_surfaces-95"><a href="#TextSlider.create_surfaces-95"><span class="linenos"> 95</span></a>
+</span><span id="TextSlider.create_surfaces-96"><a href="#TextSlider.create_surfaces-96"><span class="linenos"> 96</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="TextSlider.create_surfaces-97"><a href="#TextSlider.create_surfaces-97"><span class="linenos"> 97</span></a>
+</span><span id="TextSlider.create_surfaces-98"><a href="#TextSlider.create_surfaces-98"><span class="linenos"> 98</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)):</span>
+</span><span id="TextSlider.create_surfaces-99"><a href="#TextSlider.create_surfaces-99"><span class="linenos"> 99</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="TextSlider.create_surfaces-100"><a href="#TextSlider.create_surfaces-100"><span class="linenos">100</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="TextSlider.create_surfaces-101"><a href="#TextSlider.create_surfaces-101"><span class="linenos">101</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="TextSlider.create_surfaces-102"><a href="#TextSlider.create_surfaces-102"><span class="linenos">102</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="TextSlider.create_surfaces-103"><a href="#TextSlider.create_surfaces-103"><span class="linenos">103</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider.create_surfaces-104"><a href="#TextSlider.create_surfaces-104"><span class="linenos">104</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider.create_surfaces-105"><a href="#TextSlider.create_surfaces-105"><span class="linenos">105</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="TextSlider.create_surfaces-106"><a href="#TextSlider.create_surfaces-106"><span class="linenos">106</span></a>                                                            <span class="p">)</span>
+</span><span id="TextSlider.create_surfaces-107"><a href="#TextSlider.create_surfaces-107"><span class="linenos">107</span></a>
+</span><span id="TextSlider.create_surfaces-108"><a href="#TextSlider.create_surfaces-108"><span class="linenos">108</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="TextSlider.create_surfaces-109"><a href="#TextSlider.create_surfaces-109"><span class="linenos">109</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="TextSlider.create_surfaces-110"><a href="#TextSlider.create_surfaces-110"><span class="linenos">110</span></a>
+</span><span id="TextSlider.create_surfaces-111"><a href="#TextSlider.create_surfaces-111"><span class="linenos">111</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span></pre></div>
+
+
+    
+
+                            </div>
+                            <div id="TextSlider.create_back_surfaces" class="classattr">
+                                        <input id="TextSlider.create_back_surfaces-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">create_back_surfaces</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="TextSlider.create_back_surfaces-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#TextSlider.create_back_surfaces"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TextSlider.create_back_surfaces-114"><a href="#TextSlider.create_back_surfaces-114"><span class="linenos">114</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_back_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="TextSlider.create_back_surfaces-115"><a href="#TextSlider.create_back_surfaces-115"><span class="linenos">115</span></a>
+</span><span id="TextSlider.create_back_surfaces-116"><a href="#TextSlider.create_back_surfaces-116"><span class="linenos">116</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="TextSlider.create_back_surfaces-117"><a href="#TextSlider.create_back_surfaces-117"><span class="linenos">117</span></a>
+</span><span id="TextSlider.create_back_surfaces-118"><a href="#TextSlider.create_back_surfaces-118"><span class="linenos">118</span></a>        <span class="n">ssize</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_width_to_height_ratio</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span>
+</span><span id="TextSlider.create_back_surfaces-119"><a href="#TextSlider.create_back_surfaces-119"><span class="linenos">119</span></a>
+</span><span id="TextSlider.create_back_surfaces-120"><a href="#TextSlider.create_back_surfaces-120"><span class="linenos">120</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_is_colored</span><span class="p">:</span>
+</span><span id="TextSlider.create_back_surfaces-121"><a href="#TextSlider.create_back_surfaces-121"><span class="linenos">121</span></a>
+</span><span id="TextSlider.create_back_surfaces-122"><a href="#TextSlider.create_back_surfaces-122"><span class="linenos">122</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">)):</span>
+</span><span id="TextSlider.create_back_surfaces-123"><a href="#TextSlider.create_back_surfaces-123"><span class="linenos">123</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="TextSlider.create_back_surfaces-124"><a href="#TextSlider.create_back_surfaces-124"><span class="linenos">124</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars_color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="TextSlider.create_back_surfaces-125"><a href="#TextSlider.create_back_surfaces-125"><span class="linenos">125</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="TextSlider.create_back_surfaces-126"><a href="#TextSlider.create_back_surfaces-126"><span class="linenos">126</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="TextSlider.create_back_surfaces-127"><a href="#TextSlider.create_back_surfaces-127"><span class="linenos">127</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider.create_back_surfaces-128"><a href="#TextSlider.create_back_surfaces-128"><span class="linenos">128</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider.create_back_surfaces-129"><a href="#TextSlider.create_back_surfaces-129"><span class="linenos">129</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="TextSlider.create_back_surfaces-130"><a href="#TextSlider.create_back_surfaces-130"><span class="linenos">130</span></a>                                                            <span class="p">)</span>
+</span><span id="TextSlider.create_back_surfaces-131"><a href="#TextSlider.create_back_surfaces-131"><span class="linenos">131</span></a>
+</span><span id="TextSlider.create_back_surfaces-132"><a href="#TextSlider.create_back_surfaces-132"><span class="linenos">132</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="TextSlider.create_back_surfaces-133"><a href="#TextSlider.create_back_surfaces-133"><span class="linenos">133</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="TextSlider.create_back_surfaces-134"><a href="#TextSlider.create_back_surfaces-134"><span class="linenos">134</span></a>
+</span><span id="TextSlider.create_back_surfaces-135"><a href="#TextSlider.create_back_surfaces-135"><span class="linenos">135</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span><span id="TextSlider.create_back_surfaces-136"><a href="#TextSlider.create_back_surfaces-136"><span class="linenos">136</span></a>
+</span><span id="TextSlider.create_back_surfaces-137"><a href="#TextSlider.create_back_surfaces-137"><span class="linenos">137</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="TextSlider.create_back_surfaces-138"><a href="#TextSlider.create_back_surfaces-138"><span class="linenos">138</span></a>
+</span><span id="TextSlider.create_back_surfaces-139"><a href="#TextSlider.create_back_surfaces-139"><span class="linenos">139</span></a>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">)):</span>
+</span><span id="TextSlider.create_back_surfaces-140"><a href="#TextSlider.create_back_surfaces-140"><span class="linenos">140</span></a>                <span class="n">surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">ssize</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+</span><span id="TextSlider.create_back_surfaces-141"><a href="#TextSlider.create_back_surfaces-141"><span class="linenos">141</span></a>                <span class="n">txt</span> <span class="o">=</span> <span class="n">graphics</span><span class="o">.</span><span class="n">render_page_from_chars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">back_text</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span id="TextSlider.create_back_surfaces-142"><a href="#TextSlider.create_back_surfaces-142"><span class="linenos">142</span></a>                                                            <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">ssize</span><span class="p">),</span>
+</span><span id="TextSlider.create_back_surfaces-143"><a href="#TextSlider.create_back_surfaces-143"><span class="linenos">143</span></a>                                                            <span class="n">text_color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+</span><span id="TextSlider.create_back_surfaces-144"><a href="#TextSlider.create_back_surfaces-144"><span class="linenos">144</span></a>                                                            <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider.create_back_surfaces-145"><a href="#TextSlider.create_back_surfaces-145"><span class="linenos">145</span></a>                                                            <span class="n">vertical_centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="TextSlider.create_back_surfaces-146"><a href="#TextSlider.create_back_surfaces-146"><span class="linenos">146</span></a>                                                            <span class="n">line_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">line_margin_width</span>
+</span><span id="TextSlider.create_back_surfaces-147"><a href="#TextSlider.create_back_surfaces-147"><span class="linenos">147</span></a>                                                            <span class="p">)</span>
+</span><span id="TextSlider.create_back_surfaces-148"><a href="#TextSlider.create_back_surfaces-148"><span class="linenos">148</span></a>
+</span><span id="TextSlider.create_back_surfaces-149"><a href="#TextSlider.create_back_surfaces-149"><span class="linenos">149</span></a>                <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+</span><span id="TextSlider.create_back_surfaces-150"><a href="#TextSlider.create_back_surfaces-150"><span class="linenos">150</span></a>                    <span class="n">surf</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</span><span id="TextSlider.create_back_surfaces-151"><a href="#TextSlider.create_back_surfaces-151"><span class="linenos">151</span></a>
+</span><span id="TextSlider.create_back_surfaces-152"><a href="#TextSlider.create_back_surfaces-152"><span class="linenos">152</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">back_surfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+</span></pre></div>
+
+
+    
+
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt><a href="slider.html#Slider">Frames.widgets.slider.Slider</a></dt>
+                                <dd id="TextSlider.NO_SIZE_DECREASE" class="variable"><a href="slider.html#Slider.NO_SIZE_DECREASE">NO_SIZE_DECREASE</a></dd>
+                <dd id="TextSlider.EventTypes" class="class"><a href="slider.html#Slider.EventTypes">EventTypes</a></dd>
+                <dd id="TextSlider.SLIDING_LEFT" class="variable"><a href="slider.html#Slider.SLIDING_LEFT">SLIDING_LEFT</a></dd>
+                <dd id="TextSlider.SLIDING_RIGHT" class="variable"><a href="slider.html#Slider.SLIDING_RIGHT">SLIDING_RIGHT</a></dd>
+                <dd id="TextSlider.NOT_SLIDING" class="variable"><a href="slider.html#Slider.NOT_SLIDING">NOT_SLIDING</a></dd>
+                <dd id="TextSlider.SELECT_ANIMATION_PLAYING" class="variable"><a href="slider.html#Slider.SELECT_ANIMATION_PLAYING">SELECT_ANIMATION_PLAYING</a></dd>
+                <dd id="TextSlider.FLIPPING_ANIMATION_PLAYING" class="variable"><a href="slider.html#Slider.FLIPPING_ANIMATION_PLAYING">FLIPPING_ANIMATION_PLAYING</a></dd>
+                <dd id="TextSlider.FLIPPING_ALL_ANIMATION_PLAYING" class="variable"><a href="slider.html#Slider.FLIPPING_ALL_ANIMATION_PLAYING">FLIPPING_ALL_ANIMATION_PLAYING</a></dd>
+                <dd id="TextSlider.MIN_SCALE" class="variable"><a href="slider.html#Slider.MIN_SCALE">MIN_SCALE</a></dd>
+                <dd id="TextSlider.surfaces" class="variable"><a href="slider.html#Slider.surfaces">surfaces</a></dd>
+                <dd id="TextSlider.back_surfaces" class="variable"><a href="slider.html#Slider.back_surfaces">back_surfaces</a></dd>
+                <dd id="TextSlider.flip_duration" class="variable"><a href="slider.html#Slider.flip_duration">flip_duration</a></dd>
+                <dd id="TextSlider.flipping_animation_queued" class="variable"><a href="slider.html#Slider.flipping_animation_queued">flipping_animation_queued</a></dd>
+                <dd id="TextSlider.flipping_all_animation_queued" class="variable"><a href="slider.html#Slider.flipping_all_animation_queued">flipping_all_animation_queued</a></dd>
+                <dd id="TextSlider.surface_index" class="variable"><a href="slider.html#Slider.surface_index">surface_index</a></dd>
+                <dd id="TextSlider.cutoff" class="variable"><a href="slider.html#Slider.cutoff">cutoff</a></dd>
+                <dd id="TextSlider.max_slides" class="variable"><a href="slider.html#Slider.max_slides">max_slides</a></dd>
+                <dd id="TextSlider.sliding_duration" class="variable"><a href="slider.html#Slider.sliding_duration">sliding_duration</a></dd>
+                <dd id="TextSlider.select_animation_duration" class="variable"><a href="slider.html#Slider.select_animation_duration">select_animation_duration</a></dd>
+                <dd id="TextSlider.span" class="variable"><a href="slider.html#Slider.span">span</a></dd>
+                <dd id="TextSlider.alphas" class="variable"><a href="slider.html#Slider.alphas">alphas</a></dd>
+                <dd id="TextSlider.select_animation_queued" class="variable"><a href="slider.html#Slider.select_animation_queued">select_animation_queued</a></dd>
+                <dd id="TextSlider.scale_factors" class="variable"><a href="slider.html#Slider.scale_factors">scale_factors</a></dd>
+                <dd id="TextSlider.background_color" class="variable"><a href="slider.html#Slider.background_color">background_color</a></dd>
+                <dd id="TextSlider.size_decrease_scale" class="variable"><a href="slider.html#Slider.size_decrease_scale">size_decrease_scale</a></dd>
+                <dd id="TextSlider.horizontal" class="variable"><a href="slider.html#Slider.horizontal">horizontal</a></dd>
+                <dd id="TextSlider.slides" class="variable"><a href="slider.html#Slider.slides">slides</a></dd>
+                <dd id="TextSlider.extra_surface" class="variable"><a href="slider.html#Slider.extra_surface">extra_surface</a></dd>
+                <dd id="TextSlider.state" class="variable"><a href="slider.html#Slider.state">state</a></dd>
+                <dd id="TextSlider.rendered_surfaces" class="variable"><a href="slider.html#Slider.rendered_surfaces">rendered_surfaces</a></dd>
+                <dd id="TextSlider.rects" class="variable"><a href="slider.html#Slider.rects">rects</a></dd>
+                <dd id="TextSlider.indices" class="variable"><a href="slider.html#Slider.indices">indices</a></dd>
+                <dd id="TextSlider.original_indices" class="variable"><a href="slider.html#Slider.original_indices">original_indices</a></dd>
+                <dd id="TextSlider.fixed_image_positions" class="variable"><a href="slider.html#Slider.fixed_image_positions">fixed_image_positions</a></dd>
+                <dd id="TextSlider.sliding_clock" class="variable"><a href="slider.html#Slider.sliding_clock">sliding_clock</a></dd>
+                <dd id="TextSlider.select_animation_clock" class="variable"><a href="slider.html#Slider.select_animation_clock">select_animation_clock</a></dd>
+                <dd id="TextSlider.flipping_animation_clock" class="variable"><a href="slider.html#Slider.flipping_animation_clock">flipping_animation_clock</a></dd>
+                <dd id="TextSlider.slide_input_delay_clock" class="variable"><a href="slider.html#Slider.slide_input_delay_clock">slide_input_delay_clock</a></dd>
+                <dd id="TextSlider.slide_input_delay" class="variable"><a href="slider.html#Slider.slide_input_delay">slide_input_delay</a></dd>
+                <dd id="TextSlider.get_selected_index" class="function"><a href="slider.html#Slider.get_selected_index">get_selected_index</a></dd>
+                <dd id="TextSlider.set_background_color" class="function"><a href="slider.html#Slider.set_background_color">set_background_color</a></dd>
+                <dd id="TextSlider.get_focus_index" class="function"><a href="slider.html#Slider.get_focus_index">get_focus_index</a></dd>
+                <dd id="TextSlider.get_focus_surface" class="function"><a href="slider.html#Slider.get_focus_surface">get_focus_surface</a></dd>
+                <dd id="TextSlider.slide_left" class="function"><a href="slider.html#Slider.slide_left">slide_left</a></dd>
+                <dd id="TextSlider.slide_right" class="function"><a href="slider.html#Slider.slide_right">slide_right</a></dd>
+                <dd id="TextSlider.reset_slides" class="function"><a href="slider.html#Slider.reset_slides">reset_slides</a></dd>
+                <dd id="TextSlider.get_scale_fraction" class="function"><a href="slider.html#Slider.get_scale_fraction">get_scale_fraction</a></dd>
+                <dd id="TextSlider.get_absolute_scale" class="function"><a href="slider.html#Slider.get_absolute_scale">get_absolute_scale</a></dd>
+                <dd id="TextSlider.is_rendered" class="function"><a href="slider.html#Slider.is_rendered">is_rendered</a></dd>
+                <dd id="TextSlider.play_select_animation" class="function"><a href="slider.html#Slider.play_select_animation">play_select_animation</a></dd>
+                <dd id="TextSlider.flip_card" class="function"><a href="slider.html#Slider.flip_card">flip_card</a></dd>
+                <dd id="TextSlider.rerender_images" class="function"><a href="slider.html#Slider.rerender_images">rerender_images</a></dd>
+                <dd id="TextSlider.get_fixed_image_positions" class="function"><a href="slider.html#Slider.get_fixed_image_positions">get_fixed_image_positions</a></dd>
+                <dd id="TextSlider.prerender" class="function"><a href="slider.html#Slider.prerender">prerender</a></dd>
+                <dd id="TextSlider.initialize_slide_left" class="function"><a href="slider.html#Slider.initialize_slide_left">initialize_slide_left</a></dd>
+                <dd id="TextSlider.render_slide_left" class="function"><a href="slider.html#Slider.render_slide_left">render_slide_left</a></dd>
+                <dd id="TextSlider.finalize_slide_left" class="function"><a href="slider.html#Slider.finalize_slide_left">finalize_slide_left</a></dd>
+                <dd id="TextSlider.rerender" class="function"><a href="slider.html#Slider.rerender">rerender</a></dd>
+                <dd id="TextSlider.initialize_slide_right" class="function"><a href="slider.html#Slider.initialize_slide_right">initialize_slide_right</a></dd>
+                <dd id="TextSlider.render_slide_right" class="function"><a href="slider.html#Slider.render_slide_right">render_slide_right</a></dd>
+                <dd id="TextSlider.finalize_slide_right" class="function"><a href="slider.html#Slider.finalize_slide_right">finalize_slide_right</a></dd>
+                <dd id="TextSlider.render_select_animation" class="function"><a href="slider.html#Slider.render_select_animation">render_select_animation</a></dd>
+                <dd id="TextSlider.render_flipping_animation" class="function"><a href="slider.html#Slider.render_flipping_animation">render_flipping_animation</a></dd>
+                <dd id="TextSlider.render_flipping_all_animation" class="function"><a href="slider.html#Slider.render_flipping_all_animation">render_flipping_all_animation</a></dd>
+                <dd id="TextSlider.flip_all_cards" class="function"><a href="slider.html#Slider.flip_all_cards">flip_all_cards</a></dd>
+                <dd id="TextSlider.select_animation_playing" class="function"><a href="slider.html#Slider.select_animation_playing">select_animation_playing</a></dd>
+                <dd id="TextSlider.flipping_animation_playing" class="function"><a href="slider.html#Slider.flipping_animation_playing">flipping_animation_playing</a></dd>
+                <dd id="TextSlider.render" class="function"><a href="slider.html#Slider.render">render</a></dd>
+                <dd id="TextSlider.tick" class="function"><a href="slider.html#Slider.tick">tick</a></dd>
+
+            </div>
+            <div><dt><a href="../frame.html#Frame">Frames.frame.Frame</a></dt>
+                                <dd id="TextSlider.STANDARD_FOCUS_GROUP" class="variable"><a href="../frame.html#Frame.STANDARD_FOCUS_GROUP">STANDARD_FOCUS_GROUP</a></dd>
+                <dd id="TextSlider.FOCUS_GROUPS" class="variable"><a href="../frame.html#Frame.FOCUS_GROUPS">FOCUS_GROUPS</a></dd>
+                <dd id="TextSlider.SlideHandler" class="class"><a href="../frame.html#Frame.SlideHandler">SlideHandler</a></dd>
+                <dd id="TextSlider.CallbackEvent" class="class"><a href="../frame.html#Frame.CallbackEvent">CallbackEvent</a></dd>
+                <dd id="TextSlider.frame_enum" class="variable"><a href="../frame.html#Frame.frame_enum">frame_enum</a></dd>
+                <dd id="TextSlider.data" class="variable"><a href="../frame.html#Frame.data">data</a></dd>
+                <dd id="TextSlider.focus_group" class="variable"><a href="../frame.html#Frame.focus_group">focus_group</a></dd>
+                <dd id="TextSlider.parent_frame" class="variable"><a href="../frame.html#Frame.parent_frame">parent_frame</a></dd>
+                <dd id="TextSlider.max_parent_frames" class="variable"><a href="../frame.html#Frame.max_parent_frames">max_parent_frames</a></dd>
+                <dd id="TextSlider.event_queue" class="variable"><a href="../frame.html#Frame.event_queue">event_queue</a></dd>
+                <dd id="TextSlider.center" class="variable"><a href="../frame.html#Frame.center">center</a></dd>
+                <dd id="TextSlider.widgets" class="variable"><a href="../frame.html#Frame.widgets">widgets</a></dd>
+                <dd id="TextSlider.frame_dim" class="variable"><a href="../frame.html#Frame.frame_dim">frame_dim</a></dd>
+                <dd id="TextSlider.x" class="variable"><a href="../frame.html#Frame.x">x</a></dd>
+                <dd id="TextSlider.y" class="variable"><a href="../frame.html#Frame.y">y</a></dd>
+                <dd id="TextSlider.width" class="variable"><a href="../frame.html#Frame.width">width</a></dd>
+                <dd id="TextSlider.height" class="variable"><a href="../frame.html#Frame.height">height</a></dd>
+                <dd id="TextSlider.has_focus" class="variable"><a href="../frame.html#Frame.has_focus">has_focus</a></dd>
+                <dd id="TextSlider.on_focus_gained" class="function"><a href="../frame.html#Frame.on_focus_gained">on_focus_gained</a></dd>
+                <dd id="TextSlider.on_focus_lost" class="function"><a href="../frame.html#Frame.on_focus_lost">on_focus_lost</a></dd>
+                <dd id="TextSlider.move_by" class="function"><a href="../frame.html#Frame.move_by">move_by</a></dd>
+                <dd id="TextSlider.offset_frame" class="function"><a href="../frame.html#Frame.offset_frame">offset_frame</a></dd>
+                <dd id="TextSlider.move_to" class="function"><a href="../frame.html#Frame.move_to">move_to</a></dd>
+                <dd id="TextSlider.focus" class="function"><a href="../frame.html#Frame.focus">focus</a></dd>
+                <dd id="TextSlider.unfocus" class="function"><a href="../frame.html#Frame.unfocus">unfocus</a></dd>
+                <dd id="TextSlider.is_focused" class="function"><a href="../frame.html#Frame.is_focused">is_focused</a></dd>
+                <dd id="TextSlider.bind_events" class="function"><a href="../frame.html#Frame.bind_events">bind_events</a></dd>
+                <dd id="TextSlider.key_pressed" class="function"><a href="../frame.html#Frame.key_pressed">key_pressed</a></dd>
+                <dd id="TextSlider.add_escape_callback" class="function"><a href="../frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="TextSlider.manage_pygame_events" class="function"><a href="../frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
+                <dd id="TextSlider.clear_event_callbacks" class="function"><a href="../frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
+                <dd id="TextSlider.clear_pygame_events" class="function"><a href="../frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
+                <dd id="TextSlider.get_event_callbacks" class="function"><a href="../frame.html#Frame.get_event_callbacks">get_event_callbacks</a></dd>
+                <dd id="TextSlider.add_pygame_event_callback" class="function"><a href="../frame.html#Frame.add_pygame_event_callback">add_pygame_event_callback</a></dd>
+                <dd id="TextSlider.remove_pygame_event_callback" class="function"><a href="../frame.html#Frame.remove_pygame_event_callback">remove_pygame_event_callback</a></dd>
+                <dd id="TextSlider.pygame_key_is_disabled" class="function"><a href="../frame.html#Frame.pygame_key_is_disabled">pygame_key_is_disabled</a></dd>
+                <dd id="TextSlider.disable_pygame_key" class="function"><a href="../frame.html#Frame.disable_pygame_key">disable_pygame_key</a></dd>
+                <dd id="TextSlider.enable_pygame_key" class="function"><a href="../frame.html#Frame.enable_pygame_key">enable_pygame_key</a></dd>
+                <dd id="TextSlider.add_pygame_key_callback" class="function"><a href="../frame.html#Frame.add_pygame_key_callback">add_pygame_key_callback</a></dd>
+                <dd id="TextSlider.raise_exit_flag" class="function"><a href="../frame.html#Frame.raise_exit_flag">raise_exit_flag</a></dd>
+                <dd id="TextSlider.reset_exit_flag" class="function"><a href="../frame.html#Frame.reset_exit_flag">reset_exit_flag</a></dd>
+                <dd id="TextSlider.exit_flag_raised" class="function"><a href="../frame.html#Frame.exit_flag_raised">exit_flag_raised</a></dd>
+                <dd id="TextSlider.set_parent_frame" class="function"><a href="../frame.html#Frame.set_parent_frame">set_parent_frame</a></dd>
+                <dd id="TextSlider.widgets_tick" class="function"><a href="../frame.html#Frame.widgets_tick">widgets_tick</a></dd>
+                <dd id="TextSlider.render_widgets" class="function"><a href="../frame.html#Frame.render_widgets">render_widgets</a></dd>
+
+            </div>
+            <div><dt><a href="../../event_queue_manager.html#EventQueueManager">event_queue_manager.EventQueueManager</a></dt>
+                                <dd id="TextSlider.push_event" class="function"><a href="../../event_queue_manager.html#EventQueueManager.push_event">push_event</a></dd>
+                <dd id="TextSlider.poll_events" class="function"><a href="../../event_queue_manager.html#EventQueueManager.poll_events">poll_events</a></dd>
+                <dd id="TextSlider.poll_events_with_putback" class="function"><a href="../../event_queue_manager.html#EventQueueManager.poll_events_with_putback">poll_events_with_putback</a></dd>
+
+            </div>
+                                </dl>
+                            </div>
+                </section>
+    </main>
+<script>
+    function escapeHTML(html) {
+        return document.createElement('div').appendChild(document.createTextNode(html)).parentNode.innerHTML;
+    }
+
+    const originalContent = document.querySelector("main.pdoc");
+    let currentContent = originalContent;
+
+    function setContent(innerHTML) {
+        let elem;
+        if (innerHTML) {
+            elem = document.createElement("main");
+            elem.classList.add("pdoc");
+            elem.innerHTML = innerHTML;
+        } else {
+            elem = originalContent;
+        }
+        if (currentContent !== elem) {
+            currentContent.replaceWith(elem);
+            currentContent = elem;
+        }
+    }
+
+    function getSearchTerm() {
+        return (new URL(window.location)).searchParams.get("search");
+    }
+
+    const searchBox = document.querySelector(".pdoc input[type=search]");
+    searchBox.addEventListener("input", function () {
+        let url = new URL(window.location);
+        if (searchBox.value.trim()) {
+            url.hash = "";
+            url.searchParams.set("search", searchBox.value);
+        } else {
+            url.searchParams.delete("search");
+        }
+        history.replaceState("", "", url.toString());
+        onInput();
+    });
+    window.addEventListener("popstate", onInput);
+
+
+    let search, searchErr;
+
+    async function initialize() {
+        try {
+            search = await new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+                script.type = "text/javascript";
+                script.async = true;
+                script.onload = () => resolve(window.pdocSearch);
+                script.onerror = (e) => reject(e);
+                script.src = "../../search.js";
+                document.getElementsByTagName("head")[0].appendChild(script);
+            });
+        } catch (e) {
+            console.error("Cannot fetch pdoc search index");
+            searchErr = "Cannot fetch search index.";
+        }
+        onInput();
+
+        document.querySelector("nav.pdoc").addEventListener("click", e => {
+            if (e.target.hash) {
+                searchBox.value = "";
+                searchBox.dispatchEvent(new Event("input"));
+            }
+        });
+    }
+
+    function onInput() {
+        setContent((() => {
+            const term = getSearchTerm();
+            if (!term) {
+                return null
+            }
+            if (searchErr) {
+                return `<h3>Error: ${searchErr}</h3>`
+            }
+            if (!search) {
+                return "<h3>Searching...</h3>"
+            }
+
+            window.scrollTo({top: 0, left: 0, behavior: 'auto'});
+
+            const results = search(term);
+
+            let html;
+            if (results.length === 0) {
+                html = `No search results for '${escapeHTML(term)}'.`
+            } else {
+                html = `<h4>${results.length} search result${results.length > 1 ? "s" : ""} for '${escapeHTML(term)}'.</h4>`;
+            }
+            for (let result of results.slice(0, 10)) {
+                let doc = result.doc;
+                let url = `../../${doc.modulename.replaceAll(".", "/")}.html`;
+                if (doc.qualname) {
+                    url += `#${doc.qualname}`;
+                }
+
+                let heading;
+                switch (result.doc.kind) {
+                    case "function":
+                        if (doc.fullname.endsWith(".__init__")) {
+                            heading = `<span class="name">${doc.fullname.replace(/\.__init__$/, "")}</span>${doc.signature}`;
+                        } else {
+                            heading = `<span class="def">${doc.funcdef}</span> <span class="name">${doc.fullname}</span>${doc.signature}`;
+                        }
+                        break;
+                    case "class":
+                        heading = `<span class="def">class</span> <span class="name">${doc.fullname}</span>`;
+                        if (doc.bases)
+                            heading += `<wbr>(<span class="base">${doc.bases}</span>)`;
+                        heading += `:`;
+                        break;
+                    case "variable":
+                        heading = `<span class="name">${doc.fullname}</span>`;
+                        if (doc.annotation)
+                            heading += `<span class="annotation">${doc.annotation}</span>`;
+                        if (doc.default_value)
+                            heading += `<span class="default_value"> = ${doc.default_value}</span>`;
+                        break;
+                    default:
+                        heading = `<span class="name">${doc.fullname}</span>`;
+                        break;
+                }
+                html += `
+                        <section class="search-result">
+                        <a href="${url}" class="attr ${doc.kind}">${heading}</a>
+                        <div class="docstring">${doc.doc}</div>
+                        </section>
+                    `;
+
+            }
+            return html;
+        })());
+    }
+
+    if (getSearchTerm()) {
+        initialize();
+        searchBox.value = getSearchTerm();
+        onInput();
+    } else {
+        searchBox.addEventListener("focus", initialize, {once: true});
+    }
+
+    searchBox.addEventListener("keydown", e => {
+        if (["ArrowDown", "ArrowUp", "Enter"].includes(e.key)) {
+            let focused = currentContent.querySelector(".search-result.focused");
+            if (!focused) {
+                currentContent.querySelector(".search-result").classList.add("focused");
+            } else if (
+                e.key === "ArrowDown"
+                && focused.nextElementSibling
+                && focused.nextElementSibling.classList.contains("search-result")
+            ) {
+                focused.classList.remove("focused");
+                focused.nextElementSibling.classList.add("focused");
+                focused.nextElementSibling.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "nearest"
+                });
+            } else if (
+                e.key === "ArrowUp"
+                && focused.previousElementSibling
+                && focused.previousElementSibling.classList.contains("search-result")
+            ) {
+                focused.classList.remove("focused");
+                focused.previousElementSibling.classList.add("focused");
+                focused.previousElementSibling.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "nearest"
+                });
+            } else if (
+                e.key === "Enter"
+            ) {
+                focused.querySelector("a").click();
+            }
+        }
+    });
+</script></body>
+</html>

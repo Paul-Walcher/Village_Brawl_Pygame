@@ -49,6 +49,7 @@ class ChooseExplorerFrame(Frame):
         self.info_frame_clock = Clock()
         self.info_frame_state = self.INFO_FRAME_INACTIVE
         self.info_frame = None
+        self.tickframe = None
 
         self.rerender()
 
@@ -85,6 +86,7 @@ class ChooseExplorerFrame(Frame):
         iframe = pygame.Rect(self.width, 0, self.width // 2, self.height)
         info_frame = ExplorerInfoFrame(self.explorer_enums[self.explorer_index], self.modules, self.data, iframe, self)
         self.info_frame = info_frame
+        self.tickframe = info_frame
 
         self.info_frame_state = self.INFO_FRAME_SLIDING_IN
         self.info_frame_clock.start()
@@ -93,6 +95,7 @@ class ChooseExplorerFrame(Frame):
 
         self.info_frame_state = self.INFO_FRAME_INACTIVE
         self.info_frame = None
+        self.tickframe = None
 
     def finalize_info_frame(self):
 
@@ -202,17 +205,22 @@ class ChooseExplorerFrame(Frame):
         if self.exit_flag_raised():
             return None
 
-        if self.info_frame is not None and self.info_frame_state != self.INFO_FRAME_SLIDING_OUT:
-            nframe = self.info_frame.tick()
+        if self.tickframe is not None and self.info_frame_state not in [self.INFO_FRAME_SLIDING_IN, self.INFO_FRAME_SLIDING_OUT]:
+            tframe = self.tickframe.tick()
 
-            if nframe is self.info_frame:
-                nframe = self
-            elif nframe is not None:
-                nframe.set_parent_frame(self)
-            elif nframe is None:
-                self.info_frame_state = self.INFO_FRAME_SLIDING_OUT
-                self.info_frame_clock.start()
-                nframe = self
+            if tframe is None:
+                if self.tickframe is self.info_frame:
+                    self.info_frame_state = self.INFO_FRAME_SLIDING_OUT
+                    self.tickframe = self.info_frame
+                    self.info_frame_clock.start()
+                elif self.info_frame_state == self.INFO_FRAME_ACTIVE:
+                    self.tickframe = self.info_frame
+                    self.info_frame.focus()
+                else:
+                    self.tickframe = None
+            else:
+                self.tickframe = tframe
+
 
         if self.info_frame_state == self.INFO_FRAME_SLIDING_IN:
 
@@ -259,6 +267,5 @@ class ChooseExplorerFrame(Frame):
             screen.blit(self.second_explorer_image, (sex + self.shift, sey))
         screen.blit(self.info_text, self.info_text_pos)
 
-
-        if self.info_frame is not None:
-            self.info_frame.render(screen)
+        if self.tickframe is not None:
+            self.tickframe.render(screen)

@@ -217,11 +217,11 @@ class ExplorerInfoFrame(Frame):
 
                 if self.slider_menu.get_selected_index() == 0:
 
-                    secframe = ShowExplorerStartingCardsFrame(self.explorer_enum, self.data, constants.FULLSCREEN, self)
+                    secframe = ShowExplorerStartingCardsFrame(self.explorer_enum, self.data, constants.FULLSCREEN, self.parent_frame)
                     return secframe
                 else:
 
-                    eframe = TestFrame(data=None, frame_dim=pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT), parent_frame=self)
+                    eframe = TestFrame(data=None, frame_dim=pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT), parent_frame=self.parent_frame)
                     return eframe
 
         return self

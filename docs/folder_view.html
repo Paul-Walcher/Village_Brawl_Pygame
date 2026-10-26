@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Village_Brawl_Pygame — Source tree</title>
+<style>
+  :root { color-scheme: light dark; --accent: #6da9e8; --line: color-mix(in srgb, CanvasText 15%, transparent); }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: Canvas; color: CanvasText; }
+  header { position: sticky; top: 0; z-index: 2; padding: 22px clamp(18px, 4vw, 44px) 16px; background: Canvas; border-bottom: 1px solid var(--line); }
+  h1 { font-size: 1.45rem; margin: 0 0 4px; font-weight: 700; }
+  .subtitle { margin: 0 0 14px; opacity: .7; font-size: .9rem; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  #search { flex: 1 1 240px; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: Canvas; color: CanvasText; font: inherit; }
+  button { padding: 9px 12px; border: 1px solid var(--line); border-radius: 9px; background: color-mix(in srgb, CanvasText 5%, Canvas); color: CanvasText; font: inherit; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  main { padding: 22px clamp(18px, 4vw, 44px) 42px; max-width: 1100px; }
+  .root-title { display: flex; align-items: center; gap: 9px; font-weight: 700; margin-bottom: 8px; }
+  ul { list-style: none; margin: 0; padding-left: 23px; }
+  .root-list { padding-left: 0; }
+  li { position: relative; margin: 3px 0; }
+  li > ul { border-left: 1px solid var(--line); margin-left: 9px; }
+  summary { list-style: none; display: flex; align-items: center; gap: 8px; cursor: pointer; min-height: 32px; border-radius: 7px; padding: 3px 7px; }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover, .node-label:hover { background: color-mix(in srgb, var(--accent) 11%, transparent); }
+  summary::before { content: '›'; display: inline-block; width: 11px; color: #8b8b8b; font-size: 1.25rem; line-height: 1; transform: rotate(0deg); transition: transform .12s ease; }
+  details[open] > summary::before { transform: rotate(90deg); }
+  .folder-icon { display: inline-block; width: 17px; height: 12px; position: relative; border: 1.5px solid #d3a449; border-radius: 2px; background: color-mix(in srgb, #d3a449 22%, transparent); flex: 0 0 auto; }
+  .folder-icon::before { content: ''; position: absolute; top: -4px; left: 1px; width: 7px; height: 4px; border: 1.5px solid #d3a449; border-bottom: 0; border-radius: 2px 2px 0 0; background: color-mix(in srgb, #d3a449 22%, transparent); }
+  .folder-name, .folder-link { font-weight: 600; }
+  .folder-link { color: inherit; text-decoration: none; }
+  .node-label { display: inline-flex; align-items: center; gap: 8px; width: fit-content; min-height: 30px; padding: 3px 7px; border-radius: 7px; color: inherit; text-decoration: none; }
+  .file-icon { display: inline-grid; place-items: center; height: 18px; min-width: 21px; padding: 0 2px; border-radius: 4px; color: #4c94d8; background: color-mix(in srgb, #4c94d8 13%, transparent); font-size: 9px; font-weight: 800; letter-spacing: -.4px; }
+  .unavailable { opacity: .55; cursor: default; }
+  .missing { font-size: .72rem; opacity: .75; margin-left: 4px; }
+  .empty { opacity: .55; font-style: italic; padding: 6px 0 6px 12px; }
+  #status { margin-top: 13px; color: color-mix(in srgb, CanvasText 65%, transparent); font-size: .82rem; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Village_Brawl_Pygame source tree</h1>
+  <p class="subtitle">Browse folders and open generated pdoc documentation.</p>
+  <div class="toolbar">
+    <input id="search" type="search" placeholder="Filter folders and Python files…" aria-label="Filter source tree">
+    <button id="expand">Expand all</button>
+    <button id="collapse">Collapse all</button>
+  </div>
+  <div id="status" role="status"></div>
+</header>
+<main>
+  <div class="root-title"><span class="folder-icon" aria-hidden="true"></span>Village_Brawl_Pygame</div>
+  <ul class="root-list" id="tree"><li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">BaseAssets</span></summary><ul><li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">CardImages</span></summary><ul></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">Fonts</span></summary><ul></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">Icons</span></summary><ul></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">StandardImages</span></summary><ul></ul></details></li></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">Frames</span></summary><ul><li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">widgets</span></summary><ul><li class="tree-node file-node" data-search="frames\widgets\dropdown_menu dropdown_menu.py"><a class="node-label" href="Frames/widgets/dropdown_menu.html" title="Open documentation for dropdown_menu.py"><span class="file-icon" aria-hidden="true">PY</span>dropdown_menu.py</a></li>
+<li class="tree-node file-node" data-search="frames\widgets\expandable_dropdown_menu expandable_dropdown_menu.py"><a class="node-label" href="Frames/widgets/expandable_dropdown_menu.html" title="Open documentation for expandable_dropdown_menu.py"><span class="file-icon" aria-hidden="true">PY</span>expandable_dropdown_menu.py</a></li>
+<li class="tree-node file-node" data-search="frames\widgets\image_slider image_slider.py"><a class="node-label" href="Frames/widgets/image_slider.html" title="Open documentation for image_slider.py"><span class="file-icon" aria-hidden="true">PY</span>image_slider.py</a></li>
+<li class="tree-node file-node" data-search="frames\widgets\labeled_image_slider labeled_image_slider.py"><a class="node-label" href="Frames/widgets/labeled_image_slider.html" title="Open documentation for labeled_image_slider.py"><span class="file-icon" aria-hidden="true">PY</span>labeled_image_slider.py</a></li>
+<li class="tree-node file-node" data-search="frames\widgets\renderable_card_listviewer renderable_card_listviewer.py"><a class="node-label" href="Frames/widgets/renderable_card_listviewer.html" title="Open documentation for renderable_card_listviewer.py"><span class="file-icon" aria-hidden="true">PY</span>renderable_card_listviewer.py</a></li>
+<li class="tree-node file-node" data-search="frames\widgets\renderable_card_menu renderable_card_menu.py"><a class="node-label" href="Frames/widgets/renderable_card_menu.html" title="Open documentation for renderable_card_menu.py"><span class="file-icon" aria-hidden="true">PY</span>renderable_card_menu.py</a></li>
+<li class="tree-node file-node" data-search="frames\widgets\scrollable_dropdown_menu scrollable_dropdown_menu.py"><a class="node-label" href="Frames/widgets/scrollable_dropdown_menu.html" title="Open documentation for scrollable_dropdown_menu.py"><span class="file-icon" aria-hidden="true">PY</span>scrollable_dropdown_menu.py</a></li>
+<li class="tree-node file-node" data-search="frames\widgets\slider slider.py"><a class="node-label" href="Frames/widgets/slider.html" title="Open documentation for slider.py"><span class="file-icon" aria-hidden="true">PY</span>slider.py</a></li>
+<li class="tree-node file-node" data-search="frames\widgets\text_input text_input.py"><a class="node-label" href="Frames/widgets/text_input.html" title="Open documentation for text_input.py"><span class="file-icon" aria-hidden="true">PY</span>text_input.py</a></li>
+<li class="tree-node file-node" data-search="frames\widgets\text_slider text_slider.py"><a class="node-label" href="Frames/widgets/text_slider.html" title="Open documentation for text_slider.py"><span class="file-icon" aria-hidden="true">PY</span>text_slider.py</a></li>
+<li class="tree-node file-node" data-search="frames\widgets\textbox textbox.py"><a class="node-label" href="Frames/widgets/textbox.html" title="Open documentation for textbox.py"><span class="file-icon" aria-hidden="true">PY</span>textbox.py</a></li></ul></details></li>
+<li class="tree-node file-node" data-search="frames\cardinfo_frame cardinfo_frame.py"><a class="node-label" href="Frames/cardinfo_frame.html" title="Open documentation for cardinfo_frame.py"><span class="file-icon" aria-hidden="true">PY</span>cardinfo_frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\choose_explorer_frame choose_explorer_frame.py"><a class="node-label" href="Frames/choose_explorer_frame.html" title="Open documentation for choose_explorer_frame.py"><span class="file-icon" aria-hidden="true">PY</span>choose_explorer_frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\choose_playset_frame choose_playset_frame.py"><a class="node-label" href="Frames/choose_playset_frame.html" title="Open documentation for choose_playset_frame.py"><span class="file-icon" aria-hidden="true">PY</span>choose_playset_frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\choose_save_name_frame choose_save_name_frame.py"><a class="node-label" href="Frames/choose_save_name_frame.html" title="Open documentation for choose_save_name_frame.py"><span class="file-icon" aria-hidden="true">PY</span>choose_save_name_frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\empty_frame empty_frame.py"><a class="node-label" href="Frames/empty_frame.html" title="Open documentation for empty_frame.py"><span class="file-icon" aria-hidden="true">PY</span>empty_frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\explorer_info_frame explorer_info_frame.py"><a class="node-label" href="Frames/explorer_info_frame.html" title="Open documentation for explorer_info_frame.py"><span class="file-icon" aria-hidden="true">PY</span>explorer_info_frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\frame frame.py"><a class="node-label" href="Frames/frame.html" title="Open documentation for frame.py"><span class="file-icon" aria-hidden="true">PY</span>frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\frame_enums frame_enums.py"><a class="node-label" href="Frames/frame_enums.html" title="Open documentation for frame_enums.py"><span class="file-icon" aria-hidden="true">PY</span>frame_enums.py</a></li>
+<li class="tree-node file-node" data-search="frames\frame_mappings frame_mappings.py"><a class="node-label" href="Frames/frame_mappings.html" title="Open documentation for frame_mappings.py"><span class="file-icon" aria-hidden="true">PY</span>frame_mappings.py</a></li>
+<li class="tree-node file-node" data-search="frames\intro_frame intro_frame.py"><a class="node-label" href="Frames/intro_frame.html" title="Open documentation for intro_frame.py"><span class="file-icon" aria-hidden="true">PY</span>intro_frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\intro_menu_frame intro_menu_frame.py"><a class="node-label" href="Frames/intro_menu_frame.html" title="Open documentation for intro_menu_frame.py"><span class="file-icon" aria-hidden="true">PY</span>intro_menu_frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\load_playset_frame load_playset_frame.py"><a class="node-label" href="Frames/load_playset_frame.html" title="Open documentation for load_playset_frame.py"><span class="file-icon" aria-hidden="true">PY</span>load_playset_frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\show_explorer_starting_cards_frame show_explorer_starting_cards_frame.py"><a class="node-label" href="Frames/show_explorer_starting_cards_frame.html" title="Open documentation for show_explorer_starting_cards_frame.py"><span class="file-icon" aria-hidden="true">PY</span>show_explorer_starting_cards_frame.py</a></li>
+<li class="tree-node file-node" data-search="frames\test_frame test_frame.py"><a class="node-label" href="Frames/test_frame.html" title="Open documentation for test_frame.py"><span class="file-icon" aria-hidden="true">PY</span>test_frame.py</a></li></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">Interaction</span></summary><ul><li class="tree-node file-node" data-search="interaction\interaction interaction.py"><a class="node-label" href="Interaction/interaction.html" title="Open documentation for interaction.py"><span class="file-icon" aria-hidden="true">PY</span>interaction.py</a></li></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">playsets</span></summary><ul><li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">example_playset</span></summary><ul><li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">assets</span></summary><ul><li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">card_assets</span></summary><ul></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">standard_assets</span></summary><ul></ul></details></li></ul></details></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\biome_cards biome_cards.py"><a class="node-label" href="playsets/example_playset/biome_cards.html" title="Open documentation for biome_cards.py"><span class="file-icon" aria-hidden="true">PY</span>biome_cards.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\biomes biomes.py"><a class="node-label" href="playsets/example_playset/biomes.html" title="Open documentation for biomes.py"><span class="file-icon" aria-hidden="true">PY</span>biomes.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\blueprints blueprints.py"><a class="node-label" href="playsets/example_playset/blueprints.html" title="Open documentation for blueprints.py"><span class="file-icon" aria-hidden="true">PY</span>blueprints.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\boss_cards boss_cards.py"><a class="node-label" href="playsets/example_playset/boss_cards.html" title="Open documentation for boss_cards.py"><span class="file-icon" aria-hidden="true">PY</span>boss_cards.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\bosses bosses.py"><a class="node-label" href="playsets/example_playset/bosses.html" title="Open documentation for bosses.py"><span class="file-icon" aria-hidden="true">PY</span>bosses.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\buildings buildings.py"><a class="node-label" href="playsets/example_playset/buildings.html" title="Open documentation for buildings.py"><span class="file-icon" aria-hidden="true">PY</span>buildings.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\enums enums.py"><a class="node-label" href="playsets/example_playset/enums.html" title="Open documentation for enums.py"><span class="file-icon" aria-hidden="true">PY</span>enums.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\explorer explorer.py"><a class="node-label" href="playsets/example_playset/explorer.html" title="Open documentation for explorer.py"><span class="file-icon" aria-hidden="true">PY</span>explorer.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\explorer_cards explorer_cards.py"><a class="node-label" href="playsets/example_playset/explorer_cards.html" title="Open documentation for explorer_cards.py"><span class="file-icon" aria-hidden="true">PY</span>explorer_cards.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\explorer_supporters explorer_supporters.py"><a class="node-label" href="playsets/example_playset/explorer_supporters.html" title="Open documentation for explorer_supporters.py"><span class="file-icon" aria-hidden="true">PY</span>explorer_supporters.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\items items.py"><a class="node-label" href="playsets/example_playset/items.html" title="Open documentation for items.py"><span class="file-icon" aria-hidden="true">PY</span>items.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\mappings mappings.py"><a class="node-label" href="playsets/example_playset/mappings.html" title="Open documentation for mappings.py"><span class="file-icon" aria-hidden="true">PY</span>mappings.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\miniboss_cards miniboss_cards.py"><a class="node-label" href="playsets/example_playset/miniboss_cards.html" title="Open documentation for miniboss_cards.py"><span class="file-icon" aria-hidden="true">PY</span>miniboss_cards.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\minibosses minibosses.py"><a class="node-label" href="playsets/example_playset/minibosses.html" title="Open documentation for minibosses.py"><span class="file-icon" aria-hidden="true">PY</span>minibosses.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\objectives objectives.py"><a class="node-label" href="playsets/example_playset/objectives.html" title="Open documentation for objectives.py"><span class="file-icon" aria-hidden="true">PY</span>objectives.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\packs packs.py"><a class="node-label" href="playsets/example_playset/packs.html" title="Open documentation for packs.py"><span class="file-icon" aria-hidden="true">PY</span>packs.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\scenarios scenarios.py"><a class="node-label" href="playsets/example_playset/scenarios.html" title="Open documentation for scenarios.py"><span class="file-icon" aria-hidden="true">PY</span>scenarios.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\tags tags.py"><a class="node-label" href="playsets/example_playset/tags.html" title="Open documentation for tags.py"><span class="file-icon" aria-hidden="true">PY</span>tags.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\terrain terrain.py"><a class="node-label" href="playsets/example_playset/terrain.html" title="Open documentation for terrain.py"><span class="file-icon" aria-hidden="true">PY</span>terrain.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\tiles tiles.py"><a class="node-label" href="playsets/example_playset/tiles.html" title="Open documentation for tiles.py"><span class="file-icon" aria-hidden="true">PY</span>tiles.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\village village.py"><a class="node-label" href="playsets/example_playset/village.html" title="Open documentation for village.py"><span class="file-icon" aria-hidden="true">PY</span>village.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\village_boss_cards village_boss_cards.py"><a class="node-label" href="playsets/example_playset/village_boss_cards.html" title="Open documentation for village_boss_cards.py"><span class="file-icon" aria-hidden="true">PY</span>village_boss_cards.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\village_bosses village_bosses.py"><a class="node-label" href="playsets/example_playset/village_bosses.html" title="Open documentation for village_bosses.py"><span class="file-icon" aria-hidden="true">PY</span>village_bosses.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\village_cards village_cards.py"><a class="node-label" href="playsets/example_playset/village_cards.html" title="Open documentation for village_cards.py"><span class="file-icon" aria-hidden="true">PY</span>village_cards.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\village_supporters village_supporters.py"><a class="node-label" href="playsets/example_playset/village_supporters.html" title="Open documentation for village_supporters.py"><span class="file-icon" aria-hidden="true">PY</span>village_supporters.py</a></li>
+<li class="tree-node file-node" data-search="playsets\example_playset\villagers villagers.py"><a class="node-label" href="playsets/example_playset/villagers.html" title="Open documentation for villagers.py"><span class="file-icon" aria-hidden="true">PY</span>villagers.py</a></li></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">test1</span></summary><ul></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">test2</span></summary><ul></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">test3</span></summary><ul></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">test4</span></summary><ul></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">test5</span></summary><ul></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">test6</span></summary><ul></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">test7</span></summary><ul></ul></details></li></ul></details></li>
+<li class="tree-node folder-node"><details><summary><span class="folder-icon" aria-hidden="true"></span><span class="folder-name">templates</span></summary><ul><li class="tree-node file-node" data-search="templates\explorer_card_template explorer_card_template.py"><a class="node-label" href="templates/explorer_card_template.html" title="Open documentation for explorer_card_template.py"><span class="file-icon" aria-hidden="true">PY</span>explorer_card_template.py</a></li>
+<li class="tree-node file-node" data-search="templates\explorer_template explorer_template.py"><a class="node-label" href="templates/explorer_template.html" title="Open documentation for explorer_template.py"><span class="file-icon" aria-hidden="true">PY</span>explorer_template.py</a></li>
+<li class="tree-node file-node" data-search="templates\initialize initialize.py"><a class="node-label" href="templates/initialize.html" title="Open documentation for initialize.py"><span class="file-icon" aria-hidden="true">PY</span>initialize.py</a></li>
+<li class="tree-node file-node" data-search="templates\playset_entity playset_entity.py"><a class="node-label" href="templates/playset_entity.html" title="Open documentation for playset_entity.py"><span class="file-icon" aria-hidden="true">PY</span>playset_entity.py</a></li>
+<li class="tree-node file-node" data-search="templates\renderable_card renderable_card.py"><a class="node-label" href="templates/renderable_card.html" title="Open documentation for renderable_card.py"><span class="file-icon" aria-hidden="true">PY</span>renderable_card.py</a></li>
+<li class="tree-node file-node" data-search="templates\tag_template tag_template.py"><a class="node-label" href="templates/tag_template.html" title="Open documentation for tag_template.py"><span class="file-icon" aria-hidden="true">PY</span>tag_template.py</a></li>
+<li class="tree-node file-node" data-search="templates\type_enums type_enums.py"><a class="node-label" href="templates/type_enums.html" title="Open documentation for type_enums.py"><span class="file-icon" aria-hidden="true">PY</span>type_enums.py</a></li>
+<li class="tree-node file-node" data-search="templates\unlock_condition unlock_condition.py"><a class="node-label" href="templates/unlock_condition.html" title="Open documentation for unlock_condition.py"><span class="file-icon" aria-hidden="true">PY</span>unlock_condition.py</a></li></ul></details></li>
+<li class="tree-node file-node" data-search="build build.py"><a class="node-label" href="build.html" title="Open documentation for build.py"><span class="file-icon" aria-hidden="true">PY</span>build.py</a></li>
+<li class="tree-node file-node" data-search="calculations calculations.py"><a class="node-label" href="calculations.html" title="Open documentation for calculations.py"><span class="file-icon" aria-hidden="true">PY</span>calculations.py</a></li>
+<li class="tree-node file-node" data-search="clock clock.py"><a class="node-label" href="clock.html" title="Open documentation for clock.py"><span class="file-icon" aria-hidden="true">PY</span>clock.py</a></li>
+<li class="tree-node file-node" data-search="constants constants.py"><a class="node-label" href="constants.html" title="Open documentation for constants.py"><span class="file-icon" aria-hidden="true">PY</span>constants.py</a></li>
+<li class="tree-node file-node" data-search="deck deck.py"><a class="node-label" href="deck.html" title="Open documentation for deck.py"><span class="file-icon" aria-hidden="true">PY</span>deck.py</a></li>
+<li class="tree-node file-node" data-search="event_queue_manager event_queue_manager.py"><a class="node-label" href="event_queue_manager.html" title="Open documentation for event_queue_manager.py"><span class="file-icon" aria-hidden="true">PY</span>event_queue_manager.py</a></li>
+<li class="tree-node file-node" data-search="game_context game_context.py"><a class="node-label" href="game_context.html" title="Open documentation for game_context.py"><span class="file-icon" aria-hidden="true">PY</span>game_context.py</a></li>
+<li class="tree-node file-node" data-search="gamehandler gamehandler.py"><a class="node-label" href="gamehandler.html" title="Open documentation for gamehandler.py"><span class="file-icon" aria-hidden="true">PY</span>gamehandler.py</a></li>
+<li class="tree-node file-node" data-search="gameinfo gameinfo.py"><a class="node-label" href="gameinfo.html" title="Open documentation for gameinfo.py"><span class="file-icon" aria-hidden="true">PY</span>gameinfo.py</a></li>
+<li class="tree-node file-node" data-search="graphics graphics.py"><a class="node-label" href="graphics.html" title="Open documentation for graphics.py"><span class="file-icon" aria-hidden="true">PY</span>graphics.py</a></li>
+<li class="tree-node file-node" data-search="main main.py"><span class="node-label unavailable" title="No matching pdoc HTML page found"><span class="file-icon" aria-hidden="true">PY</span>main.py<span class="missing">not documented</span></span></li>
+<li class="tree-node file-node" data-search="modules modules.py"><a class="node-label" href="modules.html" title="Open documentation for modules.py"><span class="file-icon" aria-hidden="true">PY</span>modules.py</a></li>
+<li class="tree-node file-node" data-search="phases phases.py"><a class="node-label" href="phases.html" title="Open documentation for phases.py"><span class="file-icon" aria-hidden="true">PY</span>phases.py</a></li>
+<li class="tree-node file-node" data-search="stack stack.py"><a class="node-label" href="stack.html" title="Open documentation for stack.py"><span class="file-icon" aria-hidden="true">PY</span>stack.py</a></li></ul>
+</main>
+<script>
+(() => {
+  const tree = document.getElementById('tree');
+  const search = document.getElementById('search');
+  const status = document.getElementById('status');
+  const allDetails = () => [...tree.querySelectorAll('details')];
+
+  document.getElementById('expand').addEventListener('click', () => allDetails().forEach(el => el.open = true));
+  document.getElementById('collapse').addEventListener('click', () => allDetails().forEach(el => el.open = false));
+
+  function revealSubtree(list) {
+    for (const li of list.children) {
+      li.hidden = false;
+      const details = li.querySelector(':scope > details');
+      if (details) {
+        details.open = true;
+        revealSubtree(details.querySelector(':scope > ul'));
+      }
+    }
+  }
+
+  function filterList(list, query) {
+    let anyVisible = false;
+    for (const li of list.children) {
+      const details = li.querySelector(':scope > details');
+      if (!details) {
+        const haystack = (li.dataset.search || li.textContent).toLocaleLowerCase();
+        li.hidden = !!query && !haystack.includes(query);
+      } else {
+        const summary = details.querySelector(':scope > summary');
+        const folderMatches = !!query && summary.textContent.toLocaleLowerCase().includes(query);
+        const childList = details.querySelector(':scope > ul');
+        if (folderMatches) {
+          revealSubtree(childList);
+          details.open = true;
+          li.hidden = false;
+        } else {
+          const childVisible = filterList(childList, query);
+          li.hidden = !!query && !childVisible;
+          if (query && childVisible) details.open = true;
+        }
+      }
+      if (!li.hidden) anyVisible = true;
+    }
+    return anyVisible;
+  }
+
+  function filterTree() {
+    const query = search.value.trim().toLocaleLowerCase();
+    filterList(tree, query);
+    status.textContent = query
+      ? `Filtering for “${search.value}”`
+      : `${tree.querySelectorAll('li.file-node').length} Python files detected`;
+  }
+  search.addEventListener('input', filterTree);
+  filterTree();
+})();
+</script>
+</body>
+</html>
