@@ -13,7 +13,7 @@ pygame.init()
 """
 Types
 """
-color_t = tuple[int, int, int, int]
+type color_t = tuple[int, int, int, int]
 
 EPSILON = 10E-6
 """
