@@ -78,7 +78,7 @@ class Renderable_CardInfo:
             List of the areas the frame_dim is split up into from top to bottom.
             """
 
-        def get_blit_surface_position_tuples(self) -> tuple[ tuple[ pygame.Surface, tuple[ int, int ] ] ]:
+        def get_blit_surface_position_tuples(self) -> rendered_surface_position_tuples_t:
             """
             Returns a list of (surface, position),
             of all the parts that should be rendered this way.
