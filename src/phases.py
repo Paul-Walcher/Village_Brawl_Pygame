@@ -67,4 +67,4 @@ class PhaseInfo:
 """
 Type definitions.
 """
-phase_transition_t = tuple[Phases, Phases]
+type phase_transition_t = tuple[Phases, Phases]

@@ -17,29 +17,29 @@ NL: tuple = (None,)
 Type definitions
 """
 
-text_t = list[str]
+type text_t = list[str]
 """
 Text type. This is what is passed to page_by_chars() to
 create pages.
 """
-colored_text_t = list[ tuple[ str, color_t ] ]
+type colored_text_t = list[ tuple[ str, color_t ] ]
 """
 Colored text type. This is what is passed to page_by_chars_color() to
 create pages.
 """
-page_t = list[str]
+type page_t = list[str]
 """
 Type definition for a uncolored page.
 """
-colored_page_t = list[list[ tuple[str, color_t] ]]
+type colored_page_t = list[list[ tuple[str, color_t] ]]
 """
 Type definition for a colored page.
 """
-surface_with_position_t = tuple[pygame.Surface, tuple[int, int]]
+type surface_with_position_t = tuple[pygame.Surface, tuple[int, int]]
 """
 Type for a (surface, (x, y)=position) tuple.
 """
-rendered_surface_position_tuples_t = list[surface_with_position_t]
+type rendered_surface_position_tuples_t = list[surface_with_position_t]
 """
 A list of rendered (surface, position) tuples
 """
