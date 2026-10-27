@@ -1,3 +1,4 @@
+from __future__ import annotations
 from enum import Enum, auto
 import pygame
 
@@ -6,6 +7,7 @@ class Phases(Enum):
     """
     Enum for phases in the current game.
     """
+    ANY_PHASE = auto() #type for any phase.
 
     START_OF_GAME = auto()
     START_OF_ROUND = auto()
@@ -61,3 +63,8 @@ class PhaseInfo:
         self.data = data
         self.phase = phase
         self.parent_frame = parent_frame
+
+"""
+Type definitions.
+"""
+phase_transition_t = tuple[Phases, Phases]

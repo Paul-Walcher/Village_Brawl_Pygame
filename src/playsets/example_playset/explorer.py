@@ -31,7 +31,7 @@ class Basic_Explorer(Explorer_Template):
     def info():
 
         einfo = ExplorerInfo()
-        einfo.name = "Basic Explorer"
+        einfo.name = ["Basic Explorer"]
         einfo.name_color = Colors.LIGHT_ORANGE
         einfo.explorer_enum = enums.ExplorerEnums.BASIC_EXPLORER
         einfo.description = "Basic Explorer. Has no special abilities."

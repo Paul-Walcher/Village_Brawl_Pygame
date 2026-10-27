@@ -127,7 +127,7 @@ playsets<wbr>.example_playset<wbr>.explorer    </h1>
 </span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">():</span>
 </span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>
 </span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>        <span class="n">einfo</span> <span class="o">=</span> <span class="n">ExplorerInfo</span><span class="p">()</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"Basic Explorer"</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Basic Explorer"</span><span class="p">]</span>
 </span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">name_color</span> <span class="o">=</span> <span class="n">Colors</span><span class="o">.</span><span class="n">LIGHT_ORANGE</span>
 </span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">explorer_enum</span> <span class="o">=</span> <span class="n">enums</span><span class="o">.</span><span class="n">ExplorerEnums</span><span class="o">.</span><span class="n">BASIC_EXPLORER</span>
 </span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">"Basic Explorer. Has no special abilities."</span>
@@ -255,7 +255,7 @@ playsets<wbr>.example_playset<wbr>.explorer    </h1>
 </span><span id="Basic_Explorer-32"><a href="#Basic_Explorer-32"><span class="linenos">32</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">():</span>
 </span><span id="Basic_Explorer-33"><a href="#Basic_Explorer-33"><span class="linenos">33</span></a>
 </span><span id="Basic_Explorer-34"><a href="#Basic_Explorer-34"><span class="linenos">34</span></a>        <span class="n">einfo</span> <span class="o">=</span> <span class="n">ExplorerInfo</span><span class="p">()</span>
-</span><span id="Basic_Explorer-35"><a href="#Basic_Explorer-35"><span class="linenos">35</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"Basic Explorer"</span>
+</span><span id="Basic_Explorer-35"><a href="#Basic_Explorer-35"><span class="linenos">35</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Basic Explorer"</span><span class="p">]</span>
 </span><span id="Basic_Explorer-36"><a href="#Basic_Explorer-36"><span class="linenos">36</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">name_color</span> <span class="o">=</span> <span class="n">Colors</span><span class="o">.</span><span class="n">LIGHT_ORANGE</span>
 </span><span id="Basic_Explorer-37"><a href="#Basic_Explorer-37"><span class="linenos">37</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">explorer_enum</span> <span class="o">=</span> <span class="n">enums</span><span class="o">.</span><span class="n">ExplorerEnums</span><span class="o">.</span><span class="n">BASIC_EXPLORER</span>
 </span><span id="Basic_Explorer-38"><a href="#Basic_Explorer-38"><span class="linenos">38</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">"Basic Explorer. Has no special abilities."</span>
@@ -302,7 +302,8 @@ playsets<wbr>.example_playset<wbr>.explorer    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
+            <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
+and does actions every frame, needing to be updated using tick().</p>
 </div>
 
 
@@ -341,7 +342,7 @@ playsets<wbr>.example_playset<wbr>.explorer    </h1>
 </span><span id="Basic_Explorer.info-32"><a href="#Basic_Explorer.info-32"><span class="linenos">32</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">():</span>
 </span><span id="Basic_Explorer.info-33"><a href="#Basic_Explorer.info-33"><span class="linenos">33</span></a>
 </span><span id="Basic_Explorer.info-34"><a href="#Basic_Explorer.info-34"><span class="linenos">34</span></a>        <span class="n">einfo</span> <span class="o">=</span> <span class="n">ExplorerInfo</span><span class="p">()</span>
-</span><span id="Basic_Explorer.info-35"><a href="#Basic_Explorer.info-35"><span class="linenos">35</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"Basic Explorer"</span>
+</span><span id="Basic_Explorer.info-35"><a href="#Basic_Explorer.info-35"><span class="linenos">35</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Basic Explorer"</span><span class="p">]</span>
 </span><span id="Basic_Explorer.info-36"><a href="#Basic_Explorer.info-36"><span class="linenos">36</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">name_color</span> <span class="o">=</span> <span class="n">Colors</span><span class="o">.</span><span class="n">LIGHT_ORANGE</span>
 </span><span id="Basic_Explorer.info-37"><a href="#Basic_Explorer.info-37"><span class="linenos">37</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">explorer_enum</span> <span class="o">=</span> <span class="n">enums</span><span class="o">.</span><span class="n">ExplorerEnums</span><span class="o">.</span><span class="n">BASIC_EXPLORER</span>
 </span><span id="Basic_Explorer.info-38"><a href="#Basic_Explorer.info-38"><span class="linenos">38</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">"Basic Explorer. Has no special abilities."</span>
@@ -429,7 +430,9 @@ playsets<wbr>.example_playset<wbr>.explorer    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Tick function for the entity.</p>
+</div>
+
 
                             </div>
                             <div id="Basic_Explorer.render" class="classattr">
@@ -448,7 +451,9 @@ playsets<wbr>.example_playset<wbr>.explorer    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Render function. The default is drawing nothing.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -478,12 +483,12 @@ playsets<wbr>.example_playset<wbr>.explorer    </h1>
                 <dd id="Basic_Explorer.mappings" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.mappings">mappings</a></dd>
                 <dd id="Basic_Explorer.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Basic_Explorer.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
-                <dd id="Basic_Explorer.prev_phase" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.prev_phase">prev_phase</a></dd>
                 <dd id="Basic_Explorer.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
-                <dd id="Basic_Explorer.phase_change_functions" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.phase_change_functions">phase_change_functions</a></dd>
                 <dd id="Basic_Explorer.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Basic_Explorer.add_on_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_on_phase_change">add_on_phase_change</a></dd>
-                <dd id="Basic_Explorer.remove_on_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_on_phase_change">remove_on_phase_change</a></dd>
+                <dd id="Basic_Explorer.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
+                <dd id="Basic_Explorer.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
+                <dd id="Basic_Explorer.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
+                <dd id="Basic_Explorer.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>

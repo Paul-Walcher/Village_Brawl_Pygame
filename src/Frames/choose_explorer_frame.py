@@ -64,7 +64,7 @@ class ChooseExplorerFrame(Frame):
         self.explorer_dimensions = (int(self.height//4 *3 * 0.714), self.height//4 * 3)
 
         self.headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE,
-                                            self.explorer_infos[self.explorer_index].name, self.explorer_infos[self.explorer_index].name_color
+                                            self.explorer_infos[self.explorer_index].name[0], self.explorer_infos[self.explorer_index].name_color
                                             )
         self.headline_pos = (graphics.center_horizontally(self.headline, self.frame_dim), self.height // 20)
 
@@ -121,7 +121,7 @@ class ChooseExplorerFrame(Frame):
 
 
         self.second_headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE,
-                                            self.explorer_infos[self.explorer_index].name, self.explorer_infos[self.explorer_index].name_color
+                                            self.explorer_infos[self.explorer_index].name[0], self.explorer_infos[self.explorer_index].name_color
                                             )
         self.second_headline_pos = (graphics.center_horizontally(self.headline, self.frame_dim) + shift, self.height // 20)
 

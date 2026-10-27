@@ -149,42 +149,48 @@ templates<wbr>.type_enums    </h1>
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
 </span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TypeEnums</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>    <span class="n">GENERAL_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>    <span class="n">GENERAL_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="sd">    The different enums for the card types.</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="sd">    """</span>
 </span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>    <span class="n">BIOME_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>    <span class="n">BIOME</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>    <span class="n">GENERAL_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>    <span class="n">GENERAL_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="n">BLUEPRINT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>    <span class="n">BOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>    <span class="n">BOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>    <span class="n">BUILDING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>    <span class="n">EXPLORER_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>    <span class="n">EXPLORER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="n">ITEM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>    <span class="n">MINIBOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>    <span class="n">MINIBOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="n">OBJECTIVE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="n">PACK</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="n">SCENARIO</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>    <span class="n">EXPLORER_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>    <span class="n">VILLAGE_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="n">VILLAGE_BOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="n">VILLAGE_BOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>    <span class="n">VILLAGE_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="n">VILLAGE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="n">VILLAGER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Locations</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>    <span class="n">ANY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>    <span class="n">VILLAGE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>    <span class="n">OUTSIDE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span> <span class="c1">#any biome</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="c1">#example biomes</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="n">PLAINS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="n">BIOME_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>    <span class="n">BIOME</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>    <span class="n">BLUEPRINT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>    <span class="n">BOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>    <span class="n">BOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="n">BUILDING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>    <span class="n">EXPLORER_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>    <span class="n">EXPLORER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="n">ITEM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="n">MINIBOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="n">MINIBOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>    <span class="n">OBJECTIVE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>    <span class="n">PACK</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>    <span class="n">SCENARIO</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="n">EXPLORER_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>    <span class="n">VILLAGE_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>    <span class="n">VILLAGE_BOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="n">VILLAGE_BOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>    <span class="n">VILLAGE_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>    <span class="n">VILLAGE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="n">VILLAGER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Locations</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="sd">    Location enums, encode the current location of the explorer.</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="sd">    """</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="n">ANY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>    <span class="n">VILLAGE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>    <span class="n">OUTSIDE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span> <span class="c1">#any biome</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>    <span class="c1">#example biomes</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>    <span class="n">PLAINS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -201,36 +207,41 @@ templates<wbr>.type_enums    </h1>
     </div>
     <a class="headerlink" href="#TypeEnums"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="TypeEnums-4"><a href="#TypeEnums-4"><span class="linenos"> 4</span></a><span class="k">class</span><span class="w"> </span><span class="nc">TypeEnums</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-</span><span id="TypeEnums-5"><a href="#TypeEnums-5"><span class="linenos"> 5</span></a>
-</span><span id="TypeEnums-6"><a href="#TypeEnums-6"><span class="linenos"> 6</span></a>    <span class="n">GENERAL_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-7"><a href="#TypeEnums-7"><span class="linenos"> 7</span></a>    <span class="n">GENERAL_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-5"><a href="#TypeEnums-5"><span class="linenos"> 5</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="TypeEnums-6"><a href="#TypeEnums-6"><span class="linenos"> 6</span></a><span class="sd">    The different enums for the card types.</span>
+</span><span id="TypeEnums-7"><a href="#TypeEnums-7"><span class="linenos"> 7</span></a><span class="sd">    """</span>
 </span><span id="TypeEnums-8"><a href="#TypeEnums-8"><span class="linenos"> 8</span></a>
-</span><span id="TypeEnums-9"><a href="#TypeEnums-9"><span class="linenos"> 9</span></a>    <span class="n">BIOME_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-10"><a href="#TypeEnums-10"><span class="linenos">10</span></a>    <span class="n">BIOME</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-9"><a href="#TypeEnums-9"><span class="linenos"> 9</span></a>    <span class="n">GENERAL_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-10"><a href="#TypeEnums-10"><span class="linenos">10</span></a>    <span class="n">GENERAL_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
 </span><span id="TypeEnums-11"><a href="#TypeEnums-11"><span class="linenos">11</span></a>
-</span><span id="TypeEnums-12"><a href="#TypeEnums-12"><span class="linenos">12</span></a>    <span class="n">BLUEPRINT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-13"><a href="#TypeEnums-13"><span class="linenos">13</span></a>    <span class="n">BOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-14"><a href="#TypeEnums-14"><span class="linenos">14</span></a>    <span class="n">BOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-15"><a href="#TypeEnums-15"><span class="linenos">15</span></a>    <span class="n">BUILDING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-16"><a href="#TypeEnums-16"><span class="linenos">16</span></a>    <span class="n">EXPLORER_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-17"><a href="#TypeEnums-17"><span class="linenos">17</span></a>    <span class="n">EXPLORER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-18"><a href="#TypeEnums-18"><span class="linenos">18</span></a>    <span class="n">ITEM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-19"><a href="#TypeEnums-19"><span class="linenos">19</span></a>    <span class="n">MINIBOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-20"><a href="#TypeEnums-20"><span class="linenos">20</span></a>    <span class="n">MINIBOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-21"><a href="#TypeEnums-21"><span class="linenos">21</span></a>    <span class="n">OBJECTIVE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-22"><a href="#TypeEnums-22"><span class="linenos">22</span></a>    <span class="n">PACK</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-23"><a href="#TypeEnums-23"><span class="linenos">23</span></a>    <span class="n">SCENARIO</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-24"><a href="#TypeEnums-24"><span class="linenos">24</span></a>    <span class="n">EXPLORER_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-25"><a href="#TypeEnums-25"><span class="linenos">25</span></a>    <span class="n">VILLAGE_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-26"><a href="#TypeEnums-26"><span class="linenos">26</span></a>    <span class="n">VILLAGE_BOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-27"><a href="#TypeEnums-27"><span class="linenos">27</span></a>    <span class="n">VILLAGE_BOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-28"><a href="#TypeEnums-28"><span class="linenos">28</span></a>    <span class="n">VILLAGE_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-29"><a href="#TypeEnums-29"><span class="linenos">29</span></a>    <span class="n">VILLAGE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="TypeEnums-30"><a href="#TypeEnums-30"><span class="linenos">30</span></a>    <span class="n">VILLAGER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-12"><a href="#TypeEnums-12"><span class="linenos">12</span></a>    <span class="n">BIOME_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-13"><a href="#TypeEnums-13"><span class="linenos">13</span></a>    <span class="n">BIOME</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-14"><a href="#TypeEnums-14"><span class="linenos">14</span></a>
+</span><span id="TypeEnums-15"><a href="#TypeEnums-15"><span class="linenos">15</span></a>    <span class="n">BLUEPRINT</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-16"><a href="#TypeEnums-16"><span class="linenos">16</span></a>    <span class="n">BOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-17"><a href="#TypeEnums-17"><span class="linenos">17</span></a>    <span class="n">BOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-18"><a href="#TypeEnums-18"><span class="linenos">18</span></a>    <span class="n">BUILDING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-19"><a href="#TypeEnums-19"><span class="linenos">19</span></a>    <span class="n">EXPLORER_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-20"><a href="#TypeEnums-20"><span class="linenos">20</span></a>    <span class="n">EXPLORER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-21"><a href="#TypeEnums-21"><span class="linenos">21</span></a>    <span class="n">ITEM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-22"><a href="#TypeEnums-22"><span class="linenos">22</span></a>    <span class="n">MINIBOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-23"><a href="#TypeEnums-23"><span class="linenos">23</span></a>    <span class="n">MINIBOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-24"><a href="#TypeEnums-24"><span class="linenos">24</span></a>    <span class="n">OBJECTIVE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-25"><a href="#TypeEnums-25"><span class="linenos">25</span></a>    <span class="n">PACK</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-26"><a href="#TypeEnums-26"><span class="linenos">26</span></a>    <span class="n">SCENARIO</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-27"><a href="#TypeEnums-27"><span class="linenos">27</span></a>    <span class="n">EXPLORER_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-28"><a href="#TypeEnums-28"><span class="linenos">28</span></a>    <span class="n">VILLAGE_SUPPORTER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-29"><a href="#TypeEnums-29"><span class="linenos">29</span></a>    <span class="n">VILLAGE_BOSS_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-30"><a href="#TypeEnums-30"><span class="linenos">30</span></a>    <span class="n">VILLAGE_BOSS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-31"><a href="#TypeEnums-31"><span class="linenos">31</span></a>    <span class="n">VILLAGE_CARD</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-32"><a href="#TypeEnums-32"><span class="linenos">32</span></a>    <span class="n">VILLAGE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="TypeEnums-33"><a href="#TypeEnums-33"><span class="linenos">33</span></a>    <span class="n">VILLAGER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>The different enums for the card types.</p>
+</div>
+
 
                             <div id="TypeEnums.GENERAL_CARD" class="classattr">
                                 <div class="attr variable">
@@ -520,19 +531,24 @@ templates<wbr>.type_enums    </h1>
 
     </div>
     <a class="headerlink" href="#Locations"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Locations-32"><a href="#Locations-32"><span class="linenos">32</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Locations</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-</span><span id="Locations-33"><a href="#Locations-33"><span class="linenos">33</span></a>
-</span><span id="Locations-34"><a href="#Locations-34"><span class="linenos">34</span></a>    <span class="n">ANY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="Locations-35"><a href="#Locations-35"><span class="linenos">35</span></a>
-</span><span id="Locations-36"><a href="#Locations-36"><span class="linenos">36</span></a>    <span class="n">VILLAGE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="Locations-37"><a href="#Locations-37"><span class="linenos">37</span></a>    <span class="n">OUTSIDE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span> <span class="c1">#any biome</span>
-</span><span id="Locations-38"><a href="#Locations-38"><span class="linenos">38</span></a>
-</span><span id="Locations-39"><a href="#Locations-39"><span class="linenos">39</span></a>    <span class="c1">#example biomes</span>
-</span><span id="Locations-40"><a href="#Locations-40"><span class="linenos">40</span></a>    <span class="n">PLAINS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Locations-35"><a href="#Locations-35"><span class="linenos">35</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Locations</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+</span><span id="Locations-36"><a href="#Locations-36"><span class="linenos">36</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="Locations-37"><a href="#Locations-37"><span class="linenos">37</span></a><span class="sd">    Location enums, encode the current location of the explorer.</span>
+</span><span id="Locations-38"><a href="#Locations-38"><span class="linenos">38</span></a><span class="sd">    """</span>
+</span><span id="Locations-39"><a href="#Locations-39"><span class="linenos">39</span></a>
+</span><span id="Locations-40"><a href="#Locations-40"><span class="linenos">40</span></a>    <span class="n">ANY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="Locations-41"><a href="#Locations-41"><span class="linenos">41</span></a>
+</span><span id="Locations-42"><a href="#Locations-42"><span class="linenos">42</span></a>    <span class="n">VILLAGE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="Locations-43"><a href="#Locations-43"><span class="linenos">43</span></a>    <span class="n">OUTSIDE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span> <span class="c1">#any biome</span>
+</span><span id="Locations-44"><a href="#Locations-44"><span class="linenos">44</span></a>
+</span><span id="Locations-45"><a href="#Locations-45"><span class="linenos">45</span></a>    <span class="c1">#example biomes</span>
+</span><span id="Locations-46"><a href="#Locations-46"><span class="linenos">46</span></a>    <span class="n">PLAINS</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Location enums, encode the current location of the explorer.</p>
+</div>
+
 
                             <div id="Locations.ANY" class="classattr">
                                 <div class="attr variable">

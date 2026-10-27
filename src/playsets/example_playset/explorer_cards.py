@@ -31,7 +31,7 @@ class Example_Card_1(Explorer_Card_Template):
     def info():
 
         cinfo = ExplorerCardInfo(
-                        name = "Example Card 1",
+                        name = ["Example Card 1"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_1,
                         description = "Example Card",
@@ -56,7 +56,7 @@ class Example_Card_2(Explorer_Card_Template):
     def info():
 
         cinfo = ExplorerCardInfo(
-                        name = "Example Card 2",
+                        name = ["Example Card 2"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_2,
                         description = "Example Card",
@@ -81,7 +81,7 @@ class Example_Card_3(Explorer_Card_Template):
     def info():
 
         cinfo = ExplorerCardInfo(
-                        name = "Example Card 3",
+                        name = ["Example Card 3"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_3,
                         description = "Example Card",
@@ -106,7 +106,7 @@ class Example_Card_4(Explorer_Card_Template):
     def info():
 
         cinfo = ExplorerCardInfo(
-                        name = "Example Card 4",
+                        name = ["Example Card 4"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_4,
                         description = "Example Card",
@@ -131,7 +131,7 @@ class Example_Card_5(Explorer_Card_Template):
     def info():
 
         cinfo = ExplorerCardInfo(
-                        name = "Example Card 5",
+                        name = ["Example Card 5"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_5,
                         description = "Example Card",
@@ -156,7 +156,7 @@ class Example_Card_6(Explorer_Card_Template):
     def info():
 
         cinfo = ExplorerCardInfo(
-                        name = "Example Card 6",
+                        name = ["Example Card 6"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_6,
                         description = "Example Card",
@@ -181,7 +181,7 @@ class Example_Card_7(Explorer_Card_Template):
     def info():
 
         cinfo = ExplorerCardInfo(
-                        name = "Example Card 7",
+                        name = ["Example Card 7"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_7,
                         description = "Example Card",
@@ -207,7 +207,7 @@ class Example_Card_8(Explorer_Card_Template):
     def info():
 
         cinfo = ExplorerCardInfo(
-                        name = "Example Card 8",
+                        name = ["Example Card 8"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_8,
                         description = "Example Card",
@@ -233,7 +233,7 @@ class Example_Card_9(Explorer_Card_Template):
     def info():
 
         cinfo = ExplorerCardInfo(
-                        name = "Example Card 9",
+                        name = ["Example Card 9"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_9,
                         description = "Example Card",
@@ -258,7 +258,7 @@ class Example_Card_10(Explorer_Card_Template):
     def info():
 
         cinfo = ExplorerCardInfo(
-                        name = "Example Card 10",
+                        name = ["Example Card 10"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_4,
                         description = "Example Card",
@@ -286,7 +286,7 @@ class Small_Rest(Explorer_Card_Template):
 
         cinfo = ExplorerCardInfo()
 
-        cinfo.name = "Small Rest"
+        cinfo.name = ["Small Rest"]
         cinfo.name_color = Colors.STANDARD_TEXT_COLOR
 
         cinfo.card_enum = enums.ExplorerCardEnums.SMALL_REST

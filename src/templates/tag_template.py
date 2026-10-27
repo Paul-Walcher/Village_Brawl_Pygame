@@ -1,20 +1,46 @@
+"""
+This module contains the tag classes.
+A tag categorizes a Playset Entity belonging
+to the category of cards having the same tag.
+"""
 from constants import Colors
 from abc import abstractmethod, ABC
 from templates.type_enums import TypeEnums
 
 class Tag_Template(ABC):
 
-    def __init__(self, type_enum, own_enum, tag_color=Colors.STANDARD_TEXT_COLOR):
+    def __init__(
+                self,
+                type_enum: int,
+                own_enum: int,
+                tag_color: tuple[int, int, int] = Colors.STANDARD_TEXT_COLOR
+                ):
 
-        self.type_enum = type_enum
-        self.own_enum = own_enum
-
-        self.tag_tab = f" "*5
-        self.full_tag_tab = " " * len(f"{self.own_enum}:") + self.tag_tab
+        self.type_enum: int = type_enum
+        """
+        Defines the type of card this tag belongs to.
+        """
+        self.own_enum: int = own_enum
+        """
+        Enum identifier for this specific tag class.
+        """
+        self.tag_tab: str = f" "*5
+        """
+        Extra indentation for the tag description.
+        """
+        self.full_tag_tab: str = " " * len(f"{self.own_enum}:") + self.tag_tab
+        """
+        Full indentation for the description text.
+        """
         self.tag_color = tag_color
+        """
+        Color the description will be printed in.
+        """
 
     def __repr__(self):
-        tab_in = " "*len(self.own_enum)
+        """
+        Returns the Tag description.
+        """
         return f"{self.own_enum}:"
 
 class General_Card_Tag_Template(Tag_Template):

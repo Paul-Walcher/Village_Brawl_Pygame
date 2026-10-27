@@ -36,24 +36,6 @@
                     <a class="class" href="#UnlockCondition">UnlockCondition</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="class" href="#UnlockCondition.EventTypes">UnlockCondition.EventTypes</a>
-                                        <ul class="memberlist">
-                                    <li>
-                                            <a class="variable" href="#UnlockCondition.EventTypes.UNLOCK_ANIMATION_FINISHED">UNLOCK_ANIMATION_FINISHED</a>
-                                    </li>
-                            </ul>
-
-                        </li>
-                        <li>
-                                <a class="function" href="#UnlockCondition.bind_events">bind_events</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#UnlockCondition.tick">tick</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#UnlockCondition.render">render</a>
-                        </li>
-                        <li>
                                 <a class="function" href="#UnlockCondition.can_be_unlocked">can_be_unlocked</a>
                         </li>
                         <li>
@@ -94,39 +76,36 @@ Gets the state of the game, then checks for unlock.</p>
 </span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">Frames.frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">Frame</span>
 </span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">R_ID</span>
 </span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="k">class</span><span class="w"> </span><span class="nc">UnlockCondition</span><span class="p">(</span><span class="n">Frame</span><span class="p">):</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="k">class</span><span class="w"> </span><span class="nc">UnlockCondition</span><span class="p">:</span>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">EventTypes</span><span class="p">:</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>        <span class="n">UNLOCK_ANIMATION_FINISHED</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_unlock_animation_playing</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">bind_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">clear_event_callbacks</span><span class="p">()</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">    This class defines the unlock procedures</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    for the cards.</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="sd">    """</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>        <span class="k">pass</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>
 </span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>
-</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">manage_pygame_events</span><span class="p">()</span>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>            <span class="k">return</span> <span class="kc">None</span>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>        <span class="k">return</span> <span class="bp">self</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>    <span class="nd">@abstractmethod</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">can_be_unlocked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="sd">        Receives the gamestate, then returns</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">        True if the unlock condition is met, else False.</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="sd">        """</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>        <span class="k">pass</span>
 </span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">):</span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>        <span class="k">pass</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a>
-</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>    <span class="nd">@abstractmethod</span>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">can_be_unlocked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">):</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>        <span class="c1">#should return True if yes,</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>        <span class="c1">#False if no</span>
-</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>        <span class="k">pass</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>
-</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="nd">@abstractmethod</span>
-</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">):</span>
-</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>        <span class="c1">#should apply the cost incurred, then start the animation</span>
-</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>        <span class="k">pass</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>    <span class="nd">@abstractmethod</span>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="sd">        Receives the current gamestate, then applies the changes</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="sd">        to the gamestate necessary to unlock the card with this unlock condition.</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a><span class="sd">        If the unlock condition is not met, this returns False.</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="sd">        If the process was successful, this returns True.</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="sd">        """</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 
@@ -136,136 +115,76 @@ Gets the state of the game, then checks for unlock.</p>
 <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">UnlockCondition</span><wbr>(<span class="base"><a href="../Frames/frame.html#Frame">Frames.frame.Frame</a></span>):
+    <span class="name">UnlockCondition</span>:
 
                 <label class="view-source-button" for="UnlockCondition-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#UnlockCondition"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UnlockCondition-10"><a href="#UnlockCondition-10"><span class="linenos">10</span></a><span class="k">class</span><span class="w"> </span><span class="nc">UnlockCondition</span><span class="p">(</span><span class="n">Frame</span><span class="p">):</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UnlockCondition-10"><a href="#UnlockCondition-10"><span class="linenos">10</span></a><span class="k">class</span><span class="w"> </span><span class="nc">UnlockCondition</span><span class="p">:</span>
 </span><span id="UnlockCondition-11"><a href="#UnlockCondition-11"><span class="linenos">11</span></a>
-</span><span id="UnlockCondition-12"><a href="#UnlockCondition-12"><span class="linenos">12</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">EventTypes</span><span class="p">:</span>
-</span><span id="UnlockCondition-13"><a href="#UnlockCondition-13"><span class="linenos">13</span></a>        <span class="n">UNLOCK_ANIMATION_FINISHED</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
-</span><span id="UnlockCondition-14"><a href="#UnlockCondition-14"><span class="linenos">14</span></a>
-</span><span id="UnlockCondition-15"><a href="#UnlockCondition-15"><span class="linenos">15</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="UnlockCondition-16"><a href="#UnlockCondition-16"><span class="linenos">16</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_unlock_animation_playing</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="UnlockCondition-17"><a href="#UnlockCondition-17"><span class="linenos">17</span></a>
-</span><span id="UnlockCondition-18"><a href="#UnlockCondition-18"><span class="linenos">18</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">bind_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="UnlockCondition-19"><a href="#UnlockCondition-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">clear_event_callbacks</span><span class="p">()</span>
+</span><span id="UnlockCondition-12"><a href="#UnlockCondition-12"><span class="linenos">12</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="UnlockCondition-13"><a href="#UnlockCondition-13"><span class="linenos">13</span></a><span class="sd">    This class defines the unlock procedures</span>
+</span><span id="UnlockCondition-14"><a href="#UnlockCondition-14"><span class="linenos">14</span></a><span class="sd">    for the cards.</span>
+</span><span id="UnlockCondition-15"><a href="#UnlockCondition-15"><span class="linenos">15</span></a><span class="sd">    """</span>
+</span><span id="UnlockCondition-16"><a href="#UnlockCondition-16"><span class="linenos">16</span></a>
+</span><span id="UnlockCondition-17"><a href="#UnlockCondition-17"><span class="linenos">17</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="UnlockCondition-18"><a href="#UnlockCondition-18"><span class="linenos">18</span></a>        <span class="k">pass</span>
+</span><span id="UnlockCondition-19"><a href="#UnlockCondition-19"><span class="linenos">19</span></a>
 </span><span id="UnlockCondition-20"><a href="#UnlockCondition-20"><span class="linenos">20</span></a>
-</span><span id="UnlockCondition-21"><a href="#UnlockCondition-21"><span class="linenos">21</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="UnlockCondition-22"><a href="#UnlockCondition-22"><span class="linenos">22</span></a>
-</span><span id="UnlockCondition-23"><a href="#UnlockCondition-23"><span class="linenos">23</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">manage_pygame_events</span><span class="p">()</span>
-</span><span id="UnlockCondition-24"><a href="#UnlockCondition-24"><span class="linenos">24</span></a>
-</span><span id="UnlockCondition-25"><a href="#UnlockCondition-25"><span class="linenos">25</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
-</span><span id="UnlockCondition-26"><a href="#UnlockCondition-26"><span class="linenos">26</span></a>            <span class="k">return</span> <span class="kc">None</span>
-</span><span id="UnlockCondition-27"><a href="#UnlockCondition-27"><span class="linenos">27</span></a>
-</span><span id="UnlockCondition-28"><a href="#UnlockCondition-28"><span class="linenos">28</span></a>        <span class="k">return</span> <span class="bp">self</span>
+</span><span id="UnlockCondition-21"><a href="#UnlockCondition-21"><span class="linenos">21</span></a>
+</span><span id="UnlockCondition-22"><a href="#UnlockCondition-22"><span class="linenos">22</span></a>    <span class="nd">@abstractmethod</span>
+</span><span id="UnlockCondition-23"><a href="#UnlockCondition-23"><span class="linenos">23</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">can_be_unlocked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="UnlockCondition-24"><a href="#UnlockCondition-24"><span class="linenos">24</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="UnlockCondition-25"><a href="#UnlockCondition-25"><span class="linenos">25</span></a><span class="sd">        Receives the gamestate, then returns</span>
+</span><span id="UnlockCondition-26"><a href="#UnlockCondition-26"><span class="linenos">26</span></a><span class="sd">        True if the unlock condition is met, else False.</span>
+</span><span id="UnlockCondition-27"><a href="#UnlockCondition-27"><span class="linenos">27</span></a><span class="sd">        """</span>
+</span><span id="UnlockCondition-28"><a href="#UnlockCondition-28"><span class="linenos">28</span></a>        <span class="k">pass</span>
 </span><span id="UnlockCondition-29"><a href="#UnlockCondition-29"><span class="linenos">29</span></a>
-</span><span id="UnlockCondition-30"><a href="#UnlockCondition-30"><span class="linenos">30</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">):</span>
-</span><span id="UnlockCondition-31"><a href="#UnlockCondition-31"><span class="linenos">31</span></a>        <span class="k">pass</span>
-</span><span id="UnlockCondition-32"><a href="#UnlockCondition-32"><span class="linenos">32</span></a>
-</span><span id="UnlockCondition-33"><a href="#UnlockCondition-33"><span class="linenos">33</span></a>    <span class="nd">@abstractmethod</span>
-</span><span id="UnlockCondition-34"><a href="#UnlockCondition-34"><span class="linenos">34</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">can_be_unlocked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">):</span>
-</span><span id="UnlockCondition-35"><a href="#UnlockCondition-35"><span class="linenos">35</span></a>        <span class="c1">#should return True if yes,</span>
-</span><span id="UnlockCondition-36"><a href="#UnlockCondition-36"><span class="linenos">36</span></a>        <span class="c1">#False if no</span>
-</span><span id="UnlockCondition-37"><a href="#UnlockCondition-37"><span class="linenos">37</span></a>        <span class="k">pass</span>
-</span><span id="UnlockCondition-38"><a href="#UnlockCondition-38"><span class="linenos">38</span></a>
-</span><span id="UnlockCondition-39"><a href="#UnlockCondition-39"><span class="linenos">39</span></a>    <span class="nd">@abstractmethod</span>
-</span><span id="UnlockCondition-40"><a href="#UnlockCondition-40"><span class="linenos">40</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">):</span>
-</span><span id="UnlockCondition-41"><a href="#UnlockCondition-41"><span class="linenos">41</span></a>        <span class="c1">#should apply the cost incurred, then start the animation</span>
-</span><span id="UnlockCondition-42"><a href="#UnlockCondition-42"><span class="linenos">42</span></a>        <span class="k">pass</span>
+</span><span id="UnlockCondition-30"><a href="#UnlockCondition-30"><span class="linenos">30</span></a>    <span class="nd">@abstractmethod</span>
+</span><span id="UnlockCondition-31"><a href="#UnlockCondition-31"><span class="linenos">31</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="UnlockCondition-32"><a href="#UnlockCondition-32"><span class="linenos">32</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="UnlockCondition-33"><a href="#UnlockCondition-33"><span class="linenos">33</span></a><span class="sd">        Receives the current gamestate, then applies the changes</span>
+</span><span id="UnlockCondition-34"><a href="#UnlockCondition-34"><span class="linenos">34</span></a><span class="sd">        to the gamestate necessary to unlock the card with this unlock condition.</span>
+</span><span id="UnlockCondition-35"><a href="#UnlockCondition-35"><span class="linenos">35</span></a>
+</span><span id="UnlockCondition-36"><a href="#UnlockCondition-36"><span class="linenos">36</span></a><span class="sd">        If the unlock condition is not met, this returns False.</span>
+</span><span id="UnlockCondition-37"><a href="#UnlockCondition-37"><span class="linenos">37</span></a><span class="sd">        If the process was successful, this returns True.</span>
+</span><span id="UnlockCondition-38"><a href="#UnlockCondition-38"><span class="linenos">38</span></a><span class="sd">        """</span>
+</span><span id="UnlockCondition-39"><a href="#UnlockCondition-39"><span class="linenos">39</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
+            <div class="docstring"><p>This class defines the unlock procedures
+for the cards.</p>
 </div>
 
 
-                            <div id="UnlockCondition.bind_events" class="classattr">
-                                        <input id="UnlockCondition.bind_events-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">bind_events</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="UnlockCondition.bind_events-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#UnlockCondition.bind_events"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UnlockCondition.bind_events-18"><a href="#UnlockCondition.bind_events-18"><span class="linenos">18</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">bind_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="UnlockCondition.bind_events-19"><a href="#UnlockCondition.bind_events-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">clear_event_callbacks</span><span class="p">()</span>
-</span></pre></div>
-
-
-    
-
-                            </div>
-                            <div id="UnlockCondition.tick" class="classattr">
-                                        <input id="UnlockCondition.tick-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">tick</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="UnlockCondition.tick-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#UnlockCondition.tick"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UnlockCondition.tick-21"><a href="#UnlockCondition.tick-21"><span class="linenos">21</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="UnlockCondition.tick-22"><a href="#UnlockCondition.tick-22"><span class="linenos">22</span></a>
-</span><span id="UnlockCondition.tick-23"><a href="#UnlockCondition.tick-23"><span class="linenos">23</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">manage_pygame_events</span><span class="p">()</span>
-</span><span id="UnlockCondition.tick-24"><a href="#UnlockCondition.tick-24"><span class="linenos">24</span></a>
-</span><span id="UnlockCondition.tick-25"><a href="#UnlockCondition.tick-25"><span class="linenos">25</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
-</span><span id="UnlockCondition.tick-26"><a href="#UnlockCondition.tick-26"><span class="linenos">26</span></a>            <span class="k">return</span> <span class="kc">None</span>
-</span><span id="UnlockCondition.tick-27"><a href="#UnlockCondition.tick-27"><span class="linenos">27</span></a>
-</span><span id="UnlockCondition.tick-28"><a href="#UnlockCondition.tick-28"><span class="linenos">28</span></a>        <span class="k">return</span> <span class="bp">self</span>
-</span></pre></div>
-
-
-    
-
-                            </div>
-                            <div id="UnlockCondition.render" class="classattr">
-                                        <input id="UnlockCondition.render-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">render</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">screen</span></span><span class="return-annotation">):</span></span>
-
-                <label class="view-source-button" for="UnlockCondition.render-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#UnlockCondition.render"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UnlockCondition.render-30"><a href="#UnlockCondition.render-30"><span class="linenos">30</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">):</span>
-</span><span id="UnlockCondition.render-31"><a href="#UnlockCondition.render-31"><span class="linenos">31</span></a>        <span class="k">pass</span>
-</span></pre></div>
-
-
-    
-
-                            </div>
                             <div id="UnlockCondition.can_be_unlocked" class="classattr">
                                         <input id="UnlockCondition.can_be_unlocked-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
                     <div class="decorator decorator-abstractmethod">@abstractmethod</div>
 
         <span class="def">def</span>
-        <span class="name">can_be_unlocked</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">gamestate</span></span><span class="return-annotation">):</span></span>
+        <span class="name">can_be_unlocked</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">gamestate</span><span class="p">:</span> <span class="nb">object</span></span><span class="return-annotation">) -> <span class="nb">bool</span>:</span></span>
 
                 <label class="view-source-button" for="UnlockCondition.can_be_unlocked-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#UnlockCondition.can_be_unlocked"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UnlockCondition.can_be_unlocked-33"><a href="#UnlockCondition.can_be_unlocked-33"><span class="linenos">33</span></a>    <span class="nd">@abstractmethod</span>
-</span><span id="UnlockCondition.can_be_unlocked-34"><a href="#UnlockCondition.can_be_unlocked-34"><span class="linenos">34</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">can_be_unlocked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">):</span>
-</span><span id="UnlockCondition.can_be_unlocked-35"><a href="#UnlockCondition.can_be_unlocked-35"><span class="linenos">35</span></a>        <span class="c1">#should return True if yes,</span>
-</span><span id="UnlockCondition.can_be_unlocked-36"><a href="#UnlockCondition.can_be_unlocked-36"><span class="linenos">36</span></a>        <span class="c1">#False if no</span>
-</span><span id="UnlockCondition.can_be_unlocked-37"><a href="#UnlockCondition.can_be_unlocked-37"><span class="linenos">37</span></a>        <span class="k">pass</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UnlockCondition.can_be_unlocked-22"><a href="#UnlockCondition.can_be_unlocked-22"><span class="linenos">22</span></a>    <span class="nd">@abstractmethod</span>
+</span><span id="UnlockCondition.can_be_unlocked-23"><a href="#UnlockCondition.can_be_unlocked-23"><span class="linenos">23</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">can_be_unlocked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="UnlockCondition.can_be_unlocked-24"><a href="#UnlockCondition.can_be_unlocked-24"><span class="linenos">24</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="UnlockCondition.can_be_unlocked-25"><a href="#UnlockCondition.can_be_unlocked-25"><span class="linenos">25</span></a><span class="sd">        Receives the gamestate, then returns</span>
+</span><span id="UnlockCondition.can_be_unlocked-26"><a href="#UnlockCondition.can_be_unlocked-26"><span class="linenos">26</span></a><span class="sd">        True if the unlock condition is met, else False.</span>
+</span><span id="UnlockCondition.can_be_unlocked-27"><a href="#UnlockCondition.can_be_unlocked-27"><span class="linenos">27</span></a><span class="sd">        """</span>
+</span><span id="UnlockCondition.can_be_unlocked-28"><a href="#UnlockCondition.can_be_unlocked-28"><span class="linenos">28</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Receives the gamestate, then returns
+True if the unlock condition is met, else False.</p>
+</div>
+
 
                             </div>
                             <div id="UnlockCondition.unlock" class="classattr">
@@ -274,110 +193,32 @@ Gets the state of the game, then checks for unlock.</p>
                     <div class="decorator decorator-abstractmethod">@abstractmethod</div>
 
         <span class="def">def</span>
-        <span class="name">unlock</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">gamestate</span></span><span class="return-annotation">):</span></span>
+        <span class="name">unlock</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">gamestate</span><span class="p">:</span> <span class="nb">object</span></span><span class="return-annotation">) -> <span class="nb">bool</span>:</span></span>
 
                 <label class="view-source-button" for="UnlockCondition.unlock-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#UnlockCondition.unlock"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UnlockCondition.unlock-39"><a href="#UnlockCondition.unlock-39"><span class="linenos">39</span></a>    <span class="nd">@abstractmethod</span>
-</span><span id="UnlockCondition.unlock-40"><a href="#UnlockCondition.unlock-40"><span class="linenos">40</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">):</span>
-</span><span id="UnlockCondition.unlock-41"><a href="#UnlockCondition.unlock-41"><span class="linenos">41</span></a>        <span class="c1">#should apply the cost incurred, then start the animation</span>
-</span><span id="UnlockCondition.unlock-42"><a href="#UnlockCondition.unlock-42"><span class="linenos">42</span></a>        <span class="k">pass</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="UnlockCondition.unlock-30"><a href="#UnlockCondition.unlock-30"><span class="linenos">30</span></a>    <span class="nd">@abstractmethod</span>
+</span><span id="UnlockCondition.unlock-31"><a href="#UnlockCondition.unlock-31"><span class="linenos">31</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamestate</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="UnlockCondition.unlock-32"><a href="#UnlockCondition.unlock-32"><span class="linenos">32</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="UnlockCondition.unlock-33"><a href="#UnlockCondition.unlock-33"><span class="linenos">33</span></a><span class="sd">        Receives the current gamestate, then applies the changes</span>
+</span><span id="UnlockCondition.unlock-34"><a href="#UnlockCondition.unlock-34"><span class="linenos">34</span></a><span class="sd">        to the gamestate necessary to unlock the card with this unlock condition.</span>
+</span><span id="UnlockCondition.unlock-35"><a href="#UnlockCondition.unlock-35"><span class="linenos">35</span></a>
+</span><span id="UnlockCondition.unlock-36"><a href="#UnlockCondition.unlock-36"><span class="linenos">36</span></a><span class="sd">        If the unlock condition is not met, this returns False.</span>
+</span><span id="UnlockCondition.unlock-37"><a href="#UnlockCondition.unlock-37"><span class="linenos">37</span></a><span class="sd">        If the process was successful, this returns True.</span>
+</span><span id="UnlockCondition.unlock-38"><a href="#UnlockCondition.unlock-38"><span class="linenos">38</span></a><span class="sd">        """</span>
+</span><span id="UnlockCondition.unlock-39"><a href="#UnlockCondition.unlock-39"><span class="linenos">39</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Receives the current gamestate, then applies the changes
+to the gamestate necessary to unlock the card with this unlock condition.</p>
 
-                            </div>
-                            <div class="inherited">
-                                <h5>Inherited Members</h5>
-                                <dl>
-                                    <div><dt><a href="../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
-                                <dd id="UnlockCondition.STANDARD_FOCUS_GROUP" class="variable"><a href="../Frames/frame.html#Frame.STANDARD_FOCUS_GROUP">STANDARD_FOCUS_GROUP</a></dd>
-                <dd id="UnlockCondition.FOCUS_GROUPS" class="variable"><a href="../Frames/frame.html#Frame.FOCUS_GROUPS">FOCUS_GROUPS</a></dd>
-                <dd id="UnlockCondition.SlideHandler" class="class"><a href="../Frames/frame.html#Frame.SlideHandler">SlideHandler</a></dd>
-                <dd id="UnlockCondition.CallbackEvent" class="class"><a href="../Frames/frame.html#Frame.CallbackEvent">CallbackEvent</a></dd>
-                <dd id="UnlockCondition.frame_enum" class="variable"><a href="../Frames/frame.html#Frame.frame_enum">frame_enum</a></dd>
-                <dd id="UnlockCondition.data" class="variable"><a href="../Frames/frame.html#Frame.data">data</a></dd>
-                <dd id="UnlockCondition.focus_group" class="variable"><a href="../Frames/frame.html#Frame.focus_group">focus_group</a></dd>
-                <dd id="UnlockCondition.parent_frame" class="variable"><a href="../Frames/frame.html#Frame.parent_frame">parent_frame</a></dd>
-                <dd id="UnlockCondition.max_parent_frames" class="variable"><a href="../Frames/frame.html#Frame.max_parent_frames">max_parent_frames</a></dd>
-                <dd id="UnlockCondition.event_queue" class="variable"><a href="../Frames/frame.html#Frame.event_queue">event_queue</a></dd>
-                <dd id="UnlockCondition.center" class="variable"><a href="../Frames/frame.html#Frame.center">center</a></dd>
-                <dd id="UnlockCondition.widgets" class="variable"><a href="../Frames/frame.html#Frame.widgets">widgets</a></dd>
-                <dd id="UnlockCondition.frame_dim" class="variable"><a href="../Frames/frame.html#Frame.frame_dim">frame_dim</a></dd>
-                <dd id="UnlockCondition.x" class="variable"><a href="../Frames/frame.html#Frame.x">x</a></dd>
-                <dd id="UnlockCondition.y" class="variable"><a href="../Frames/frame.html#Frame.y">y</a></dd>
-                <dd id="UnlockCondition.width" class="variable"><a href="../Frames/frame.html#Frame.width">width</a></dd>
-                <dd id="UnlockCondition.height" class="variable"><a href="../Frames/frame.html#Frame.height">height</a></dd>
-                <dd id="UnlockCondition.has_focus" class="variable"><a href="../Frames/frame.html#Frame.has_focus">has_focus</a></dd>
-                <dd id="UnlockCondition.on_focus_gained" class="function"><a href="../Frames/frame.html#Frame.on_focus_gained">on_focus_gained</a></dd>
-                <dd id="UnlockCondition.on_focus_lost" class="function"><a href="../Frames/frame.html#Frame.on_focus_lost">on_focus_lost</a></dd>
-                <dd id="UnlockCondition.move_by" class="function"><a href="../Frames/frame.html#Frame.move_by">move_by</a></dd>
-                <dd id="UnlockCondition.offset_frame" class="function"><a href="../Frames/frame.html#Frame.offset_frame">offset_frame</a></dd>
-                <dd id="UnlockCondition.move_to" class="function"><a href="../Frames/frame.html#Frame.move_to">move_to</a></dd>
-                <dd id="UnlockCondition.focus" class="function"><a href="../Frames/frame.html#Frame.focus">focus</a></dd>
-                <dd id="UnlockCondition.unfocus" class="function"><a href="../Frames/frame.html#Frame.unfocus">unfocus</a></dd>
-                <dd id="UnlockCondition.is_focused" class="function"><a href="../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
-                <dd id="UnlockCondition.key_pressed" class="function"><a href="../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="UnlockCondition.add_escape_callback" class="function"><a href="../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
-                <dd id="UnlockCondition.manage_pygame_events" class="function"><a href="../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
-                <dd id="UnlockCondition.clear_event_callbacks" class="function"><a href="../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
-                <dd id="UnlockCondition.clear_pygame_events" class="function"><a href="../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
-                <dd id="UnlockCondition.get_event_callbacks" class="function"><a href="../Frames/frame.html#Frame.get_event_callbacks">get_event_callbacks</a></dd>
-                <dd id="UnlockCondition.add_pygame_event_callback" class="function"><a href="../Frames/frame.html#Frame.add_pygame_event_callback">add_pygame_event_callback</a></dd>
-                <dd id="UnlockCondition.remove_pygame_event_callback" class="function"><a href="../Frames/frame.html#Frame.remove_pygame_event_callback">remove_pygame_event_callback</a></dd>
-                <dd id="UnlockCondition.pygame_key_is_disabled" class="function"><a href="../Frames/frame.html#Frame.pygame_key_is_disabled">pygame_key_is_disabled</a></dd>
-                <dd id="UnlockCondition.disable_pygame_key" class="function"><a href="../Frames/frame.html#Frame.disable_pygame_key">disable_pygame_key</a></dd>
-                <dd id="UnlockCondition.enable_pygame_key" class="function"><a href="../Frames/frame.html#Frame.enable_pygame_key">enable_pygame_key</a></dd>
-                <dd id="UnlockCondition.add_pygame_key_callback" class="function"><a href="../Frames/frame.html#Frame.add_pygame_key_callback">add_pygame_key_callback</a></dd>
-                <dd id="UnlockCondition.raise_exit_flag" class="function"><a href="../Frames/frame.html#Frame.raise_exit_flag">raise_exit_flag</a></dd>
-                <dd id="UnlockCondition.reset_exit_flag" class="function"><a href="../Frames/frame.html#Frame.reset_exit_flag">reset_exit_flag</a></dd>
-                <dd id="UnlockCondition.exit_flag_raised" class="function"><a href="../Frames/frame.html#Frame.exit_flag_raised">exit_flag_raised</a></dd>
-                <dd id="UnlockCondition.set_parent_frame" class="function"><a href="../Frames/frame.html#Frame.set_parent_frame">set_parent_frame</a></dd>
-                <dd id="UnlockCondition.widgets_tick" class="function"><a href="../Frames/frame.html#Frame.widgets_tick">widgets_tick</a></dd>
-                <dd id="UnlockCondition.render_widgets" class="function"><a href="../Frames/frame.html#Frame.render_widgets">render_widgets</a></dd>
-                <dd id="UnlockCondition.rerender" class="function"><a href="../Frames/frame.html#Frame.rerender">rerender</a></dd>
+<p>If the unlock condition is not met, this returns False.
+If the process was successful, this returns True.</p>
+</div>
 
-            </div>
-            <div><dt><a href="../event_queue_manager.html#EventQueueManager">event_queue_manager.EventQueueManager</a></dt>
-                                <dd id="UnlockCondition.push_event" class="function"><a href="../event_queue_manager.html#EventQueueManager.push_event">push_event</a></dd>
-                <dd id="UnlockCondition.poll_events" class="function"><a href="../event_queue_manager.html#EventQueueManager.poll_events">poll_events</a></dd>
-                <dd id="UnlockCondition.poll_events_with_putback" class="function"><a href="../event_queue_manager.html#EventQueueManager.poll_events_with_putback">poll_events_with_putback</a></dd>
-
-            </div>
-                                </dl>
-                            </div>
-                </section>
-                <section id="UnlockCondition.EventTypes">
-                            <input id="UnlockCondition.EventTypes-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
-<div class="attr class">
-            
-    <span class="def">class</span>
-    <span class="name">UnlockCondition.EventTypes</span>:
-
-                <label class="view-source-button" for="UnlockCondition.EventTypes-view-source"><span>View Source</span></label>
-
-    </div>
-    <a class="headerlink" href="#UnlockCondition.EventTypes"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="UnlockCondition.EventTypes-12"><a href="#UnlockCondition.EventTypes-12"><span class="linenos">12</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">EventTypes</span><span class="p">:</span>
-</span><span id="UnlockCondition.EventTypes-13"><a href="#UnlockCondition.EventTypes-13"><span class="linenos">13</span></a>        <span class="n">UNLOCK_ANIMATION_FINISHED</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
-</span></pre></div>
-
-
-    
-
-                            <div id="UnlockCondition.EventTypes.UNLOCK_ANIMATION_FINISHED" class="classattr">
-                                <div class="attr variable">
-            <span class="name">UNLOCK_ANIMATION_FINISHED</span>        =
-<span class="default_value">693940895166769139</span>
-
-        
-    </div>
-    <a class="headerlink" href="#UnlockCondition.EventTypes.UNLOCK_ANIMATION_FINISHED"></a>
-    
-    
 
                             </div>
                 </section>

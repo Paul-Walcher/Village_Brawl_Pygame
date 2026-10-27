@@ -240,11 +240,20 @@ class ExplorerInfoFrame(Frame):
             background_color = (*Colors.BLACK, 210)
             self.surface.fill(background_color)
 
+            tosize = None
+            tocolor = None
+
+            if self.state == self.DESCRIPTION_FOCUSED:
+                tosize = 5
+                tocolor = Colors.WHITE
+
             self.explorer_info.render_info_page_parts(
                                                         screen=self.surface,
                                                         info_page_part_container=self.info_page_parts,
                                                         background_color=background_color,
-                                                        full_image_shown=self.full_image_shown
+                                                        full_image_shown=self.full_image_shown,
+                                                        textbox_outline_size=tosize,
+                                                        textbox_outline_color=tocolor
                                                         )
             self.slider_menu.render(self.surface)
 

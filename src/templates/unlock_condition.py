@@ -6,36 +6,33 @@ from abc import ABC, abstractmethod
 from Frames.frame import Frame
 from constants import R_ID
 
-class UnlockCondition(Frame):
+class UnlockCondition:
 
-    class EventTypes:
-        UNLOCK_ANIMATION_FINISHED = R_ID()
+    """
+    This class defines the unlock procedures
+    for the cards.
+    """
 
     def __init__(self):
-        self._unlock_animation_playing = False
+        pass
 
-    def bind_events(self):
-        self.clear_event_callbacks()
 
-    def tick(self):
 
-        self.manage_pygame_events()
-
-        if self.exit_flag_raised():
-            return None
-
-        return self
-
-    def render(self, screen):
+    @abstractmethod
+    def can_be_unlocked(self, gamestate: object) -> bool:
+        """
+        Receives the gamestate, then returns
+        True if the unlock condition is met, else False.
+        """
         pass
 
     @abstractmethod
-    def can_be_unlocked(self, gamestate):
-        #should return True if yes,
-        #False if no
-        pass
+    def unlock(self, gamestate: object) -> bool:
+        """
+        Receives the current gamestate, then applies the changes
+        to the gamestate necessary to unlock the card with this unlock condition.
 
-    @abstractmethod
-    def unlock(self, gamestate):
-        #should apply the cost incurred, then start the animation
+        If the unlock condition is not met, this returns False.
+        If the process was successful, this returns True.
+        """
         pass

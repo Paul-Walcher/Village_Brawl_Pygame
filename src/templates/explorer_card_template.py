@@ -10,7 +10,7 @@ from constants import Fonts, Colors
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 
-from templates.renderable_card import Renderable_Card
+from templates.renderable_cardinfo import Renderable_CardInfo
 from templates.playset_entity import PlaysetEntity
 from calculations import Weightlist
 """
@@ -18,7 +18,7 @@ class CardTag:
     pass
 """
 
-class ExplorerCardInfo(Renderable_Card):
+class ExplorerCardInfo(Renderable_CardInfo):
 
     def __init__(self,
                 name: str = "",
@@ -34,7 +34,7 @@ class ExplorerCardInfo(Renderable_Card):
                 playable_locations = None,
                 activation_phases: list = None,
                 keep_duration=0
-                    ):
+                ):
 
 
         super().__init__(name, name_color, description, description_color, card_image_path, standard_image_path)
@@ -56,7 +56,7 @@ class ExplorerCardInfo(Renderable_Card):
 
         #extra info
 
-        page_parts = Renderable_Card.get_info_page_parts(self, frame_dim, font, hmargin, vmargin, chars_per_line, lines_per_page, height_distributions)
+        page_parts = Renderable_CardInfo.get_info_page_parts(self, frame_dim, font, hmargin, vmargin, chars_per_line, lines_per_page, height_distributions)
 
 
         #creating extra info pages

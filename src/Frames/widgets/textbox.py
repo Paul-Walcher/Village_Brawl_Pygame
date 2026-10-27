@@ -64,6 +64,7 @@ class Textbox(Frame):
         self.prerender()
 
     def calculate_pages(self):
+        
         if not self.text_colored:
             self.pages = graphics.page_by_chars(self.text, line_length=self.line_length, paragraph_length=self.paragraph_length)
         else:

@@ -16,24 +16,23 @@ from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from templates.playset_entity import PlaysetEntity
 
-from templates.renderable_card import Renderable_Card
+from templates.renderable_cardinfo import Renderable_CardInfo
 from copy import deepcopy
 
-class ExplorerInfo(Renderable_Card):
+class ExplorerInfo(Renderable_CardInfo):
 
-    class ExplorerInfoPagePartContainer(Renderable_Card.InfoPagePartContainer):
+    class ExplorerInfoPagePartContainer(Renderable_CardInfo.InfoPagePartContainer):
 
         def __init__(self,
                     info_page_parts,
                     rendered_stats
                     ):
 
-            Renderable_Card.InfoPagePartContainer.__init__(
+            Renderable_CardInfo.InfoPagePartContainer.__init__(
                                                             self,
                                                             frame_dim=info_page_parts.frame_dim,
 
-                                                            headline_surface=info_page_parts.headline_surface,
-                                                            headline_pos=info_page_parts.headline_pos,
+                                                            headline=info_page_parts.headline,
 
                                                             image_surface=info_page_parts.image_surface,
                                                             image_pos=info_page_parts.image_pos,
@@ -54,7 +53,7 @@ class ExplorerInfo(Renderable_Card):
                 name_color: tuple = (255, 255, 255),
                 explorer_enum = None,
                 description: str = "",
-                description_color: str = "",
+                colored_description: str = "",
                 card_image_path: str = "",
                 standard_image_path: str = "",
                 lives: int = 5,
@@ -80,7 +79,13 @@ class ExplorerInfo(Renderable_Card):
                 ):
 
 
-        super().__init__(name, name_color, description, description_color, card_image_path, standard_image_path)
+        super().__init__(   name=name,
+                            name_color=name_color,
+                            description=description,
+                            colored_description=colored_description,
+                            card_image_path=card_image_path,
+                            standard_image_path=standard_image_path
+                            )
         #reference to the explorer enum
         self.explorer_enum = explorer_enum
 
@@ -163,7 +168,7 @@ class ExplorerInfo(Renderable_Card):
             stats_page.insert(0, [])
             stats_page.append([])
 
-        page_parts = Renderable_Card.get_info_page_parts(self,
+        page_parts = Renderable_CardInfo.get_info_page_parts(self,
                                                         frame_dim,
                                                         font=font,
                                                         hmargin=hmargin,
@@ -220,18 +225,18 @@ class ExplorerInfo(Renderable_Card):
                                 info_page_part_container,
                                 page_index=-1,
                                 background_color=Colors.BLACK,
-                                outline_size=None,
-                                outline_color=None,
+                                textbox_outline_size=None,
+                                textbox_outline_color=None,
                                 full_image_shown=False
                                 ):
 
-        Renderable_Card.render_info_page_parts(self,
+        Renderable_CardInfo.render_info_page_parts(self,
                                     screen,
                                     info_page_part_container=info_page_part_container,
                                     page_index=page_index,
                                     background_color=background_color,
-                                    outline_size=outline_size,
-                                    outline_color=outline_color,
+                                    textbox_outline_size=textbox_outline_size,
+                                    textbox_outline_color=textbox_outline_color,
                                     full_image_shown=False
                                     )
 

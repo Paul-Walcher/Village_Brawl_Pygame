@@ -1,6 +1,9 @@
 from enum import Enum, auto
 
 class TypeEnums(Enum):
+    """
+    The different enums for the card types.
+    """
 
     GENERAL_CARD = auto()
     GENERAL_SUPPORTER = auto()
@@ -29,6 +32,9 @@ class TypeEnums(Enum):
     VILLAGER = auto()
 
 class Locations(Enum):
+    """
+    Location enums, encode the current location of the explorer.
+    """
 
     ANY = auto()
 

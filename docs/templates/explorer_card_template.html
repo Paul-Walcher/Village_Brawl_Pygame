@@ -112,7 +112,7 @@ templates<wbr>.explorer_card_template    </h1>
 </span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">Frames.frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">Frame</span>
 </span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">Frames.frame_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrameEnums</span>
 </span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a>
-</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">templates.renderable_card</span><span class="w"> </span><span class="kn">import</span> <span class="n">Renderable_Card</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">templates.renderable_cardinfo</span><span class="w"> </span><span class="kn">import</span> <span class="n">Renderable_CardInfo</span>
 </span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">templates.playset_entity</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlaysetEntity</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">calculations</span><span class="w"> </span><span class="kn">import</span> <span class="n">Weightlist</span>
 </span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="sd">"""</span>
@@ -120,7 +120,7 @@ templates<wbr>.explorer_card_template    </h1>
 </span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="sd">    pass</span>
 </span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a><span class="sd">"""</span>
 </span><span id="L-20"><a href="#L-20"><span class="linenos"> 20</span></a>
-</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="k">class</span><span class="w"> </span><span class="nc">ExplorerCardInfo</span><span class="p">(</span><span class="n">Renderable_Card</span><span class="p">):</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos"> 21</span></a><span class="k">class</span><span class="w"> </span><span class="nc">ExplorerCardInfo</span><span class="p">(</span><span class="n">Renderable_CardInfo</span><span class="p">):</span>
 </span><span id="L-22"><a href="#L-22"><span class="linenos"> 22</span></a>
 </span><span id="L-23"><a href="#L-23"><span class="linenos"> 23</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
 </span><span id="L-24"><a href="#L-24"><span class="linenos"> 24</span></a>                <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
@@ -136,7 +136,7 @@ templates<wbr>.explorer_card_template    </h1>
 </span><span id="L-34"><a href="#L-34"><span class="linenos"> 34</span></a>                <span class="n">playable_locations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="L-35"><a href="#L-35"><span class="linenos"> 35</span></a>                <span class="n">activation_phases</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="L-36"><a href="#L-36"><span class="linenos"> 36</span></a>                <span class="n">keep_duration</span><span class="o">=</span><span class="mi">0</span>
-</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>                    <span class="p">):</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos"> 37</span></a>                <span class="p">):</span>
 </span><span id="L-38"><a href="#L-38"><span class="linenos"> 38</span></a>
 </span><span id="L-39"><a href="#L-39"><span class="linenos"> 39</span></a>
 </span><span id="L-40"><a href="#L-40"><span class="linenos"> 40</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">name_color</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">description_color</span><span class="p">,</span> <span class="n">card_image_path</span><span class="p">,</span> <span class="n">standard_image_path</span><span class="p">)</span>
@@ -158,7 +158,7 @@ templates<wbr>.explorer_card_template    </h1>
 </span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>
 </span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>        <span class="c1">#extra info</span>
 </span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>
-</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>        <span class="n">page_parts</span> <span class="o">=</span> <span class="n">Renderable_Card</span><span class="o">.</span><span class="n">get_info_page_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">hmargin</span><span class="p">,</span> <span class="n">vmargin</span><span class="p">,</span> <span class="n">chars_per_line</span><span class="p">,</span> <span class="n">lines_per_page</span><span class="p">,</span> <span class="n">height_distributions</span><span class="p">)</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>        <span class="n">page_parts</span> <span class="o">=</span> <span class="n">Renderable_CardInfo</span><span class="o">.</span><span class="n">get_info_page_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">hmargin</span><span class="p">,</span> <span class="n">vmargin</span><span class="p">,</span> <span class="n">chars_per_line</span><span class="p">,</span> <span class="n">lines_per_page</span><span class="p">,</span> <span class="n">height_distributions</span><span class="p">)</span>
 </span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>
 </span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>
 </span><span id="L-62"><a href="#L-62"><span class="linenos"> 62</span></a>        <span class="c1">#creating extra info pages</span>
@@ -237,13 +237,13 @@ templates<wbr>.explorer_card_template    </h1>
 <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">ExplorerCardInfo</span><wbr>(<span class="base"><a href="renderable_card.html#Renderable_Card">templates.renderable_card.Renderable_Card</a></span>):
+    <span class="name">ExplorerCardInfo</span><wbr>(<span class="base"><a href="renderable_cardinfo.html#Renderable_CardInfo">templates.renderable_cardinfo.Renderable_CardInfo</a></span>):
 
                 <label class="view-source-button" for="ExplorerCardInfo-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#ExplorerCardInfo"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="ExplorerCardInfo-22"><a href="#ExplorerCardInfo-22"><span class="linenos"> 22</span></a><span class="k">class</span><span class="w"> </span><span class="nc">ExplorerCardInfo</span><span class="p">(</span><span class="n">Renderable_Card</span><span class="p">):</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="ExplorerCardInfo-22"><a href="#ExplorerCardInfo-22"><span class="linenos"> 22</span></a><span class="k">class</span><span class="w"> </span><span class="nc">ExplorerCardInfo</span><span class="p">(</span><span class="n">Renderable_CardInfo</span><span class="p">):</span>
 </span><span id="ExplorerCardInfo-23"><a href="#ExplorerCardInfo-23"><span class="linenos"> 23</span></a>
 </span><span id="ExplorerCardInfo-24"><a href="#ExplorerCardInfo-24"><span class="linenos"> 24</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
 </span><span id="ExplorerCardInfo-25"><a href="#ExplorerCardInfo-25"><span class="linenos"> 25</span></a>                <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
@@ -259,7 +259,7 @@ templates<wbr>.explorer_card_template    </h1>
 </span><span id="ExplorerCardInfo-35"><a href="#ExplorerCardInfo-35"><span class="linenos"> 35</span></a>                <span class="n">playable_locations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="ExplorerCardInfo-36"><a href="#ExplorerCardInfo-36"><span class="linenos"> 36</span></a>                <span class="n">activation_phases</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="ExplorerCardInfo-37"><a href="#ExplorerCardInfo-37"><span class="linenos"> 37</span></a>                <span class="n">keep_duration</span><span class="o">=</span><span class="mi">0</span>
-</span><span id="ExplorerCardInfo-38"><a href="#ExplorerCardInfo-38"><span class="linenos"> 38</span></a>                    <span class="p">):</span>
+</span><span id="ExplorerCardInfo-38"><a href="#ExplorerCardInfo-38"><span class="linenos"> 38</span></a>                <span class="p">):</span>
 </span><span id="ExplorerCardInfo-39"><a href="#ExplorerCardInfo-39"><span class="linenos"> 39</span></a>
 </span><span id="ExplorerCardInfo-40"><a href="#ExplorerCardInfo-40"><span class="linenos"> 40</span></a>
 </span><span id="ExplorerCardInfo-41"><a href="#ExplorerCardInfo-41"><span class="linenos"> 41</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">name_color</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">description_color</span><span class="p">,</span> <span class="n">card_image_path</span><span class="p">,</span> <span class="n">standard_image_path</span><span class="p">)</span>
@@ -281,7 +281,7 @@ templates<wbr>.explorer_card_template    </h1>
 </span><span id="ExplorerCardInfo-57"><a href="#ExplorerCardInfo-57"><span class="linenos"> 57</span></a>
 </span><span id="ExplorerCardInfo-58"><a href="#ExplorerCardInfo-58"><span class="linenos"> 58</span></a>        <span class="c1">#extra info</span>
 </span><span id="ExplorerCardInfo-59"><a href="#ExplorerCardInfo-59"><span class="linenos"> 59</span></a>
-</span><span id="ExplorerCardInfo-60"><a href="#ExplorerCardInfo-60"><span class="linenos"> 60</span></a>        <span class="n">page_parts</span> <span class="o">=</span> <span class="n">Renderable_Card</span><span class="o">.</span><span class="n">get_info_page_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">hmargin</span><span class="p">,</span> <span class="n">vmargin</span><span class="p">,</span> <span class="n">chars_per_line</span><span class="p">,</span> <span class="n">lines_per_page</span><span class="p">,</span> <span class="n">height_distributions</span><span class="p">)</span>
+</span><span id="ExplorerCardInfo-60"><a href="#ExplorerCardInfo-60"><span class="linenos"> 60</span></a>        <span class="n">page_parts</span> <span class="o">=</span> <span class="n">Renderable_CardInfo</span><span class="o">.</span><span class="n">get_info_page_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">hmargin</span><span class="p">,</span> <span class="n">vmargin</span><span class="p">,</span> <span class="n">chars_per_line</span><span class="p">,</span> <span class="n">lines_per_page</span><span class="p">,</span> <span class="n">height_distributions</span><span class="p">)</span>
 </span><span id="ExplorerCardInfo-61"><a href="#ExplorerCardInfo-61"><span class="linenos"> 61</span></a>
 </span><span id="ExplorerCardInfo-62"><a href="#ExplorerCardInfo-62"><span class="linenos"> 62</span></a>
 </span><span id="ExplorerCardInfo-63"><a href="#ExplorerCardInfo-63"><span class="linenos"> 63</span></a>        <span class="c1">#creating extra info pages</span>
@@ -337,7 +337,16 @@ templates<wbr>.explorer_card_template    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>This class defines how the info  text for a
+card is is rendered. The info text describes the cards
+functionality.</p>
+
+<p>This class works by first getting the page parts to render with positions
+as a container class using Renderable_CardInfo.get_info_page_parts,
+then some time later rendering the page parts to the given screen by passing
+the container class to Renderable_CardInfo.render_info_page_parts</p>
+</div>
+
 
                             <div id="ExplorerCardInfo.__init__" class="classattr">
                                         <input id="ExplorerCardInfo.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
@@ -363,7 +372,7 @@ templates<wbr>.explorer_card_template    </h1>
 </span><span id="ExplorerCardInfo.__init__-35"><a href="#ExplorerCardInfo.__init__-35"><span class="linenos">35</span></a>                <span class="n">playable_locations</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="ExplorerCardInfo.__init__-36"><a href="#ExplorerCardInfo.__init__-36"><span class="linenos">36</span></a>                <span class="n">activation_phases</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="ExplorerCardInfo.__init__-37"><a href="#ExplorerCardInfo.__init__-37"><span class="linenos">37</span></a>                <span class="n">keep_duration</span><span class="o">=</span><span class="mi">0</span>
-</span><span id="ExplorerCardInfo.__init__-38"><a href="#ExplorerCardInfo.__init__-38"><span class="linenos">38</span></a>                    <span class="p">):</span>
+</span><span id="ExplorerCardInfo.__init__-38"><a href="#ExplorerCardInfo.__init__-38"><span class="linenos">38</span></a>                <span class="p">):</span>
 </span><span id="ExplorerCardInfo.__init__-39"><a href="#ExplorerCardInfo.__init__-39"><span class="linenos">39</span></a>
 </span><span id="ExplorerCardInfo.__init__-40"><a href="#ExplorerCardInfo.__init__-40"><span class="linenos">40</span></a>
 </span><span id="ExplorerCardInfo.__init__-41"><a href="#ExplorerCardInfo.__init__-41"><span class="linenos">41</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">name_color</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">description_color</span><span class="p">,</span> <span class="n">card_image_path</span><span class="p">,</span> <span class="n">standard_image_path</span><span class="p">)</span>
@@ -467,7 +476,7 @@ templates<wbr>.explorer_card_template    </h1>
 </span><span id="ExplorerCardInfo.get_info_page_parts-57"><a href="#ExplorerCardInfo.get_info_page_parts-57"><span class="linenos"> 57</span></a>
 </span><span id="ExplorerCardInfo.get_info_page_parts-58"><a href="#ExplorerCardInfo.get_info_page_parts-58"><span class="linenos"> 58</span></a>        <span class="c1">#extra info</span>
 </span><span id="ExplorerCardInfo.get_info_page_parts-59"><a href="#ExplorerCardInfo.get_info_page_parts-59"><span class="linenos"> 59</span></a>
-</span><span id="ExplorerCardInfo.get_info_page_parts-60"><a href="#ExplorerCardInfo.get_info_page_parts-60"><span class="linenos"> 60</span></a>        <span class="n">page_parts</span> <span class="o">=</span> <span class="n">Renderable_Card</span><span class="o">.</span><span class="n">get_info_page_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">hmargin</span><span class="p">,</span> <span class="n">vmargin</span><span class="p">,</span> <span class="n">chars_per_line</span><span class="p">,</span> <span class="n">lines_per_page</span><span class="p">,</span> <span class="n">height_distributions</span><span class="p">)</span>
+</span><span id="ExplorerCardInfo.get_info_page_parts-60"><a href="#ExplorerCardInfo.get_info_page_parts-60"><span class="linenos"> 60</span></a>        <span class="n">page_parts</span> <span class="o">=</span> <span class="n">Renderable_CardInfo</span><span class="o">.</span><span class="n">get_info_page_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">hmargin</span><span class="p">,</span> <span class="n">vmargin</span><span class="p">,</span> <span class="n">chars_per_line</span><span class="p">,</span> <span class="n">lines_per_page</span><span class="p">,</span> <span class="n">height_distributions</span><span class="p">)</span>
 </span><span id="ExplorerCardInfo.get_info_page_parts-61"><a href="#ExplorerCardInfo.get_info_page_parts-61"><span class="linenos"> 61</span></a>
 </span><span id="ExplorerCardInfo.get_info_page_parts-62"><a href="#ExplorerCardInfo.get_info_page_parts-62"><span class="linenos"> 62</span></a>
 </span><span id="ExplorerCardInfo.get_info_page_parts-63"><a href="#ExplorerCardInfo.get_info_page_parts-63"><span class="linenos"> 63</span></a>        <span class="c1">#creating extra info pages</span>
@@ -523,34 +532,33 @@ templates<wbr>.explorer_card_template    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Renders all significant parts for the info page, then returns
+a InfoPagePartContainer object.</p>
+
+<p>hmargin and vmargin specify the margins applied to frame_dim before rendering.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
                                 <dl>
-                                    <div><dt><a href="renderable_card.html#Renderable_Card">templates.renderable_card.Renderable_Card</a></dt>
-                                <dd id="ExplorerCardInfo.InfoPagePartContainer" class="class"><a href="renderable_card.html#Renderable_Card.InfoPagePartContainer">InfoPagePartContainer</a></dd>
-                <dd id="ExplorerCardInfo.name" class="variable"><a href="renderable_card.html#Renderable_Card.name">name</a></dd>
-                <dd id="ExplorerCardInfo.name_color" class="variable"><a href="renderable_card.html#Renderable_Card.name_color">name_color</a></dd>
-                <dd id="ExplorerCardInfo.card_image_path" class="variable"><a href="renderable_card.html#Renderable_Card.card_image_path">card_image_path</a></dd>
-                <dd id="ExplorerCardInfo.standard_image_path" class="variable"><a href="renderable_card.html#Renderable_Card.standard_image_path">standard_image_path</a></dd>
-                <dd id="ExplorerCardInfo.description_pages" class="variable"><a href="renderable_card.html#Renderable_Card.description_pages">description_pages</a></dd>
-                <dd id="ExplorerCardInfo.description_pages_color" class="variable"><a href="renderable_card.html#Renderable_Card.description_pages_color">description_pages_color</a></dd>
-                <dd id="ExplorerCardInfo.n_pages" class="variable"><a href="renderable_card.html#Renderable_Card.n_pages">n_pages</a></dd>
-                <dd id="ExplorerCardInfo.n_pages_color" class="variable"><a href="renderable_card.html#Renderable_Card.n_pages_color">n_pages_color</a></dd>
-                <dd id="ExplorerCardInfo.card_width_to_height_ratio" class="variable"><a href="renderable_card.html#Renderable_Card.card_width_to_height_ratio">card_width_to_height_ratio</a></dd>
-                <dd id="ExplorerCardInfo.standard_width_to_height_ratio" class="variable"><a href="renderable_card.html#Renderable_Card.standard_width_to_height_ratio">standard_width_to_height_ratio</a></dd>
-                <dd id="ExplorerCardInfo.description" class="variable"><a href="renderable_card.html#Renderable_Card.description">description</a></dd>
-                <dd id="ExplorerCardInfo.description_color" class="variable"><a href="renderable_card.html#Renderable_Card.description_color">description_color</a></dd>
-                <dd id="ExplorerCardInfo.description_line_length" class="variable"><a href="renderable_card.html#Renderable_Card.description_line_length">description_line_length</a></dd>
-                <dd id="ExplorerCardInfo.description_paragraph_length" class="variable"><a href="renderable_card.html#Renderable_Card.description_paragraph_length">description_paragraph_length</a></dd>
-                <dd id="ExplorerCardInfo.get_name_rendered" class="function"><a href="renderable_card.html#Renderable_Card.get_name_rendered">get_name_rendered</a></dd>
-                <dd id="ExplorerCardInfo.get_card_image_rendered" class="function"><a href="renderable_card.html#Renderable_Card.get_card_image_rendered">get_card_image_rendered</a></dd>
-                <dd id="ExplorerCardInfo.get_standard_image_rendered" class="function"><a href="renderable_card.html#Renderable_Card.get_standard_image_rendered">get_standard_image_rendered</a></dd>
-                <dd id="ExplorerCardInfo.get_description_textbox" class="function"><a href="renderable_card.html#Renderable_Card.get_description_textbox">get_description_textbox</a></dd>
-                <dd id="ExplorerCardInfo.get_areas" class="function"><a href="renderable_card.html#Renderable_Card.get_areas">get_areas</a></dd>
-                <dd id="ExplorerCardInfo.render_info_page_parts" class="function"><a href="renderable_card.html#Renderable_Card.render_info_page_parts">render_info_page_parts</a></dd>
+                                    <div><dt><a href="renderable_cardinfo.html#Renderable_CardInfo">templates.renderable_cardinfo.Renderable_CardInfo</a></dt>
+                                <dd id="ExplorerCardInfo.InfoPagePartContainer" class="class"><a href="renderable_cardinfo.html#Renderable_CardInfo.InfoPagePartContainer">InfoPagePartContainer</a></dd>
+                <dd id="ExplorerCardInfo.name" class="variable"><a href="renderable_cardinfo.html#Renderable_CardInfo.name">name</a></dd>
+                <dd id="ExplorerCardInfo.name_color" class="variable"><a href="renderable_cardinfo.html#Renderable_CardInfo.name_color">name_color</a></dd>
+                <dd id="ExplorerCardInfo.card_image_path" class="variable"><a href="renderable_cardinfo.html#Renderable_CardInfo.card_image_path">card_image_path</a></dd>
+                <dd id="ExplorerCardInfo.standard_image_path" class="variable"><a href="renderable_cardinfo.html#Renderable_CardInfo.standard_image_path">standard_image_path</a></dd>
+                <dd id="ExplorerCardInfo.description" class="variable"><a href="renderable_cardinfo.html#Renderable_CardInfo.description">description</a></dd>
+                <dd id="ExplorerCardInfo.colored_description" class="variable"><a href="renderable_cardinfo.html#Renderable_CardInfo.colored_description">colored_description</a></dd>
+                <dd id="ExplorerCardInfo.description_line_length" class="variable"><a href="renderable_cardinfo.html#Renderable_CardInfo.description_line_length">description_line_length</a></dd>
+                <dd id="ExplorerCardInfo.description_lines_per_page" class="variable"><a href="renderable_cardinfo.html#Renderable_CardInfo.description_lines_per_page">description_lines_per_page</a></dd>
+                <dd id="ExplorerCardInfo.get_name_rendered" class="function"><a href="renderable_cardinfo.html#Renderable_CardInfo.get_name_rendered">get_name_rendered</a></dd>
+                <dd id="ExplorerCardInfo.get_card_image_rendered" class="function"><a href="renderable_cardinfo.html#Renderable_CardInfo.get_card_image_rendered">get_card_image_rendered</a></dd>
+                <dd id="ExplorerCardInfo.get_standard_image_rendered" class="function"><a href="renderable_cardinfo.html#Renderable_CardInfo.get_standard_image_rendered">get_standard_image_rendered</a></dd>
+                <dd id="ExplorerCardInfo.get_description_textbox" class="function"><a href="renderable_cardinfo.html#Renderable_CardInfo.get_description_textbox">get_description_textbox</a></dd>
+                <dd id="ExplorerCardInfo.get_areas" class="function"><a href="renderable_cardinfo.html#Renderable_CardInfo.get_areas">get_areas</a></dd>
+                <dd id="ExplorerCardInfo.render_info_page_parts" class="function"><a href="renderable_cardinfo.html#Renderable_CardInfo.render_info_page_parts">render_info_page_parts</a></dd>
 
             </div>
                                 </dl>
@@ -585,7 +593,8 @@ templates<wbr>.explorer_card_template    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
+            <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
+and does actions every frame, needing to be updated using tick().</p>
 </div>
 
 
@@ -647,7 +656,9 @@ templates<wbr>.explorer_card_template    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Tick function for the entity.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -658,13 +669,13 @@ templates<wbr>.explorer_card_template    </h1>
                 <dd id="Explorer_Card_Template.mappings" class="variable"><a href="playset_entity.html#PlaysetEntity.mappings">mappings</a></dd>
                 <dd id="Explorer_Card_Template.enums" class="variable"><a href="playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Explorer_Card_Template.tags" class="variable"><a href="playset_entity.html#PlaysetEntity.tags">tags</a></dd>
-                <dd id="Explorer_Card_Template.prev_phase" class="variable"><a href="playset_entity.html#PlaysetEntity.prev_phase">prev_phase</a></dd>
                 <dd id="Explorer_Card_Template.entity_type" class="variable"><a href="playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
-                <dd id="Explorer_Card_Template.phase_change_functions" class="variable"><a href="playset_entity.html#PlaysetEntity.phase_change_functions">phase_change_functions</a></dd>
                 <dd id="Explorer_Card_Template.render" class="function"><a href="playset_entity.html#PlaysetEntity.render">render</a></dd>
                 <dd id="Explorer_Card_Template.execute_phase_change" class="function"><a href="playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Explorer_Card_Template.add_on_phase_change" class="function"><a href="playset_entity.html#PlaysetEntity.add_on_phase_change">add_on_phase_change</a></dd>
-                <dd id="Explorer_Card_Template.remove_on_phase_change" class="function"><a href="playset_entity.html#PlaysetEntity.remove_on_phase_change">remove_on_phase_change</a></dd>
+                <dd id="Explorer_Card_Template.add_transition_callback" class="function"><a href="playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
+                <dd id="Explorer_Card_Template.remove_transition_callback" class="function"><a href="playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
+                <dd id="Explorer_Card_Template.clear_transition_callback" class="function"><a href="playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
+                <dd id="Explorer_Card_Template.clear_all_transition_callback" class="function"><a href="playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>

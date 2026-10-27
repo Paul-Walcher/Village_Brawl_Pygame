@@ -10,6 +10,11 @@ import pygame
 
 pygame.init()
 
+"""
+Types
+"""
+color_t = tuple[int, int, int, int]
+
 EPSILON = 10E-6
 """
 constant for small differences, e.g.

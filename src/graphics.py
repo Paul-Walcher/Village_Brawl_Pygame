@@ -3,10 +3,9 @@ from typing import Callable
 
 import pygame
 import constants
-from constants import fequal
+from constants import fequal, color_t
 from collections import deque
 import re
-
 """
 This module handles graphical rendering
 and graphical calculations.
@@ -14,6 +13,36 @@ and graphical calculations.
 
 NL: tuple = (None,)
 
+"""
+Type definitions
+"""
+
+text_t = list[str]
+"""
+Text type. This is what is passed to page_by_chars() to
+create pages.
+"""
+colored_text_t = list[ tuple[ str, color_t ] ]
+"""
+Colored text type. This is what is passed to page_by_chars_color() to
+create pages.
+"""
+page_t = list[str]
+"""
+Type definition for a uncolored page.
+"""
+colored_page_t = list[list[ tuple[str, color_t] ]]
+"""
+Type definition for a colored page.
+"""
+surface_with_position_t = tuple[pygame.Surface, tuple[int, int]]
+"""
+Type for a (surface, (x, y)=position) tuple.
+"""
+rendered_surface_position_tuples_t = list[surface_with_position_t]
+"""
+A list of rendered (surface, position) tuples
+"""
 
 class _NewPage:
     """Marker requesting a page break after a given number of blank lines."""
