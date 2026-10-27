@@ -9,8 +9,7 @@ from constants import (
     Colors,
     Fonts,
     Fontsizes,
-    KeyAlternatives,
-    FrameDataID
+    KeyAlternatives
 )
 import graphics
 from clock import Clock

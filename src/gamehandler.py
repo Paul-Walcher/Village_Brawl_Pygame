@@ -36,6 +36,8 @@ class Gamehandler:
         """
         This is the main gameloop.
         """
+        if starting_frame is None:
+            raise RuntimeError("Starting Frame can't be None.")
 
         self.current_frame = starting_frame
 
@@ -50,6 +52,8 @@ class Gamehandler:
             else:
 
                 self.current_frame = frame_back
+
+            self.current_frame.clear_pygame_events()
 
 
             self.screen.fill((0, 0, 0))

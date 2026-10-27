@@ -5,11 +5,13 @@ import threading
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.explorer_info_frame import ExplorerInfoFrame
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
 from modules import Modules
 import constants
+
+from context_data import ContextData
 
 class ChooseExplorerFrame(Frame):
 
@@ -17,15 +19,17 @@ class ChooseExplorerFrame(Frame):
 
         super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame_dim, parent_frame)
 
-        self.modules = self.data[FrameDataID.MODULES]
-        self.stack = self.data[FrameDataID.STACK]
+        self.modules = None
+
+        if type(self.data) == ContextData:
+            self.modules = self.data.modules
 
         #getting all explorers
         self.explorer_enums = list(self.modules.enums.ExplorerEnums)
         self.explorer_refs = [self.modules.mappings.explorer_mappings[explorer_enum] for explorer_enum in self.explorer_enums]
         self.explorer_infos = [ref.info() for ref in self.explorer_refs]
 
-        self.explorer_index = (0 if self.stack.size() == 0 else self.stack.pop())
+        self.explorer_index = 0
 
 
         self.rotating_left = False
@@ -84,7 +88,7 @@ class ChooseExplorerFrame(Frame):
 
 
         iframe = pygame.Rect(self.width, 0, self.width // 2, self.height)
-        info_frame = ExplorerInfoFrame(self.explorer_enums[self.explorer_index], self.modules, self.data, iframe, self)
+        info_frame = ExplorerInfoFrame(self.explorer_enums[self.explorer_index], self.data, iframe, self)
         self.info_frame = info_frame
         self.tickframe = info_frame
 
@@ -205,19 +209,17 @@ class ChooseExplorerFrame(Frame):
         if self.exit_flag_raised():
             return None
 
-        if self.tickframe is not None and self.info_frame_state not in [self.INFO_FRAME_SLIDING_IN, self.INFO_FRAME_SLIDING_OUT]:
+        if self.tickframe is not None:
             tframe = self.tickframe.tick()
 
             if tframe is None:
-                if self.tickframe is self.info_frame:
+                if self.tickframe is self.info_frame and self.info_frame_state != self.INFO_FRAME_SLIDING_OUT:
                     self.info_frame_state = self.INFO_FRAME_SLIDING_OUT
                     self.tickframe = self.info_frame
                     self.info_frame_clock.start()
                 elif self.info_frame_state == self.INFO_FRAME_ACTIVE:
                     self.tickframe = self.info_frame
                     self.info_frame.focus()
-                else:
-                    self.tickframe = None
             else:
                 self.tickframe = tframe
 

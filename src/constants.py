@@ -119,16 +119,6 @@ class Alpha:
 
     FULL = 255
 
-class FrameDataID:
-    """
-    Keys for the data dictionary.
-    """
-
-    GAMEINFO = "Gameinfo"
-    MODULES = "Modules"
-    STACK = "Stack"
-    CURRENT_FRAME = "Current Frame"
-
 class Colors:
     """
     Stored Colors.

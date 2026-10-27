@@ -4,13 +4,14 @@ import threading
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
 from modules import Modules
 import constants
 
 from Frames.choose_explorer_frame import ChooseExplorerFrame
+from context_data import ContextData
 
 class LoadPlaysetFrame(Frame):
 
@@ -53,8 +54,9 @@ class LoadPlaysetFrame(Frame):
 
     def load_playset(self):
 
-        playset_name = self.data[FrameDataID.GAMEINFO].playset
-        self.modules = Modules.load_playset(playset_name)
+        playset_name = None
+        if type(self.data) == ContextData:
+            self.data.modules = Modules.load_playset(self.data.current_playset)
 
         with self.loading_lock:
             self.loading_finished = True
@@ -79,8 +81,6 @@ class LoadPlaysetFrame(Frame):
         with self.loading_lock:
 
             if self.loading_finished and self.extra_clock.elapsed() > constants.__ADDITIONAL_LOAD_TIME__:
-
-                self.data[FrameDataID.MODULES] = self.modules
 
                 ceframe = ChooseExplorerFrame(self.data, self.frame_dim.copy(), None) #resetting parent_frame_list
                 return ceframe

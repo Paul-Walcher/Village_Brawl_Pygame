@@ -3,11 +3,11 @@ import pygame
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
-from gameinfo import Gameinfo
 from Frames.choose_save_name_frame import ChooseSaveNameFrame
+from context_data import ContextData
 
 class ChoosePlaysetFrame(Frame):
 
@@ -193,12 +193,8 @@ class ChoosePlaysetFrame(Frame):
         if self.choose_save_name_flag:
             self.choose_save_name_flag = False
 
-            ginfo = Gameinfo()
-            ginfo.playset = self.playsets[self.playset_index]
-            if self.data:
-                self.data[FrameDataID.GAMEINFO] = ginfo
-            else:
-                self.data = {FrameDataID.GAMEINFO: ginfo}
+            if type(self.data) == ContextData:
+                self.data.current_playset = self.playsets[self.playset_index]
 
             csnframe = ChooseSaveNameFrame(self.data, self.frame_dim.copy(), self)
 

@@ -8,7 +8,7 @@ from Frames.empty_frame import EmptyFrame
 from Frames.test_frame import TestFrame
 from Frames.show_explorer_starting_cards_frame import ShowExplorerStartingCardsFrame
 from Frames.cardinfo_frame import CardinfoFrame
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, Alpha, IIMAGE, STANDARD_BACKSIDES, R_ID
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, Alpha, IIMAGE, STANDARD_BACKSIDES, R_ID
 import graphics
 from clock import Clock
 from modules import Modules
@@ -18,18 +18,23 @@ from Frames.widgets.image_slider import ImageSlider
 from Frames.widgets.text_slider import TextSlider
 from Frames.widgets.labeled_image_slider import LabeledImageSlider
 
+from context_data import ContextData
+
 class ExplorerInfoFrame(Frame):
 
     NO_FOCUS = R_ID()
     DESCRIPTION_FOCUSED = R_ID()
     MENU_FOCUSED = R_ID()
 
-    def __init__(self, explorer_enum, modules, data=None, frame_dim=None, parent_frame=None):
+    def __init__(self, explorer_enum, data=None, frame_dim=None, parent_frame=None):
 
         super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame_dim, parent_frame)
 
-        self.modules = modules
         self.explorer_enum = explorer_enum
+        self.modules = None
+
+        if type(self.data) == ContextData:
+            self.modules = self.data.modules
 
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
@@ -106,6 +111,7 @@ class ExplorerInfoFrame(Frame):
                                                                         vmargin=0.0
                                                                         )
         self.textbox = self.info_page_parts.textbox
+        self.textbox.set_outline_size(0)
 
         self.render_slider_menu()
 
@@ -140,7 +146,6 @@ class ExplorerInfoFrame(Frame):
         self.raise_exit_flag()
 
     def left_pressed(self, event, data):
-
 
         if self.state == ExplorerInfoFrame.NO_FOCUS:
             self.state = ExplorerInfoFrame.DESCRIPTION_FOCUSED

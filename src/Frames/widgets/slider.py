@@ -13,7 +13,6 @@ from constants import (
     Fonts,
     Fontsizes,
     KeyAlternatives,
-    FrameDataID,
     R_ID
 )
 from enum import Enum, auto

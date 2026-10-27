@@ -1,6 +1,5 @@
 import pygame
 from abc import ABC, abstractmethod
-from constants import FrameDataID
 from event_queue_manager import EventQueueManager, Event
 from clock import Clock
 

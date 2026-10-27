@@ -12,7 +12,6 @@ from constants import (
     Fonts,
     Fontsizes,
     KeyAlternatives,
-    FrameDataID,
     R_ID,
     MENU_BUTTON_UNFOCUSED_IMAGE,
     MENU_BUTTON_FOCUSED_IMAGE

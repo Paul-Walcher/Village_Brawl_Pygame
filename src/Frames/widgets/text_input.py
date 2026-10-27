@@ -10,14 +10,12 @@ from constants import (
     Fonts,
     Fontsizes,
     KeyAlternatives,
-    FrameDataID,
     R_ID
 )
 import graphics
 from clock import Clock
 from modules import Modules
 import constants
-from constants import KeyAlternatives
 
 from event_queue_manager import EventQueueManager, Event
 

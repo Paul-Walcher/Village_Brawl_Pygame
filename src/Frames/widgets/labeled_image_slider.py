@@ -10,7 +10,6 @@ from constants import (
     Fonts,
     Fontsizes,
     KeyAlternatives,
-    FrameDataID,
     R_ID
 )
 import graphics

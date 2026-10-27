@@ -10,8 +10,7 @@ from constants import (
     Colors,
     Fonts,
     Fontsizes,
-    KeyAlternatives,
-    FrameDataID
+    KeyAlternatives
 )
 from enum import Enum, auto
 import graphics

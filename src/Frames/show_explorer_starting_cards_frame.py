@@ -3,7 +3,7 @@ import pygame
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID, WIDTH, HEIGHT
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, WIDTH, HEIGHT
 import graphics
 from clock import Clock
 
@@ -12,6 +12,7 @@ from Frames.widgets.renderable_card_listviewer import RenderableCardListviewer
 import constants
 
 from Frames.cardinfo_frame import CardinfoFrame
+from context_data import ContextData
 
 class ShowExplorerStartingCardsFrame(Frame):
 
@@ -19,7 +20,10 @@ class ShowExplorerStartingCardsFrame(Frame):
 
         super().__init__(FrameEnums.SHOW_EXPLORER_STARTING_CARDS_FRAME, data, frame_dim, parent_frame)
 
-        self.modules = self.data[FrameDataID.MODULES]
+        self.modules = None
+        if type(self.data) == ContextData:
+            self.modules = self.data.modules
+
         self.explorer_enum = explorer_enum
 
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]

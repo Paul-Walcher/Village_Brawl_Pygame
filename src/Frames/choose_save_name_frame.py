@@ -3,11 +3,12 @@ import pygame
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, FrameDataID
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
 
 from Frames.load_playset_frame import LoadPlaysetFrame
+from context_data import ContextData
 
 class ChooseSaveNameFrame(Frame):
 
@@ -193,7 +194,9 @@ class ChooseSaveNameFrame(Frame):
 
         if self.load_playset_flag:
             self.load_playset_flag = False
-            self.data[FrameDataID.GAMEINFO].savefile_name = self.savefile_name
+
+            if type(self.data) == ContextData:
+                self.data.current_savefile_name = self.savefile_name
             lpframe = LoadPlaysetFrame(self.data, self.frame_dim.copy(), self)
             return lpframe
 
