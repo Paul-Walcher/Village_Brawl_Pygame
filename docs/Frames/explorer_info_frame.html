@@ -700,7 +700,39 @@ Frames<wbr>.explorer_info_frame    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
+            <div class="docstring"><p>This class is the basic framework for a shown window instance.</p>
+
+<p>It has an internal rectangle defined as frame_dim, which
+specifies the rectangle in which it operates in (its window size).</p>
+
+<p>The internal rectangles x, y, width and height are separately stored as
+class varriables.</p>
+
+<p>IMPORTANT: Do not change a frames frame_dim by doing frame_dim.x = ...,
+because internal x, y, width and height and frame_dim are adjusted using setter
+methods.</p>
+
+<p>Each frame can also have a parent frame. If this class is discontinued using raise_exit_flag(),
+and the parent frames focus group is the same as this classes', the parent frame will receive the focus.</p>
+
+<p>About focus groups:</p>
+
+<p>A focus group is an identifier of the group the frame belongs to.
+Inside this group, only one frame can have the focus at one time.</p>
+
+<p>You can check if you have the focus using Frame.is_focused,
+and focus as well as unfocus using Frame.focus and Frame.unfocus().</p>
+
+<p>If you dont pass an argument for the focus group to the constructor,
+the frame will be assigned to a standard focus group.
+You should bind input received for the frame using bind_events().
+Whenever focus changes for an event, all event_callbacks are cleared,
+and Frame.bind_events is called. There you can bind callbacks depending on whether
+you have the focus or not.</p>
+
+<p>A frame handles pygame events by using Frame.manage_pygame_events in Frame.tick.
+You can register event callbacks using Frame.add_pygame_key_callback or
+Frame.add_pygame_event_callback.</p>
 </div>
 
 
@@ -778,7 +810,7 @@ Frames<wbr>.explorer_info_frame    </h1>
                             <div id="ExplorerInfoFrame.NO_FOCUS" class="classattr">
                                 <div class="attr variable">
             <span class="name">NO_FOCUS</span>        =
-<span class="default_value">-6868948808018485889</span>
+<span class="default_value">-1124015488200549684</span>
 
         
     </div>
@@ -790,7 +822,7 @@ Frames<wbr>.explorer_info_frame    </h1>
                             <div id="ExplorerInfoFrame.DESCRIPTION_FOCUSED" class="classattr">
                                 <div class="attr variable">
             <span class="name">DESCRIPTION_FOCUSED</span>        =
-<span class="default_value">8281628284566334340</span>
+<span class="default_value">-5567857097003465639</span>
 
         
     </div>
@@ -802,7 +834,7 @@ Frames<wbr>.explorer_info_frame    </h1>
                             <div id="ExplorerInfoFrame.MENU_FOCUSED" class="classattr">
                                 <div class="attr variable">
             <span class="name">MENU_FOCUSED</span>        =
-<span class="default_value">6492529988362074999</span>
+<span class="default_value">-5741186687534532351</span>
 
         
     </div>
@@ -1160,7 +1192,10 @@ Frames<wbr>.explorer_info_frame    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>This is called in the constructor and every time this frames
+focus changes. Make event bindings dependent on self.is_focused().</p>
+</div>
+
 
                             </div>
                             <div id="ExplorerInfoFrame.escape_pressed" class="classattr">
@@ -1393,7 +1428,11 @@ Frames<wbr>.explorer_info_frame    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>This function is important, it should be called on every frame in the game.
+It returns a reference to the frame that should be the main frame rendered.
+If it returns None, this signals the frame is set to be deleted.</p>
+</div>
+
 
                             </div>
                             <div id="ExplorerInfoFrame.render" class="classattr">
@@ -1440,7 +1479,10 @@ Frames<wbr>.explorer_info_frame    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Renders this frame onto the given surface.
+Is called once per frame.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1449,23 +1491,18 @@ Frames<wbr>.explorer_info_frame    </h1>
                                     <div><dt><a href="frame.html#Frame">Frames.frame.Frame</a></dt>
                                 <dd id="ExplorerInfoFrame.STANDARD_FOCUS_GROUP" class="variable"><a href="frame.html#Frame.STANDARD_FOCUS_GROUP">STANDARD_FOCUS_GROUP</a></dd>
                 <dd id="ExplorerInfoFrame.FOCUS_GROUPS" class="variable"><a href="frame.html#Frame.FOCUS_GROUPS">FOCUS_GROUPS</a></dd>
-                <dd id="ExplorerInfoFrame.SlideHandler" class="class"><a href="frame.html#Frame.SlideHandler">SlideHandler</a></dd>
-                <dd id="ExplorerInfoFrame.CallbackEvent" class="class"><a href="frame.html#Frame.CallbackEvent">CallbackEvent</a></dd>
-                <dd id="ExplorerInfoFrame.EventTypes" class="class"><a href="frame.html#Frame.EventTypes">EventTypes</a></dd>
+                <dd id="ExplorerInfoFrame.EventCallback" class="class"><a href="frame.html#Frame.EventCallback">EventCallback</a></dd>
                 <dd id="ExplorerInfoFrame.frame_enum" class="variable"><a href="frame.html#Frame.frame_enum">frame_enum</a></dd>
                 <dd id="ExplorerInfoFrame.data" class="variable"><a href="frame.html#Frame.data">data</a></dd>
                 <dd id="ExplorerInfoFrame.focus_group" class="variable"><a href="frame.html#Frame.focus_group">focus_group</a></dd>
                 <dd id="ExplorerInfoFrame.parent_frame" class="variable"><a href="frame.html#Frame.parent_frame">parent_frame</a></dd>
                 <dd id="ExplorerInfoFrame.max_parent_frames" class="variable"><a href="frame.html#Frame.max_parent_frames">max_parent_frames</a></dd>
-                <dd id="ExplorerInfoFrame.event_queue" class="variable"><a href="frame.html#Frame.event_queue">event_queue</a></dd>
                 <dd id="ExplorerInfoFrame.center" class="variable"><a href="frame.html#Frame.center">center</a></dd>
-                <dd id="ExplorerInfoFrame.widgets" class="variable"><a href="frame.html#Frame.widgets">widgets</a></dd>
                 <dd id="ExplorerInfoFrame.frame_dim" class="variable"><a href="frame.html#Frame.frame_dim">frame_dim</a></dd>
                 <dd id="ExplorerInfoFrame.x" class="variable"><a href="frame.html#Frame.x">x</a></dd>
                 <dd id="ExplorerInfoFrame.y" class="variable"><a href="frame.html#Frame.y">y</a></dd>
                 <dd id="ExplorerInfoFrame.width" class="variable"><a href="frame.html#Frame.width">width</a></dd>
                 <dd id="ExplorerInfoFrame.height" class="variable"><a href="frame.html#Frame.height">height</a></dd>
-                <dd id="ExplorerInfoFrame.has_focus" class="variable"><a href="frame.html#Frame.has_focus">has_focus</a></dd>
                 <dd id="ExplorerInfoFrame.on_focus_gained" class="function"><a href="frame.html#Frame.on_focus_gained">on_focus_gained</a></dd>
                 <dd id="ExplorerInfoFrame.on_focus_lost" class="function"><a href="frame.html#Frame.on_focus_lost">on_focus_lost</a></dd>
                 <dd id="ExplorerInfoFrame.move_by" class="function"><a href="frame.html#Frame.move_by">move_by</a></dd>
@@ -1489,9 +1526,6 @@ Frames<wbr>.explorer_info_frame    </h1>
                 <dd id="ExplorerInfoFrame.raise_exit_flag" class="function"><a href="frame.html#Frame.raise_exit_flag">raise_exit_flag</a></dd>
                 <dd id="ExplorerInfoFrame.reset_exit_flag" class="function"><a href="frame.html#Frame.reset_exit_flag">reset_exit_flag</a></dd>
                 <dd id="ExplorerInfoFrame.exit_flag_raised" class="function"><a href="frame.html#Frame.exit_flag_raised">exit_flag_raised</a></dd>
-                <dd id="ExplorerInfoFrame.set_parent_frame" class="function"><a href="frame.html#Frame.set_parent_frame">set_parent_frame</a></dd>
-                <dd id="ExplorerInfoFrame.widgets_tick" class="function"><a href="frame.html#Frame.widgets_tick">widgets_tick</a></dd>
-                <dd id="ExplorerInfoFrame.render_widgets" class="function"><a href="frame.html#Frame.render_widgets">render_widgets</a></dd>
 
             </div>
             <div><dt><a href="../event_queue_manager.html#EventQueueManager">event_queue_manager.EventQueueManager</a></dt>

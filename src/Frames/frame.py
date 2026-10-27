@@ -11,7 +11,7 @@ from Frames.frame_enums import FrameEnums
 Type definitions.
 """
 type event_callback_result_t = int
-type event_callback_t = Callable[ [pygame.Event, Any],  event_callback_result]
+type event_callback_t = Callable[ [pygame.event.Event, Any],  event_callback_result_t]
 
 class Frame(EventQueueManager):
 
@@ -74,7 +74,7 @@ class Frame(EventQueueManager):
         with the data given to the constructor.
 
         The callback function receives two arguments:
-        event: the pygame.Event reference,
+        event: the pygame.event.Event reference,
         data: the data given to this class in the constructor.
 
         The callback function should return 1 of the following 3 enums:
@@ -109,7 +109,7 @@ class Frame(EventQueueManager):
             """
             super().__init__(type, data)
 
-        def __call__(self, event: pygame.Event) -> event_callback_result_t:
+        def __call__(self, event: pygame.event.Event) -> event_callback_result_t:
             """
             Executes the callback function with the event and this classes' data.
             """
@@ -455,7 +455,7 @@ class Frame(EventQueueManager):
     def manage_pygame_events(self) -> None:
         """
         Manages the events, by going through all
-        events in the pygame event queue.
+        events in the pygame.event.Event queue.
         Should be called in tick().
         triggers the event_callbacks in self.__event_callbacks
         added via self.add_pygame_key_callback or self.add_pygame_event_callback
@@ -465,7 +465,7 @@ class Frame(EventQueueManager):
 
         putback_events = []
 
-        for event in pygame.event.get():
+        for event in pygame.event.Event.get():
             processed = True
             matched_any = False
 
@@ -516,7 +516,7 @@ class Frame(EventQueueManager):
                 putback_events.append(event)
 
         for event in putback_events:
-            pygame.event.post(event)
+            pygame.event.Event.post(event)
 
 
     def clear_event_callbacks(self) -> None:
@@ -528,10 +528,10 @@ class Frame(EventQueueManager):
 
     def clear_pygame_events(self) -> None:
         """
-        Empties the pygame event queue.
+        Empties the pygame.event.Event queue.
         """
-        #clears the pygame event queue
-        events = pygame.event.get()
+        #clears the pygame.event.Event queue
+        events = pygame.event.Event.get()
 
     def get_event_callbacks(self) -> None:
         """
@@ -586,7 +586,7 @@ class Frame(EventQueueManager):
         self.__disabled_keys[key] = False
 
     def __key_callback_wrapper( self,
-                                event: pygame.Event,
+                                event: pygame.event.Event,
                                 key: int,
                                 data: Any,
                                 putback: bool,

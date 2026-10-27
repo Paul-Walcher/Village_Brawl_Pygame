@@ -497,34 +497,35 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
 </span><span id="L-262"><a href="#L-262"><span class="linenos">262</span></a>
 </span><span id="L-263"><a href="#L-263"><span class="linenos">263</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">slide_left</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span id="L-264"><a href="#L-264"><span class="linenos">264</span></a>
-</span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
-</span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
-</span><span id="L-267"><a href="#L-267"><span class="linenos">267</span></a>
-</span><span id="L-268"><a href="#L-268"><span class="linenos">268</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">slide_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-269"><a href="#L-269"><span class="linenos">269</span></a>
-</span><span id="L-270"><a href="#L-270"><span class="linenos">270</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
-</span><span id="L-271"><a href="#L-271"><span class="linenos">271</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
-</span><span id="L-272"><a href="#L-272"><span class="linenos">272</span></a>
-</span><span id="L-273"><a href="#L-273"><span class="linenos">273</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_slides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-274"><a href="#L-274"><span class="linenos">274</span></a>
-</span><span id="L-275"><a href="#L-275"><span class="linenos">275</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
-</span><span id="L-276"><a href="#L-276"><span class="linenos">276</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
-</span><span id="L-277"><a href="#L-277"><span class="linenos">277</span></a>
+</span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">any_animation_playing</span><span class="p">():</span>
+</span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
+</span><span id="L-267"><a href="#L-267"><span class="linenos">267</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
+</span><span id="L-268"><a href="#L-268"><span class="linenos">268</span></a>
+</span><span id="L-269"><a href="#L-269"><span class="linenos">269</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">slide_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-270"><a href="#L-270"><span class="linenos">270</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">any_animation_playing</span><span class="p">():</span>
+</span><span id="L-271"><a href="#L-271"><span class="linenos">271</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
+</span><span id="L-272"><a href="#L-272"><span class="linenos">272</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
+</span><span id="L-273"><a href="#L-273"><span class="linenos">273</span></a>
+</span><span id="L-274"><a href="#L-274"><span class="linenos">274</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_slides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-275"><a href="#L-275"><span class="linenos">275</span></a>
+</span><span id="L-276"><a href="#L-276"><span class="linenos">276</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
+</span><span id="L-277"><a href="#L-277"><span class="linenos">277</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
 </span><span id="L-278"><a href="#L-278"><span class="linenos">278</span></a>
-</span><span id="L-279"><a href="#L-279"><span class="linenos">279</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_selected_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-280"><a href="#L-280"><span class="linenos">280</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_selected_index</span><span class="p">()</span>
-</span><span id="L-281"><a href="#L-281"><span class="linenos">281</span></a>
+</span><span id="L-279"><a href="#L-279"><span class="linenos">279</span></a>
+</span><span id="L-280"><a href="#L-280"><span class="linenos">280</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_selected_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-281"><a href="#L-281"><span class="linenos">281</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_selected_index</span><span class="p">()</span>
 </span><span id="L-282"><a href="#L-282"><span class="linenos">282</span></a>
-</span><span id="L-283"><a href="#L-283"><span class="linenos">283</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_background_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
-</span><span id="L-284"><a href="#L-284"><span class="linenos">284</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
-</span><span id="L-285"><a href="#L-285"><span class="linenos">285</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
-</span><span id="L-286"><a href="#L-286"><span class="linenos">286</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">background_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
-</span><span id="L-287"><a href="#L-287"><span class="linenos">287</span></a>
-</span><span id="L-288"><a href="#L-288"><span class="linenos">288</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-289"><a href="#L-289"><span class="linenos">289</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_index</span><span class="p">()</span>
-</span><span id="L-290"><a href="#L-290"><span class="linenos">290</span></a>
-</span><span id="L-291"><a href="#L-291"><span class="linenos">291</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-292"><a href="#L-292"><span class="linenos">292</span></a>        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">()]</span>
+</span><span id="L-283"><a href="#L-283"><span class="linenos">283</span></a>
+</span><span id="L-284"><a href="#L-284"><span class="linenos">284</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_background_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+</span><span id="L-285"><a href="#L-285"><span class="linenos">285</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+</span><span id="L-286"><a href="#L-286"><span class="linenos">286</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+</span><span id="L-287"><a href="#L-287"><span class="linenos">287</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">background_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+</span><span id="L-288"><a href="#L-288"><span class="linenos">288</span></a>
+</span><span id="L-289"><a href="#L-289"><span class="linenos">289</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-290"><a href="#L-290"><span class="linenos">290</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_index</span><span class="p">()</span>
+</span><span id="L-291"><a href="#L-291"><span class="linenos">291</span></a>
+</span><span id="L-292"><a href="#L-292"><span class="linenos">292</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-293"><a href="#L-293"><span class="linenos">293</span></a>        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">()]</span>
 </span></pre></div>
 
 
@@ -780,38 +781,71 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
 </span><span id="LabeledImageSlider-263"><a href="#LabeledImageSlider-263"><span class="linenos">263</span></a>
 </span><span id="LabeledImageSlider-264"><a href="#LabeledImageSlider-264"><span class="linenos">264</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">slide_left</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span id="LabeledImageSlider-265"><a href="#LabeledImageSlider-265"><span class="linenos">265</span></a>
-</span><span id="LabeledImageSlider-266"><a href="#LabeledImageSlider-266"><span class="linenos">266</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
-</span><span id="LabeledImageSlider-267"><a href="#LabeledImageSlider-267"><span class="linenos">267</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
-</span><span id="LabeledImageSlider-268"><a href="#LabeledImageSlider-268"><span class="linenos">268</span></a>
-</span><span id="LabeledImageSlider-269"><a href="#LabeledImageSlider-269"><span class="linenos">269</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">slide_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="LabeledImageSlider-270"><a href="#LabeledImageSlider-270"><span class="linenos">270</span></a>
-</span><span id="LabeledImageSlider-271"><a href="#LabeledImageSlider-271"><span class="linenos">271</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
-</span><span id="LabeledImageSlider-272"><a href="#LabeledImageSlider-272"><span class="linenos">272</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
-</span><span id="LabeledImageSlider-273"><a href="#LabeledImageSlider-273"><span class="linenos">273</span></a>
-</span><span id="LabeledImageSlider-274"><a href="#LabeledImageSlider-274"><span class="linenos">274</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_slides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="LabeledImageSlider-275"><a href="#LabeledImageSlider-275"><span class="linenos">275</span></a>
-</span><span id="LabeledImageSlider-276"><a href="#LabeledImageSlider-276"><span class="linenos">276</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
-</span><span id="LabeledImageSlider-277"><a href="#LabeledImageSlider-277"><span class="linenos">277</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
-</span><span id="LabeledImageSlider-278"><a href="#LabeledImageSlider-278"><span class="linenos">278</span></a>
+</span><span id="LabeledImageSlider-266"><a href="#LabeledImageSlider-266"><span class="linenos">266</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">any_animation_playing</span><span class="p">():</span>
+</span><span id="LabeledImageSlider-267"><a href="#LabeledImageSlider-267"><span class="linenos">267</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
+</span><span id="LabeledImageSlider-268"><a href="#LabeledImageSlider-268"><span class="linenos">268</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
+</span><span id="LabeledImageSlider-269"><a href="#LabeledImageSlider-269"><span class="linenos">269</span></a>
+</span><span id="LabeledImageSlider-270"><a href="#LabeledImageSlider-270"><span class="linenos">270</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">slide_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="LabeledImageSlider-271"><a href="#LabeledImageSlider-271"><span class="linenos">271</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">any_animation_playing</span><span class="p">():</span>
+</span><span id="LabeledImageSlider-272"><a href="#LabeledImageSlider-272"><span class="linenos">272</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
+</span><span id="LabeledImageSlider-273"><a href="#LabeledImageSlider-273"><span class="linenos">273</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
+</span><span id="LabeledImageSlider-274"><a href="#LabeledImageSlider-274"><span class="linenos">274</span></a>
+</span><span id="LabeledImageSlider-275"><a href="#LabeledImageSlider-275"><span class="linenos">275</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_slides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="LabeledImageSlider-276"><a href="#LabeledImageSlider-276"><span class="linenos">276</span></a>
+</span><span id="LabeledImageSlider-277"><a href="#LabeledImageSlider-277"><span class="linenos">277</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
+</span><span id="LabeledImageSlider-278"><a href="#LabeledImageSlider-278"><span class="linenos">278</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
 </span><span id="LabeledImageSlider-279"><a href="#LabeledImageSlider-279"><span class="linenos">279</span></a>
-</span><span id="LabeledImageSlider-280"><a href="#LabeledImageSlider-280"><span class="linenos">280</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_selected_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="LabeledImageSlider-281"><a href="#LabeledImageSlider-281"><span class="linenos">281</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_selected_index</span><span class="p">()</span>
-</span><span id="LabeledImageSlider-282"><a href="#LabeledImageSlider-282"><span class="linenos">282</span></a>
+</span><span id="LabeledImageSlider-280"><a href="#LabeledImageSlider-280"><span class="linenos">280</span></a>
+</span><span id="LabeledImageSlider-281"><a href="#LabeledImageSlider-281"><span class="linenos">281</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_selected_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="LabeledImageSlider-282"><a href="#LabeledImageSlider-282"><span class="linenos">282</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_selected_index</span><span class="p">()</span>
 </span><span id="LabeledImageSlider-283"><a href="#LabeledImageSlider-283"><span class="linenos">283</span></a>
-</span><span id="LabeledImageSlider-284"><a href="#LabeledImageSlider-284"><span class="linenos">284</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_background_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
-</span><span id="LabeledImageSlider-285"><a href="#LabeledImageSlider-285"><span class="linenos">285</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
-</span><span id="LabeledImageSlider-286"><a href="#LabeledImageSlider-286"><span class="linenos">286</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
-</span><span id="LabeledImageSlider-287"><a href="#LabeledImageSlider-287"><span class="linenos">287</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">background_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
-</span><span id="LabeledImageSlider-288"><a href="#LabeledImageSlider-288"><span class="linenos">288</span></a>
-</span><span id="LabeledImageSlider-289"><a href="#LabeledImageSlider-289"><span class="linenos">289</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="LabeledImageSlider-290"><a href="#LabeledImageSlider-290"><span class="linenos">290</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_index</span><span class="p">()</span>
-</span><span id="LabeledImageSlider-291"><a href="#LabeledImageSlider-291"><span class="linenos">291</span></a>
-</span><span id="LabeledImageSlider-292"><a href="#LabeledImageSlider-292"><span class="linenos">292</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="LabeledImageSlider-293"><a href="#LabeledImageSlider-293"><span class="linenos">293</span></a>        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">()]</span>
+</span><span id="LabeledImageSlider-284"><a href="#LabeledImageSlider-284"><span class="linenos">284</span></a>
+</span><span id="LabeledImageSlider-285"><a href="#LabeledImageSlider-285"><span class="linenos">285</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_background_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+</span><span id="LabeledImageSlider-286"><a href="#LabeledImageSlider-286"><span class="linenos">286</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+</span><span id="LabeledImageSlider-287"><a href="#LabeledImageSlider-287"><span class="linenos">287</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+</span><span id="LabeledImageSlider-288"><a href="#LabeledImageSlider-288"><span class="linenos">288</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">background_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+</span><span id="LabeledImageSlider-289"><a href="#LabeledImageSlider-289"><span class="linenos">289</span></a>
+</span><span id="LabeledImageSlider-290"><a href="#LabeledImageSlider-290"><span class="linenos">290</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="LabeledImageSlider-291"><a href="#LabeledImageSlider-291"><span class="linenos">291</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_index</span><span class="p">()</span>
+</span><span id="LabeledImageSlider-292"><a href="#LabeledImageSlider-292"><span class="linenos">292</span></a>
+</span><span id="LabeledImageSlider-293"><a href="#LabeledImageSlider-293"><span class="linenos">293</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="LabeledImageSlider-294"><a href="#LabeledImageSlider-294"><span class="linenos">294</span></a>        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">()]</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
+            <div class="docstring"><p>This class is the basic framework for a shown window instance.</p>
+
+<p>It has an internal rectangle defined as frame_dim, which
+specifies the rectangle in which it operates in (its window size).</p>
+
+<p>The internal rectangles x, y, width and height are separately stored as
+class varriables.</p>
+
+<p>IMPORTANT: Do not change a frames frame_dim by doing frame_dim.x = ...,
+because internal x, y, width and height and frame_dim are adjusted using setter
+methods.</p>
+
+<p>Each frame can also have a parent frame. If this class is discontinued using raise_exit_flag(),
+and the parent frames focus group is the same as this classes', the parent frame will receive the focus.</p>
+
+<p>About focus groups:</p>
+
+<p>A focus group is an identifier of the group the frame belongs to.
+Inside this group, only one frame can have the focus at one time.</p>
+
+<p>You can check if you have the focus using Frame.is_focused,
+and focus as well as unfocus using Frame.focus and Frame.unfocus().</p>
+
+<p>If you dont pass an argument for the focus group to the constructor,
+the frame will be assigned to a standard focus group.
+You should bind input received for the frame using bind_events().
+Whenever focus changes for an event, all event_callbacks are cleared,
+and Frame.bind_events is called. There you can bind callbacks depending on whether
+you have the focus or not.</p>
+
+<p>A frame handles pygame events by using Frame.manage_pygame_events in Frame.tick.
+You can register event callbacks using Frame.add_pygame_key_callback or
+Frame.add_pygame_event_callback.</p>
 </div>
 
 
@@ -908,7 +942,7 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
                             <div id="LabeledImageSlider.LEFT" class="classattr">
                                 <div class="attr variable">
             <span class="name">LEFT</span>        =
-<span class="default_value">-182608568604543724</span>
+<span class="default_value">3091657641238051974</span>
 
         
     </div>
@@ -920,7 +954,7 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
                             <div id="LabeledImageSlider.RIGHT" class="classattr">
                                 <div class="attr variable">
             <span class="name">RIGHT</span>        =
-<span class="default_value">8356602761526698131</span>
+<span class="default_value">-5249216421198398583</span>
 
         
     </div>
@@ -932,7 +966,7 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
                             <div id="LabeledImageSlider.TOP" class="classattr">
                                 <div class="attr variable">
             <span class="name">TOP</span>        =
-<span class="default_value">-6099328901132097450</span>
+<span class="default_value">5307650040846892243</span>
 
         
     </div>
@@ -944,7 +978,7 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
                             <div id="LabeledImageSlider.BOTTOM" class="classattr">
                                 <div class="attr variable">
             <span class="name">BOTTOM</span>        =
-<span class="default_value">2162467790777094703</span>
+<span class="default_value">4769749847535695369</span>
 
         
     </div>
@@ -1566,7 +1600,11 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>This function is important, it should be called on every frame in the game.
+It returns a reference to the frame that should be the main frame rendered.
+If it returns None, this signals the frame is set to be deleted.</p>
+</div>
+
 
                             </div>
                             <div id="LabeledImageSlider.render" class="classattr">
@@ -1587,7 +1625,10 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Renders this frame onto the given surface.
+Is called once per frame.</p>
+</div>
+
 
                             </div>
                             <div id="LabeledImageSlider.slide_left" class="classattr">
@@ -1603,8 +1644,9 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
     <a class="headerlink" href="#LabeledImageSlider.slide_left"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.slide_left-264"><a href="#LabeledImageSlider.slide_left-264"><span class="linenos">264</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">slide_left</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 </span><span id="LabeledImageSlider.slide_left-265"><a href="#LabeledImageSlider.slide_left-265"><span class="linenos">265</span></a>
-</span><span id="LabeledImageSlider.slide_left-266"><a href="#LabeledImageSlider.slide_left-266"><span class="linenos">266</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
-</span><span id="LabeledImageSlider.slide_left-267"><a href="#LabeledImageSlider.slide_left-267"><span class="linenos">267</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
+</span><span id="LabeledImageSlider.slide_left-266"><a href="#LabeledImageSlider.slide_left-266"><span class="linenos">266</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">any_animation_playing</span><span class="p">():</span>
+</span><span id="LabeledImageSlider.slide_left-267"><a href="#LabeledImageSlider.slide_left-267"><span class="linenos">267</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
+</span><span id="LabeledImageSlider.slide_left-268"><a href="#LabeledImageSlider.slide_left-268"><span class="linenos">268</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_left</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -1622,10 +1664,10 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
 
     </div>
     <a class="headerlink" href="#LabeledImageSlider.slide_right"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.slide_right-269"><a href="#LabeledImageSlider.slide_right-269"><span class="linenos">269</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">slide_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="LabeledImageSlider.slide_right-270"><a href="#LabeledImageSlider.slide_right-270"><span class="linenos">270</span></a>
-</span><span id="LabeledImageSlider.slide_right-271"><a href="#LabeledImageSlider.slide_right-271"><span class="linenos">271</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
-</span><span id="LabeledImageSlider.slide_right-272"><a href="#LabeledImageSlider.slide_right-272"><span class="linenos">272</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.slide_right-270"><a href="#LabeledImageSlider.slide_right-270"><span class="linenos">270</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">slide_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="LabeledImageSlider.slide_right-271"><a href="#LabeledImageSlider.slide_right-271"><span class="linenos">271</span></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">any_animation_playing</span><span class="p">():</span>
+</span><span id="LabeledImageSlider.slide_right-272"><a href="#LabeledImageSlider.slide_right-272"><span class="linenos">272</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
+</span><span id="LabeledImageSlider.slide_right-273"><a href="#LabeledImageSlider.slide_right-273"><span class="linenos">273</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_right</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -1643,10 +1685,10 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
 
     </div>
     <a class="headerlink" href="#LabeledImageSlider.reset_slides"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.reset_slides-274"><a href="#LabeledImageSlider.reset_slides-274"><span class="linenos">274</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_slides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="LabeledImageSlider.reset_slides-275"><a href="#LabeledImageSlider.reset_slides-275"><span class="linenos">275</span></a>
-</span><span id="LabeledImageSlider.reset_slides-276"><a href="#LabeledImageSlider.reset_slides-276"><span class="linenos">276</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
-</span><span id="LabeledImageSlider.reset_slides-277"><a href="#LabeledImageSlider.reset_slides-277"><span class="linenos">277</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.reset_slides-275"><a href="#LabeledImageSlider.reset_slides-275"><span class="linenos">275</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_slides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="LabeledImageSlider.reset_slides-276"><a href="#LabeledImageSlider.reset_slides-276"><span class="linenos">276</span></a>
+</span><span id="LabeledImageSlider.reset_slides-277"><a href="#LabeledImageSlider.reset_slides-277"><span class="linenos">277</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
+</span><span id="LabeledImageSlider.reset_slides-278"><a href="#LabeledImageSlider.reset_slides-278"><span class="linenos">278</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">reset_slides</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -1664,8 +1706,8 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
 
     </div>
     <a class="headerlink" href="#LabeledImageSlider.get_selected_index"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.get_selected_index-280"><a href="#LabeledImageSlider.get_selected_index-280"><span class="linenos">280</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_selected_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="LabeledImageSlider.get_selected_index-281"><a href="#LabeledImageSlider.get_selected_index-281"><span class="linenos">281</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_selected_index</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.get_selected_index-281"><a href="#LabeledImageSlider.get_selected_index-281"><span class="linenos">281</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_selected_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="LabeledImageSlider.get_selected_index-282"><a href="#LabeledImageSlider.get_selected_index-282"><span class="linenos">282</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_selected_index</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -1683,10 +1725,10 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
 
     </div>
     <a class="headerlink" href="#LabeledImageSlider.set_background_color"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.set_background_color-284"><a href="#LabeledImageSlider.set_background_color-284"><span class="linenos">284</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_background_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
-</span><span id="LabeledImageSlider.set_background_color-285"><a href="#LabeledImageSlider.set_background_color-285"><span class="linenos">285</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
-</span><span id="LabeledImageSlider.set_background_color-286"><a href="#LabeledImageSlider.set_background_color-286"><span class="linenos">286</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
-</span><span id="LabeledImageSlider.set_background_color-287"><a href="#LabeledImageSlider.set_background_color-287"><span class="linenos">287</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">background_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.set_background_color-285"><a href="#LabeledImageSlider.set_background_color-285"><span class="linenos">285</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_background_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+</span><span id="LabeledImageSlider.set_background_color-286"><a href="#LabeledImageSlider.set_background_color-286"><span class="linenos">286</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+</span><span id="LabeledImageSlider.set_background_color-287"><a href="#LabeledImageSlider.set_background_color-287"><span class="linenos">287</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">set_background_color</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+</span><span id="LabeledImageSlider.set_background_color-288"><a href="#LabeledImageSlider.set_background_color-288"><span class="linenos">288</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">background_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1704,8 +1746,8 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
 
     </div>
     <a class="headerlink" href="#LabeledImageSlider.get_focus_index"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.get_focus_index-289"><a href="#LabeledImageSlider.get_focus_index-289"><span class="linenos">289</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="LabeledImageSlider.get_focus_index-290"><a href="#LabeledImageSlider.get_focus_index-290"><span class="linenos">290</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_index</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.get_focus_index-290"><a href="#LabeledImageSlider.get_focus_index-290"><span class="linenos">290</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="LabeledImageSlider.get_focus_index-291"><a href="#LabeledImageSlider.get_focus_index-291"><span class="linenos">291</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_index</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -1723,8 +1765,8 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
 
     </div>
     <a class="headerlink" href="#LabeledImageSlider.get_focus_image"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.get_focus_image-292"><a href="#LabeledImageSlider.get_focus_image-292"><span class="linenos">292</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="LabeledImageSlider.get_focus_image-293"><a href="#LabeledImageSlider.get_focus_image-293"><span class="linenos">293</span></a>        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">()]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="LabeledImageSlider.get_focus_image-293"><a href="#LabeledImageSlider.get_focus_image-293"><span class="linenos">293</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_focus_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="LabeledImageSlider.get_focus_image-294"><a href="#LabeledImageSlider.get_focus_image-294"><span class="linenos">294</span></a>        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">get_focus_image</span><span class="p">()]</span>
 </span></pre></div>
 
 
@@ -1737,22 +1779,18 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
                                     <div><dt><a href="../frame.html#Frame">Frames.frame.Frame</a></dt>
                                 <dd id="LabeledImageSlider.STANDARD_FOCUS_GROUP" class="variable"><a href="../frame.html#Frame.STANDARD_FOCUS_GROUP">STANDARD_FOCUS_GROUP</a></dd>
                 <dd id="LabeledImageSlider.FOCUS_GROUPS" class="variable"><a href="../frame.html#Frame.FOCUS_GROUPS">FOCUS_GROUPS</a></dd>
-                <dd id="LabeledImageSlider.SlideHandler" class="class"><a href="../frame.html#Frame.SlideHandler">SlideHandler</a></dd>
-                <dd id="LabeledImageSlider.CallbackEvent" class="class"><a href="../frame.html#Frame.CallbackEvent">CallbackEvent</a></dd>
+                <dd id="LabeledImageSlider.EventCallback" class="class"><a href="../frame.html#Frame.EventCallback">EventCallback</a></dd>
                 <dd id="LabeledImageSlider.frame_enum" class="variable"><a href="../frame.html#Frame.frame_enum">frame_enum</a></dd>
                 <dd id="LabeledImageSlider.data" class="variable"><a href="../frame.html#Frame.data">data</a></dd>
                 <dd id="LabeledImageSlider.focus_group" class="variable"><a href="../frame.html#Frame.focus_group">focus_group</a></dd>
                 <dd id="LabeledImageSlider.parent_frame" class="variable"><a href="../frame.html#Frame.parent_frame">parent_frame</a></dd>
                 <dd id="LabeledImageSlider.max_parent_frames" class="variable"><a href="../frame.html#Frame.max_parent_frames">max_parent_frames</a></dd>
-                <dd id="LabeledImageSlider.event_queue" class="variable"><a href="../frame.html#Frame.event_queue">event_queue</a></dd>
                 <dd id="LabeledImageSlider.center" class="variable"><a href="../frame.html#Frame.center">center</a></dd>
-                <dd id="LabeledImageSlider.widgets" class="variable"><a href="../frame.html#Frame.widgets">widgets</a></dd>
                 <dd id="LabeledImageSlider.frame_dim" class="variable"><a href="../frame.html#Frame.frame_dim">frame_dim</a></dd>
                 <dd id="LabeledImageSlider.x" class="variable"><a href="../frame.html#Frame.x">x</a></dd>
                 <dd id="LabeledImageSlider.y" class="variable"><a href="../frame.html#Frame.y">y</a></dd>
                 <dd id="LabeledImageSlider.width" class="variable"><a href="../frame.html#Frame.width">width</a></dd>
                 <dd id="LabeledImageSlider.height" class="variable"><a href="../frame.html#Frame.height">height</a></dd>
-                <dd id="LabeledImageSlider.has_focus" class="variable"><a href="../frame.html#Frame.has_focus">has_focus</a></dd>
                 <dd id="LabeledImageSlider.on_focus_gained" class="function"><a href="../frame.html#Frame.on_focus_gained">on_focus_gained</a></dd>
                 <dd id="LabeledImageSlider.on_focus_lost" class="function"><a href="../frame.html#Frame.on_focus_lost">on_focus_lost</a></dd>
                 <dd id="LabeledImageSlider.move_by" class="function"><a href="../frame.html#Frame.move_by">move_by</a></dd>
@@ -1777,9 +1815,6 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
                 <dd id="LabeledImageSlider.raise_exit_flag" class="function"><a href="../frame.html#Frame.raise_exit_flag">raise_exit_flag</a></dd>
                 <dd id="LabeledImageSlider.reset_exit_flag" class="function"><a href="../frame.html#Frame.reset_exit_flag">reset_exit_flag</a></dd>
                 <dd id="LabeledImageSlider.exit_flag_raised" class="function"><a href="../frame.html#Frame.exit_flag_raised">exit_flag_raised</a></dd>
-                <dd id="LabeledImageSlider.set_parent_frame" class="function"><a href="../frame.html#Frame.set_parent_frame">set_parent_frame</a></dd>
-                <dd id="LabeledImageSlider.widgets_tick" class="function"><a href="../frame.html#Frame.widgets_tick">widgets_tick</a></dd>
-                <dd id="LabeledImageSlider.render_widgets" class="function"><a href="../frame.html#Frame.render_widgets">render_widgets</a></dd>
 
             </div>
             <div><dt><a href="../../event_queue_manager.html#EventQueueManager">event_queue_manager.EventQueueManager</a></dt>
@@ -1815,7 +1850,7 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
                             <div id="LabeledImageSlider.EventTypes.SELECT_ANIMATION_ENDED" class="classattr">
                                 <div class="attr variable">
             <span class="name">SELECT_ANIMATION_ENDED</span>        =
-<span class="default_value">-1061554151781477633</span>
+<span class="default_value">-6627796137017699059</span>
 
         
     </div>
@@ -1827,7 +1862,7 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
                             <div id="LabeledImageSlider.EventTypes.FLIPPING_ANIMATION_ENDED" class="classattr">
                                 <div class="attr variable">
             <span class="name">FLIPPING_ANIMATION_ENDED</span>        =
-<span class="default_value">-1630133823680653469</span>
+<span class="default_value">-4043403525787039052</span>
 
         
     </div>
@@ -1839,7 +1874,7 @@ Frames<wbr>.widgets<wbr>.labeled_image_slider    </h1>
                             <div id="LabeledImageSlider.EventTypes.SLIDING_ANIMATION_ENDED" class="classattr">
                                 <div class="attr variable">
             <span class="name">SLIDING_ANIMATION_ENDED</span>        =
-<span class="default_value">703787972577652828</span>
+<span class="default_value">-2468697226548327226</span>
 
         
     </div>

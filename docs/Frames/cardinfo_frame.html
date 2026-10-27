@@ -218,14 +218,14 @@ Frames<wbr>.cardinfo_frame    </h1>
 </span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">alt_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 </span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>
 </span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">SHOW_IMAGE_KEY</span><span class="p">:</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">CallbackEvent</span><span class="o">.</span><span class="n">FAILURE</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos"> 76</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">EventCallback</span><span class="o">.</span><span class="n">FAILURE</span>
 </span><span id="L-77"><a href="#L-77"><span class="linenos"> 77</span></a>
 </span><span id="L-78"><a href="#L-78"><span class="linenos"> 78</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">full_image_shown</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span id="L-79"><a href="#L-79"><span class="linenos"> 79</span></a>
 </span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">alt_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 </span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>
 </span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">SHOW_IMAGE_KEY</span><span class="p">:</span>
-</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">CallbackEvent</span><span class="o">.</span><span class="n">FAILURE</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">EventCallback</span><span class="o">.</span><span class="n">FAILURE</span>
 </span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>
 </span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">full_image_shown</span> <span class="o">=</span> <span class="kc">False</span>
 </span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>
@@ -390,14 +390,14 @@ Frames<wbr>.cardinfo_frame    </h1>
 </span><span id="CardinfoFrame-74"><a href="#CardinfoFrame-74"><span class="linenos"> 74</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">alt_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 </span><span id="CardinfoFrame-75"><a href="#CardinfoFrame-75"><span class="linenos"> 75</span></a>
 </span><span id="CardinfoFrame-76"><a href="#CardinfoFrame-76"><span class="linenos"> 76</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">SHOW_IMAGE_KEY</span><span class="p">:</span>
-</span><span id="CardinfoFrame-77"><a href="#CardinfoFrame-77"><span class="linenos"> 77</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">CallbackEvent</span><span class="o">.</span><span class="n">FAILURE</span>
+</span><span id="CardinfoFrame-77"><a href="#CardinfoFrame-77"><span class="linenos"> 77</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">EventCallback</span><span class="o">.</span><span class="n">FAILURE</span>
 </span><span id="CardinfoFrame-78"><a href="#CardinfoFrame-78"><span class="linenos"> 78</span></a>
 </span><span id="CardinfoFrame-79"><a href="#CardinfoFrame-79"><span class="linenos"> 79</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">full_image_shown</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span id="CardinfoFrame-80"><a href="#CardinfoFrame-80"><span class="linenos"> 80</span></a>
 </span><span id="CardinfoFrame-81"><a href="#CardinfoFrame-81"><span class="linenos"> 81</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">alt_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 </span><span id="CardinfoFrame-82"><a href="#CardinfoFrame-82"><span class="linenos"> 82</span></a>
 </span><span id="CardinfoFrame-83"><a href="#CardinfoFrame-83"><span class="linenos"> 83</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">SHOW_IMAGE_KEY</span><span class="p">:</span>
-</span><span id="CardinfoFrame-84"><a href="#CardinfoFrame-84"><span class="linenos"> 84</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">CallbackEvent</span><span class="o">.</span><span class="n">FAILURE</span>
+</span><span id="CardinfoFrame-84"><a href="#CardinfoFrame-84"><span class="linenos"> 84</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">EventCallback</span><span class="o">.</span><span class="n">FAILURE</span>
 </span><span id="CardinfoFrame-85"><a href="#CardinfoFrame-85"><span class="linenos"> 85</span></a>
 </span><span id="CardinfoFrame-86"><a href="#CardinfoFrame-86"><span class="linenos"> 86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">full_image_shown</span> <span class="o">=</span> <span class="kc">False</span>
 </span><span id="CardinfoFrame-87"><a href="#CardinfoFrame-87"><span class="linenos"> 87</span></a>
@@ -486,7 +486,39 @@ Frames<wbr>.cardinfo_frame    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
+            <div class="docstring"><p>This class is the basic framework for a shown window instance.</p>
+
+<p>It has an internal rectangle defined as frame_dim, which
+specifies the rectangle in which it operates in (its window size).</p>
+
+<p>The internal rectangles x, y, width and height are separately stored as
+class varriables.</p>
+
+<p>IMPORTANT: Do not change a frames frame_dim by doing frame_dim.x = ...,
+because internal x, y, width and height and frame_dim are adjusted using setter
+methods.</p>
+
+<p>Each frame can also have a parent frame. If this class is discontinued using raise_exit_flag(),
+and the parent frames focus group is the same as this classes', the parent frame will receive the focus.</p>
+
+<p>About focus groups:</p>
+
+<p>A focus group is an identifier of the group the frame belongs to.
+Inside this group, only one frame can have the focus at one time.</p>
+
+<p>You can check if you have the focus using Frame.is_focused,
+and focus as well as unfocus using Frame.focus and Frame.unfocus().</p>
+
+<p>If you dont pass an argument for the focus group to the constructor,
+the frame will be assigned to a standard focus group.
+You should bind input received for the frame using bind_events().
+Whenever focus changes for an event, all event_callbacks are cleared,
+and Frame.bind_events is called. There you can bind callbacks depending on whether
+you have the focus or not.</p>
+
+<p>A frame handles pygame events by using Frame.manage_pygame_events in Frame.tick.
+You can register event callbacks using Frame.add_pygame_key_callback or
+Frame.add_pygame_event_callback.</p>
 </div>
 
 
@@ -707,7 +739,10 @@ Frames<wbr>.cardinfo_frame    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>This is called in the constructor and every time this frames
+focus changes. Make event bindings dependent on self.is_focused().</p>
+</div>
+
 
                             </div>
                             <div id="CardinfoFrame.next_page" class="classattr">
@@ -764,7 +799,7 @@ Frames<wbr>.cardinfo_frame    </h1>
             <div class="pdoc-code codehilite"><pre><span></span><span id="CardinfoFrame.alt_down-74"><a href="#CardinfoFrame.alt_down-74"><span class="linenos">74</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">alt_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 </span><span id="CardinfoFrame.alt_down-75"><a href="#CardinfoFrame.alt_down-75"><span class="linenos">75</span></a>
 </span><span id="CardinfoFrame.alt_down-76"><a href="#CardinfoFrame.alt_down-76"><span class="linenos">76</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">SHOW_IMAGE_KEY</span><span class="p">:</span>
-</span><span id="CardinfoFrame.alt_down-77"><a href="#CardinfoFrame.alt_down-77"><span class="linenos">77</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">CallbackEvent</span><span class="o">.</span><span class="n">FAILURE</span>
+</span><span id="CardinfoFrame.alt_down-77"><a href="#CardinfoFrame.alt_down-77"><span class="linenos">77</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">EventCallback</span><span class="o">.</span><span class="n">FAILURE</span>
 </span><span id="CardinfoFrame.alt_down-78"><a href="#CardinfoFrame.alt_down-78"><span class="linenos">78</span></a>
 </span><span id="CardinfoFrame.alt_down-79"><a href="#CardinfoFrame.alt_down-79"><span class="linenos">79</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">full_image_shown</span> <span class="o">=</span> <span class="kc">True</span>
 </span></pre></div>
@@ -787,7 +822,7 @@ Frames<wbr>.cardinfo_frame    </h1>
             <div class="pdoc-code codehilite"><pre><span></span><span id="CardinfoFrame.alt_up-81"><a href="#CardinfoFrame.alt_up-81"><span class="linenos">81</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">alt_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 </span><span id="CardinfoFrame.alt_up-82"><a href="#CardinfoFrame.alt_up-82"><span class="linenos">82</span></a>
 </span><span id="CardinfoFrame.alt_up-83"><a href="#CardinfoFrame.alt_up-83"><span class="linenos">83</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">SHOW_IMAGE_KEY</span><span class="p">:</span>
-</span><span id="CardinfoFrame.alt_up-84"><a href="#CardinfoFrame.alt_up-84"><span class="linenos">84</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">CallbackEvent</span><span class="o">.</span><span class="n">FAILURE</span>
+</span><span id="CardinfoFrame.alt_up-84"><a href="#CardinfoFrame.alt_up-84"><span class="linenos">84</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">EventCallback</span><span class="o">.</span><span class="n">FAILURE</span>
 </span><span id="CardinfoFrame.alt_up-85"><a href="#CardinfoFrame.alt_up-85"><span class="linenos">85</span></a>
 </span><span id="CardinfoFrame.alt_up-86"><a href="#CardinfoFrame.alt_up-86"><span class="linenos">86</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">full_image_shown</span> <span class="o">=</span> <span class="kc">False</span>
 </span></pre></div>
@@ -939,7 +974,11 @@ Frames<wbr>.cardinfo_frame    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>This function is important, it should be called on every frame in the game.
+It returns a reference to the frame that should be the main frame rendered.
+If it returns None, this signals the frame is set to be deleted.</p>
+</div>
+
 
                             </div>
                             <div id="CardinfoFrame.render" class="classattr">
@@ -966,7 +1005,10 @@ Frames<wbr>.cardinfo_frame    </h1>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Renders this frame onto the given surface.
+Is called once per frame.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -975,22 +1017,18 @@ Frames<wbr>.cardinfo_frame    </h1>
                                     <div><dt><a href="frame.html#Frame">Frames.frame.Frame</a></dt>
                                 <dd id="CardinfoFrame.STANDARD_FOCUS_GROUP" class="variable"><a href="frame.html#Frame.STANDARD_FOCUS_GROUP">STANDARD_FOCUS_GROUP</a></dd>
                 <dd id="CardinfoFrame.FOCUS_GROUPS" class="variable"><a href="frame.html#Frame.FOCUS_GROUPS">FOCUS_GROUPS</a></dd>
-                <dd id="CardinfoFrame.SlideHandler" class="class"><a href="frame.html#Frame.SlideHandler">SlideHandler</a></dd>
-                <dd id="CardinfoFrame.CallbackEvent" class="class"><a href="frame.html#Frame.CallbackEvent">CallbackEvent</a></dd>
+                <dd id="CardinfoFrame.EventCallback" class="class"><a href="frame.html#Frame.EventCallback">EventCallback</a></dd>
                 <dd id="CardinfoFrame.frame_enum" class="variable"><a href="frame.html#Frame.frame_enum">frame_enum</a></dd>
                 <dd id="CardinfoFrame.data" class="variable"><a href="frame.html#Frame.data">data</a></dd>
                 <dd id="CardinfoFrame.focus_group" class="variable"><a href="frame.html#Frame.focus_group">focus_group</a></dd>
                 <dd id="CardinfoFrame.parent_frame" class="variable"><a href="frame.html#Frame.parent_frame">parent_frame</a></dd>
                 <dd id="CardinfoFrame.max_parent_frames" class="variable"><a href="frame.html#Frame.max_parent_frames">max_parent_frames</a></dd>
-                <dd id="CardinfoFrame.event_queue" class="variable"><a href="frame.html#Frame.event_queue">event_queue</a></dd>
                 <dd id="CardinfoFrame.center" class="variable"><a href="frame.html#Frame.center">center</a></dd>
-                <dd id="CardinfoFrame.widgets" class="variable"><a href="frame.html#Frame.widgets">widgets</a></dd>
                 <dd id="CardinfoFrame.frame_dim" class="variable"><a href="frame.html#Frame.frame_dim">frame_dim</a></dd>
                 <dd id="CardinfoFrame.x" class="variable"><a href="frame.html#Frame.x">x</a></dd>
                 <dd id="CardinfoFrame.y" class="variable"><a href="frame.html#Frame.y">y</a></dd>
                 <dd id="CardinfoFrame.width" class="variable"><a href="frame.html#Frame.width">width</a></dd>
                 <dd id="CardinfoFrame.height" class="variable"><a href="frame.html#Frame.height">height</a></dd>
-                <dd id="CardinfoFrame.has_focus" class="variable"><a href="frame.html#Frame.has_focus">has_focus</a></dd>
                 <dd id="CardinfoFrame.on_focus_gained" class="function"><a href="frame.html#Frame.on_focus_gained">on_focus_gained</a></dd>
                 <dd id="CardinfoFrame.on_focus_lost" class="function"><a href="frame.html#Frame.on_focus_lost">on_focus_lost</a></dd>
                 <dd id="CardinfoFrame.move_by" class="function"><a href="frame.html#Frame.move_by">move_by</a></dd>
@@ -1014,9 +1052,6 @@ Frames<wbr>.cardinfo_frame    </h1>
                 <dd id="CardinfoFrame.raise_exit_flag" class="function"><a href="frame.html#Frame.raise_exit_flag">raise_exit_flag</a></dd>
                 <dd id="CardinfoFrame.reset_exit_flag" class="function"><a href="frame.html#Frame.reset_exit_flag">reset_exit_flag</a></dd>
                 <dd id="CardinfoFrame.exit_flag_raised" class="function"><a href="frame.html#Frame.exit_flag_raised">exit_flag_raised</a></dd>
-                <dd id="CardinfoFrame.set_parent_frame" class="function"><a href="frame.html#Frame.set_parent_frame">set_parent_frame</a></dd>
-                <dd id="CardinfoFrame.widgets_tick" class="function"><a href="frame.html#Frame.widgets_tick">widgets_tick</a></dd>
-                <dd id="CardinfoFrame.render_widgets" class="function"><a href="frame.html#Frame.render_widgets">render_widgets</a></dd>
 
             </div>
             <div><dt><a href="../event_queue_manager.html#EventQueueManager">event_queue_manager.EventQueueManager</a></dt>

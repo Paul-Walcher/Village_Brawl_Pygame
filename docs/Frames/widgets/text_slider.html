@@ -386,7 +386,39 @@ Frames<wbr>.widgets<wbr>.text_slider    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
+            <div class="docstring"><p>This class is the basic framework for a shown window instance.</p>
+
+<p>It has an internal rectangle defined as frame_dim, which
+specifies the rectangle in which it operates in (its window size).</p>
+
+<p>The internal rectangles x, y, width and height are separately stored as
+class varriables.</p>
+
+<p>IMPORTANT: Do not change a frames frame_dim by doing frame_dim.x = ...,
+because internal x, y, width and height and frame_dim are adjusted using setter
+methods.</p>
+
+<p>Each frame can also have a parent frame. If this class is discontinued using raise_exit_flag(),
+and the parent frames focus group is the same as this classes', the parent frame will receive the focus.</p>
+
+<p>About focus groups:</p>
+
+<p>A focus group is an identifier of the group the frame belongs to.
+Inside this group, only one frame can have the focus at one time.</p>
+
+<p>You can check if you have the focus using Frame.is_focused,
+and focus as well as unfocus using Frame.focus and Frame.unfocus().</p>
+
+<p>If you dont pass an argument for the focus group to the constructor,
+the frame will be assigned to a standard focus group.
+You should bind input received for the frame using bind_events().
+Whenever focus changes for an event, all event_callbacks are cleared,
+and Frame.bind_events is called. There you can bind callbacks depending on whether
+you have the focus or not.</p>
+
+<p>A frame handles pygame events by using Frame.manage_pygame_events in Frame.tick.
+You can register event callbacks using Frame.add_pygame_key_callback or
+Frame.add_pygame_event_callback.</p>
 </div>
 
 
@@ -712,6 +744,7 @@ Frames<wbr>.widgets<wbr>.text_slider    </h1>
                 <dd id="TextSlider.flip_all_cards" class="function"><a href="slider.html#Slider.flip_all_cards">flip_all_cards</a></dd>
                 <dd id="TextSlider.select_animation_playing" class="function"><a href="slider.html#Slider.select_animation_playing">select_animation_playing</a></dd>
                 <dd id="TextSlider.flipping_animation_playing" class="function"><a href="slider.html#Slider.flipping_animation_playing">flipping_animation_playing</a></dd>
+                <dd id="TextSlider.any_animation_playing" class="function"><a href="slider.html#Slider.any_animation_playing">any_animation_playing</a></dd>
                 <dd id="TextSlider.render" class="function"><a href="slider.html#Slider.render">render</a></dd>
                 <dd id="TextSlider.tick" class="function"><a href="slider.html#Slider.tick">tick</a></dd>
 
@@ -719,22 +752,18 @@ Frames<wbr>.widgets<wbr>.text_slider    </h1>
             <div><dt><a href="../frame.html#Frame">Frames.frame.Frame</a></dt>
                                 <dd id="TextSlider.STANDARD_FOCUS_GROUP" class="variable"><a href="../frame.html#Frame.STANDARD_FOCUS_GROUP">STANDARD_FOCUS_GROUP</a></dd>
                 <dd id="TextSlider.FOCUS_GROUPS" class="variable"><a href="../frame.html#Frame.FOCUS_GROUPS">FOCUS_GROUPS</a></dd>
-                <dd id="TextSlider.SlideHandler" class="class"><a href="../frame.html#Frame.SlideHandler">SlideHandler</a></dd>
-                <dd id="TextSlider.CallbackEvent" class="class"><a href="../frame.html#Frame.CallbackEvent">CallbackEvent</a></dd>
+                <dd id="TextSlider.EventCallback" class="class"><a href="../frame.html#Frame.EventCallback">EventCallback</a></dd>
                 <dd id="TextSlider.frame_enum" class="variable"><a href="../frame.html#Frame.frame_enum">frame_enum</a></dd>
                 <dd id="TextSlider.data" class="variable"><a href="../frame.html#Frame.data">data</a></dd>
                 <dd id="TextSlider.focus_group" class="variable"><a href="../frame.html#Frame.focus_group">focus_group</a></dd>
                 <dd id="TextSlider.parent_frame" class="variable"><a href="../frame.html#Frame.parent_frame">parent_frame</a></dd>
                 <dd id="TextSlider.max_parent_frames" class="variable"><a href="../frame.html#Frame.max_parent_frames">max_parent_frames</a></dd>
-                <dd id="TextSlider.event_queue" class="variable"><a href="../frame.html#Frame.event_queue">event_queue</a></dd>
                 <dd id="TextSlider.center" class="variable"><a href="../frame.html#Frame.center">center</a></dd>
-                <dd id="TextSlider.widgets" class="variable"><a href="../frame.html#Frame.widgets">widgets</a></dd>
                 <dd id="TextSlider.frame_dim" class="variable"><a href="../frame.html#Frame.frame_dim">frame_dim</a></dd>
                 <dd id="TextSlider.x" class="variable"><a href="../frame.html#Frame.x">x</a></dd>
                 <dd id="TextSlider.y" class="variable"><a href="../frame.html#Frame.y">y</a></dd>
                 <dd id="TextSlider.width" class="variable"><a href="../frame.html#Frame.width">width</a></dd>
                 <dd id="TextSlider.height" class="variable"><a href="../frame.html#Frame.height">height</a></dd>
-                <dd id="TextSlider.has_focus" class="variable"><a href="../frame.html#Frame.has_focus">has_focus</a></dd>
                 <dd id="TextSlider.on_focus_gained" class="function"><a href="../frame.html#Frame.on_focus_gained">on_focus_gained</a></dd>
                 <dd id="TextSlider.on_focus_lost" class="function"><a href="../frame.html#Frame.on_focus_lost">on_focus_lost</a></dd>
                 <dd id="TextSlider.move_by" class="function"><a href="../frame.html#Frame.move_by">move_by</a></dd>
@@ -759,9 +788,6 @@ Frames<wbr>.widgets<wbr>.text_slider    </h1>
                 <dd id="TextSlider.raise_exit_flag" class="function"><a href="../frame.html#Frame.raise_exit_flag">raise_exit_flag</a></dd>
                 <dd id="TextSlider.reset_exit_flag" class="function"><a href="../frame.html#Frame.reset_exit_flag">reset_exit_flag</a></dd>
                 <dd id="TextSlider.exit_flag_raised" class="function"><a href="../frame.html#Frame.exit_flag_raised">exit_flag_raised</a></dd>
-                <dd id="TextSlider.set_parent_frame" class="function"><a href="../frame.html#Frame.set_parent_frame">set_parent_frame</a></dd>
-                <dd id="TextSlider.widgets_tick" class="function"><a href="../frame.html#Frame.widgets_tick">widgets_tick</a></dd>
-                <dd id="TextSlider.render_widgets" class="function"><a href="../frame.html#Frame.render_widgets">render_widgets</a></dd>
 
             </div>
             <div><dt><a href="../../event_queue_manager.html#EventQueueManager">event_queue_manager.EventQueueManager</a></dt>

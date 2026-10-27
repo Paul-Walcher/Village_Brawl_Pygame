@@ -100,7 +100,39 @@ Interaction<wbr>.interaction    </h1>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Parent class for classes that manage internal events.</p>
+            <div class="docstring"><p>This class is the basic framework for a shown window instance.</p>
+
+<p>It has an internal rectangle defined as frame_dim, which
+specifies the rectangle in which it operates in (its window size).</p>
+
+<p>The internal rectangles x, y, width and height are separately stored as
+class varriables.</p>
+
+<p>IMPORTANT: Do not change a frames frame_dim by doing frame_dim.x = ...,
+because internal x, y, width and height and frame_dim are adjusted using setter
+methods.</p>
+
+<p>Each frame can also have a parent frame. If this class is discontinued using raise_exit_flag(),
+and the parent frames focus group is the same as this classes', the parent frame will receive the focus.</p>
+
+<p>About focus groups:</p>
+
+<p>A focus group is an identifier of the group the frame belongs to.
+Inside this group, only one frame can have the focus at one time.</p>
+
+<p>You can check if you have the focus using Frame.is_focused,
+and focus as well as unfocus using Frame.focus and Frame.unfocus().</p>
+
+<p>If you dont pass an argument for the focus group to the constructor,
+the frame will be assigned to a standard focus group.
+You should bind input received for the frame using bind_events().
+Whenever focus changes for an event, all event_callbacks are cleared,
+and Frame.bind_events is called. There you can bind callbacks depending on whether
+you have the focus or not.</p>
+
+<p>A frame handles pygame events by using Frame.manage_pygame_events in Frame.tick.
+You can register event callbacks using Frame.add_pygame_key_callback or
+Frame.add_pygame_event_callback.</p>
 </div>
 
 
@@ -112,7 +144,10 @@ Interaction<wbr>.interaction    </h1>
     </div>
     <a class="headerlink" href="#Interaction.parent_frame"></a>
     
-    
+            <div class="docstring"><p>Reference to the frame that instantiated this frame, or is considered
+the higher frame in the hierarchy</p>
+</div>
+
 
                             </div>
                             <div id="Interaction.follow_up_function" class="classattr">
@@ -132,22 +167,17 @@ Interaction<wbr>.interaction    </h1>
                                     <div><dt><a href="../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
                                 <dd id="Interaction.STANDARD_FOCUS_GROUP" class="variable"><a href="../Frames/frame.html#Frame.STANDARD_FOCUS_GROUP">STANDARD_FOCUS_GROUP</a></dd>
                 <dd id="Interaction.FOCUS_GROUPS" class="variable"><a href="../Frames/frame.html#Frame.FOCUS_GROUPS">FOCUS_GROUPS</a></dd>
-                <dd id="Interaction.SlideHandler" class="class"><a href="../Frames/frame.html#Frame.SlideHandler">SlideHandler</a></dd>
-                <dd id="Interaction.CallbackEvent" class="class"><a href="../Frames/frame.html#Frame.CallbackEvent">CallbackEvent</a></dd>
-                <dd id="Interaction.EventTypes" class="class"><a href="../Frames/frame.html#Frame.EventTypes">EventTypes</a></dd>
+                <dd id="Interaction.EventCallback" class="class"><a href="../Frames/frame.html#Frame.EventCallback">EventCallback</a></dd>
                 <dd id="Interaction.frame_enum" class="variable"><a href="../Frames/frame.html#Frame.frame_enum">frame_enum</a></dd>
                 <dd id="Interaction.data" class="variable"><a href="../Frames/frame.html#Frame.data">data</a></dd>
                 <dd id="Interaction.focus_group" class="variable"><a href="../Frames/frame.html#Frame.focus_group">focus_group</a></dd>
                 <dd id="Interaction.max_parent_frames" class="variable"><a href="../Frames/frame.html#Frame.max_parent_frames">max_parent_frames</a></dd>
-                <dd id="Interaction.event_queue" class="variable"><a href="../Frames/frame.html#Frame.event_queue">event_queue</a></dd>
                 <dd id="Interaction.center" class="variable"><a href="../Frames/frame.html#Frame.center">center</a></dd>
-                <dd id="Interaction.widgets" class="variable"><a href="../Frames/frame.html#Frame.widgets">widgets</a></dd>
                 <dd id="Interaction.frame_dim" class="variable"><a href="../Frames/frame.html#Frame.frame_dim">frame_dim</a></dd>
                 <dd id="Interaction.x" class="variable"><a href="../Frames/frame.html#Frame.x">x</a></dd>
                 <dd id="Interaction.y" class="variable"><a href="../Frames/frame.html#Frame.y">y</a></dd>
                 <dd id="Interaction.width" class="variable"><a href="../Frames/frame.html#Frame.width">width</a></dd>
                 <dd id="Interaction.height" class="variable"><a href="../Frames/frame.html#Frame.height">height</a></dd>
-                <dd id="Interaction.has_focus" class="variable"><a href="../Frames/frame.html#Frame.has_focus">has_focus</a></dd>
                 <dd id="Interaction.on_focus_gained" class="function"><a href="../Frames/frame.html#Frame.on_focus_gained">on_focus_gained</a></dd>
                 <dd id="Interaction.on_focus_lost" class="function"><a href="../Frames/frame.html#Frame.on_focus_lost">on_focus_lost</a></dd>
                 <dd id="Interaction.move_by" class="function"><a href="../Frames/frame.html#Frame.move_by">move_by</a></dd>
@@ -172,10 +202,6 @@ Interaction<wbr>.interaction    </h1>
                 <dd id="Interaction.raise_exit_flag" class="function"><a href="../Frames/frame.html#Frame.raise_exit_flag">raise_exit_flag</a></dd>
                 <dd id="Interaction.reset_exit_flag" class="function"><a href="../Frames/frame.html#Frame.reset_exit_flag">reset_exit_flag</a></dd>
                 <dd id="Interaction.exit_flag_raised" class="function"><a href="../Frames/frame.html#Frame.exit_flag_raised">exit_flag_raised</a></dd>
-                <dd id="Interaction.set_parent_frame" class="function"><a href="../Frames/frame.html#Frame.set_parent_frame">set_parent_frame</a></dd>
-                <dd id="Interaction.widgets_tick" class="function"><a href="../Frames/frame.html#Frame.widgets_tick">widgets_tick</a></dd>
-                <dd id="Interaction.render_widgets" class="function"><a href="../Frames/frame.html#Frame.render_widgets">render_widgets</a></dd>
-                <dd id="Interaction.rerender" class="function"><a href="../Frames/frame.html#Frame.rerender">rerender</a></dd>
                 <dd id="Interaction.tick" class="function"><a href="../Frames/frame.html#Frame.tick">tick</a></dd>
                 <dd id="Interaction.render" class="function"><a href="../Frames/frame.html#Frame.render">render</a></dd>
 

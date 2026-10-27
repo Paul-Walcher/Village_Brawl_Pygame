@@ -119,6 +119,9 @@
             <li>
                     <a class="function" href="#img_load_and_position">img_load_and_position</a>
             </li>
+            <li>
+                    <a class="function" href="#img_load_and_position_smoothscale">img_load_and_position_smoothscale</a>
+            </li>
     </ul>
 
 
@@ -845,7 +848,7 @@ graphics    </h1>
 </span><span id="L-703"><a href="#L-703"><span class="linenos">703</span></a>
 </span><span id="L-704"><a href="#L-704"><span class="linenos">704</span></a>    <span class="k">return</span> <span class="n">split_rects</span>
 </span><span id="L-705"><a href="#L-705"><span class="linenos">705</span></a>
-</span><span id="L-706"><a href="#L-706"><span class="linenos">706</span></a><span class="k">def</span><span class="w"> </span><span class="nf">scale_image_to_frame</span><span class="p">(</span><span class="n">img_surf</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">:</span>
+</span><span id="L-706"><a href="#L-706"><span class="linenos">706</span></a><span class="k">def</span><span class="w"> </span><span class="nf">scale_image_to_frame</span><span class="p">(</span><span class="n">img_surf</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">,</span> <span class="n">smoothscale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">:</span>
 </span><span id="L-707"><a href="#L-707"><span class="linenos">707</span></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="L-708"><a href="#L-708"><span class="linenos">708</span></a><span class="sd">    Returns a version of img_surf that is scaled to fit into frame.</span>
 </span><span id="L-709"><a href="#L-709"><span class="linenos">709</span></a><span class="sd">    """</span>
@@ -879,13 +882,13 @@ graphics    </h1>
 </span><span id="L-737"><a href="#L-737"><span class="linenos">737</span></a>                <span class="n">sw</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">w2h</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
 </span><span id="L-738"><a href="#L-738"><span class="linenos">738</span></a>                <span class="n">sh</span> <span class="o">=</span> <span class="n">h</span>
 </span><span id="L-739"><a href="#L-739"><span class="linenos">739</span></a>
-</span><span id="L-740"><a href="#L-740"><span class="linenos">740</span></a>    <span class="k">return</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">smoothscale</span><span class="p">(</span><span class="n">img_surf</span><span class="p">,</span> <span class="p">(</span><span class="n">sw</span><span class="p">,</span> <span class="n">sh</span><span class="p">))</span>
+</span><span id="L-740"><a href="#L-740"><span class="linenos">740</span></a>    <span class="k">return</span> <span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">img_surf</span><span class="p">,</span> <span class="p">(</span><span class="n">sw</span><span class="p">,</span> <span class="n">sh</span><span class="p">))</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">smoothscale</span> <span class="k">else</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">smoothscale</span><span class="p">(</span><span class="n">img_surf</span><span class="p">,</span> <span class="p">(</span><span class="n">sw</span><span class="p">,</span> <span class="n">sh</span><span class="p">)))</span>
 </span><span id="L-741"><a href="#L-741"><span class="linenos">741</span></a>
 </span><span id="L-742"><a href="#L-742"><span class="linenos">742</span></a><span class="k">def</span><span class="w"> </span><span class="nf">img_load_and_position</span><span class="p">(</span><span class="n">img_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 </span><span id="L-743"><a href="#L-743"><span class="linenos">743</span></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="L-744"><a href="#L-744"><span class="linenos">744</span></a><span class="sd">    Given the image path and the frame it should be rendered into,</span>
 </span><span id="L-745"><a href="#L-745"><span class="linenos">745</span></a><span class="sd">    this function returns the surface, scaled to fit into the frame and the position</span>
-</span><span id="L-746"><a href="#L-746"><span class="linenos">746</span></a><span class="sd">    for which it will be centered at frame.</span>
+</span><span id="L-746"><a href="#L-746"><span class="linenos">746</span></a><span class="sd">    for which it will be centered at frame. This uses pygame.transform.scale.</span>
 </span><span id="L-747"><a href="#L-747"><span class="linenos">747</span></a><span class="sd">    """</span>
 </span><span id="L-748"><a href="#L-748"><span class="linenos">748</span></a>
 </span><span id="L-749"><a href="#L-749"><span class="linenos">749</span></a>    <span class="n">img</span> <span class="o">=</span> <span class="n">render_image</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
@@ -893,6 +896,19 @@ graphics    </h1>
 </span><span id="L-751"><a href="#L-751"><span class="linenos">751</span></a>    <span class="n">img_pos</span> <span class="o">=</span> <span class="n">get_center_with_surface</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
 </span><span id="L-752"><a href="#L-752"><span class="linenos">752</span></a>
 </span><span id="L-753"><a href="#L-753"><span class="linenos">753</span></a>    <span class="k">return</span> <span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">img_pos</span><span class="p">)</span>
+</span><span id="L-754"><a href="#L-754"><span class="linenos">754</span></a>
+</span><span id="L-755"><a href="#L-755"><span class="linenos">755</span></a><span class="k">def</span><span class="w"> </span><span class="nf">img_load_and_position_smoothscale</span><span class="p">(</span><span class="n">img_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+</span><span id="L-756"><a href="#L-756"><span class="linenos">756</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-757"><a href="#L-757"><span class="linenos">757</span></a><span class="sd">    Given the image path and the frame it should be rendered into,</span>
+</span><span id="L-758"><a href="#L-758"><span class="linenos">758</span></a><span class="sd">    this function returns the surface, scaled to fit into the frame and the position</span>
+</span><span id="L-759"><a href="#L-759"><span class="linenos">759</span></a><span class="sd">    for which it will be centered at frame. This uses pygame.transform.smoothscale.</span>
+</span><span id="L-760"><a href="#L-760"><span class="linenos">760</span></a><span class="sd">    """</span>
+</span><span id="L-761"><a href="#L-761"><span class="linenos">761</span></a>
+</span><span id="L-762"><a href="#L-762"><span class="linenos">762</span></a>    <span class="n">img</span> <span class="o">=</span> <span class="n">render_image</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
+</span><span id="L-763"><a href="#L-763"><span class="linenos">763</span></a>    <span class="n">img</span> <span class="o">=</span> <span class="n">scale_image_to_frame</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">smoothscale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="L-764"><a href="#L-764"><span class="linenos">764</span></a>    <span class="n">img_pos</span> <span class="o">=</span> <span class="n">get_center_with_surface</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
+</span><span id="L-765"><a href="#L-765"><span class="linenos">765</span></a>
+</span><span id="L-766"><a href="#L-766"><span class="linenos">766</span></a>    <span class="k">return</span> <span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">img_pos</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1992,13 +2008,13 @@ percentages = [0.2, 0.7, 0.1]</p>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">scale_image_to_frame</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">img_surf</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">Surface</span>,</span><span class="param">	<span class="n">frame</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">Rect</span></span><span class="return-annotation">) -> <span class="n">pygame</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">Surface</span>:</span></span>
+        <span class="name">scale_image_to_frame</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">img_surf</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">Surface</span>,</span><span class="param">	<span class="n">frame</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">Rect</span>,</span><span class="param">	<span class="n">smoothscale</span><span class="o">=</span><span class="kc">False</span></span><span class="return-annotation">) -> <span class="n">pygame</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">Surface</span>:</span></span>
 
                 <label class="view-source-button" for="scale_image_to_frame-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#scale_image_to_frame"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="scale_image_to_frame-707"><a href="#scale_image_to_frame-707"><span class="linenos">707</span></a><span class="k">def</span><span class="w"> </span><span class="nf">scale_image_to_frame</span><span class="p">(</span><span class="n">img_surf</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">:</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="scale_image_to_frame-707"><a href="#scale_image_to_frame-707"><span class="linenos">707</span></a><span class="k">def</span><span class="w"> </span><span class="nf">scale_image_to_frame</span><span class="p">(</span><span class="n">img_surf</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">,</span> <span class="n">smoothscale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">:</span>
 </span><span id="scale_image_to_frame-708"><a href="#scale_image_to_frame-708"><span class="linenos">708</span></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="scale_image_to_frame-709"><a href="#scale_image_to_frame-709"><span class="linenos">709</span></a><span class="sd">    Returns a version of img_surf that is scaled to fit into frame.</span>
 </span><span id="scale_image_to_frame-710"><a href="#scale_image_to_frame-710"><span class="linenos">710</span></a><span class="sd">    """</span>
@@ -2032,7 +2048,7 @@ percentages = [0.2, 0.7, 0.1]</p>
 </span><span id="scale_image_to_frame-738"><a href="#scale_image_to_frame-738"><span class="linenos">738</span></a>                <span class="n">sw</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">w2h</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
 </span><span id="scale_image_to_frame-739"><a href="#scale_image_to_frame-739"><span class="linenos">739</span></a>                <span class="n">sh</span> <span class="o">=</span> <span class="n">h</span>
 </span><span id="scale_image_to_frame-740"><a href="#scale_image_to_frame-740"><span class="linenos">740</span></a>
-</span><span id="scale_image_to_frame-741"><a href="#scale_image_to_frame-741"><span class="linenos">741</span></a>    <span class="k">return</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">smoothscale</span><span class="p">(</span><span class="n">img_surf</span><span class="p">,</span> <span class="p">(</span><span class="n">sw</span><span class="p">,</span> <span class="n">sh</span><span class="p">))</span>
+</span><span id="scale_image_to_frame-741"><a href="#scale_image_to_frame-741"><span class="linenos">741</span></a>    <span class="k">return</span> <span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">img_surf</span><span class="p">,</span> <span class="p">(</span><span class="n">sw</span><span class="p">,</span> <span class="n">sh</span><span class="p">))</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">smoothscale</span> <span class="k">else</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">smoothscale</span><span class="p">(</span><span class="n">img_surf</span><span class="p">,</span> <span class="p">(</span><span class="n">sw</span><span class="p">,</span> <span class="n">sh</span><span class="p">)))</span>
 </span></pre></div>
 
 
@@ -2056,7 +2072,7 @@ percentages = [0.2, 0.7, 0.1]</p>
 </span><span id="img_load_and_position-744"><a href="#img_load_and_position-744"><span class="linenos">744</span></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="img_load_and_position-745"><a href="#img_load_and_position-745"><span class="linenos">745</span></a><span class="sd">    Given the image path and the frame it should be rendered into,</span>
 </span><span id="img_load_and_position-746"><a href="#img_load_and_position-746"><span class="linenos">746</span></a><span class="sd">    this function returns the surface, scaled to fit into the frame and the position</span>
-</span><span id="img_load_and_position-747"><a href="#img_load_and_position-747"><span class="linenos">747</span></a><span class="sd">    for which it will be centered at frame.</span>
+</span><span id="img_load_and_position-747"><a href="#img_load_and_position-747"><span class="linenos">747</span></a><span class="sd">    for which it will be centered at frame. This uses pygame.transform.scale.</span>
 </span><span id="img_load_and_position-748"><a href="#img_load_and_position-748"><span class="linenos">748</span></a><span class="sd">    """</span>
 </span><span id="img_load_and_position-749"><a href="#img_load_and_position-749"><span class="linenos">749</span></a>
 </span><span id="img_load_and_position-750"><a href="#img_load_and_position-750"><span class="linenos">750</span></a>    <span class="n">img</span> <span class="o">=</span> <span class="n">render_image</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
@@ -2069,7 +2085,40 @@ percentages = [0.2, 0.7, 0.1]</p>
 
             <div class="docstring"><p>Given the image path and the frame it should be rendered into,
 this function returns the surface, scaled to fit into the frame and the position
-for which it will be centered at frame.</p>
+for which it will be centered at frame. This uses pygame.transform.scale.</p>
+</div>
+
+
+                </section>
+                <section id="img_load_and_position_smoothscale">
+                            <input id="img_load_and_position_smoothscale-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">img_load_and_position_smoothscale</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">img_path</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">frame</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">Rect</span></span><span class="return-annotation">) -> <span class="nb">tuple</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>:</span></span>
+
+                <label class="view-source-button" for="img_load_and_position_smoothscale-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#img_load_and_position_smoothscale"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="img_load_and_position_smoothscale-756"><a href="#img_load_and_position_smoothscale-756"><span class="linenos">756</span></a><span class="k">def</span><span class="w"> </span><span class="nf">img_load_and_position_smoothscale</span><span class="p">(</span><span class="n">img_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+</span><span id="img_load_and_position_smoothscale-757"><a href="#img_load_and_position_smoothscale-757"><span class="linenos">757</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="img_load_and_position_smoothscale-758"><a href="#img_load_and_position_smoothscale-758"><span class="linenos">758</span></a><span class="sd">    Given the image path and the frame it should be rendered into,</span>
+</span><span id="img_load_and_position_smoothscale-759"><a href="#img_load_and_position_smoothscale-759"><span class="linenos">759</span></a><span class="sd">    this function returns the surface, scaled to fit into the frame and the position</span>
+</span><span id="img_load_and_position_smoothscale-760"><a href="#img_load_and_position_smoothscale-760"><span class="linenos">760</span></a><span class="sd">    for which it will be centered at frame. This uses pygame.transform.smoothscale.</span>
+</span><span id="img_load_and_position_smoothscale-761"><a href="#img_load_and_position_smoothscale-761"><span class="linenos">761</span></a><span class="sd">    """</span>
+</span><span id="img_load_and_position_smoothscale-762"><a href="#img_load_and_position_smoothscale-762"><span class="linenos">762</span></a>
+</span><span id="img_load_and_position_smoothscale-763"><a href="#img_load_and_position_smoothscale-763"><span class="linenos">763</span></a>    <span class="n">img</span> <span class="o">=</span> <span class="n">render_image</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>
+</span><span id="img_load_and_position_smoothscale-764"><a href="#img_load_and_position_smoothscale-764"><span class="linenos">764</span></a>    <span class="n">img</span> <span class="o">=</span> <span class="n">scale_image_to_frame</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">smoothscale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="img_load_and_position_smoothscale-765"><a href="#img_load_and_position_smoothscale-765"><span class="linenos">765</span></a>    <span class="n">img_pos</span> <span class="o">=</span> <span class="n">get_center_with_surface</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
+</span><span id="img_load_and_position_smoothscale-766"><a href="#img_load_and_position_smoothscale-766"><span class="linenos">766</span></a>
+</span><span id="img_load_and_position_smoothscale-767"><a href="#img_load_and_position_smoothscale-767"><span class="linenos">767</span></a>    <span class="k">return</span> <span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">img_pos</span><span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Given the image path and the frame it should be rendered into,
+this function returns the surface, scaled to fit into the frame and the position
+for which it will be centered at frame. This uses pygame.transform.smoothscale.</p>
 </div>
 
 
