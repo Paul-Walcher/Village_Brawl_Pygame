@@ -170,7 +170,7 @@ class ChooseExplorerFrame(Frame):
             self.add_pygame_key_callback(pygame.K_i, cdata, putback=False, func=self.i_pressed)
 
     def escape_pressed(self, event, data):
-        return Frame.CallbackEvent.EXIT
+        return Frame.EventCallback.EXIT
 
     def left_pressed(self, event, data):
         ref = data["frame_ref"]

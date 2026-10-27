@@ -73,14 +73,14 @@ class CardinfoFrame(Frame):
     def alt_down(self, event, data):
 
         if event.key != KeyAlternatives.SHOW_IMAGE_KEY:
-            return Frame.CallbackEvent.FAILURE
+            return Frame.EventCallback.FAILURE
 
         self.full_image_shown = True
 
     def alt_up(self, event, data):
 
         if event.key != KeyAlternatives.SHOW_IMAGE_KEY:
-            return Frame.CallbackEvent.FAILURE
+            return Frame.EventCallback.FAILURE
 
         self.full_image_shown = False
 

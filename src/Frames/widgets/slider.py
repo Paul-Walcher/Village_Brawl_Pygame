@@ -871,6 +871,9 @@ class Slider(Frame):
     def flipping_animation_playing(self):
         return (self.state == Slider.FLIPPING_ANIMATION_PLAYING or self.state == Slider.FLIPPING_ALL_ANIMATION_PLAYING)
 
+    def any_animation_playing(self):
+        return (self.select_animation_playing() or self.flipping_animation_playing())
+
     def render(self, screen):
 
         self.prerender()

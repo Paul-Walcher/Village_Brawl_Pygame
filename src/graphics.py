@@ -703,7 +703,7 @@ def split_rect_vertically(rect: pygame.Rect, percentages: list[float]) -> list[p
 
     return split_rects
 
-def scale_image_to_frame(img_surf: pygame.Surface, frame: pygame.Rect) -> pygame.Surface:
+def scale_image_to_frame(img_surf: pygame.Surface, frame: pygame.Rect, smoothscale=False) -> pygame.Surface:
     """
     Returns a version of img_surf that is scaled to fit into frame.
     """
@@ -737,17 +737,30 @@ def scale_image_to_frame(img_surf: pygame.Surface, frame: pygame.Rect) -> pygame
                 sw = int(w2h * h)
                 sh = h
 
-    return pygame.transform.smoothscale(img_surf, (sw, sh))
+    return (pygame.transform.scale(img_surf, (sw, sh)) if not smoothscale else pygame.transform.smoothscale(img_surf, (sw, sh)))
 
 def img_load_and_position(img_path: str, frame: pygame.Rect) -> tuple[pygame.Surface, tuple[int, int]]:
     """
     Given the image path and the frame it should be rendered into,
     this function returns the surface, scaled to fit into the frame and the position
-    for which it will be centered at frame.
+    for which it will be centered at frame. This uses pygame.transform.scale.
     """
 
     img = render_image(img_path)
     img = scale_image_to_frame(img, frame)
+    img_pos = get_center_with_surface(img, frame)
+
+    return (img, img_pos)
+
+def img_load_and_position_smoothscale(img_path: str, frame: pygame.Rect) -> tuple[pygame.Surface, tuple[int, int]]:
+    """
+    Given the image path and the frame it should be rendered into,
+    this function returns the surface, scaled to fit into the frame and the position
+    for which it will be centered at frame. This uses pygame.transform.smoothscale.
+    """
+
+    img = render_image(img_path)
+    img = scale_image_to_frame(img, frame, smoothscale=True)
     img_pos = get_center_with_surface(img, frame)
 
     return (img, img_pos)

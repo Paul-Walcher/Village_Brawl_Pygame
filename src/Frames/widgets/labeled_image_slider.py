@@ -262,13 +262,14 @@ class LabeledImageSlider(Frame):
 
     def slide_left(self):
 
-        self.image_slider.slide_left()
-        self.text_slider.slide_left()
+        if not self.image_slider.any_animation_playing():
+            self.image_slider.slide_left()
+            self.text_slider.slide_left()
 
     def slide_right(self):
-
-        self.image_slider.slide_right()
-        self.text_slider.slide_right()
+        if not self.image_slider.any_animation_playing():
+            self.image_slider.slide_right()
+            self.text_slider.slide_right()
 
     def reset_slides(self):
 

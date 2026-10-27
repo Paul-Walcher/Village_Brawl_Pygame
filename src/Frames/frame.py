@@ -1,185 +1,221 @@
+from __future__ import annotations
+from typing import Callable, Any
+
 import pygame
 from abc import ABC, abstractmethod
 from event_queue_manager import EventQueueManager, Event
 from clock import Clock
+from constants import R_ID
+from Frames.frame_enums import FrameEnums
+"""
+Type definitions.
+"""
+type event_callback_result_t = int
+type event_callback_t = Callable[ [pygame.Event, Any],  event_callback_result]
 
 class Frame(EventQueueManager):
 
-    STANDARD_FOCUS_GROUP = "STANDARD FOCUS GROUP"
-    FOCUS_GROUPS = {}
+    """
+    This class is the basic framework for a shown window instance.
 
-    class SlideHandler:
+    It has an internal rectangle defined as frame_dim, which
+    specifies the rectangle in which it operates in (its window size).
 
-        def __init__(self, x_offset, y_offset, slide_positions, slide_duration=800):
+    The internal rectangles x, y, width and height are separately stored as
+    class varriables.
 
-            #x offset is the amount to slide horizontally,
-            #y offset the amount to slide vertically
-            #x_offset, y_offset = target_pos - current_pos
-            self.x_offset = x_offset
-            self.y_offset = y_offset
+    IMPORTANT: Do not change a frames frame_dim by doing frame_dim.x = ...,
+    because internal x, y, width and height and frame_dim are adjusted using setter
+    methods.
 
-            #positions is a list of p(x, y),
-            #each representing the position of an object.
-            #each index in self.current_slide_positions
-            #corresponds to the position in the same index in slide_positions
-            self.slide_start_positions = slide_positions.copy()
-            self.current_slide_positions = slide_positions.copy()
+    Each frame can also have a parent frame. If this class is discontinued using raise_exit_flag(),
+    and the parent frames focus group is the same as this classes', the parent frame will receive the focus.
 
-            #slide duration is in ms
-            self.slide_duration = slide_duration
-            self.clock = Clock()
+    About focus groups:
 
-            #for saving time that has passed when the slide is paused.
-            self.time_passed = 0
+    A focus group is an identifier of the group the frame belongs to.
+    Inside this group, only one frame can have the focus at one time.
 
-            #status, if it is sliding or not
-            self.is_sliding = False
+    You can check if you have the focus using Frame.is_focused,
+    and focus as well as unfocus using Frame.focus and Frame.unfocus().
 
-            #slide needs to be started using start_slide()
+    If you dont pass an argument for the focus group to the constructor,
+    the frame will be assigned to a standard focus group.
+    You should bind input received for the frame using bind_events().
+    Whenever focus changes for an event, all event_callbacks are cleared,
+    and Frame.bind_events is called. There you can bind callbacks depending on whether
+    you have the focus or not.
 
-        def reset_slide(self):
-            #resets the slide
-            self.is_sliding = False
-            self.time_passed = 0
+    A frame handles pygame events by using Frame.manage_pygame_events in Frame.tick.
+    You can register event callbacks using Frame.add_pygame_key_callback or
+    Frame.add_pygame_event_callback.
+    """
 
-        def start_slide(self):
-
-            #needs to be called to start, at the beginning or after a pause
-            self.clock.start()
-            self.is_sliding = True
-
-        def stop_slide(self):
-
-            #stops the slide, but keeps the progress
-            self.time_passed += self.clock.elapsed()
-            self.is_sliding = False
-
-        def tick(self):
-
-            #needs to be called in another frame tick function
-
-            if self.is_sliding:
-                percentage = (self.clock.elapsed() + self.time_passed) / self.slide_duration
-
-                new_pos = []
-
-                for x, y in self.slide_start_positions:
-
-                    new_pos.append((x + int(self.x_offset * percentage), y + int(self.y_offset * percentage)))
-
-                self.current_slide_positions = new_pos
-
-        def positions(self):
-            #returns the adjusted positions
-            return self.current_slide_positions.copy()
+    STANDARD_FOCUS_GROUP: str = "STANDARD FOCUS GROUP"
+    """
+    The standard focus group.
+    """
+    FOCUS_GROUPS: dict[str, Frame] = {}
+    """
+    Class internal dict of focus groups.
+    The keys are the names for the focus group,
+    and each key has a frame as a value, being
+    the reference to the frame that currently has the focus
+    in this group (key).
+    """
 
 
+    class EventCallback(Event):
 
-    class CallbackEvent(Event):
+        """
+        Class for a callback event.
 
-        EXIT = 0
-        FAILURE = 1
-        SUCCESS = 2
+        This class is callable, and executes the function
+        with the data given to the constructor.
 
-        def __init__(self, type, data, putback, func):
-            #type is a pygame event.type enum, like pygame.KEYDOWN or pygame.TEXT_INPUT
-            #data is the data given to the function
-            #if putback == True, the pygame event gets but back into the event queue
-            #func is the function that is called. The function gets the pygame event and the data
-            self.putback = putback
-            self.func = func
+        The callback function receives two arguments:
+        event: the pygame.Event reference,
+        data: the data given to this class in the constructor.
+
+        The callback function should return 1 of the following 3 enums:
+
+        EventCallback.EXIT: signals to the frame processing the callback event
+                            to call raise_exit_flag(), and this way end the frame's activity.
+                            This will lead to the event being consumed.
+
+        EventCallback.FAILURE:  Signals that the callback function was not able to
+                                handle the event. This leads to the event not being consumed.
+
+        EventCallback.SUCCESS:  Signals the event was successfully handled.
+                                This will lead to the event being consumed.
+
+        if EventCallback.putback == True, the event will be not consumed by this callback
+        regardless of the return value
+        """
+
+        EXIT = R_ID()
+        FAILURE = R_ID()
+        SUCCESS = R_ID()
+
+        def __init__(self, type: int, data: Any, putback: bool, func: event_callback_t):
+
+            self.putback: bool = putback
+            """
+            If putback == True, this event callback won't consume the event.
+            """
+            self.func: event_callback_t = func
+            """
+            The function executed when this class is called.
+            """
             super().__init__(type, data)
 
-        def __call__(self, event):
+        def __call__(self, event: pygame.Event) -> event_callback_result_t:
+            """
+            Executes the callback function with the event and this classes' data.
+            """
             return self.func(event, self.data)
 
-    class EventTypes:
-        #event types
-        EXIT_FRAME = 0 #signal to exit the current frame
-        EXIT_PARENT_FRAME = 1
-
-    def __init__(self,
-                        frame_enum, #the identifier for the frame, typically specified in frame_enums.py
-                        data=None, #the data passed from other frames
-                        frame_dim=None, #the pygame.Rect that describes the area in which the frame operates
-                        parent_frame=None, #the frame that instantiated this frame. If the previous frame wont be used, None is apt.
-                        max_parent_frames=10,   #since each parent_frame also keeps its parent_frame in memory,
-                                                #the frames in memory keep piling up.
-                                                #if max_parent_frames in memory is reached,
-                                                #the oldest frame is deleted by cutting it off in the follow up frame
-                                                #that has it as its parent_frame
-
-                        focus_group="",       #a string identifying the focus group this frame belongs to.
-                                                #there can only be one frame that has the focus in each focus group
-
-                        has_focus=True          #if the frame should start out with focus after being created.
-                                                #this takes the focus from the currently focused frame in the same
-                                                #focus group away
+    def __init__(       self,
+                        frame_enum: FrameEnums,
+                        data: Any = None,
+                        frame_dim: pygame.Rect = None,
+                        parent_frame: Frame = None,
+                        max_parent_frames: int = 10,
+                        focus_group: str = "",
+                        has_focus: bool = True
                 ):
 
         EventQueueManager.__init__(self)
-        #identifier
-        self.frame_enum = frame_enum
-        #passed on data
-        self.data = (data if data is not None else {})
-        #frame dimensions. if this variable is changed, x, y, width and height are as well
-        self._frame_dim = (frame_dim if frame_dim is not None else pygame.Rect(0, 0, 0, 0))
-        #changing any of the following variables changes self._frame_dim as well
-        self._x = self.frame_dim.x
-        self._y = self.frame_dim.y
-        self._width = self.frame_dim.width
-        self._height = self.frame_dim.height
 
-        #the focus group this frame is assigned to
-        self.focus_group = focus_group
+        self.frame_enum: FrameEnums = frame_enum
+        """
+        Identifier for the Frame.
+        """
+        self.data: Any = (data if data is not None else {})
+        """
+        The internal data, meant to be passed on to other frames.
+        """
+        self._frame_dim: pygame.Rect = (frame_dim if frame_dim is not None else pygame.Rect(0, 0, 0, 0))
+        """
+        Protected frame dimension, changing the frame dimension adjust
+        x, y, width and height.
+        """
+        self._x: int = self._frame_dim.x
+        """
+        x position of this frame.
+        """
+        self._y: int = self._frame_dim.y
+        """
+        y position of this frame.
+        """
+        self._width: int = self._frame_dim.width
+        """
+        width of this frame.
+        """
+        self._height: int = self._frame_dim.height
+        """
+        height of this frame.
+        """
+        self.focus_group: str = focus_group
+        """
+        The focus group this frame belongs to.
+        """
         if not self.focus_group and self.focus_group is not None:
             self.focus_group = Frame.STANDARD_FOCUS_GROUP
 
-        #the event callbacks that used in self.manage_pygame_events()
-        self.__event_callbacks = []
-        #if this flag is raised, the frame should return None in the tick method
-        #to indicate the frame should be deleted
-        self.__exit_flag_raised = False
-        #saves the keys that are currently enabled,
-        #meaning the event callbacks pertaining to the key x wont be called if
-        #self.__disabled_keys[x] = False
-        self.__disabled_keys = {}
-
-        #reference to the frame that instantiated this frame
-        self.parent_frame = parent_frame
-        #frame cutoff
-        self.max_parent_frames = max_parent_frames
-        #getting the list of parent frames
-        self._parent_frame_list = []
-
+        self.__event_callbacks: list[event_callback_t] = []
+        """
+        Private list of all event callbacks pertaining to this frame.
+        """
+        self.__exit_flag_raised: bool = False
+        """
+        If this flag is raised, the frame is set to exit and give control to another frame.
+        """
+        self.__disabled_keys: dict[int, bool] = {}
+        """
+        saves the keys that are currently disabled,
+        meaning the event callbacks pertaining to the key x wont be called if
+        self.__disabled_keys[x] = True
+        """
+        self.parent_frame: Frame = parent_frame
+        """
+        Reference to the frame that instantiated this frame, or is considered
+        the higher frame in the hierarchy
+        """
+        self.max_parent_frames: int = max_parent_frames
+        """
+        Number of parent frames saved before the cutoff.
+        This is done to free memory by discarding old frames.
+        """
+        self._parent_frame_list: list[Frame] = []
+        """
+        List of parent frames.
+        """
         self.__prune_parent_frames()
 
-        #the event queue containing the events from event_queue_manager this frame posts
-        self.event_queue = []
-
-        #own center, gets adjusted when x, y, width, height or frame_dim are changed
-        self.center = (self.frame_dim.x + self.frame_dim.w // 2,
+        self.center: tuple[int, int] = (self.frame_dim.x + self.frame_dim.w // 2,
                         self.frame_dim.y + self.frame_dim.h // 2
                         )
-
-        #saves scancode: is_pressed, so you can ask via key_pressed(scancode) if the key
-        #belonging to scancode is currently pressed
-        self.__key_scancodes = {}
-
-        #list of own widgets, or subframes
-        self.widgets = [] #own widgets
-
-        #adding escape key
+        """
+        The center of this frame.
+        """
+        self.__key_scancodes: dict[int, bool] = {}
+        """
+        Saves the key scancodes.
+        self.__key_scancodes[key] == True if the key is currently pressed.
+        To check whether a key is pressed or not, use Frame.key_pressed(key),
+        since not all scancodes might be contained as keys in __key_scancodes.
+        """
 
         self.bind_events()
+        #binding events
 
-        #indicates if the frame has the focus in its group
-        #this variable should be changed using
-        #self.has_focus = x
-        #or self.focus(), self.unfocus()
-        #since this class handles the focus group
         if has_focus:
             self.focus()
+        """
+        has_focus indicates if the frame receives the focus
+        in its group upon instantiation.
+        """
 
 
 
@@ -241,19 +277,14 @@ class Frame(EventQueueManager):
         if pre_h != self.height:
             self.rerender()
 
-    @property
-    def has_focus(self):
-        return self.is_focused()
 
-    @has_focus.setter
-    def has_focus(self, v):
-        if v:
-            self.focus()
-        else:
-            self.unfocus()
-
-    def __prune_parent_frames(self):
-
+    def __prune_parent_frames(self) -> None:
+        """
+        This constructs the parent frame list.
+        Then if the list is bigger that Frame.max_parent_frames,
+        the oldest frames will be cutoff and cleaned up
+        by the garbage collector.
+        """
         if self.parent_frame is not None:
             self._parent_frame_list.insert(0, self.parent_frame)
             self._parent_frame_list.extend(self.parent_frame._parent_frame_list)
@@ -261,8 +292,12 @@ class Frame(EventQueueManager):
         if len(self._parent_frame_list) > self.max_parent_frames:
             self._parent_frame_list = self.__cutoff_parent_frames(self, self.max_parent_frames)
 
-    def __cutoff_parent_frames(self, cframe, pindex):
-
+    def __cutoff_parent_frames(self, cframe: Frame, pindex: int) -> list[Frame]:
+        """
+        Cuts off the oldest frames, and removes them from memory.
+        Returns the modified _parent_frame_list for the frame that called
+        this function to adopt.
+        """
         if cframe.parent_frame is None:
             return []
         if pindex == 0:
@@ -282,20 +317,31 @@ class Frame(EventQueueManager):
     that are called when the own focus gets either lost or gained
     """
 
-    def on_focus_gained(self):
+    def on_focus_gained(self) -> None:
+        """
+        Callback function for when this frame gains focus.
+        """
         pass
 
-    def on_focus_lost(self):
+    def on_focus_lost(self) -> None:
+        """
+        Callback function for when this frame looses focus.
+        """
         pass
 
 
-    def move_by(self, x=0, y=0, w=0, h=0):
+    def move_by(self, x: int = 0, y:int = 0, w: int = 0, h: int = 0) -> None:
+        """
+        Moves this frame by the given offsets.
+        """
         #Moves the own frame dimension by the offsets
         nframe = pygame.Rect(self.x + x, self.y, self.width + w, self.height + h)
         self.frame_dim = nframe
 
-    def offset_frame(self, frame_offsets):
-        #takes a pygame.Rect and does self.frame_dim += frame_offsets
+    def offset_frame(self, frame_offsets: pygame.Rect) -> None:
+        """
+        Moves this frame by applying: self.frame_dim += frame_offsets.
+        """
 
         nframe = pygame.Rect(self.x + frame_offsets.x, self.y + frame_offsets.y,
                             self.width + frame_offsets.width, self.height + frame_offsets.height
@@ -303,9 +349,11 @@ class Frame(EventQueueManager):
 
         self.frame_dim = nframe
 
-    def move_to(self, x=None, y=None, w=None, h=None):
-        #sets the frame_dim to the provdided values,
-        #if the value is None the old value is used
+    def move_to(self, x: int = None, y: int = None, w: int = None, h: int = None) -> None:
+        """
+        Sets the frame_dim to the provided values,
+        if the value is None the old value is used.
+        """
         r = pygame.Rect((x if x is not None else self.x),
                         (y if y is not None else self.y),
                         (w if w is not None else self.width),
@@ -313,7 +361,13 @@ class Frame(EventQueueManager):
 
         self.frame_dim = r
 
-    def _on_focus_changed(self):
+    def _on_focus_changed(self) -> None:
+        """
+        Internal function, this function calls
+        the on_focus_gained and on_focus_lost
+        callback functions after clearing the event callbacks,
+        and rebinding the events via self.bind_events().
+        """
 
         self.clear_event_callbacks()
         self.bind_events()
@@ -324,8 +378,11 @@ class Frame(EventQueueManager):
 
 
 
-    def focus(self):
-
+    def focus(self) -> None:
+        """
+        Gives this frame the focus for its
+        focus group.
+        """
         if self.focus_group is None:
             return
 
@@ -341,8 +398,12 @@ class Frame(EventQueueManager):
             self._on_focus_changed()
 
 
-    def unfocus(self):
-
+    def unfocus(self) -> None:
+        """
+        Takes the focus from this frame.
+        If this frame had the focus, and the parent frame has the same focus group as this frame,
+        the parent frame will receive the focus via parent_frame.focus().
+        """
         if self.focus_group is not None and self.focus_group in Frame.FOCUS_GROUPS and Frame.FOCUS_GROUPS[self.focus_group] == self:
             pre = Frame.FOCUS_GROUPS[self.focus_group]
             Frame.FOCUS_GROUPS[self.focus_group] = None
@@ -353,36 +414,54 @@ class Frame(EventQueueManager):
             if self.parent_frame is not None and self.parent_frame.focus_group == self.focus_group:
                 self.parent_frame.focus()
 
-    def is_focused(self):
-        #just for style
-        if self.focus_group is None or self.focus_group not in Frame.FOCUS_GROUPS:
+    def is_focused(self) -> bool:
+        """
+        Returns True if this frame currently has the focus in its group, else False.
+        If self.focus_group is None, True is returned, since a frame not belonging
+        to a focus group is always focused.
+        """
+        if self.focus_group is None:
+            return None
+
+        if self.focus_group not in Frame.FOCUS_GROUPS:
             return False
+
         return (Frame.FOCUS_GROUPS[self.focus_group] == self)
 
-    def bind_events(self):
-        #This is called in the constructor and every time this frames
-        #focus changes. Make event bindings dependent on self._has_focus
+    def bind_events(self) -> None:
+        """
+        This is called in the constructor and every time this frames
+        focus changes. Make event bindings dependent on self.is_focused().
+        """
         pass
 
-    def key_pressed(self, scancode):
-        #returns if the key belonging to the scancode is currently pressed
-        if scancode not in self.__key_scancodes:
+    def key_pressed(self, scancode: int) -> bool:
+        """
+        Returns if the key belonging to the scancode is currently pressed.
+        If the key is disabled, this is always False.
+        """
+        if scancode not in self.__key_scancodes or self.pygame_key_is_disabled(scancode):
             return False
         else:
             return self.__key_scancodes[scancode]
 
-    def add_escape_callback(self):
-        self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.CallbackEvent.EXIT, key_delay=0)
+    def add_escape_callback(self) -> None:
+        """
+        This adds a generic callback function, that returns EventCallback.EXIT
+        on pressing enter.
+        """
+        self.add_pygame_key_callback(pygame.K_ESCAPE, {}, False, lambda e, d: Frame.EventCallback.EXIT, key_delay=0)
 
-    def manage_pygame_events(self):
-
-        #Manages the events, by going through all
-        #events in the pygame event queue.
-        #Should be called in tick().
-        #triggers the event_callbacks in self.__event_callbacks
-        #added via self.add_pygame_key_callback or self.add_pygame_event_callback
-        #if the callback has putback == True, the event stays in the queue
-        #for the next event check
+    def manage_pygame_events(self) -> None:
+        """
+        Manages the events, by going through all
+        events in the pygame event queue.
+        Should be called in tick().
+        triggers the event_callbacks in self.__event_callbacks
+        added via self.add_pygame_key_callback or self.add_pygame_event_callback
+        if the callback has putback == True, the event stays in the queue
+        for the next event check
+        """
 
         putback_events = []
 
@@ -424,10 +503,10 @@ class Frame(EventQueueManager):
 
                 res = ecallback(event)
 
-                if res == Frame.CallbackEvent.EXIT:
+                if res == Frame.EventCallback.EXIT:
                     self.raise_exit_flag()
 
-                if res == Frame.CallbackEvent.FAILURE:
+                if res == Frame.EventCallback.FAILURE:
                     processed = False
 
                 if ecallback.putback:
@@ -440,72 +519,115 @@ class Frame(EventQueueManager):
             pygame.event.post(event)
 
 
-    def clear_event_callbacks(self):
+    def clear_event_callbacks(self) -> None:
+        """
+        Clears the event callback functions.
+        """
         #removes all event callbacks
         self.__event_callbacks = []
 
-    def clear_pygame_events(self):
+    def clear_pygame_events(self) -> None:
+        """
+        Empties the pygame event queue.
+        """
         #clears the pygame event queue
         events = pygame.event.get()
 
-    def get_event_callbacks(self):
-        #gets the event callback list
+    def get_event_callbacks(self) -> None:
+        """
+        Returns a copy of the stored event callbacks.
+        The contents of the list are references of the store
+        EventCallback classes, so changes to those references
+        change the EventCallback instances in self.__event_callbacks.
+        """
         return self.__event_callbacks.copy()
 
-    def add_pygame_event_callback(self, type, data, putback, func):
+    def add_pygame_event_callback(self, type: int, data: Any, putback: bool, func: event_callback_t) -> Frame.EventCallback:
+        """
+        adds a EventCallback class into self.__event_callbacks.
+        See Frame.EventCallback.
+        Returns the created EventCallback.
+        """
 
-        #adds a CallbackEvent class into self.__event_callbacks
-        cb = Frame.CallbackEvent(type, data, putback, func)
+        cb = Frame.EventCallback(type, data, putback, func)
         self.__event_callbacks.append(cb)
         return cb
 
-    def remove_pygame_event_callback(self, cb):
-
-        #if the CallbackEvent class is in self.__event_callbacks it gets removed
+    def remove_pygame_event_callback(self, cb: Frame.EventCallback) -> bool:
+        """
+        Tries to remove the event callback from the event_callback queue.
+        Returns True of the event callback was successfully removed, else False.
+        """
         try:
             self.__event_callbacks.remove(cb)
             return True
         except:
             return False
 
-    def pygame_key_is_disabled(self, key):
-        #returns if a key is currently disabled
+    def pygame_key_is_disabled(self, key: int) -> bool:
+        """
+        returns if a key is currently disabled
+        """
         if key not in self.__disabled_keys:
             return False
         else:
             return self.__disabled_keys[key]
 
-    def disable_pygame_key(self, key):
-        #disables a key for the event callbacks
+    def disable_pygame_key(self, key: int) -> None:
+        """
+        Disables a key for the event callbacks
+        """
         self.__disabled_keys[key] = True
 
-    def enable_pygame_key(self, key):
-        #enables the key for the event callbacks
+    def enable_pygame_key(self, key) -> None:
+        """
+        enables the key for the event callbacks
+        """
         self.__disabled_keys[key] = False
 
-    def __key_callback_wrapper(self, event, key, data, putback, func, key_delay):
+    def __key_callback_wrapper( self,
+                                event: pygame.Event,
+                                key: int,
+                                data: Any,
+                                putback: bool,
+                                func: event_callback_t,
+                                key_delay: float
+                                ) -> event_callback_result_t:
+
+        """
+        Wrapper function for a event callback added using
+        self.add_pygame_key_callback().
+        """
 
         # This callback should only receive matching KEYDOWN events.
         if event.type != pygame.KEYDOWN or event.key != key:
-            return Frame.CallbackEvent.FAILURE
+            return Frame.EventCallback.FAILURE
 
-        # Ignore these events rather than deferring them.
         if self.pygame_key_is_disabled(key):
-            return Frame.CallbackEvent.SUCCESS
+            #if the key is disabled, return SUCCESS for event consumption.
+            return Frame.EventCallback.SUCCESS
 
         if data["clock"].elapsed() <= key_delay:
-            return Frame.CallbackEvent.SUCCESS
+            #if not enough time elapsed for another keypress to be registered,
+            #consume the event with a SUCCESS notification.
+            return Frame.EventCallback.SUCCESS
 
         back = func(event, data)
         data["clock"].start()
 
         if back is None:
-            return Frame.CallbackEvent.SUCCESS
+            return Frame.EventCallback.SUCCESS
 
         return back
 
-    def add_pygame_key_callback(self, key, data, putback, func, key_delay=100):#ms
-        #adds a callback for a pygame.KEYDOWN event with event.key == key
+    def add_pygame_key_callback(self, key: int, data: Any, putback: bool, func: event_callback_t, key_delay: float = 100) -> Frame.EventCallback:
+        """
+        Adds a callback for a pygame.KEYDOWN event with event.key == key.
+        Returns the created EventCallback.
+
+        key_delay is the time in milliseconds that needs to pass before this callback can be
+        called again.
+        """
         if data is None:
             data = {}
         else:
@@ -514,53 +636,40 @@ class Frame(EventQueueManager):
         data["clock"].start()
         data["key"] = key
 
-        cb = Frame.CallbackEvent(pygame.KEYDOWN, data, putback, lambda event, d: self.__key_callback_wrapper(event, key, d, putback, func, key_delay))
+        cb = Frame.EventCallback(pygame.KEYDOWN, data, putback, lambda event, d: self.__key_callback_wrapper(event, key, d, putback, func, key_delay))
         self.__event_callbacks.append(cb)
         return cb
 
 
-    def raise_exit_flag(self):
-        #sets the exit flag, and gives the focus to next_focused_frame,
-        #or the parent frame if the variable is None.
-        #The focus can only be given if the next focused frame is in the same
-        #focus group, and only if this frame has the focus
+    def raise_exit_flag(self) -> None:
+        """
+        Sets the exit flag, and gives the focus to
+        self.parent_frame if self.parent frame is a Frame instance.
+        """
         self.__exit_flag_raised = True
         self.unfocus()
 
-    def reset_exit_flag(self):
-
+    def reset_exit_flag(self) -> None:
+        """
+        Resets the exit flag, and makes this frame usable again.
+        """
         self.__exit_flag_raised = False
 
-    def exit_flag_raised(self):
+    def exit_flag_raised(self) -> bool:
+        """
+        For checking if the exit flag is raised.
+        """
         return self.__exit_flag_raised
 
-    def set_parent_frame(self, pframe):
-        self.parent_frame = pframe
 
-    def widgets_tick(self):
-        #calls the tick function in all widgets/subframes
-        #should be called in self.tick()
-        for w in self.widgets:
-            w.tick()
-
-    def render_widgets(self, screen):
-        #renders the widgets/subframes onto the screen.
-        #should be called in self.render
-        for widget in self.widgets:
-            widget.render(screen)
-
-    def rerender(self):
-        #called every time either this frames
-        #width or this frames height changes
-        pass
-
-    def tick(self):
-        #This function is important, it should be called on every frame in the game.
-        #It returns a reference to the frame that should be the main frame rendered.
-        #If it returns None, this signals the frame was deleted
+    def tick(self) -> Frame:
+        """
+        This function is important, it should be called on every frame in the game.
+        It returns a reference to the frame that should be the main frame rendered.
+        If it returns None, this signals the frame is set to be deleted.
+        """
 
         self.manage_pygame_events()
-        self.widgets_tick()
 
         if self.exit_flag_raised():
             return None
@@ -568,7 +677,9 @@ class Frame(EventQueueManager):
         return self
 
     @abstractmethod
-    def render(self, screen):
-        #draws the frame onto the screen
-        #it should call self.render_widgets(screen)
+    def render(self, screen: pygame.Surface) -> None:
+        """
+        Renders this frame onto the given surface.
+        Is called once per frame.
+        """
         pass

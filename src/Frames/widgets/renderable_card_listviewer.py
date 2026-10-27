@@ -797,9 +797,9 @@ class RenderableCardListviewer(Frame):
         #now rendering the menu items
         #rendering the menu button
         self.menu_button_unfocused_image_rendered,\
-        self.menu_button_unfocused_image_rendered_pos = graphics.img_load_and_position(self.menu_button_unfocused_image, self.menu_button_frame)
+        self.menu_button_unfocused_image_rendered_pos = graphics.img_load_and_position_smoothscale(self.menu_button_unfocused_image, self.menu_button_frame)
         self.menu_button_focused_image_rendered,\
-        self.menu_button_focused_image_rendered_pos = graphics.img_load_and_position(self.menu_button_focused_image, self.menu_button_frame)
+        self.menu_button_focused_image_rendered_pos = graphics.img_load_and_position_smoothscale(self.menu_button_focused_image, self.menu_button_frame)
 
         """
         -----------------------------------------
@@ -992,7 +992,7 @@ class RenderableCardListviewer(Frame):
                         img_rerender_needed = False
 
                 if img_rerender_needed:
-                    img, img_pos = graphics.img_load_and_position(cinfo.card_image_path, pygame.Rect(0, 0, img_rect.width, img_rect.height))
+                    img, img_pos = graphics.img_load_and_position_smoothscale(cinfo.card_image_path, pygame.Rect(0, 0, img_rect.width, img_rect.height))
                     self.card_render_cache[cinfo.card_image_path] = (img, img_pos, img_rect.copy())
 
                 img_render_pos = (img_rect.x + img_pos[0], img_rect.y + img_pos[1] + self.main_list_yscroll)
@@ -1004,7 +1004,7 @@ class RenderableCardListviewer(Frame):
 
                     #scaling up selected card
                     img_x_inc, img_y_inc = img.get_width() * 0.1, img.get_height() * 0.1
-                    img = pygame.transform.smoothscale(img, (img.get_width() + img_x_inc, img.get_height() + img_y_inc))
+                    img = pygame.transform.scale(img, (img.get_width() + img_x_inc, img.get_height() + img_y_inc))
                     img_render_pos = (img_render_pos[0]  - img_x_inc // 2, img_render_pos[1] - img_y_inc // 2)
 
                 shadow_rect = pygame.Rect(img_render_pos[0], img_render_pos[1], img.get_width(), img.get_height())
@@ -1795,7 +1795,7 @@ class RenderableCardListviewer(Frame):
 
 
         self.menu_button_frame = menu_button_animation_frame
-        self.menu_button_focused_image_rendered, self.menu_button_focused_image_rendered_pos = graphics.img_load_and_position(self.menu_button_focused_image, self.menu_button_frame)
+        self.menu_button_focused_image_rendered, self.menu_button_focused_image_rendered_pos = graphics.img_load_and_position_smoothscale(self.menu_button_focused_image, self.menu_button_frame)
 
     def finalize_menu_button_selected_animation(self):
 
@@ -1814,7 +1814,7 @@ class RenderableCardListviewer(Frame):
 
         img_path = cinfo.card_image_path
 
-        isurf, ipos = graphics.img_load_and_position(img_path, self.frame_dim)
+        isurf, ipos = graphics.img_load_and_position_smoothscale(img_path, self.frame_dim)
         self.full_image_surface.blit(isurf, ipos)
 
     def initialize_deck_renaming_frame(self):

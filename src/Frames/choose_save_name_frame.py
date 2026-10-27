@@ -128,7 +128,7 @@ class ChooseSaveNameFrame(Frame):
             ref.is_typing = False
             pygame.key.stop_text_input()
         else:
-            return Frame.CallbackEvent.EXIT
+            return Frame.EventCallback.EXIT
 
 
     def left_pressed(self, event, data):
