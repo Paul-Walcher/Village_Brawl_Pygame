@@ -200,7 +200,7 @@ class Frame(EventQueueManager):
         """
         self.__key_scancodes: dict[int, bool] = {}
         """
-        Saves the key scancodes.
+        Saves which keys are currently pressed.
         self.__key_scancodes[key] == True if the key is currently pressed.
         To check whether a key is pressed or not, use Frame.key_pressed(key),
         since not all scancodes might be contained as keys in __key_scancodes.
@@ -680,5 +680,15 @@ class Frame(EventQueueManager):
         """
         Renders this frame onto the given surface.
         Is called once per frame.
+        """
+        pass
+
+    def rerender(self) -> None:
+        """
+        Can be called upon reentry into this frame.
+        This function should prepare the frame and adopt changes
+        made to it.
+        This should e.g. cancel animations, reset the state...,
+        and should also clear the exit flag.
         """
         pass

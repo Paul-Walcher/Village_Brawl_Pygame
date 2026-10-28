@@ -11,9 +11,9 @@ from context_data import ContextData
 
 class ChoosePlaysetFrame(Frame):
 
-    def __init__(self, data=None, frame_dim=None, parent_frame=None):
+    def __init__(self, data=None, frame_dim=None, parent_frame=None, focus_group=""):
 
-        super().__init__(FrameEnums.CHOOSE_PLAYSET_FRAME, data, frame_dim, parent_frame)
+        super().__init__(FrameEnums.CHOOSE_PLAYSET_FRAME, data=data, frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group)
 
         self.frame_rect = pygame.Rect(0, 0, self.width, self.height)
 
@@ -188,6 +188,8 @@ class ChoosePlaysetFrame(Frame):
 
         if self.parent_frame_flag:
             self.parent_frame_flag = False
+            self.parent_frame.focus()
+            self.parent_frame.rerender()
             return self.parent_frame
 
         if self.choose_save_name_flag:

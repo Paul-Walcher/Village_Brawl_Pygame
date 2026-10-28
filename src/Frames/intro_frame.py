@@ -243,6 +243,9 @@ class IntroFrame(Frame):
         self.press_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.SMALL, "Press enter to continue...", Colors.WHITE)
         self.press_text_pos = (20, self.height - 20)
 
+        self.reset_exit_flag()
+        self.entry_delay_clock.start()
+
 
     def bind_events(self) -> None:
         """
@@ -275,7 +278,7 @@ class IntroFrame(Frame):
 
         if self.enter_intro_menu:
 
-            imframe = IntroMenuFrame(self.data, self.frame_dim.copy(), self)
+            imframe = IntroMenuFrame(data=self.data, frame_dim=self.frame_dim.copy(), parent_frame=self, focus_group=self.focus_group)
             self.enter_intro_menu = False
             return imframe
 
