@@ -1,6 +1,9 @@
 from enum import Enum, auto
 
 class FrameEnums(Enum):
+    """
+    Type enums for Frames.frame.Frame class.
+    """
 
     UNDEFINED = auto()
     PLAYSET_ENTITY = auto()

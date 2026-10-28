@@ -1,82 +1,277 @@
+from __future__ import annotations
+from typing import Callable, Any
+
 import pygame
 from Frames.frame import Frame
 from constants import Colors
 from constants import Fonts, Fontsizes, KeyAlternatives
 from constants import SIMAGE, CIMAGE, INTRO_IMAGES
 import graphics
-import clock
+from graphics import rendered_surface_position_tuples_t, colored_page_t
+from clock import Clock
 import random
 from Frames.frame_enums import FrameEnums
 from Frames.intro_menu_frame import IntroMenuFrame
 
 class IntroFrame(Frame):
+    """
+    This frame shows the intro screen.
+    """
 
-    def __init__(self, data=None, frame_dim=None, parent_frame=None):
-        super().__init__(FrameEnums.INTRO_FRAME, data, frame_dim, parent_frame)
+    def __init__(self, data: Any = None, frame_dim: pygame.Rect = None, parent_frame: Frame = None, focus_group=""):
 
+        super().__init__(frame_enum=FrameEnums.INTRO_FRAME, data=data,
+                            frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group)
 
-        self.num_headlines = 20
+        #dividing the frame dimension into the top frame for the headline, and the bottom for the shown image.
+        self.headline_height_percentage: float = 0.3
+        """
+        The percentage of the height the headline occupies.
 
-        self.headline_index = 0
-        self.clock = clock.Clock()
-        self.headline_change_time = 50#ms
-        self.headline_index_going_right = True
+        --------------
+        |            | -> Headline frame
+        --------------
+        |            | -> Image frame
+        |            |
+        --------------
+        """
+        self.image_height_percentage: float = (1.0 - self.headline_height_percentage)
+        """
+        The remaining height goes to the image.
+        """
+        self.headline_area: pygame.Rect = None
+        """
+        The area that belongs to the headline.
+        """
+        self.headline_frame_hmargin: float = 0.4
+        """
+        The horizontal margins to apply to the headline frame,
+        such that the text is not right at the edges.
+        """
+        self.headline_frame_vmargin: float = 0.2
+        """
+        Vertical margins, same purpose as self.headline_frame_hmargin
+        """
+        self.image_area: pygame.Rect = None
+        """
+        The area that belongs to the image.
+        """
+        self.image_frame_hmargin: float = 0.4
+        """
+        The horizontal margin for the image frame.
+        """
+        self.image_frame_vmargin: float = 0.1
+        """
+        The vertical margin for the image frame.
+        """
+        self.headline_frame: pygame.Rect = None
+        """
+        The rectangle the headline will be rendered into.
+        """
+        self.image_frame: pygame.Rect = None
+        """
+        The rectangle the various images will be rendered into.
+        """
 
-        self.image_clock = clock.Clock()
-        self.image_alpha = 255
-        self.fading = True
-        self.fade_duration = 2000.0
+        self.headline_area, self.image_area = graphics.split_rect_vertically(self.frame_dim, [self.headline_height_percentage, self.image_height_percentage])
+        self.headline_frame = graphics.apply_margins(self.headline_area, self.headline_frame_hmargin, self.headline_frame_vmargin)
+        self.image_frame = graphics.apply_margins(self.image_area, self.image_frame_hmargin, self.image_frame_vmargin)
+        #centering
+        self.headline_frame = graphics.get_center_with_rect_as_rect(self.headline_area, self.headline_frame)
+        self.image_frame = graphics.get_center_with_rect_as_rect(self.image_area, self.image_frame)
 
-        self.clock.start()
-        self.image_clock.start()
+        self.headline_increase_percentage: float = 0.25
+        """
+        At its biggest, the the headline will be rendered into a frame
+        that is (1 + self.headline_height_percentage) times the original frame.
+        """
+        self.headline_clock: Clock = Clock()
+        """
+        The clock used for changing the headlines size.
+        """
+        self.headline_animation_duration: float = 2000#ms
+        """
+        The duration for the headline to expand to full size,
+        and go back to normal size.
+        """
+        self.headline_text: colored_page_t = [[("Village Brawl", Colors.WHITE)]]
+        """
+        The text that will be shown. Is a page in colored text form.
+        """
+        self.headline: rendered_surface_position_tuples_t = None
+        """
+        The rendered headline.
+        """
+        self.image_animation_clock: Clock = Clock()
+        """
+        The clock for the image animation
+        """
+        self.image_animation_duration: float = 2000#ms
+        """
+        Duration for the image animation.
+        The image will increase or decrease in alpha.
+        """
+        self.alpha_increasing: bool = False
+        """
+        If this is True, the image will be increasing in alpha.
+        Otherwise, it will be decreasing.
+        """
+        self.image: pygame.Surface = None
+        """
+        The image shown at the center. This is an changing image
+        of a list of images chosen randomly from constants.INTRO_IMAGES
+        """
+        self.image_pos: tuple[int, int] = None
+        """
+        The position of the image.
+        """
+        self.enter_intro_menu: bool = False
+        """
+        If this flag is set tick() returns an IntroMenuFrame
+        instance as the next main window.
+        """
 
-        self.entry_delay_clock = clock.Clock()
-        self.entry_delay = 500#ms
+        self.entry_delay_clock: Clock = Clock()
+        """
+        Clock for the entry delay.
+        since we might have keys pressed when starting this
+        application, they might be registered immediately as inputs.
+        Therefore we wait a bit before accepting inputs.
+        """
+        self.entry_delay: float = 500#ms
+
+        #starting all clocks
+        self.headline_clock.start()
+        self.image_animation_clock.start()
         self.entry_delay_clock.start()
-
-        self.enter_intro_menu = False
 
         self.rerender()
 
-    def rerender(self):
+    def handle_headline_animation(self) -> None:
+        """
+        This handles the headline animation.
+        Is called once per tick.
+        """
+        percentage: float = self.headline_clock.elapsed() / self.headline_animation_duration
 
-        self.widgets = []
+        if percentage >= 1.0:
+            #render onto the normal surface
+            self.headline = graphics.render_page_from_chars_color(
+                                                                    Fonts.STANDARD_FONT,
+                                                                    self.headline_text,
+                                                                    self.headline_frame,
+                                                                    centered=True,
+                                                                    vertical_centered=True
+                                                                    )
+            #restart the clock
+            self.headline_clock.start()
 
-        self.village_brawl_headlines = [graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE + i, "Village Brawl", Colors.WHITE) for i in range(self.num_headlines)]
-        self.village_brawl_pos = [(graphics.center_horizontally(self.village_brawl_headlines[i], pygame.Rect(0, 0, self.width, self.height)), self.height // 20) for i in range(self.num_headlines)]
+        else:
 
-        self.center_image_size = (self.height // 2, self.height // 2)
-        self.center_image = graphics.render_image(random.choice(INTRO_IMAGES), self.center_image_size)
-        self.center_image_pos = (graphics.center_horizontally(self.center_image, pygame.Rect(0, 0, self.width, self.height)),
-                                graphics.center_vertically(self.center_image, pygame.Rect(0, self.height // 4, self.width, self.height//4 * 3))
-        )
+            increase_margin: float = 0.0
+            """
+            The margins for the headline frame increase/decrease.
+            """
+
+            if percentage <= 0.5:
+
+                #increase accordingly
+                inc_percentage: float = 2 * percentage
+                increase_margin = -(self.headline_increase_percentage * inc_percentage)
+
+            else:
+
+                inc_percentage: float = (percentage - 0.5) * 2
+                increase_margin = -self.headline_increase_percentage + self.headline_increase_percentage * inc_percentage
+
+            #now applying the margins and rendering
+            increased_headline_frame: pygame.Rect = graphics.apply_margins(self.headline_frame, increase_margin, increase_margin)
+            #centering the headline frame
+            increased_headline_frame = graphics.get_center_with_rect_as_rect(outer_rect=self.headline_area, inner_rect=increased_headline_frame)
+
+            self.headline = graphics.render_page_from_chars_color(
+                                                                    Fonts.STANDARD_FONT,
+                                                                    self.headline_text,
+                                                                    increased_headline_frame,
+                                                                    centered=True,
+                                                                    vertical_centered=True
+                                                                    )
+
+    def handle_image_animation(self) -> None:
+        """
+        Handles the images fading in and out
+        """
+
+        percentage: float = self.image_animation_clock.elapsed() / self.image_animation_duration
+
+        if percentage >= 1.0:
+
+            #if we were decreasing in alpha, fade in a new image
+            if not self.alpha_increasing:
+
+                self.image, self.image_pos = graphics.img_load_and_position(random.choice(INTRO_IMAGES), self.image_frame)
+                self.image.set_alpha(0)
+
+            #change alpha increase/decrease direction
+            self.alpha_increasing = not self.alpha_increasing
+            #restart the clock
+            self.image_animation_clock.start()
+
+        else:
+
+            if self.image is None:
+                self.image, self.image_pos = graphics.img_load_and_position(random.choice(INTRO_IMAGES), self.image_frame)
+
+            alpha: int = int( (percentage * 255 if self.alpha_increasing else (1.0 - percentage) * 255) )
+
+            self.image.set_alpha(alpha)
+
+
+    def rerender(self) -> None:
+        """
+        Renders the frame as it should be as the beginning.
+        This resets all render data.
+        """
+        self.image = None
+        self.image_pos = None
+
+        self.headline = None
+
+        self.handle_headline_animation()
+        self.handle_image_animation()
 
         self.press_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.SMALL, "Press enter to continue...", Colors.WHITE)
         self.press_text_pos = (20, self.height - 20)
 
 
-    def bind_events(self):
+    def bind_events(self) -> None:
+        """
+        Binds the enter events as triggering a transition into the IntroMenuFrame.
+        """
 
-        cdata = {"frame_ref": self}
+        self.add_pygame_key_callback(pygame.K_RETURN, None, False, self.enter_pressed)
+        self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, None, False, self.enter_pressed)
 
-        self.add_pygame_key_callback(pygame.K_RETURN, cdata, False, self.enter_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, cdata, False, self.enter_pressed)
+    def enter_pressed(self, event: pygame.event.Event, data: Any):
+        """
+        If the entry delay has already passed, we set the enter intro menu flag to true.
+        """
 
-    def enter_pressed(self, event, data):
-
-        ref = data["frame_ref"]
-
-        if ref.entry_delay_clock.elapsed() > ref.entry_delay:
-            ref.enter_intro_menu = True
+        if self.entry_delay_clock.elapsed() > self.entry_delay:
+            self.enter_intro_menu = True
 
 
     def tick(self):
-
-
+        """
+        Basic tick function.
+        """
         self.manage_pygame_events()
 
         if self.exit_flag_raised():
             return None
+
+        self.handle_headline_animation()
+        self.handle_image_animation()
 
         if self.enter_intro_menu:
 
@@ -84,65 +279,20 @@ class IntroFrame(Frame):
             self.enter_intro_menu = False
             return imframe
 
-        #setting opacity
-        if self.fading:
-
-            percent_faded = self.image_clock.elapsed() / self.fade_duration
-
-            if percent_faded >= 1.0:
-
-                self.image_alpha = 0
-                self.fading = False
-
-                self.center_image = graphics.render_image(random.choice(INTRO_IMAGES), self.center_image_size)
-                self.image_clock.start()
-            else:
-
-                self.image_alpha = int(255 - percent_faded*255)
-
-        else:
-
-            percent_faded = self.image_clock.elapsed() / self.fade_duration
-
-            if percent_faded >= 1.0:
-
-                self.image_alpha = 255
-                self.fading = True
-                self.image_clock.start()
-
-            else:
-
-                self.image_alpha = int(percent_faded*255)
-
-        self.center_image.set_alpha(self.image_alpha)
-
-
-
-
-        if self.clock.elapsed() > self.headline_change_time:
-
-            if self.headline_index_going_right:
-                if self.headline_index == (len(self.village_brawl_headlines)-1):
-                    self.headline_index -= 1
-                    self.headline_index_going_right = False
-                else:
-                    self.headline_index += 1
-            else:
-                if (self.headline_index == 0):
-                    self.headline_index += 1
-                    self.headline_index_going_right = True
-                else:
-                    self.headline_index -= 1
-
-            self.clock.start()
-
-
         return self
 
-    def render(self, screen):
+    def render(self, screen: pygame.Surface) -> None:
+        """
+        Rendering function, see Frame class.
+        """
 
         screen.fill(Colors.BLACK)
 
-        screen.blit(self.village_brawl_headlines[self.headline_index], self.village_brawl_pos[self.headline_index])
-        screen.blit(self.center_image, self.center_image_pos)
+        if self.headline is not None:
+            for surf, pos in self.headline:
+                screen.blit(surf, pos)
+
+        if self.image is not None:
+            screen.blit(self.image, self.image_pos)
+
         screen.blit(self.press_text, self.press_text_pos)

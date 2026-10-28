@@ -64,7 +64,6 @@ class Frame(EventQueueManager):
     in this group (key).
     """
 
-
     class EventCallback(Event):
 
         """
@@ -465,7 +464,7 @@ class Frame(EventQueueManager):
 
         putback_events = []
 
-        for event in pygame.event.Event.get():
+        for event in pygame.event.get():
             processed = True
             matched_any = False
 
@@ -516,7 +515,7 @@ class Frame(EventQueueManager):
                 putback_events.append(event)
 
         for event in putback_events:
-            pygame.event.Event.post(event)
+            pygame.event.post(event)
 
 
     def clear_event_callbacks(self) -> None:
@@ -528,10 +527,10 @@ class Frame(EventQueueManager):
 
     def clear_pygame_events(self) -> None:
         """
-        Empties the pygame.event.Event queue.
+        Empties the pygame.event queue.
         """
-        #clears the pygame.event.Event queue
-        events = pygame.event.Event.get()
+        #clears the pygame.event queue
+        events = pygame.event.get()
 
     def get_event_callbacks(self) -> None:
         """

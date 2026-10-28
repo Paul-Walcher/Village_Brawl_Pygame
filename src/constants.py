@@ -166,6 +166,8 @@ class Fonts:
 
     MINECRAFT = os.path.join(FONT_PATH, "Minecraft.ttf")
 
+    STANDARD_FONT = MINECRAFT
+
 class Fontsizes:
 
     """

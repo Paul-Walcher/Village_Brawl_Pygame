@@ -605,6 +605,15 @@ def get_center_with_surface(surface: pygame.Surface, rect: pygame.Rect) -> tuple
 
     return (x - w//2, y - h//2)
 
+def get_center_with_surface_as_rect(surface: pygame.Surface, rect: pygame.Rect) -> pygame.Rect:
+    """
+    Returns a frame defining the surfaces position, width and height
+    after it was centered in rect.
+    """
+
+    x, y = get_center_with_surface(surface, rect)
+    return pygame.Rect(x, y, surface.get_width(), surface.get_height())
+
 def get_center_with_rect(outer_rect: pygame.Rect, inner_rect: pygame.Rect) -> tuple[int, int]:
     """
     Returns the position inner_rect needs to be rendered at to be centered at the rects center.
@@ -615,16 +624,30 @@ def get_center_with_rect(outer_rect: pygame.Rect, inner_rect: pygame.Rect) -> tu
 
     return (x - w//2, y - h//2)
 
+def get_center_with_rect_as_rect(outer_rect: pygame.Rect, inner_rect: pygame.Rect) -> pygame.Rect:
+    """
+    Returns a new rectangle, representing inner rect being centered inside outer_rect.
+    """
+
+    x, y = get_center_with_rect(outer_rect, inner_rect)
+
+    return pygame.Rect(x, y, inner_rect.width, inner_rect.height)
+
 def apply_margins(rect: pygame.Rect, h_margin_percentage: float=0.0, v_margin_percentage: float=0.0) -> pygame.Rect:
     """
     Returns rect after applying the margin percentages.
-    """
 
-    margin_rect = pygame.Rect(int(rect.width * h_margin_percentage / 2 + rect.x),
-                                            int(rect.height * v_margin_percentage / 2 + rect.y),
-                                            int(rect.width * (1.0 - h_margin_percentage)),
-                                            int(rect.height * (1.0 - v_margin_percentage))
-                                        )
+    Negative margins mean expanding the frame by the given percentage,
+    positive margins mean decreasing the frame by the given percentage.
+    """
+    if h_margin_percentage > 1.0 or v_margin_percentage > 1.0:
+        raise RuntimeError("Margins can not be greater than 1.0 (Returned frame cant have negative size)")
+
+    margin_rect = pygame.Rect(  int(rect.x + rect.width * h_margin_percentage / 2),
+                                int(rect.y + rect.height * v_margin_percentage / 2),
+                                int(rect.width * (1.0 - h_margin_percentage)),
+                                int(rect.height * (1.0 - v_margin_percentage))
+                                )
     return margin_rect
 
 def split_rect_horizontally(rect: pygame.Rect, percentages: list[float]) -> list[pygame.Rect]:
