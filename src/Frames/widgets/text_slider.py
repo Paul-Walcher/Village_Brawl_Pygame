@@ -108,7 +108,6 @@ class TextSlider(Slider):
 
                 self.surfaces.append(surf)
 
-
     def create_back_surfaces(self):
 
         self.back_surfaces = []

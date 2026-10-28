@@ -12,9 +12,9 @@ from context_data import ContextData
 
 class ChooseSaveNameFrame(Frame):
 
-    def __init__(self, data=None, frame_dim=None, parent_frame=None):
+    def __init__(self, data=None, frame_dim=None, parent_frame=None, focus_group=""):
 
-        super().__init__(FrameEnums.CHOOSE_SAVE_NAME_FRAME, data, frame_dim, parent_frame)
+        super().__init__(FrameEnums.CHOOSE_SAVE_NAME_FRAME, data=data, frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group)
 
         self.highlighted_index = -1
         self.is_typing = False

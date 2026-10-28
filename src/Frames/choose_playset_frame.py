@@ -1,206 +1,341 @@
+from __future__ import annotations
+from typing import Any, Callable
+
 import os
 import pygame
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, color_t, R_ID
 import graphics
+from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock
 from Frames.choose_save_name_frame import ChooseSaveNameFrame
 from context_data import ContextData
+from Frames.widgets.text_slider import TextSlider
 
 class ChoosePlaysetFrame(Frame):
+    """
+    This frame lets the player choose the playset.
+    """
 
-    def __init__(self, data=None, frame_dim=None, parent_frame=None, focus_group=""):
+    #states
+    NOTHING_FOCUSED: int = R_ID()
+    BACK_OPTION_FOCUSED: int = R_ID()
+    PLAYSET_OPTIONS_FOCUSED: int = R_ID()
+
+    def __init__(   self,
+                    data: Any = None,
+                    frame_dim: pygame.Rect = None,
+                    parent_frame: Frame = None,
+                    focus_group: str = ""
+                    ):
 
         super().__init__(FrameEnums.CHOOSE_PLAYSET_FRAME, data=data, frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group)
 
-        self.frame_rect = pygame.Rect(0, 0, self.width, self.height)
 
-        self.playsets = [x for x in os.listdir(PLAYSETS_FOLDER) if os.path.isdir(os.path.join(PLAYSETS_FOLDER, x))]
+        self.playset_pages: list[page_t] = [[x] for x in os.listdir(PLAYSETS_FOLDER) if os.path.isdir(os.path.join(PLAYSETS_FOLDER, x))]
+        """
+        Playsets are loaded and put into a list.
+        The playsets are loaded via getting the names of all folders at constants.PLAYSETS_FOLDER
+        """
+        self.playsets_span: int = 2
+        """
+        The span of the playlists.
 
-        self.playsets_shown = 5
-
-        self.back_text = None
-        self.back_pos = None
-
-        self.back_focused = False
-        self.playsets_focused = False
-
-        self.playset_index = min(len(self.playsets), self.playsets_shown // 2)
-
-        self.parent_frame_flag = False
-        self.choose_save_name_flag = False
-
+        This means there are self.playsets_span rendered on top,
+        then the main playset,
+        then self.playsets_span again.
+        """
+        self.back_text_frame_width_percentage: float = 0.15
+        """
+        The width percentage of the back option relative to self.width.
+        """
+        self.back_text_frame_height_percentage: float = 0.08
+        """
+        The height percentage of the back option relative to self.height.
+        """
+        self.back_text_frame_margin_percentage: float = 0.04
+        """
+        The percentage of the distance from the left bottom corner.
+        The margin is taking relative to min(self.width, self.height)
+        """
+        self.back_text_frame_margin: int = -1
+        """
+        The distance to the bottom left corner of self.dim for the back etxt frame.
+        """
+        self.back_text_size_increase_percentage: float = 0.1
+        """
+        The percentage the framesize increases by when the back option is selected.
+        """
+        self.main_text_frame: pygame.Rect = None
+        """
+        The centered main text rect inside self.frame_dim.
+        Contains the main options.
+        """
+        self.back_text_frame: pygame.Rect = None
+        """
+        The back text frame at the bottom left.
+        """
+        self.back_text_selected_frame: pygame.Rect = None
+        """
+        The frame for the back text when it is selected.
+        """
+        self.back_text: str = "Back"
+        """
+        The text for the back option.
+        """
+        self.back_text_rendered: rendered_surface_position_tuples_t = None
+        """
+        The back text rendered.
+        """
+        self.selected_back_text_rendered: rendered_surface_position_tuples_t = None
+        """
+        Rendered text when the back option is selected.
+        """
+        #the frames for the headline
+        self.headline_frame_width_percentage: float = 1.0
+        """
+        The width of the headline frame in relation to self.width.
+        """
+        self.headline_frame_height_percentage: float = 0.3
+        """
+        The height of the headline frame in relation to self.height.
+        """
+        self.headline_frame_hmargin: float = 0.2
+        """
+        The horizontal margin for the headline frame
+        """
+        self.headline_frame_vmargin: float = 0.1
+        """
+        The vertical margin for the headline frame.
+        """
+        self.headline_frame: pygame.Rect = None
+        """
+        The frame the headline will be rendered into.
+        """
+        self.headline_text: page_t = ["Choose your", "Playset"]
+        """
+        The text as a page that will be rendered as the headline.
+        """
+        self.rendered_headline: rendered_surface_position_tuples_t = None
+        """
+        The rendered headline.
+        """
+        self.headline_color: color_t = Colors.CYAN
+        """
+        The color the headline will be rendered in.
+        """
+        self.playset_options_frame_width_margin: float = 0.5
+        """
+        The width of the playset options frame relative to self.width
+        """
+        self.playset_options_frame_height_margin: float = 0.7
+        """
+        The height of the playset options frame relative to (self.height - self.headline_frame.height - self.headline_frame.y)
+        """
+        self.playset_options_frame: pygame.Rect = None
+        """
+        The frame for the playset options.
+        """
+        self.text_slider: TextSlider = None
+        """
+        The text slider showing the playset options.
+        """
+        self.option_color: color_t = Colors.STANDARD_TEXT_COLOR
+        """
+        Color for the options
+        """
+        self.option_selected_color: color_t = Colors.YELLOW
+        """
+        Color for selected options
+        """
+        self.state: int = ChoosePlaysetFrame.NOTHING_FOCUSED
+        """
+        The current state.
+        """
+        self.intro_delay_clock: Clock = Clock()
+        """
+        Clock for the intro delay
+        """
+        self.intro_delay: float = 250#ms
+        """
+        Delay after the frame is made the main frame.
+        """
         self.rerender()
 
     def rerender(self):
 
-        self.widgets = []
 
-        self.headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE, "Playsets", Colors.CYAN)
-        self.headline_pos = (graphics.center_horizontally(self.headline, self.frame_rect), self.height // 20)
+        headline_rect: pygame.Rect = pygame.Rect(
+                                                    0,
+                                                    0,
+                                                    int(self.width * self.headline_frame_width_percentage),
+                                                    int(self.height * self.headline_frame_height_percentage)
+                                                )
 
-        self.playset_texts = [] #list of tuples (playset font, position)
+        self.headline_frame = graphics.apply_margins(headline_rect, self.headline_frame_hmargin, self.headline_frame_vmargin)
 
-        self.render_text()
+        self.rendered_headline = graphics.render_page_from_chars(
+                                                                    font=Fonts.STANDARD_FONT,
+                                                                    page=self.headline_text,
+                                                                    frame=self.headline_frame,
+                                                                    text_color=self.headline_color,
+                                                                    centered=True,
+                                                                    vertical_centered=True
+                                                                )
+        #the text slider
+        options_rect: pygame.Rect = self.frame_dim.copy()
+        options_rect.y = self.headline_frame.y + self.headline_frame.height
+        options_rect.height = self.height - options_rect.y
+        print(options_rect)
+        self.playset_options_frame = graphics.get_center_with_rect_as_rect(
+                                                                                outer_rect=options_rect,
+                                                                                inner_rect=pygame.Rect(
+                                                                                                            0, 0,
+                                                                                                            int(self.playset_options_frame_width_margin * options_rect.width),
+                                                                                                            int(self.playset_options_frame_height_margin * options_rect.height)
+                                                                                                        )
+                                                                            )
+        self.text_slider = TextSlider(
+                                            text=self.playset_pages,
+                                            frame_dim=self.playset_options_frame,
+                                            font=Fonts.STANDARD_FONT,
+                                            horizontal=False,
+                                            cutoff=True,
+                                            max_slides=1,
+                                            text_color=self.option_color
+                                        )
+        #back text
+        self.back_text_frame_margin = min(  int(self.width * self.back_text_frame_margin_percentage),
+                                            int(self.height * self.back_text_frame_margin_percentage)
+                                        )
+        #the distance from the corner for the back text
+        #main frame for the main options
+        self.back_text_frame = pygame.Rect(
+                                            self.back_text_frame_margin,
+                                            self.height - self.back_text_frame_margin - int(self.height * self.back_text_frame_height_percentage),
+                                            int(self.width * self.back_text_frame_width_percentage),
+                                            int(self.height * self.back_text_frame_height_percentage)
+                                            )
+        #the frame for the 'back' text
+        self.back_text_selected_frame = graphics.apply_margins(
+                                                                self.back_text_frame,
+                                                                -self.back_text_size_increase_percentage,
+                                                                -self.back_text_size_increase_percentage
+                                                                )
+        #rendering the back text
+        self.back_text_rendered = graphics.render_page_from_chars(
+                                                                    font=Fonts.STANDARD_FONT,
+                                                                    page=[self.back_text],
+                                                                    frame=self.back_text_frame,
+                                                                    text_color=self.option_color,
+                                                                    centered=True,
+                                                                    vertical_centered=True
+                                                                    )
 
-    def render_text(self):
-
-        if self.back_focused:
-            self.back_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.AVERAGE + 10, "Back", color=Colors.YELLOW)
-        else:
-            self.back_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.AVERAGE + 4, "Back", color=Colors.WHITE)
-
-        self.back_pos = (self.width//20,
-                            self.height - self.back_text.get_height() - self.height // 20)
-
-        #rendering the middle playset
-
-        font_decrease = 25
-        text_distance = 40#px
-
-        rect = pygame.Rect(0, self.height // 4, self.width, self.height // 4 * 3)
-
-        middle_playset = None
-        if self.playsets_focused:
-            middle_playset = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG+8, self.playsets[self.playset_index], color=Colors.YELLOW)
-        else:
-            middle_playset = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG, self.playsets[self.playset_index], color=Colors.WHITE)
-
-
-        middle_playset_pos = (graphics.center_horizontally(middle_playset, self.frame_rect), graphics.center_vertically(middle_playset, rect))
-        #rendering the other playsets
-
-        self.playset_texts = [(middle_playset, middle_playset_pos)]
-
-        pshown = self.playsets_shown - 1
-
-        playsets_above = pshown // 2
-        playsets_below = pshown - playsets_above
-
-        font_above = Fontsizes.BIG - font_decrease
-        idx = self.playset_index - 1
-
-        above_y = middle_playset_pos[1]
-
-        while (font_above > 0) and (idx >= 0) and (playsets_above > 0):
-
-            rendered_text = graphics.render_text(Fonts.MINECRAFT, font_above, self.playsets[idx], Colors.WHITE)
-            above_y -= rendered_text.get_height() + text_distance
-
-            rendered_pos = (graphics.center_horizontally(rendered_text, rect), above_y)
-
-            self.playset_texts.append((rendered_text, rendered_pos))
-
-
-            playsets_above -= 1
-            idx -= 1
-            font_above -= font_decrease
-
-        font_below = Fontsizes.BIG - font_decrease
-        idx = self.playset_index + 1
-
-        above_y = middle_playset_pos[1] + middle_playset.get_height() + text_distance
-
-        while (font_below > 0) and (idx < len(self.playsets)) and (playsets_below > 0):
-
-            rendered_text = graphics.render_text(Fonts.MINECRAFT, font_below, self.playsets[idx], Colors.WHITE)
-
-            rendered_pos = (graphics.center_horizontally(rendered_text, rect), above_y)
-
-            above_y += rendered_text.get_height() + text_distance
-
-            self.playset_texts.append((rendered_text, rendered_pos))
-
-            playsets_below -= 1
-            idx += 1
-            font_below -= font_decrease
+        self.selected_back_text_rendered = graphics.render_page_from_chars(
+                                                                            font=Fonts.STANDARD_FONT,
+                                                                            page=[self.back_text],
+                                                                            frame=self.back_text_selected_frame,
+                                                                            text_color=self.option_selected_color,
+                                                                            centered=True,
+                                                                            vertical_centered=True
+                                                                            )
+        #changing next_frame
+        self._next_frame = None
+        #resetting the exit flag
+        self.reset_exit_flag()
+        #starting the intro delay clock
+        self.intro_delay_clock.start()
 
     def bind_events(self):
 
-        cdata = {"frame_ref": self}
+        if self.is_focused():
+            self.add_pygame_key_callback(pygame.K_LEFT, None, putback=False, func=self.left_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, None, putback=False, func=self.left_pressed)
 
-        self.add_pygame_key_callback(pygame.K_LEFT, cdata, putback=False, func=self.left_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, cdata, putback=False, func=self.left_pressed)
+            self.add_pygame_key_callback(pygame.K_RIGHT, None, putback=False, func=self.right_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, None, putback=False, func=self.right_pressed)
 
-        self.add_pygame_key_callback(pygame.K_RIGHT, cdata, putback=False, func=self.right_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, cdata, putback=False, func=self.right_pressed)
+            self.add_pygame_key_callback(pygame.K_UP, None, putback=False, func=self.up_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.UP_ALTERNATIVE, None, putback=False, func=self.up_pressed)
 
-        self.add_pygame_key_callback(pygame.K_UP, cdata, putback=False, func=self.up_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.UP_ALTERNATIVE, cdata, putback=False, func=self.up_pressed)
+            self.add_pygame_key_callback(pygame.K_DOWN, None, putback=False, func=self.down_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.DOWN_ALTERNATIVE, None, putback=False, func=self.down_pressed)
 
-        self.add_pygame_key_callback(pygame.K_DOWN, cdata, putback=False, func=self.down_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.DOWN_ALTERNATIVE, cdata, putback=False, func=self.down_pressed)
-
-        self.add_pygame_key_callback(pygame.K_RETURN, cdata, putback=False, func=self.enter_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, cdata, putback=False, func=self.enter_pressed)
+            self.add_pygame_key_callback(pygame.K_RETURN, None, putback=False, func=self.enter_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, None, putback=False, func=self.enter_pressed)
 
 
-    def left_pressed(self, event, data):
+    def left_pressed(self, event, data) -> None:
+        """
+        Callback function.
+        """
+        if self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
+            self.state = ChoosePlaysetFrame.NOTHING_FOCUSED
+        elif self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
+            self.state = ChoosePlaysetFrame.BACK_OPTION_FOCUSED
 
-        ref = data["frame_ref"]
-
-        if not ref.back_focused:
-            ref.back_focused = True
-            ref.playsets_focused = False
-            ref.render_text()
-
-    def right_pressed(self, event, data):
-
-        ref = data["frame_ref"]
-
-        if not ref.playsets_focused:
-            ref.back_focused = False
-            ref.playsets_focused = True
-            ref.render_text()
+    def right_pressed(self, event, data) -> None:
+        """
+        Callback function.
+        """
+        if self.state == ChoosePlaysetFrame.NOTHING_FOCUSED:
+            self.state = ChoosePlaysetFrame.BACK_OPTION_FOCUSED
+        elif self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
+            self.state = ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED
 
     def up_pressed(self, event, data):
-
-        ref = data["frame_ref"]
-
-        if ref.playsets_focused and ref.playset_index > 0:
-            ref.playset_index -= 1
-            ref.render_text()
+        """
+        Callback function
+        """
+        if self.state == ChoosePlaysetFrame.NOTHING_FOCUSED:
+            self.state = ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED
+        elif self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
+            #sliding
+            self.text_slider.slide_up()
 
     def down_pressed(self, event, data):
-
-        ref = data["frame_ref"]
-
-        if ref.playsets_focused and ref.playset_index < len(ref.playsets) - 1:
-            ref.playset_index += 1
-            ref.render_text()
+        """
+        Callback function
+        """
+        if self.state == ChoosePlaysetFrame.NOTHING_FOCUSED:
+            self.state = ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED
+        elif self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
+            #sliding
+            self.text_slider.slide_down()
 
     def enter_pressed(self, event, data):
-        ref = data["frame_ref"]
-
-        if ref.back_focused:
-            ref.parent_frame_flag = True
-        if ref.playsets_focused:
-            ref.choose_save_name_flag = True
+        """
+        Callback function.
+        """
+        if self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
+            self._next_frame = self.parent_frame
+            self.parent_frame.focus()
+            self.parent_frame.rerender()
+            self.raise_exit_flag()
+        elif self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
+            self.text_slider.play_select_animation()
 
     def tick(self):
 
         self.manage_pygame_events()
 
         if self.exit_flag_raised():
-            return None
+            return self._next_frame
 
-        if self.parent_frame_flag:
-            self.parent_frame_flag = False
-            self.parent_frame.focus()
-            self.parent_frame.rerender()
-            return self.parent_frame
+        self.text_slider.tick()
 
-        if self.choose_save_name_flag:
-            self.choose_save_name_flag = False
+        #getting all events
+        for event in self.text_slider.poll_events():
+            if event.type == TextSlider.EventTypes.SELECT_ANIMATION_ENDED:
 
-            if type(self.data) == ContextData:
-                self.data.current_playset = self.playsets[self.playset_index]
+                if type(self.data) == ContextData:
+                    self.data.current_playset = self.playset_pages[self.text_slider.get_selected_index()][0]
 
-            csnframe = ChooseSaveNameFrame(self.data, self.frame_dim.copy(), self)
-
-            return csnframe
+                    self._next_frame = ChooseSaveNameFrame(data=self.data, frame_dim=self.frame_dim.copy(), parent_frame=self, focus_group=self.focus_group)
+                    self.raise_exit_flag()
 
         return self
 
@@ -208,10 +343,17 @@ class ChoosePlaysetFrame(Frame):
 
         screen.fill(Colors.BLACK)
 
-        screen.blit(self.headline, self.headline_pos)
+        for surface, pos in self.rendered_headline:
+            screen.blit(surface, pos)
 
-        for (text, pos) in self.playset_texts:
+        if self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
+            for surface, pos in self.selected_back_text_rendered:
+                screen.blit(surface, pos)
+        else:
+            for surface, pos in self.back_text_rendered:
+                screen.blit(surface, pos)
 
-            screen.blit(text, pos)
+        if self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
+            pygame.draw.rect(screen, self.option_color, self.playset_options_frame, width=4)
 
-        screen.blit(self.back_text, self.back_pos)
+        self.text_slider.render(screen)

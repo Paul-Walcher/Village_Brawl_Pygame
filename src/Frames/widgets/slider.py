@@ -197,6 +197,15 @@ class Slider(Frame):
 
         self.slide_input_delay_clock.start()
 
+    """
+    Just renaming for vertical sliders
+    """
+    def slide_up(self):
+        self.slide_left()
+
+    def slide_down(self):
+        self.slide_right()
+
 
     def reset_slides(self):
 
