@@ -145,7 +145,7 @@ class IntroMenuFrame(Frame):
         The index of the currently selected option.
         If no option is selected it is set to 0.
         """
-        self.next_frame: Frame = None
+        self._next_frame: Frame = None
         """
         The next frame that is returned from self.tick,
         when self.exit_flag_raised() == True.
@@ -280,7 +280,7 @@ class IntroMenuFrame(Frame):
 
                                                                             )
         #changing next_frame
-        self.next_frame = None
+        self._next_frame = None
         #resetting the exit flag
         self.reset_exit_flag()
         #starting the intro delay clock
@@ -292,7 +292,7 @@ class IntroMenuFrame(Frame):
         If new game is pressed, make a new choose playset frame,
         then raise the exit flag.
         """
-        self.next_frame = ChoosePlaysetFrame(data=self.data, frame_dim=self.frame_dim.copy(), parent_frame=self, focus_group=self.focus_group)
+        self._next_frame = ChoosePlaysetFrame(data=self.data, frame_dim=self.frame_dim.copy(), parent_frame=self, focus_group=self.focus_group)
         self.raise_exit_flag()
 
     def load_save_pressed(self) -> None:
@@ -305,8 +305,8 @@ class IntroMenuFrame(Frame):
         """
         Back is pressed, means go back to parent frame.
         """
-        self.next_frame = self.parent_frame
-        self.next_frame.rerender()
+        self._next_frame = self.parent_frame
+        self._next_frame.rerender()
         self.raise_exit_flag()
 
 
@@ -396,8 +396,8 @@ class IntroMenuFrame(Frame):
             self.manage_pygame_events()
 
         if self.exit_flag_raised():
-            self.next_frame.focus()
-            return self.next_frame
+            self._next_frame.focus()
+            return self._next_frame
 
         return self
 

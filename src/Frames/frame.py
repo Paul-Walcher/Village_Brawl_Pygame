@@ -205,6 +205,11 @@ class Frame(EventQueueManager):
         To check whether a key is pressed or not, use Frame.key_pressed(key),
         since not all scancodes might be contained as keys in __key_scancodes.
         """
+        self._next_frame: Frame = None
+        """
+        The next frame returned by tick() after
+        self.exit_flag_raised() == True.
+        """
 
         self.bind_events()
         #binding events
