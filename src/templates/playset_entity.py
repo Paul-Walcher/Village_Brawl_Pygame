@@ -9,6 +9,7 @@ from modules import Modules
 from templates.type_enums import TypeEnums
 from Frames.frame_enums import FrameEnums
 from phases import Phases, phase_transition_t, PhaseInfo
+from templates.renderable_cardinfo import Renderable_CardInfo
 
 
 class PlaysetEntity(Frame):
@@ -16,10 +17,19 @@ class PlaysetEntity(Frame):
     """
     Describes a card/entity that needs to be rendered to the screen,
     and does actions every frame, needing to be updated using tick().
+
+    Playset entities are in the same focus group as the main frames,
+    so frames take the inputs before the main frame does.
+
+    This should not happen by the entity calling focus() itself,
+    but by queueing itself in in a focus-queue by the parent frame.
     """
 
     @staticmethod
-    def info():
+    def info() -> Renderable_CardInfo:
+        """
+        Returns a renderable cardinfo describing the object.
+        """
         pass
 
     def __init__(   self,
@@ -28,10 +38,12 @@ class PlaysetEntity(Frame):
                     frame_enum: FrameEnums = FrameEnums.PLAYSET_ENTITY,
                     data: Any = None,
                     frame_dim: pygame.Rect = constants.FULLSCREEN,
-                    parent_frame: Frame = None
+                    parent_frame: Frame = None,
+                    focus_group: str = "",
+                    has_focus: bool = False #no focus by default
                     ):
 
-        super().__init__(frame_enum, data, frame_dim, parent_frame)
+        super().__init__(frame_enum=frame_enum, data=data, frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group, has_focus=has_focus)
 
         self.modules: Modules = modules
         """
@@ -52,18 +64,9 @@ class PlaysetEntity(Frame):
         Direct reference to the tags.
         Defined for readability
         """
-        self._prev_phase: Phases = None
-        """
-        Saves the previous phase for detecting phase transitions.
-        """
         self.entity_type: TypeEnums = entity_type
         """
         The type of this entity.
-        """
-        self._transition_callbacks: dict[ phase_transition_t, list[Callable[ [Phases, Phases, PhaseInfo] , None]] ] = {}
-        """
-        A dictionary storing the functions called when the phase changes.
-        If (prev_phase, new_phase) in phase_change_functions, all stored functions will be executed there.
         """
 
     def tick(
@@ -73,88 +76,20 @@ class PlaysetEntity(Frame):
 
         """
         Tick function for the entity.
+        Rceceives Information about the game state as PhaseInfo instances.
         """
 
-        self.execute_phase_change(phaseinfo)
 
         return self
+
+    def rerender(self) -> None:
+        """
+        Rerendering upon reentry.
+        """
+        pass
 
     def render(self, screen: pygame.Surface) -> None:
         """
         Render function. The default is drawing nothing.
         """
         pass
-
-    def execute_phase_change(self, phaseinfo: PhaseInfo) -> None:
-
-        """
-        Executes all corresponding callback functions if a phase change ocurred.
-        """
-
-        cphase = phaseinfo.phase
-
-        if self._prev_phase != cphase:
-
-            transitions = [(self._prev_phase, cphase), (Phases.ANY_PHASE, cphase), (self._prev_phase, Phases.ANY_PHASE)]
-
-            for transition in transitions:
-                if transition in self._transition_callbacks:
-                    for func in self._transition_callbacks[transition]:
-                        func(self._prev_phase, cphase, phaseinfo)
-
-
-        self._prev_phase = cphase
-
-    def add_transition_callback(self, transition: phase_transition_t, func: Callable[[Phases, Phases, PhaseInfo], None]) -> bool:
-        """
-        Adds the given callback function to the callbacks for the given transition.
-        Return False if the function is already registered for the same transition,
-        True else.
-        """
-
-        if transition not in self._transition_callbacks:
-            self._transition_callbacks[transition] = []
-        else:
-            if func in self._transition_callbacks[transition]:
-                return False
-
-        self._transition_callbacks[transition].append(func)
-
-        return True
-
-    def remove_transition_callback(self, transition: phase_transition_t, func: Callable[[Phases, Phases, PhaseInfo], None]) -> bool:
-        """
-        Tries to remove the given function from the phase change functions.
-        If the function is not registered for the transition, this fails to remove it and returns False.
-        Otherwise True is returned.
-        """
-
-        if transition in self._transition_callbacks:
-            if func in self._transition_callbacks[transition]:
-                self._transition_callbacks[transition].remove(func)
-                return True
-
-        return False
-
-    def clear_transition_callback(self, transition: phase_transition_t) -> list[ Callable[ [Phases, Phases, PhaseInfo], None ] ]:
-        """
-        Removes all callbacks registered for transition, then returns all functions removed
-        in a list.
-        """
-        if transitions not in self._transition_callbacks:
-            return []
-        else:
-
-            funcs = self._transition_callbacks[transition]
-            self._transition_callbacks[transition] = []
-
-            return funcs
-
-    def clear_all_transition_callback(self) -> dict[ phase_transition_t, list[Callable[ [Phases, Phases, PhaseInfo] , None]] ]:
-        """
-        Clears all callbacks, then returns the transition dictionary before being cleared.
-        """
-        back = self._transition_callbacks
-        self._transition_callbacks = {}
-
-        return back

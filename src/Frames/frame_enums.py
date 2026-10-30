@@ -33,3 +33,5 @@ class FrameEnums(Enum):
     LABELED_IMAGE_SLIDER_WIDGET = auto()
     IMAGESLIDER_WIDGET = auto()
     DROPDOWN_MENU_WIDGET = auto()
+    LABEL_WIDGET = auto()
+    BUTTON_WIDGET = auto()

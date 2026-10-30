@@ -957,3 +957,5 @@ class Slider(Frame):
                 self.selected_surface_startpos = (self.rendered_surfaces[self.span][1], self.rendered_surfaces[self.span][2])
                 self.selected_surface_copy = self.rendered_surfaces[self.span][0].copy()
                 self.select_animation_clock.start()
+
+        return self

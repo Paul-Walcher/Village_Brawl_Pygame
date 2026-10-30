@@ -595,6 +595,12 @@ a InfoPagePartContainer object.</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -637,7 +643,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div id="Explorer_Card_Template.tick" class="classattr">
@@ -656,7 +664,8 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Tick function for the entity.</p>
+            <div class="docstring"><p>Tick function for the entity.
+Rceceives Information about the game state as PhaseInfo instances.</p>
 </div>
 
 
@@ -670,12 +679,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Explorer_Card_Template.enums" class="variable"><a href="playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Explorer_Card_Template.tags" class="variable"><a href="playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Explorer_Card_Template.entity_type" class="variable"><a href="playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Explorer_Card_Template.rerender" class="function"><a href="playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Explorer_Card_Template.render" class="function"><a href="playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Explorer_Card_Template.execute_phase_change" class="function"><a href="playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Explorer_Card_Template.add_transition_callback" class="function"><a href="playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Explorer_Card_Template.remove_transition_callback" class="function"><a href="playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Explorer_Card_Template.clear_transition_callback" class="function"><a href="playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Explorer_Card_Template.clear_all_transition_callback" class="function"><a href="playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -703,7 +708,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Explorer_Card_Template.is_focused" class="function"><a href="../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Explorer_Card_Template.bind_events" class="function"><a href="../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Explorer_Card_Template.key_pressed" class="function"><a href="../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Explorer_Card_Template.add_escape_callback" class="function"><a href="../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Explorer_Card_Template.add_default_escape_callback" class="function"><a href="../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Explorer_Card_Template.manage_pygame_events" class="function"><a href="../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Explorer_Card_Template.clear_event_callbacks" class="function"><a href="../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Explorer_Card_Template.clear_pygame_events" class="function"><a href="../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>

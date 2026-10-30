@@ -138,7 +138,7 @@ class IntroFrame(Frame):
         application, they might be registered immediately as inputs.
         Therefore we wait a bit before accepting inputs.
         """
-        self.entry_delay: float = 500#ms
+        self.entry_delay: float = 250#ms
 
         #starting all clocks
         self.headline_clock.start()
@@ -252,6 +252,8 @@ class IntroFrame(Frame):
         Binds the enter events as triggering a transition into the IntroMenuFrame.
         """
 
+        #adding generic escape exit function
+        self.add_default_escape_callback()
         self.add_pygame_key_callback(pygame.K_RETURN, None, False, self.enter_pressed)
         self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, None, False, self.enter_pressed)
 

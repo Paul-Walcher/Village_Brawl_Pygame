@@ -153,6 +153,7 @@ class Colors:
     MAGENTA = (255, 0, 255)
     DARK_MAGENTA = (139, 0, 139)
     LILAC = (253, 61, 245)
+    ORANGE = (255, 165, 0)
 
     STANDARD_TEXT_COLOR = WHITE
     MAX_PER_DECK_COLOR = YELLOW

@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import Any, Callable
+
 import os
 import pygame
 
@@ -5,16 +8,62 @@ from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
+from graphics import text_t, colored_text_t, page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock
 
 from Frames.load_playset_frame import LoadPlaysetFrame
 from context_data import ContextData
 
 class ChooseSaveNameFrame(Frame):
+    """
+    This frame lets the player choose the name for the savefile.
+    """
 
-    def __init__(self, data=None, frame_dim=None, parent_frame=None, focus_group=""):
+    def __init__(self, data: Any = None, frame_dim: pygame.Rect = None, parent_frame: Frame = None, focus_group: str = ""):
 
         super().__init__(FrameEnums.CHOOSE_SAVE_NAME_FRAME, data=data, frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group)
+
+        self.back_text_frame_width_percentage: float = 0.15
+        """
+        The width percentage of the back option relative to self.width.
+        """
+        self.back_text_frame_height_percentage: float = 0.08
+        """
+        The height percentage of the back option relative to self.height.
+        """
+        self.back_text_frame_margin_percentage: float = 0.04
+        """
+        The percentage of the distance from the left bottom corner.
+        The margin is taking relative to min(self.width, self.height)
+        """
+        self.back_text_frame_margin: int = -1
+        """
+        The distance to the bottom left corner of self.dim for the back etxt frame.
+        """
+        self.back_text_size_increase_percentage: float = 0.1
+        """
+        The percentage the framesize increases by when the back option is selected.
+        """
+        self.back_text_frame: pygame.Rect = None
+        """
+        The back text frame at the bottom left.
+        """
+        self.back_text_selected_frame: pygame.Rect = None
+        """
+        The frame for the back text when it is selected.
+        """
+        self.back_text: str = "Back"
+        """
+        The text for the back option.
+        """
+        self.back_text_rendered: rendered_surface_position_tuples_t = None
+        """
+        The back text rendered.
+        """
+        self.selected_back_text_rendered: rendered_surface_position_tuples_t = None
+        """
+        Rendered text when the back option is selected.
+        """
 
         self.highlighted_index = -1
         self.is_typing = False
@@ -24,9 +73,6 @@ class ChooseSaveNameFrame(Frame):
 
         self.savefile_name_font = None
         self.savefile_name_font_pos = None
-
-        self.back_text = None
-        self.back_pos = None
 
         self.enter_text = None
         self.enter_pos = None

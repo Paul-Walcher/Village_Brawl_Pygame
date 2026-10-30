@@ -68,11 +68,6 @@ class ChoosePlaysetFrame(Frame):
         """
         The percentage the framesize increases by when the back option is selected.
         """
-        self.main_text_frame: pygame.Rect = None
-        """
-        The centered main text rect inside self.frame_dim.
-        Contains the main options.
-        """
         self.back_text_frame: pygame.Rect = None
         """
         The back text frame at the bottom left.
@@ -98,7 +93,7 @@ class ChoosePlaysetFrame(Frame):
         """
         The width of the headline frame in relation to self.width.
         """
-        self.headline_frame_height_percentage: float = 0.3
+        self.headline_frame_height_percentage: float = 0.4
         """
         The height of the headline frame in relation to self.height.
         """
@@ -188,7 +183,7 @@ class ChoosePlaysetFrame(Frame):
         options_rect: pygame.Rect = self.frame_dim.copy()
         options_rect.y = self.headline_frame.y + self.headline_frame.height
         options_rect.height = self.height - options_rect.y
-        print(options_rect)
+
         self.playset_options_frame = graphics.get_center_with_rect_as_rect(
                                                                                 outer_rect=options_rect,
                                                                                 inner_rect=pygame.Rect(
@@ -252,6 +247,9 @@ class ChoosePlaysetFrame(Frame):
     def bind_events(self):
 
         if self.is_focused():
+            #adding generic escape callback
+            self.add_default_escape_callback()
+
             self.add_pygame_key_callback(pygame.K_LEFT, None, putback=False, func=self.left_pressed)
             self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, None, putback=False, func=self.left_pressed)
 
@@ -294,7 +292,7 @@ class ChoosePlaysetFrame(Frame):
             self.state = ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED
         elif self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
             #sliding
-            self.text_slider.slide_up()
+            self.text_slider.slide_down()
 
     def down_pressed(self, event, data):
         """
@@ -304,7 +302,7 @@ class ChoosePlaysetFrame(Frame):
             self.state = ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED
         elif self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
             #sliding
-            self.text_slider.slide_down()
+            self.text_slider.slide_up()
 
     def enter_pressed(self, event, data):
         """
@@ -323,6 +321,8 @@ class ChoosePlaysetFrame(Frame):
         self.manage_pygame_events()
 
         if self.exit_flag_raised():
+            if self._next_frame is not None:
+                self._next_frame.focus()
             return self._next_frame
 
         self.text_slider.tick()

@@ -186,6 +186,9 @@
                                 <a class="variable" href="#Colors.LILAC">LILAC</a>
                         </li>
                         <li>
+                                <a class="variable" href="#Colors.ORANGE">ORANGE</a>
+                        </li>
+                        <li>
                                 <a class="variable" href="#Colors.STANDARD_TEXT_COLOR">STANDARD_TEXT_COLOR</a>
                         </li>
                         <li>
@@ -202,6 +205,9 @@
                             <ul class="memberlist">
                         <li>
                                 <a class="variable" href="#Fonts.MINECRAFT">MINECRAFT</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#Fonts.STANDARD_FONT">STANDARD_FONT</a>
                         </li>
                 </ul>
 
@@ -301,7 +307,7 @@ constants    </h1>
 </span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="sd">"""</span>
 </span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="sd">Types</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a><span class="sd">"""</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="nb">type</span> <span class="n">color_t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="nb">type</span> <span class="n">color_t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 </span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a>
 </span><span id="L-18"><a href="#L-18"><span class="linenos"> 18</span></a><span class="n">EPSILON</span> <span class="o">=</span> <span class="mf">10E-6</span>
 </span><span id="L-19"><a href="#L-19"><span class="linenos"> 19</span></a><span class="sd">"""</span>
@@ -441,51 +447,54 @@ constants    </h1>
 </span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>    <span class="n">MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
 </span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>    <span class="n">DARK_MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">139</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">139</span><span class="p">)</span>
 </span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>    <span class="n">LILAC</span> <span class="o">=</span> <span class="p">(</span><span class="mi">253</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">245</span><span class="p">)</span>
-</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>
-</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>    <span class="n">STANDARD_TEXT_COLOR</span> <span class="o">=</span> <span class="n">WHITE</span>
-</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>    <span class="n">MAX_PER_DECK_COLOR</span> <span class="o">=</span> <span class="n">YELLOW</span>
-</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>    <span class="n">KEEP_DURATION_COLOR</span> <span class="o">=</span> <span class="n">BLUE</span>
-</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>    <span class="n">ORANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>
+</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>    <span class="n">STANDARD_TEXT_COLOR</span> <span class="o">=</span> <span class="n">WHITE</span>
+</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>    <span class="n">MAX_PER_DECK_COLOR</span> <span class="o">=</span> <span class="n">YELLOW</span>
+</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>    <span class="n">KEEP_DURATION_COLOR</span> <span class="o">=</span> <span class="n">BLUE</span>
 </span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>
-</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fonts</span><span class="p">:</span>
-</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a><span class="sd">    saved fonts.</span>
-</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a><span class="sd">    """</span>
-</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a>
-</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>    <span class="n">MINECRAFT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FONT_PATH</span><span class="p">,</span> <span class="s2">"Minecraft.ttf"</span><span class="p">)</span>
-</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>
-</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fontsizes</span><span class="p">:</span>
-</span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>
-</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a><span class="sd">    Standardized fontsizes.</span>
-</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a><span class="sd">    """</span>
-</span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a>
-</span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
-</span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a>
-</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a>    <span class="n">TINY</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a>    <span class="n">SMALL</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
-</span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a>    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a>    <span class="n">BIG</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
-</span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a>    <span class="n">HUGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
-</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a>
-</span><span id="L-183"><a href="#L-183"><span class="linenos">183</span></a>    <span class="n">SMALL_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">140</span><span class="p">)</span>
-</span><span id="L-184"><a href="#L-184"><span class="linenos">184</span></a>    <span class="n">BIG_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>
+</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fonts</span><span class="p">:</span>
+</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a><span class="sd">    saved fonts.</span>
+</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a><span class="sd">    """</span>
+</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>
+</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>    <span class="n">MINECRAFT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FONT_PATH</span><span class="p">,</span> <span class="s2">"Minecraft.ttf"</span><span class="p">)</span>
+</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a>
+</span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>    <span class="n">STANDARD_FONT</span> <span class="o">=</span> <span class="n">MINECRAFT</span>
+</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a>
+</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fontsizes</span><span class="p">:</span>
+</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a>
+</span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a><span class="sd">    Standardized fontsizes.</span>
+</span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a><span class="sd">    """</span>
+</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a>
+</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
+</span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a>
+</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a>    <span class="n">TINY</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a>    <span class="n">SMALL</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a>    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+</span><span id="L-183"><a href="#L-183"><span class="linenos">183</span></a>    <span class="n">BIG</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+</span><span id="L-184"><a href="#L-184"><span class="linenos">184</span></a>    <span class="n">HUGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
 </span><span id="L-185"><a href="#L-185"><span class="linenos">185</span></a>
-</span><span id="L-186"><a href="#L-186"><span class="linenos">186</span></a><span class="k">class</span><span class="w"> </span><span class="nc">KeyAlternatives</span><span class="p">:</span>
-</span><span id="L-187"><a href="#L-187"><span class="linenos">187</span></a>
-</span><span id="L-188"><a href="#L-188"><span class="linenos">188</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="L-189"><a href="#L-189"><span class="linenos">189</span></a><span class="sd">    Bindable Keys used as alternatives.</span>
-</span><span id="L-190"><a href="#L-190"><span class="linenos">190</span></a><span class="sd">    """</span>
-</span><span id="L-191"><a href="#L-191"><span class="linenos">191</span></a>
-</span><span id="L-192"><a href="#L-192"><span class="linenos">192</span></a>    <span class="n">ENTER_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_o</span>
-</span><span id="L-193"><a href="#L-193"><span class="linenos">193</span></a>    <span class="n">BACK_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_k</span>
+</span><span id="L-186"><a href="#L-186"><span class="linenos">186</span></a>    <span class="n">SMALL_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">140</span><span class="p">)</span>
+</span><span id="L-187"><a href="#L-187"><span class="linenos">187</span></a>    <span class="n">BIG_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+</span><span id="L-188"><a href="#L-188"><span class="linenos">188</span></a>
+</span><span id="L-189"><a href="#L-189"><span class="linenos">189</span></a><span class="k">class</span><span class="w"> </span><span class="nc">KeyAlternatives</span><span class="p">:</span>
+</span><span id="L-190"><a href="#L-190"><span class="linenos">190</span></a>
+</span><span id="L-191"><a href="#L-191"><span class="linenos">191</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-192"><a href="#L-192"><span class="linenos">192</span></a><span class="sd">    Bindable Keys used as alternatives.</span>
+</span><span id="L-193"><a href="#L-193"><span class="linenos">193</span></a><span class="sd">    """</span>
 </span><span id="L-194"><a href="#L-194"><span class="linenos">194</span></a>
-</span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a>    <span class="n">UP_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span>
-</span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a>    <span class="n">DOWN_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span>
-</span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a>    <span class="n">LEFT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span>
-</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a>    <span class="n">RIGHT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span>
-</span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a>
-</span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a>    <span class="n">SHOW_IMAGE_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_LALT</span>
+</span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a>    <span class="n">ENTER_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_o</span>
+</span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a>    <span class="n">BACK_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_k</span>
+</span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a>
+</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a>    <span class="n">UP_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span>
+</span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a>    <span class="n">DOWN_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span>
+</span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a>    <span class="n">LEFT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span>
+</span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a>    <span class="n">RIGHT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span>
+</span><span id="L-202"><a href="#L-202"><span class="linenos">202</span></a>
+</span><span id="L-203"><a href="#L-203"><span class="linenos">203</span></a>    <span class="n">SHOW_IMAGE_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_LALT</span>
 </span></pre></div>
 
 
@@ -493,7 +502,7 @@ constants    </h1>
                 <section id="color_t">
                     <div class="attr variable">
             <span class="def">type</span> <span class="name">color_t</span>        =
-<span class="default_value">tuple[int, int, int, int]</span>
+<span class="default_value">tuple[int, int, int] | tuple[int, int, int, int]</span>
 
         
     </div>
@@ -764,7 +773,7 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
                 <section id="HASH_VALUE">
                     <div class="attr variable">
             <span class="name">HASH_VALUE</span><span class="annotation">: int</span>        =
-<span class="default_value">61</span>
+<span class="default_value">71</span>
 
         
     </div>
@@ -989,10 +998,11 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 </span><span id="Colors-154"><a href="#Colors-154"><span class="linenos">154</span></a>    <span class="n">MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
 </span><span id="Colors-155"><a href="#Colors-155"><span class="linenos">155</span></a>    <span class="n">DARK_MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">139</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">139</span><span class="p">)</span>
 </span><span id="Colors-156"><a href="#Colors-156"><span class="linenos">156</span></a>    <span class="n">LILAC</span> <span class="o">=</span> <span class="p">(</span><span class="mi">253</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">245</span><span class="p">)</span>
-</span><span id="Colors-157"><a href="#Colors-157"><span class="linenos">157</span></a>
-</span><span id="Colors-158"><a href="#Colors-158"><span class="linenos">158</span></a>    <span class="n">STANDARD_TEXT_COLOR</span> <span class="o">=</span> <span class="n">WHITE</span>
-</span><span id="Colors-159"><a href="#Colors-159"><span class="linenos">159</span></a>    <span class="n">MAX_PER_DECK_COLOR</span> <span class="o">=</span> <span class="n">YELLOW</span>
-</span><span id="Colors-160"><a href="#Colors-160"><span class="linenos">160</span></a>    <span class="n">KEEP_DURATION_COLOR</span> <span class="o">=</span> <span class="n">BLUE</span>
+</span><span id="Colors-157"><a href="#Colors-157"><span class="linenos">157</span></a>    <span class="n">ORANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="Colors-158"><a href="#Colors-158"><span class="linenos">158</span></a>
+</span><span id="Colors-159"><a href="#Colors-159"><span class="linenos">159</span></a>    <span class="n">STANDARD_TEXT_COLOR</span> <span class="o">=</span> <span class="n">WHITE</span>
+</span><span id="Colors-160"><a href="#Colors-160"><span class="linenos">160</span></a>    <span class="n">MAX_PER_DECK_COLOR</span> <span class="o">=</span> <span class="n">YELLOW</span>
+</span><span id="Colors-161"><a href="#Colors-161"><span class="linenos">161</span></a>    <span class="n">KEEP_DURATION_COLOR</span> <span class="o">=</span> <span class="n">BLUE</span>
 </span></pre></div>
 
 
@@ -1236,6 +1246,18 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
     
 
                             </div>
+                            <div id="Colors.ORANGE" class="classattr">
+                                <div class="attr variable">
+            <span class="name">ORANGE</span>        =
+<span class="default_value">(255, 165, 0)</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Colors.ORANGE"></a>
+    
+    
+
+                            </div>
                             <div id="Colors.STANDARD_TEXT_COLOR" class="classattr">
                                 <div class="attr variable">
             <span class="name">STANDARD_TEXT_COLOR</span>        =
@@ -1284,12 +1306,14 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#Fonts"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fonts-163"><a href="#Fonts-163"><span class="linenos">163</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fonts</span><span class="p">:</span>
-</span><span id="Fonts-164"><a href="#Fonts-164"><span class="linenos">164</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="Fonts-165"><a href="#Fonts-165"><span class="linenos">165</span></a><span class="sd">    saved fonts.</span>
-</span><span id="Fonts-166"><a href="#Fonts-166"><span class="linenos">166</span></a><span class="sd">    """</span>
-</span><span id="Fonts-167"><a href="#Fonts-167"><span class="linenos">167</span></a>
-</span><span id="Fonts-168"><a href="#Fonts-168"><span class="linenos">168</span></a>    <span class="n">MINECRAFT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FONT_PATH</span><span class="p">,</span> <span class="s2">"Minecraft.ttf"</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fonts-164"><a href="#Fonts-164"><span class="linenos">164</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fonts</span><span class="p">:</span>
+</span><span id="Fonts-165"><a href="#Fonts-165"><span class="linenos">165</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="Fonts-166"><a href="#Fonts-166"><span class="linenos">166</span></a><span class="sd">    saved fonts.</span>
+</span><span id="Fonts-167"><a href="#Fonts-167"><span class="linenos">167</span></a><span class="sd">    """</span>
+</span><span id="Fonts-168"><a href="#Fonts-168"><span class="linenos">168</span></a>
+</span><span id="Fonts-169"><a href="#Fonts-169"><span class="linenos">169</span></a>    <span class="n">MINECRAFT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FONT_PATH</span><span class="p">,</span> <span class="s2">"Minecraft.ttf"</span><span class="p">)</span>
+</span><span id="Fonts-170"><a href="#Fonts-170"><span class="linenos">170</span></a>
+</span><span id="Fonts-171"><a href="#Fonts-171"><span class="linenos">171</span></a>    <span class="n">STANDARD_FONT</span> <span class="o">=</span> <span class="n">MINECRAFT</span>
 </span></pre></div>
 
 
@@ -1309,6 +1333,18 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
     
 
                             </div>
+                            <div id="Fonts.STANDARD_FONT" class="classattr">
+                                <div class="attr variable">
+            <span class="name">STANDARD_FONT</span>        =
+<span class="default_value">&#39;BaseAssets\\Fonts\\Minecraft.ttf&#39;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Fonts.STANDARD_FONT"></a>
+    
+    
+
+                            </div>
                 </section>
                 <section id="Fontsizes">
                             <input id="Fontsizes-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
@@ -1321,22 +1357,22 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#Fontsizes"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fontsizes-170"><a href="#Fontsizes-170"><span class="linenos">170</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fontsizes</span><span class="p">:</span>
-</span><span id="Fontsizes-171"><a href="#Fontsizes-171"><span class="linenos">171</span></a>
-</span><span id="Fontsizes-172"><a href="#Fontsizes-172"><span class="linenos">172</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="Fontsizes-173"><a href="#Fontsizes-173"><span class="linenos">173</span></a><span class="sd">    Standardized fontsizes.</span>
-</span><span id="Fontsizes-174"><a href="#Fontsizes-174"><span class="linenos">174</span></a><span class="sd">    """</span>
-</span><span id="Fontsizes-175"><a href="#Fontsizes-175"><span class="linenos">175</span></a>
-</span><span id="Fontsizes-176"><a href="#Fontsizes-176"><span class="linenos">176</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
-</span><span id="Fontsizes-177"><a href="#Fontsizes-177"><span class="linenos">177</span></a>
-</span><span id="Fontsizes-178"><a href="#Fontsizes-178"><span class="linenos">178</span></a>    <span class="n">TINY</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span><span id="Fontsizes-179"><a href="#Fontsizes-179"><span class="linenos">179</span></a>    <span class="n">SMALL</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
-</span><span id="Fontsizes-180"><a href="#Fontsizes-180"><span class="linenos">180</span></a>    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-</span><span id="Fontsizes-181"><a href="#Fontsizes-181"><span class="linenos">181</span></a>    <span class="n">BIG</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
-</span><span id="Fontsizes-182"><a href="#Fontsizes-182"><span class="linenos">182</span></a>    <span class="n">HUGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
-</span><span id="Fontsizes-183"><a href="#Fontsizes-183"><span class="linenos">183</span></a>
-</span><span id="Fontsizes-184"><a href="#Fontsizes-184"><span class="linenos">184</span></a>    <span class="n">SMALL_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">140</span><span class="p">)</span>
-</span><span id="Fontsizes-185"><a href="#Fontsizes-185"><span class="linenos">185</span></a>    <span class="n">BIG_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fontsizes-173"><a href="#Fontsizes-173"><span class="linenos">173</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fontsizes</span><span class="p">:</span>
+</span><span id="Fontsizes-174"><a href="#Fontsizes-174"><span class="linenos">174</span></a>
+</span><span id="Fontsizes-175"><a href="#Fontsizes-175"><span class="linenos">175</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="Fontsizes-176"><a href="#Fontsizes-176"><span class="linenos">176</span></a><span class="sd">    Standardized fontsizes.</span>
+</span><span id="Fontsizes-177"><a href="#Fontsizes-177"><span class="linenos">177</span></a><span class="sd">    """</span>
+</span><span id="Fontsizes-178"><a href="#Fontsizes-178"><span class="linenos">178</span></a>
+</span><span id="Fontsizes-179"><a href="#Fontsizes-179"><span class="linenos">179</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
+</span><span id="Fontsizes-180"><a href="#Fontsizes-180"><span class="linenos">180</span></a>
+</span><span id="Fontsizes-181"><a href="#Fontsizes-181"><span class="linenos">181</span></a>    <span class="n">TINY</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span id="Fontsizes-182"><a href="#Fontsizes-182"><span class="linenos">182</span></a>    <span class="n">SMALL</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</span><span id="Fontsizes-183"><a href="#Fontsizes-183"><span class="linenos">183</span></a>    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+</span><span id="Fontsizes-184"><a href="#Fontsizes-184"><span class="linenos">184</span></a>    <span class="n">BIG</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+</span><span id="Fontsizes-185"><a href="#Fontsizes-185"><span class="linenos">185</span></a>    <span class="n">HUGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
+</span><span id="Fontsizes-186"><a href="#Fontsizes-186"><span class="linenos">186</span></a>
+</span><span id="Fontsizes-187"><a href="#Fontsizes-187"><span class="linenos">187</span></a>    <span class="n">SMALL_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">140</span><span class="p">)</span>
+</span><span id="Fontsizes-188"><a href="#Fontsizes-188"><span class="linenos">188</span></a>    <span class="n">BIG_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1355,7 +1391,7 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#Fontsizes.fscale"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fontsizes.fscale-176"><a href="#Fontsizes.fscale-176"><span class="linenos">176</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fontsizes.fscale-179"><a href="#Fontsizes.fscale-179"><span class="linenos">179</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -1458,21 +1494,21 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#KeyAlternatives"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="KeyAlternatives-187"><a href="#KeyAlternatives-187"><span class="linenos">187</span></a><span class="k">class</span><span class="w"> </span><span class="nc">KeyAlternatives</span><span class="p">:</span>
-</span><span id="KeyAlternatives-188"><a href="#KeyAlternatives-188"><span class="linenos">188</span></a>
-</span><span id="KeyAlternatives-189"><a href="#KeyAlternatives-189"><span class="linenos">189</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="KeyAlternatives-190"><a href="#KeyAlternatives-190"><span class="linenos">190</span></a><span class="sd">    Bindable Keys used as alternatives.</span>
-</span><span id="KeyAlternatives-191"><a href="#KeyAlternatives-191"><span class="linenos">191</span></a><span class="sd">    """</span>
-</span><span id="KeyAlternatives-192"><a href="#KeyAlternatives-192"><span class="linenos">192</span></a>
-</span><span id="KeyAlternatives-193"><a href="#KeyAlternatives-193"><span class="linenos">193</span></a>    <span class="n">ENTER_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_o</span>
-</span><span id="KeyAlternatives-194"><a href="#KeyAlternatives-194"><span class="linenos">194</span></a>    <span class="n">BACK_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_k</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="KeyAlternatives-190"><a href="#KeyAlternatives-190"><span class="linenos">190</span></a><span class="k">class</span><span class="w"> </span><span class="nc">KeyAlternatives</span><span class="p">:</span>
+</span><span id="KeyAlternatives-191"><a href="#KeyAlternatives-191"><span class="linenos">191</span></a>
+</span><span id="KeyAlternatives-192"><a href="#KeyAlternatives-192"><span class="linenos">192</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="KeyAlternatives-193"><a href="#KeyAlternatives-193"><span class="linenos">193</span></a><span class="sd">    Bindable Keys used as alternatives.</span>
+</span><span id="KeyAlternatives-194"><a href="#KeyAlternatives-194"><span class="linenos">194</span></a><span class="sd">    """</span>
 </span><span id="KeyAlternatives-195"><a href="#KeyAlternatives-195"><span class="linenos">195</span></a>
-</span><span id="KeyAlternatives-196"><a href="#KeyAlternatives-196"><span class="linenos">196</span></a>    <span class="n">UP_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span>
-</span><span id="KeyAlternatives-197"><a href="#KeyAlternatives-197"><span class="linenos">197</span></a>    <span class="n">DOWN_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span>
-</span><span id="KeyAlternatives-198"><a href="#KeyAlternatives-198"><span class="linenos">198</span></a>    <span class="n">LEFT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span>
-</span><span id="KeyAlternatives-199"><a href="#KeyAlternatives-199"><span class="linenos">199</span></a>    <span class="n">RIGHT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span>
-</span><span id="KeyAlternatives-200"><a href="#KeyAlternatives-200"><span class="linenos">200</span></a>
-</span><span id="KeyAlternatives-201"><a href="#KeyAlternatives-201"><span class="linenos">201</span></a>    <span class="n">SHOW_IMAGE_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_LALT</span>
+</span><span id="KeyAlternatives-196"><a href="#KeyAlternatives-196"><span class="linenos">196</span></a>    <span class="n">ENTER_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_o</span>
+</span><span id="KeyAlternatives-197"><a href="#KeyAlternatives-197"><span class="linenos">197</span></a>    <span class="n">BACK_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_k</span>
+</span><span id="KeyAlternatives-198"><a href="#KeyAlternatives-198"><span class="linenos">198</span></a>
+</span><span id="KeyAlternatives-199"><a href="#KeyAlternatives-199"><span class="linenos">199</span></a>    <span class="n">UP_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span>
+</span><span id="KeyAlternatives-200"><a href="#KeyAlternatives-200"><span class="linenos">200</span></a>    <span class="n">DOWN_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span>
+</span><span id="KeyAlternatives-201"><a href="#KeyAlternatives-201"><span class="linenos">201</span></a>    <span class="n">LEFT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span>
+</span><span id="KeyAlternatives-202"><a href="#KeyAlternatives-202"><span class="linenos">202</span></a>    <span class="n">RIGHT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span>
+</span><span id="KeyAlternatives-203"><a href="#KeyAlternatives-203"><span class="linenos">203</span></a>
+</span><span id="KeyAlternatives-204"><a href="#KeyAlternatives-204"><span class="linenos">204</span></a>    <span class="n">SHOW_IMAGE_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_LALT</span>
 </span></pre></div>
 
 

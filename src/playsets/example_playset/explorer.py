@@ -52,7 +52,6 @@ class Basic_Explorer(Explorer_Template):
         einfo.starting_blueprints = {}
         einfo.starting_packs = {}
         einfo.unlocked_packs = {}
-        einfo.unlockable_packs = {}
 
         einfo.starting_buildings = {}
         einfo.starting_villagers = {}

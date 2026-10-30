@@ -31,9 +31,17 @@ type page_t = list[str]
 """
 Type definition for a uncolored page.
 """
+EMPTY_PAGE: Callable[[], page_t] = lambda: []
+"""
+This generates an empty page.
+"""
 type colored_page_t = list[list[ tuple[str, color_t] ]]
 """
 Type definition for a colored page.
+"""
+EMPTY_COLORED_PAGE: Callable[[], colored_page_t] = lambda: []
+"""
+This generates an empty colored page.
 """
 type surface_with_position_t = tuple[pygame.Surface, tuple[int, int]]
 """
@@ -222,7 +230,8 @@ def render_page_from_chars(
     text_color: tuple[int, int, int]=constants.Colors.STANDARD_TEXT_COLOR,
     centered: bool=False,
     vertical_centered: bool=False,
-    line_margin: int=5
+    line_margin: int=5,
+    line_margin_as_percentage=None
 ) -> list[tuple[pygame.Surface, tuple[int, int]]]:
     """
     font: the the page will be rendered in
@@ -235,6 +244,10 @@ def render_page_from_chars(
 
     returns a list of (surface, position) tuples where position = (x, y)
     """
+
+    if line_margin_as_percentage is not None:
+        line_margin = int(frame.height * line_margin_as_percentage)
+
     fsize = get_fontsize(font, page, frame, line_margin=line_margin)
     trend = []
     cy = 0
@@ -421,7 +434,8 @@ def render_page_from_chars_color(
     text_color=constants.Colors.STANDARD_TEXT_COLOR,
     centered=False,
     vertical_centered=False,
-    line_margin=5
+    line_margin=5,
+    line_margin_as_percentage=None
 ):
     """
     Render a page returned by page_by_chars_color().
@@ -431,6 +445,9 @@ def render_page_from_chars_color(
 
     See render_page_from_chars.
     """
+
+    if line_margin_as_percentage is not None:
+        line_margin = int(frame.height * line_margin_as_percentage)
 
     if not page:
         return []
@@ -527,7 +544,7 @@ def render_page_from_chars_color(
     return trend
 
 
-def render_image(img_path: str, dimensions: tuple[float, float]=None) -> pygame.Surface:
+def render_image(img_path: str, dimensions: tuple[float, float]=None, scaling_function=pygame.transform.scale) -> pygame.Surface:
     """
     Renders the image onto a surface, then scales it up or down to dimensions.
     if dimensions is not None.
@@ -535,25 +552,25 @@ def render_image(img_path: str, dimensions: tuple[float, float]=None) -> pygame.
 
     img = pygame.image.load(img_path).convert_alpha()
     if dimensions is not None:
-        img = pygame.transform.scale(img, dimensions)
+        img = scaling_function(img, dimensions)
     return img
 
-def render_image_scale(img_path: str, scale: tuple[float, float]) -> pygame.Surface:
+def render_image_scale(img_path: str, scale: tuple[float, float], scale_function=pygame.transform.scale) -> pygame.Surface:
     """
     scales the loaded image by scale.
     """
 
     img = pygame.image.load(img_path).convert_alpha()
-    img = pygame.transform.scale(img,
+    img = scale_function(img,
                 (img.get_width() * scale, img.get_height() * scale)
     )
     return img
 
-def scale_surface(img: pygame.Surface, scale: float) ->  pygame.Surface:
+def scale_surface(img: pygame.Surface, scale: float, scale_function=pygame.transform.scale) ->  pygame.Surface:
     """
     scales the surface by scale.
     """
-    return pygame.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
+    return scale_function(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
 
 
 def center_horizontally(surface: pygame.Surface, frame_rect: pygame.Rect) -> pygame.Rect:

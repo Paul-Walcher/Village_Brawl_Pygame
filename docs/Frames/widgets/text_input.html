@@ -1275,7 +1275,13 @@ Frame.add_pygame_event_callback.</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Can be called upon reentry into this frame.
+This function should prepare the frame and adopt changes
+made to it.
+This should e.g. cancel animations, reset the state...,
+and should also clear the exit flag.</p>
+</div>
+
 
                             </div>
                             <div id="TextInput.prerender" class="classattr">
@@ -1702,7 +1708,7 @@ the parent frame will receive the focus via parent_frame.focus().</p>
                 <dd id="TextInput.move_to" class="function"><a href="../frame.html#Frame.move_to">move_to</a></dd>
                 <dd id="TextInput.is_focused" class="function"><a href="../frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="TextInput.key_pressed" class="function"><a href="../frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="TextInput.add_escape_callback" class="function"><a href="../frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="TextInput.add_default_escape_callback" class="function"><a href="../frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="TextInput.manage_pygame_events" class="function"><a href="../frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="TextInput.clear_event_callbacks" class="function"><a href="../frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="TextInput.clear_pygame_events" class="function"><a href="../frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -1749,7 +1755,7 @@ the parent frame will receive the focus via parent_frame.focus().</p>
                             <div id="TextInput.EventTypes.ENTER_PRESSED" class="classattr">
                                 <div class="attr variable">
             <span class="name">ENTER_PRESSED</span>        =
-<span class="default_value">4780010293528279454</span>
+<span class="default_value">-2783019928879558111</span>
 
         
     </div>

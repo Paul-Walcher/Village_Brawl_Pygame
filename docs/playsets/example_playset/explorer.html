@@ -148,29 +148,28 @@ playsets<wbr>.example_playset<wbr>.explorer    </h1>
 </span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_blueprints</span> <span class="o">=</span> <span class="p">{}</span>
 </span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_packs</span> <span class="o">=</span> <span class="p">{}</span>
 </span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">unlocked_packs</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">unlockable_packs</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>
-</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_buildings</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_villagers</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">activation_phases</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>
-</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>        <span class="k">return</span> <span class="n">einfo</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>
-</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">frame_enum</span><span class="o">=</span><span class="n">FrameEnums</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">,</span> <span class="n">parent_frame</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>
-</span><span id="L-65"><a href="#L-65"><span class="linenos">65</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">modules</span><span class="p">,</span> <span class="n">Basic_Explorer</span><span class="o">.</span><span class="n">info</span><span class="p">(),</span> <span class="n">frame_enum</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">parent_frame</span><span class="p">)</span>
-</span><span id="L-66"><a href="#L-66"><span class="linenos">66</span></a>
-</span><span id="L-67"><a href="#L-67"><span class="linenos">67</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-68"><a href="#L-68"><span class="linenos">68</span></a>        <span class="k">return</span> <span class="kc">False</span>
-</span><span id="L-69"><a href="#L-69"><span class="linenos">69</span></a>
-</span><span id="L-70"><a href="#L-70"><span class="linenos">70</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-71"><a href="#L-71"><span class="linenos">71</span></a>        <span class="k">pass</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos">72</span></a>
-</span><span id="L-73"><a href="#L-73"><span class="linenos">73</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-74"><a href="#L-74"><span class="linenos">74</span></a>        <span class="k">pass</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos">75</span></a>
-</span><span id="L-76"><a href="#L-76"><span class="linenos">76</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">):</span>
-</span><span id="L-77"><a href="#L-77"><span class="linenos">77</span></a>        <span class="k">pass</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>
+</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_buildings</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_villagers</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">activation_phases</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>
+</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>        <span class="k">return</span> <span class="n">einfo</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>
+</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">frame_enum</span><span class="o">=</span><span class="n">FrameEnums</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">,</span> <span class="n">parent_frame</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>
+</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">modules</span><span class="p">,</span> <span class="n">Basic_Explorer</span><span class="o">.</span><span class="n">info</span><span class="p">(),</span> <span class="n">frame_enum</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">parent_frame</span><span class="p">)</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos">65</span></a>
+</span><span id="L-66"><a href="#L-66"><span class="linenos">66</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos">67</span></a>        <span class="k">return</span> <span class="kc">False</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos">68</span></a>
+</span><span id="L-69"><a href="#L-69"><span class="linenos">69</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos">70</span></a>        <span class="k">pass</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos">71</span></a>
+</span><span id="L-72"><a href="#L-72"><span class="linenos">72</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos">73</span></a>        <span class="k">pass</span>
+</span><span id="L-74"><a href="#L-74"><span class="linenos">74</span></a>
+</span><span id="L-75"><a href="#L-75"><span class="linenos">75</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">):</span>
+</span><span id="L-76"><a href="#L-76"><span class="linenos">76</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 
@@ -276,34 +275,39 @@ playsets<wbr>.example_playset<wbr>.explorer    </h1>
 </span><span id="Basic_Explorer-53"><a href="#Basic_Explorer-53"><span class="linenos">53</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_blueprints</span> <span class="o">=</span> <span class="p">{}</span>
 </span><span id="Basic_Explorer-54"><a href="#Basic_Explorer-54"><span class="linenos">54</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_packs</span> <span class="o">=</span> <span class="p">{}</span>
 </span><span id="Basic_Explorer-55"><a href="#Basic_Explorer-55"><span class="linenos">55</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">unlocked_packs</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="Basic_Explorer-56"><a href="#Basic_Explorer-56"><span class="linenos">56</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">unlockable_packs</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="Basic_Explorer-57"><a href="#Basic_Explorer-57"><span class="linenos">57</span></a>
-</span><span id="Basic_Explorer-58"><a href="#Basic_Explorer-58"><span class="linenos">58</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_buildings</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="Basic_Explorer-59"><a href="#Basic_Explorer-59"><span class="linenos">59</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_villagers</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="Basic_Explorer-60"><a href="#Basic_Explorer-60"><span class="linenos">60</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">activation_phases</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="Basic_Explorer-61"><a href="#Basic_Explorer-61"><span class="linenos">61</span></a>
-</span><span id="Basic_Explorer-62"><a href="#Basic_Explorer-62"><span class="linenos">62</span></a>        <span class="k">return</span> <span class="n">einfo</span>
-</span><span id="Basic_Explorer-63"><a href="#Basic_Explorer-63"><span class="linenos">63</span></a>
-</span><span id="Basic_Explorer-64"><a href="#Basic_Explorer-64"><span class="linenos">64</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">frame_enum</span><span class="o">=</span><span class="n">FrameEnums</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">,</span> <span class="n">parent_frame</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="Basic_Explorer-65"><a href="#Basic_Explorer-65"><span class="linenos">65</span></a>
-</span><span id="Basic_Explorer-66"><a href="#Basic_Explorer-66"><span class="linenos">66</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">modules</span><span class="p">,</span> <span class="n">Basic_Explorer</span><span class="o">.</span><span class="n">info</span><span class="p">(),</span> <span class="n">frame_enum</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">parent_frame</span><span class="p">)</span>
-</span><span id="Basic_Explorer-67"><a href="#Basic_Explorer-67"><span class="linenos">67</span></a>
-</span><span id="Basic_Explorer-68"><a href="#Basic_Explorer-68"><span class="linenos">68</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Basic_Explorer-69"><a href="#Basic_Explorer-69"><span class="linenos">69</span></a>        <span class="k">return</span> <span class="kc">False</span>
-</span><span id="Basic_Explorer-70"><a href="#Basic_Explorer-70"><span class="linenos">70</span></a>
-</span><span id="Basic_Explorer-71"><a href="#Basic_Explorer-71"><span class="linenos">71</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Basic_Explorer-72"><a href="#Basic_Explorer-72"><span class="linenos">72</span></a>        <span class="k">pass</span>
-</span><span id="Basic_Explorer-73"><a href="#Basic_Explorer-73"><span class="linenos">73</span></a>
-</span><span id="Basic_Explorer-74"><a href="#Basic_Explorer-74"><span class="linenos">74</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Basic_Explorer-75"><a href="#Basic_Explorer-75"><span class="linenos">75</span></a>        <span class="k">pass</span>
-</span><span id="Basic_Explorer-76"><a href="#Basic_Explorer-76"><span class="linenos">76</span></a>
-</span><span id="Basic_Explorer-77"><a href="#Basic_Explorer-77"><span class="linenos">77</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">):</span>
-</span><span id="Basic_Explorer-78"><a href="#Basic_Explorer-78"><span class="linenos">78</span></a>        <span class="k">pass</span>
+</span><span id="Basic_Explorer-56"><a href="#Basic_Explorer-56"><span class="linenos">56</span></a>
+</span><span id="Basic_Explorer-57"><a href="#Basic_Explorer-57"><span class="linenos">57</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_buildings</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="Basic_Explorer-58"><a href="#Basic_Explorer-58"><span class="linenos">58</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_villagers</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="Basic_Explorer-59"><a href="#Basic_Explorer-59"><span class="linenos">59</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">activation_phases</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="Basic_Explorer-60"><a href="#Basic_Explorer-60"><span class="linenos">60</span></a>
+</span><span id="Basic_Explorer-61"><a href="#Basic_Explorer-61"><span class="linenos">61</span></a>        <span class="k">return</span> <span class="n">einfo</span>
+</span><span id="Basic_Explorer-62"><a href="#Basic_Explorer-62"><span class="linenos">62</span></a>
+</span><span id="Basic_Explorer-63"><a href="#Basic_Explorer-63"><span class="linenos">63</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">frame_enum</span><span class="o">=</span><span class="n">FrameEnums</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">,</span> <span class="n">parent_frame</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="Basic_Explorer-64"><a href="#Basic_Explorer-64"><span class="linenos">64</span></a>
+</span><span id="Basic_Explorer-65"><a href="#Basic_Explorer-65"><span class="linenos">65</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">modules</span><span class="p">,</span> <span class="n">Basic_Explorer</span><span class="o">.</span><span class="n">info</span><span class="p">(),</span> <span class="n">frame_enum</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">parent_frame</span><span class="p">)</span>
+</span><span id="Basic_Explorer-66"><a href="#Basic_Explorer-66"><span class="linenos">66</span></a>
+</span><span id="Basic_Explorer-67"><a href="#Basic_Explorer-67"><span class="linenos">67</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Basic_Explorer-68"><a href="#Basic_Explorer-68"><span class="linenos">68</span></a>        <span class="k">return</span> <span class="kc">False</span>
+</span><span id="Basic_Explorer-69"><a href="#Basic_Explorer-69"><span class="linenos">69</span></a>
+</span><span id="Basic_Explorer-70"><a href="#Basic_Explorer-70"><span class="linenos">70</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Basic_Explorer-71"><a href="#Basic_Explorer-71"><span class="linenos">71</span></a>        <span class="k">pass</span>
+</span><span id="Basic_Explorer-72"><a href="#Basic_Explorer-72"><span class="linenos">72</span></a>
+</span><span id="Basic_Explorer-73"><a href="#Basic_Explorer-73"><span class="linenos">73</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Basic_Explorer-74"><a href="#Basic_Explorer-74"><span class="linenos">74</span></a>        <span class="k">pass</span>
+</span><span id="Basic_Explorer-75"><a href="#Basic_Explorer-75"><span class="linenos">75</span></a>
+</span><span id="Basic_Explorer-76"><a href="#Basic_Explorer-76"><span class="linenos">76</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">):</span>
+</span><span id="Basic_Explorer-77"><a href="#Basic_Explorer-77"><span class="linenos">77</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -317,9 +321,9 @@ and does actions every frame, needing to be updated using tick().</p>
 
     </div>
     <a class="headerlink" href="#Basic_Explorer.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Basic_Explorer.__init__-64"><a href="#Basic_Explorer.__init__-64"><span class="linenos">64</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">frame_enum</span><span class="o">=</span><span class="n">FrameEnums</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">,</span> <span class="n">parent_frame</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span id="Basic_Explorer.__init__-65"><a href="#Basic_Explorer.__init__-65"><span class="linenos">65</span></a>
-</span><span id="Basic_Explorer.__init__-66"><a href="#Basic_Explorer.__init__-66"><span class="linenos">66</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">modules</span><span class="p">,</span> <span class="n">Basic_Explorer</span><span class="o">.</span><span class="n">info</span><span class="p">(),</span> <span class="n">frame_enum</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">parent_frame</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Basic_Explorer.__init__-63"><a href="#Basic_Explorer.__init__-63"><span class="linenos">63</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules</span><span class="p">,</span> <span class="n">frame_enum</span><span class="o">=</span><span class="n">FrameEnums</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="n">constants</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">,</span> <span class="n">parent_frame</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="Basic_Explorer.__init__-64"><a href="#Basic_Explorer.__init__-64"><span class="linenos">64</span></a>
+</span><span id="Basic_Explorer.__init__-65"><a href="#Basic_Explorer.__init__-65"><span class="linenos">65</span></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">modules</span><span class="p">,</span> <span class="n">Basic_Explorer</span><span class="o">.</span><span class="n">info</span><span class="p">(),</span> <span class="n">frame_enum</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="p">,</span> <span class="n">parent_frame</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -363,17 +367,18 @@ and does actions every frame, needing to be updated using tick().</p>
 </span><span id="Basic_Explorer.info-53"><a href="#Basic_Explorer.info-53"><span class="linenos">53</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_blueprints</span> <span class="o">=</span> <span class="p">{}</span>
 </span><span id="Basic_Explorer.info-54"><a href="#Basic_Explorer.info-54"><span class="linenos">54</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_packs</span> <span class="o">=</span> <span class="p">{}</span>
 </span><span id="Basic_Explorer.info-55"><a href="#Basic_Explorer.info-55"><span class="linenos">55</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">unlocked_packs</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="Basic_Explorer.info-56"><a href="#Basic_Explorer.info-56"><span class="linenos">56</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">unlockable_packs</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="Basic_Explorer.info-57"><a href="#Basic_Explorer.info-57"><span class="linenos">57</span></a>
-</span><span id="Basic_Explorer.info-58"><a href="#Basic_Explorer.info-58"><span class="linenos">58</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_buildings</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="Basic_Explorer.info-59"><a href="#Basic_Explorer.info-59"><span class="linenos">59</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_villagers</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span id="Basic_Explorer.info-60"><a href="#Basic_Explorer.info-60"><span class="linenos">60</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">activation_phases</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span id="Basic_Explorer.info-61"><a href="#Basic_Explorer.info-61"><span class="linenos">61</span></a>
-</span><span id="Basic_Explorer.info-62"><a href="#Basic_Explorer.info-62"><span class="linenos">62</span></a>        <span class="k">return</span> <span class="n">einfo</span>
+</span><span id="Basic_Explorer.info-56"><a href="#Basic_Explorer.info-56"><span class="linenos">56</span></a>
+</span><span id="Basic_Explorer.info-57"><a href="#Basic_Explorer.info-57"><span class="linenos">57</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_buildings</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="Basic_Explorer.info-58"><a href="#Basic_Explorer.info-58"><span class="linenos">58</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">starting_villagers</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span id="Basic_Explorer.info-59"><a href="#Basic_Explorer.info-59"><span class="linenos">59</span></a>        <span class="n">einfo</span><span class="o">.</span><span class="n">activation_phases</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="Basic_Explorer.info-60"><a href="#Basic_Explorer.info-60"><span class="linenos">60</span></a>
+</span><span id="Basic_Explorer.info-61"><a href="#Basic_Explorer.info-61"><span class="linenos">61</span></a>        <span class="k">return</span> <span class="n">einfo</span>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div id="Basic_Explorer.check_activation" class="classattr">
@@ -387,8 +392,8 @@ and does actions every frame, needing to be updated using tick().</p>
 
     </div>
     <a class="headerlink" href="#Basic_Explorer.check_activation"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Basic_Explorer.check_activation-68"><a href="#Basic_Explorer.check_activation-68"><span class="linenos">68</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Basic_Explorer.check_activation-69"><a href="#Basic_Explorer.check_activation-69"><span class="linenos">69</span></a>        <span class="k">return</span> <span class="kc">False</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Basic_Explorer.check_activation-67"><a href="#Basic_Explorer.check_activation-67"><span class="linenos">67</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Basic_Explorer.check_activation-68"><a href="#Basic_Explorer.check_activation-68"><span class="linenos">68</span></a>        <span class="k">return</span> <span class="kc">False</span>
 </span></pre></div>
 
 
@@ -406,8 +411,8 @@ and does actions every frame, needing to be updated using tick().</p>
 
     </div>
     <a class="headerlink" href="#Basic_Explorer.initialize_activation"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Basic_Explorer.initialize_activation-71"><a href="#Basic_Explorer.initialize_activation-71"><span class="linenos">71</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Basic_Explorer.initialize_activation-72"><a href="#Basic_Explorer.initialize_activation-72"><span class="linenos">72</span></a>        <span class="k">pass</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Basic_Explorer.initialize_activation-70"><a href="#Basic_Explorer.initialize_activation-70"><span class="linenos">70</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_activation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Basic_Explorer.initialize_activation-71"><a href="#Basic_Explorer.initialize_activation-71"><span class="linenos">71</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 
@@ -425,12 +430,13 @@ and does actions every frame, needing to be updated using tick().</p>
 
     </div>
     <a class="headerlink" href="#Basic_Explorer.tick"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Basic_Explorer.tick-74"><a href="#Basic_Explorer.tick-74"><span class="linenos">74</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Basic_Explorer.tick-75"><a href="#Basic_Explorer.tick-75"><span class="linenos">75</span></a>        <span class="k">pass</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Basic_Explorer.tick-73"><a href="#Basic_Explorer.tick-73"><span class="linenos">73</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Basic_Explorer.tick-74"><a href="#Basic_Explorer.tick-74"><span class="linenos">74</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Tick function for the entity.</p>
+            <div class="docstring"><p>Tick function for the entity.
+Rceceives Information about the game state as PhaseInfo instances.</p>
 </div>
 
 
@@ -446,8 +452,8 @@ and does actions every frame, needing to be updated using tick().</p>
 
     </div>
     <a class="headerlink" href="#Basic_Explorer.render"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Basic_Explorer.render-77"><a href="#Basic_Explorer.render-77"><span class="linenos">77</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">):</span>
-</span><span id="Basic_Explorer.render-78"><a href="#Basic_Explorer.render-78"><span class="linenos">78</span></a>        <span class="k">pass</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Basic_Explorer.render-76"><a href="#Basic_Explorer.render-76"><span class="linenos">76</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">):</span>
+</span><span id="Basic_Explorer.render-77"><a href="#Basic_Explorer.render-77"><span class="linenos">77</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 
@@ -484,11 +490,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Basic_Explorer.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Basic_Explorer.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Basic_Explorer.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
-                <dd id="Basic_Explorer.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Basic_Explorer.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Basic_Explorer.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Basic_Explorer.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Basic_Explorer.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
+                <dd id="Basic_Explorer.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -516,7 +518,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Basic_Explorer.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Basic_Explorer.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Basic_Explorer.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Basic_Explorer.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Basic_Explorer.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Basic_Explorer.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Basic_Explorer.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Basic_Explorer.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>

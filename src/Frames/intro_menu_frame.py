@@ -128,7 +128,7 @@ class IntroMenuFrame(Frame):
         """
         The text for the back option.
         """
-        self.back_text_callback: Callback[[], None] = self.back_pressed
+        self.back_text_callback: Callable[[], None] = self.back_pressed
         """
         The callback function for what should happen when self.back is pressed.
         """
@@ -317,6 +317,9 @@ class IntroMenuFrame(Frame):
 
         if self.is_focused():
 
+            #adding generic exit
+            self.add_default_escape_callback()
+
             self.add_pygame_key_callback(pygame.K_LEFT, None, putback=False, func=self.left_pressed)
             self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, None, putback=False, func=self.left_pressed)
 
@@ -396,7 +399,8 @@ class IntroMenuFrame(Frame):
             self.manage_pygame_events()
 
         if self.exit_flag_raised():
-            self._next_frame.focus()
+            if self._next_frame is not None:
+                self._next_frame.focus()
             return self._next_frame
 
         return self

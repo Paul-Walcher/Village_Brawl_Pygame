@@ -1,4 +1,6 @@
 from __future__ import annotations
+from typing import Any, Callable
+
 from enum import Enum, auto
 import pygame
 
@@ -8,6 +10,8 @@ class Phases(Enum):
     Enum for phases in the current game.
     """
     ANY_PHASE = auto() #type for any phase.
+
+    TRANSITION_PHASE = auto() #a phase in between two phases, for letting entites adjust accordingly
 
     START_OF_GAME = auto()
     START_OF_ROUND = auto()
@@ -51,20 +55,35 @@ class Phases(Enum):
 
 all_phases = list(Phases)
 
-class PhaseInfo:
-
-    """
-    Instances of this class get passed to playset entities
-    during tick()
-    """
-
-    def __init__(self, phase=None, data=None, parent_frame=None):
-
-        self.data = data
-        self.phase = phase
-        self.parent_frame = parent_frame
-
 """
 Type definitions.
 """
 type phase_transition_t = tuple[Phases, Phases]
+
+class PhaseInfo:
+
+    """
+    Instances of this class get passed to playset entities
+    during tick().
+
+    For each phase, there should be a subclass defined with its own
+    phase data.
+    """
+
+    def __init__(self,  phase: Phases = None):
+
+        self.phase: Phases = phase
+
+class TransitionPhaseInfo(PhaseInfo):
+
+    """
+    Class to use when giving a phase transition update.
+    """
+    def __init__(self, previous_phase: Phases, next_phase: Phases):
+
+        PhaseInfo.__init__(self, Phases.TRANSITION_PHASE)
+
+        self.previous_phase: Phases = previous_phase
+        self.next_phase: Phases = next_phase
+
+        self.phase_transition: phase_transition_t = (previous_phase, next_phase)

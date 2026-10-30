@@ -6,6 +6,7 @@ from Frames.frame_enums import FrameEnums
 from Frames.widgets.dropdown_menu import DropdownMenu
 from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu
 from Frames.widgets.scrollable_dropdown_menu import ScrollableDropdownMenu
+from Frames.widgets.button import Button
 from constants import Colors, KeyAlternatives
 from clock import Clock
 import time
@@ -27,6 +28,13 @@ class TestFrame(EmptyFrame):
     def rerender(self):
 
         self.dropdown_frame = pygame.Rect(self.x + 100, self.y + 100, 800, 500)
+        self.button = Button(
+                                frame_dim=pygame.Rect(100, 100, 300, 80),
+                                button_page=[[("HELLO", Colors.WHITE)]],
+                                selected_button_page=[[("HELLO", Colors.WHITE)]],
+                                background_color=Colors.ORANGE,
+                                selected_background_color=Colors.CYAN
+                            )
 
         self.surface = pygame.Surface((self.frame_dim.w, self.frame_dim.h))
 
@@ -65,6 +73,8 @@ class TestFrame(EmptyFrame):
         keys = pygame.key.get_pressed()
 
         self.dropdown.tick()
+        self.button.tick()
+
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_ESCAPE]:
@@ -87,7 +97,7 @@ class TestFrame(EmptyFrame):
                 self.dropdown.move_down()
                 self.key_clock.start()
             elif keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
-                self.dropdown.select()
+                self.button.press()
                 self.key_clock.start()
             elif keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
                 self.dropdown.move_left()
@@ -105,5 +115,6 @@ class TestFrame(EmptyFrame):
         self.surface.fill(Colors.GRAY)
 
         self.dropdown.render(self.surface)
+        self.button.render(self.surface)
 
         screen.blit(self.surface, (self.x, self.y))

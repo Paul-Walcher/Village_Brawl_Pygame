@@ -633,6 +633,12 @@ playsets<wbr>.example_playset<wbr>.explorer_cards    </h1>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -688,7 +694,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -704,12 +712,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_1.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Example_Card_1.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Example_Card_1.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Example_Card_1.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Example_Card_1.render" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Example_Card_1.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Example_Card_1.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Example_Card_1.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Example_Card_1.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Example_Card_1.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -737,7 +741,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_1.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Example_Card_1.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Example_Card_1.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Example_Card_1.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Example_Card_1.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Example_Card_1.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Example_Card_1.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Example_Card_1.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -802,6 +806,12 @@ and does actions every frame, needing to be updated using tick().</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -857,7 +867,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -873,12 +885,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_2.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Example_Card_2.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Example_Card_2.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Example_Card_2.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Example_Card_2.render" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Example_Card_2.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Example_Card_2.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Example_Card_2.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Example_Card_2.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Example_Card_2.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -906,7 +914,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_2.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Example_Card_2.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Example_Card_2.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Example_Card_2.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Example_Card_2.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Example_Card_2.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Example_Card_2.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Example_Card_2.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -971,6 +979,12 @@ and does actions every frame, needing to be updated using tick().</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -1026,7 +1040,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1042,12 +1058,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_3.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Example_Card_3.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Example_Card_3.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Example_Card_3.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Example_Card_3.render" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Example_Card_3.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Example_Card_3.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Example_Card_3.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Example_Card_3.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Example_Card_3.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -1075,7 +1087,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_3.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Example_Card_3.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Example_Card_3.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Example_Card_3.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Example_Card_3.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Example_Card_3.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Example_Card_3.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Example_Card_3.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -1140,6 +1152,12 @@ and does actions every frame, needing to be updated using tick().</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -1195,7 +1213,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1211,12 +1231,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_4.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Example_Card_4.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Example_Card_4.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Example_Card_4.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Example_Card_4.render" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Example_Card_4.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Example_Card_4.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Example_Card_4.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Example_Card_4.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Example_Card_4.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -1244,7 +1260,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_4.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Example_Card_4.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Example_Card_4.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Example_Card_4.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Example_Card_4.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Example_Card_4.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Example_Card_4.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Example_Card_4.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -1309,6 +1325,12 @@ and does actions every frame, needing to be updated using tick().</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -1364,7 +1386,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1380,12 +1404,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_5.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Example_Card_5.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Example_Card_5.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Example_Card_5.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Example_Card_5.render" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Example_Card_5.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Example_Card_5.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Example_Card_5.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Example_Card_5.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Example_Card_5.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -1413,7 +1433,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_5.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Example_Card_5.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Example_Card_5.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Example_Card_5.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Example_Card_5.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Example_Card_5.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Example_Card_5.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Example_Card_5.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -1478,6 +1498,12 @@ and does actions every frame, needing to be updated using tick().</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -1533,7 +1559,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1549,12 +1577,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_6.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Example_Card_6.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Example_Card_6.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Example_Card_6.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Example_Card_6.render" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Example_Card_6.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Example_Card_6.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Example_Card_6.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Example_Card_6.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Example_Card_6.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -1582,7 +1606,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_6.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Example_Card_6.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Example_Card_6.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Example_Card_6.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Example_Card_6.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Example_Card_6.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Example_Card_6.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Example_Card_6.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -1647,6 +1671,12 @@ and does actions every frame, needing to be updated using tick().</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -1702,7 +1732,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1718,12 +1750,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_7.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Example_Card_7.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Example_Card_7.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Example_Card_7.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Example_Card_7.render" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Example_Card_7.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Example_Card_7.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Example_Card_7.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Example_Card_7.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Example_Card_7.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -1751,7 +1779,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_7.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Example_Card_7.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Example_Card_7.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Example_Card_7.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Example_Card_7.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Example_Card_7.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Example_Card_7.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Example_Card_7.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -1816,6 +1844,12 @@ and does actions every frame, needing to be updated using tick().</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -1871,7 +1905,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -1887,12 +1923,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_8.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Example_Card_8.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Example_Card_8.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Example_Card_8.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Example_Card_8.render" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Example_Card_8.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Example_Card_8.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Example_Card_8.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Example_Card_8.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Example_Card_8.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -1920,7 +1952,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_8.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Example_Card_8.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Example_Card_8.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Example_Card_8.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Example_Card_8.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Example_Card_8.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Example_Card_8.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Example_Card_8.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -1985,6 +2017,12 @@ and does actions every frame, needing to be updated using tick().</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -2040,7 +2078,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2056,12 +2096,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_9.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Example_Card_9.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Example_Card_9.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Example_Card_9.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Example_Card_9.render" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Example_Card_9.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Example_Card_9.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Example_Card_9.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Example_Card_9.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Example_Card_9.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -2089,7 +2125,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_9.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Example_Card_9.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Example_Card_9.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Example_Card_9.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Example_Card_9.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Example_Card_9.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Example_Card_9.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Example_Card_9.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -2154,6 +2190,12 @@ and does actions every frame, needing to be updated using tick().</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -2209,7 +2251,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div class="inherited">
@@ -2225,12 +2269,8 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_10.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Example_Card_10.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Example_Card_10.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
+                <dd id="Example_Card_10.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
                 <dd id="Example_Card_10.render" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.render">render</a></dd>
-                <dd id="Example_Card_10.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Example_Card_10.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Example_Card_10.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Example_Card_10.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Example_Card_10.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -2258,7 +2298,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Example_Card_10.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Example_Card_10.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Example_Card_10.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Example_Card_10.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Example_Card_10.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Example_Card_10.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Example_Card_10.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Example_Card_10.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>
@@ -2337,6 +2377,12 @@ and does actions every frame, needing to be updated using tick().</p>
 
             <div class="docstring"><p>Describes a card/entity that needs to be rendered to the screen,
 and does actions every frame, needing to be updated using tick().</p>
+
+<p>Playset entities are in the same focus group as the main frames,
+so frames take the inputs before the main frame does.</p>
+
+<p>This should not happen by the entity calling focus() itself,
+but by queueing itself in in a focus-queue by the parent frame.</p>
 </div>
 
 
@@ -2398,7 +2444,9 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>Returns a renderable cardinfo describing the object.</p>
+</div>
+
 
                             </div>
                             <div id="Small_Rest.tick" class="classattr">
@@ -2418,7 +2466,8 @@ and does actions every frame, needing to be updated using tick().</p>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Tick function for the entity.</p>
+            <div class="docstring"><p>Tick function for the entity.
+Rceceives Information about the game state as PhaseInfo instances.</p>
 </div>
 
 
@@ -2453,11 +2502,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Small_Rest.enums" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.enums">enums</a></dd>
                 <dd id="Small_Rest.tags" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.tags">tags</a></dd>
                 <dd id="Small_Rest.entity_type" class="variable"><a href="../../templates/playset_entity.html#PlaysetEntity.entity_type">entity_type</a></dd>
-                <dd id="Small_Rest.execute_phase_change" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.execute_phase_change">execute_phase_change</a></dd>
-                <dd id="Small_Rest.add_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.add_transition_callback">add_transition_callback</a></dd>
-                <dd id="Small_Rest.remove_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.remove_transition_callback">remove_transition_callback</a></dd>
-                <dd id="Small_Rest.clear_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_transition_callback">clear_transition_callback</a></dd>
-                <dd id="Small_Rest.clear_all_transition_callback" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.clear_all_transition_callback">clear_all_transition_callback</a></dd>
+                <dd id="Small_Rest.rerender" class="function"><a href="../../templates/playset_entity.html#PlaysetEntity.rerender">rerender</a></dd>
 
             </div>
             <div><dt><a href="../../Frames/frame.html#Frame">Frames.frame.Frame</a></dt>
@@ -2485,7 +2530,7 @@ and does actions every frame, needing to be updated using tick().</p>
                 <dd id="Small_Rest.is_focused" class="function"><a href="../../Frames/frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="Small_Rest.bind_events" class="function"><a href="../../Frames/frame.html#Frame.bind_events">bind_events</a></dd>
                 <dd id="Small_Rest.key_pressed" class="function"><a href="../../Frames/frame.html#Frame.key_pressed">key_pressed</a></dd>
-                <dd id="Small_Rest.add_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_escape_callback">add_escape_callback</a></dd>
+                <dd id="Small_Rest.add_default_escape_callback" class="function"><a href="../../Frames/frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="Small_Rest.manage_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="Small_Rest.clear_event_callbacks" class="function"><a href="../../Frames/frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
                 <dd id="Small_Rest.clear_pygame_events" class="function"><a href="../../Frames/frame.html#Frame.clear_pygame_events">clear_pygame_events</a></dd>

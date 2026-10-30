@@ -449,7 +449,7 @@ class Frame(EventQueueManager):
         else:
             return self.__key_scancodes[scancode]
 
-    def add_escape_callback(self) -> None:
+    def add_default_escape_callback(self) -> None:
         """
         This adds a generic callback function, that returns EventCallback.EXIT
         on pressing enter.
@@ -508,6 +508,8 @@ class Frame(EventQueueManager):
                 res = ecallback(event)
 
                 if res == Frame.EventCallback.EXIT:
+                    #setting exit frame to None
+                    self._exit_frame = None
                     self.raise_exit_flag()
 
                 if res == Frame.EventCallback.FAILURE:
@@ -676,6 +678,9 @@ class Frame(EventQueueManager):
         self.manage_pygame_events()
 
         if self.exit_flag_raised():
+            if self._next_frame is not None:
+                self._next_frame.focus()
+
             return None
 
         return self

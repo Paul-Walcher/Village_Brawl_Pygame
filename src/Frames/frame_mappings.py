@@ -1,5 +1,7 @@
+from __future__ import annotations
 from typing import Type
 
+from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.intro_frame import IntroFrame
 from Frames.intro_menu_frame import IntroMenuFrame
