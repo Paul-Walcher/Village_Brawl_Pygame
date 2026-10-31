@@ -242,6 +242,7 @@ class Frame(EventQueueManager):
                         )
 
         self._frame_dim = oframe.copy()
+        self.rerender()
 
     @property
     def x(self):

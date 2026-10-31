@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Callable, Any
 
 import pygame
-from Frames.frame import Frame
 from constants import Colors
 from constants import Fonts, Fontsizes, KeyAlternatives
 from constants import SIMAGE, CIMAGE, INTRO_IMAGES
@@ -10,8 +9,12 @@ import graphics
 from graphics import rendered_surface_position_tuples_t, colored_page_t
 from clock import Clock
 import random
+
+from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
+from Frames.widgets.label import Label
 from Frames.intro_menu_frame import IntroMenuFrame
+
 
 class IntroFrame(Frame):
     """
@@ -73,13 +76,6 @@ class IntroFrame(Frame):
         The rectangle the various images will be rendered into.
         """
 
-        self.headline_area, self.image_area = graphics.split_rect_vertically(self.frame_dim, [self.headline_height_percentage, self.image_height_percentage])
-        self.headline_frame = graphics.apply_margins(self.headline_area, self.headline_frame_hmargin, self.headline_frame_vmargin)
-        self.image_frame = graphics.apply_margins(self.image_area, self.image_frame_hmargin, self.image_frame_vmargin)
-        #centering
-        self.headline_frame = graphics.get_center_with_rect_as_rect(self.headline_area, self.headline_frame)
-        self.image_frame = graphics.get_center_with_rect_as_rect(self.image_area, self.image_frame)
-
         self.headline_increase_percentage: float = 0.25
         """
         At its biggest, the the headline will be rendered into a frame
@@ -98,9 +94,17 @@ class IntroFrame(Frame):
         """
         The text that will be shown. Is a page in colored text form.
         """
-        self.headline: rendered_surface_position_tuples_t = None
+        self.headline_label: Label = None
         """
         The rendered headline.
+        """
+        self.press_text_frame: pygame.Rect = None
+        """
+        The frame for the press text.
+        """
+        self.press_text_label: Label = None
+        """
+        Press text label.
         """
         self.image_animation_clock: Clock = Clock()
         """
@@ -156,13 +160,12 @@ class IntroFrame(Frame):
 
         if percentage >= 1.0:
             #render onto the normal surface
-            self.headline = graphics.render_page_from_chars_color(
-                                                                    Fonts.STANDARD_FONT,
-                                                                    self.headline_text,
-                                                                    self.headline_frame,
-                                                                    centered=True,
-                                                                    vertical_centered=True
-                                                                    )
+            self.headline_label = Label(
+                                            frame_dim=self.headline_frame,
+                                            font=Fonts.STANDARD_FONT,
+                                            label_page=self.headline_text,
+                                            background_color=Colors.TRANSPARENT
+                                        )
             #restart the clock
             self.headline_clock.start()
 
@@ -189,13 +192,12 @@ class IntroFrame(Frame):
             #centering the headline frame
             increased_headline_frame = graphics.get_center_with_rect_as_rect(outer_rect=self.headline_area, inner_rect=increased_headline_frame)
 
-            self.headline = graphics.render_page_from_chars_color(
-                                                                    Fonts.STANDARD_FONT,
-                                                                    self.headline_text,
-                                                                    increased_headline_frame,
-                                                                    centered=True,
-                                                                    vertical_centered=True
-                                                                    )
+            self.headline_label = Label(
+                                            frame_dim=increased_headline_frame,
+                                            font=Fonts.STANDARD_FONT,
+                                            label_page=self.headline_text,
+                                            background_color=Colors.TRANSPARENT
+                                        )
 
     def handle_image_animation(self) -> None:
         """
@@ -235,13 +237,25 @@ class IntroFrame(Frame):
         self.image = None
         self.image_pos = None
 
-        self.headline = None
+        self.headline_label = None
+        self.press_text_label = None
+
+        self.headline_area, self.image_area = graphics.split_rect_vertically(self.frame_dim, [self.headline_height_percentage, self.image_height_percentage])
+        self.headline_frame = graphics.apply_margins(self.headline_area, self.headline_frame_hmargin, self.headline_frame_vmargin)
+        self.image_frame = graphics.apply_margins(self.image_area, self.image_frame_hmargin, self.image_frame_vmargin)
+        #centering
+        self.headline_frame = graphics.get_center_with_rect_as_rect(self.headline_area, self.headline_frame)
+        self.image_frame = graphics.get_center_with_rect_as_rect(self.image_area, self.image_frame)
+        self.press_text_frame = pygame.Rect(self.width // 75, self.height - self.height // 20, self.width // 5, self.height // 20)
+        self.press_text_label = Label(
+                                        frame_dim=self.press_text_frame,
+                                        font=Fonts.STANDARD_FONT,
+                                        label_page=[[("Press enter to coninue...", Colors.STANDARD_TEXT_COLOR)]],
+                                        background_color=Colors.TRANSPARENT
+                                        )
 
         self.handle_headline_animation()
         self.handle_image_animation()
-
-        self.press_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.SMALL, "Press enter to continue...", Colors.WHITE)
-        self.press_text_pos = (20, self.height - 20)
 
         self.reset_exit_flag()
         self.entry_delay_clock.start()
@@ -293,11 +307,11 @@ class IntroFrame(Frame):
 
         screen.fill(Colors.BLACK)
 
-        if self.headline is not None:
-            for surf, pos in self.headline:
-                screen.blit(surf, pos)
+        if self.headline_label is not None:
+            self.headline_label.render(screen)
 
         if self.image is not None:
             screen.blit(self.image, self.image_pos)
 
-        screen.blit(self.press_text, self.press_text_pos)
+        if self.press_text_label is not None:
+            self.press_text_label.render(screen)

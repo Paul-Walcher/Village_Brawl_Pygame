@@ -143,7 +143,7 @@ class Label(Frame):
         """
         The background color for when no image is shown and the label is not selected.
         """
-        self.selected_background_color: color_t = selected_background_color
+        self.selected_background_color: color_t = (selected_background_color if selected_background_color is not None else background_color)
         """
         background color for when the label is selected.
         """
@@ -202,6 +202,9 @@ class Label(Frame):
                                                                     dimensions=(self.inner_frame_dim.width, self.inner_frame_dim.height),
                                                                     scaling_function=self.image_scaling_function
                                                                     )
+            #copying for selected background
+            self.selected_background_image_rendered = self.background_image_rendered.copy()
+
         if self.selected_background_image_path is not None:
             self.selected_background_image_rendered = graphics.render_image(
                                                                     img_path=self.selected_background_image_path,
@@ -219,6 +222,9 @@ class Label(Frame):
                                                                                 vertical_centered=True,
                                                                                 line_margin_as_percentage=0.02
                                                                                 )
+
+            self.selected_label_page_rendered = graphics.copy_rendered_surface_position_tuples(self.label_page_rendered)
+
         if self.selected_label_page is not None:
             self.selected_label_page_rendered = graphics.render_page_from_chars_color( font=self.font,
                                                                                         page=self.selected_label_page,
@@ -228,6 +234,7 @@ class Label(Frame):
                                                                                         vertical_centered=True,
                                                                                         line_margin_as_percentage=0.02
                                                                                         )
+
         #prerendering
         self.prerender()
 

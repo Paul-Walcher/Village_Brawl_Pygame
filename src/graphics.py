@@ -52,6 +52,12 @@ type rendered_surface_position_tuples_t = list[surface_with_position_t]
 A list of rendered (surface, position) tuples
 """
 
+def copy_rendered_surface_position_tuples(rspt: rendered_surface_position_tuples_t) -> rendered_surface_position_tuples_t:
+    """
+    Creates a copy of the rendered_surface_position_tuples.
+    """
+    return [(surf.copy(), pos) for surf, pos in rspt]
+
 class _NewPage:
     """Marker requesting a page break after a given number of blank lines."""
 
