@@ -3,12 +3,13 @@ from typing import Callable, Any
 
 import pygame
 from constants import Colors
-from constants import Fonts, Fontsizes, KeyAlternatives
+from constants import Fonts, Fontsizes, KeyAlternatives, Mouse
 from constants import SIMAGE, CIMAGE, INTRO_IMAGES
 import graphics
 from graphics import rendered_surface_position_tuples_t, colored_page_t
 from clock import Clock
 import random
+from context_data import ContextData
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -22,6 +23,7 @@ class IntroFrame(Frame):
     """
 
     def __init__(self, data: Any = None, frame_dim: pygame.Rect = None, parent_frame: Frame = None, focus_group=""):
+
 
         super().__init__(frame_enum=FrameEnums.INTRO_FRAME, data=data,
                             frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group)
@@ -270,6 +272,17 @@ class IntroFrame(Frame):
         self.add_default_escape_callback()
         self.add_pygame_key_callback(pygame.K_RETURN, None, False, self.enter_pressed)
         self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, None, False, self.enter_pressed)
+        #if mouse events are not disabled
+        if type(self.data) == ContextData:
+            if self.data.mouse_enabled:
+                self.add_pygame_event_callback(pygame.MOUSEBUTTONDOWN, None, False, self.mousebutton_pressed)
+
+    def mousebutton_pressed(self, event: pygame.event.Event, data: Any):
+        """
+        Starts the game on mousebutton.
+        """
+        if event.button == Mouse.LEFT_BUTTON:
+            self.enter_pressed(event, data)
 
     def enter_pressed(self, event: pygame.event.Event, data: Any):
         """

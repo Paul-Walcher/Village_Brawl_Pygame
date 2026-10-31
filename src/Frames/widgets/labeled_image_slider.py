@@ -208,8 +208,8 @@ class LabeledImageSlider(Frame):
                                         sliding_duration=self.sliding_duration,  # ms
                                         select_animation_duration=self.select_animation_duration,
                                         flip_duration=self.flipping_animation_duration,
-                                        images_alphas=self.alphas,
-                                        images_span=self.span,
+                                        text_alphas=self.alphas,
+                                        text_span=self.span,
                                         background_color=self.background_color,
                                         size_decrease_scale=self.size_decrease_scale,
                                         horizontal=self.horizontal,

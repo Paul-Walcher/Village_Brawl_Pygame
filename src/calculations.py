@@ -4,9 +4,33 @@ File for calculations and maths
 from __future__ import annotations
 from typing import Callable, Any
 
+import pygame
+
 from collections.abc import Iterable
 import random
 
+def point_collides(point: tuple[int, int], rect: pygame.Rect) -> bool:
+    """
+    Checks whether the point collides with the rect given.
+    """
+    x: int = point[0]
+    y: int = point[1]
+
+    return (not (
+                    x < rect.x or x > rect.x + rect.width\
+                    or\
+                    y < rect.y or y > rect.y + rect.height
+            ))
+
+def rect_collides(rect1: pygame.Rect, rect2: pygame.Rect) -> bool:
+    """
+    Checks whether the two rectangles collide.
+    """
+    return (not (
+                    rect1.x + rect1.width < rect2.x or rect1.x > rect2.x + rect2.width\
+                    or\
+                    rect1.y + rect1.height < rect2.y or rect1.y > rect2.y + rect2.height
+            ))
 
 class Weightlist(list):
     """
@@ -134,7 +158,7 @@ class Weightlist(list):
     def draw(self, n: int = 1, zero_drawn_included: bool = False) -> dict[tuple[int, object], int]:
         """
         n: int                      | The amount of draws (All draws are independent)
-        
+
         zero_drawn_included: bool   | If this is true, the returned dict will
                                       have the indices that were not drawn included with amount drawn == 0
 

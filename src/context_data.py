@@ -11,11 +11,18 @@ class ContextData:
 
     def __init__(
                     self,
+                    mouse_enabled: bool = False,
+                    #data
                     current_playset: str = None,
                     current_savefile_name: str = None,
                     modules: Modules = None
                 ):
 
+        self.mouse_enabled: bool = mouse_enabled
+        """
+        If the mouse events are enabled or not.
+        """
+        #data
         self.current_playset: str = current_playset
         """
         The current playset that is loaded.

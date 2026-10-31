@@ -30,8 +30,8 @@ class TextSlider(Slider):
         sliding_duration=500,  # ms
         select_animation_duration=800,#ms
         flip_duration=400,#ms
-        images_alphas=None,
-        images_span=1,
+        text_alphas=None,
+        text_span=1,
         background_color=Colors.TRANSPARENT,
         size_decrease_scale=0.5,
         horizontal=True,
@@ -57,8 +57,8 @@ class TextSlider(Slider):
                         frame_dim=frame_dim,
                         sliding_duration=sliding_duration,
                         select_animation_duration=select_animation_duration,
-                        alphas=images_alphas,
-                        span=images_span,
+                        alphas=text_alphas,
+                        span=text_span,
                         background_color=background_color,
                         size_decrease_scale=size_decrease_scale,
                         horizontal=horizontal,

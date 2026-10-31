@@ -4,15 +4,18 @@ from typing import Any, Callable
 import os
 import pygame
 
-from Frames.frame import Frame
-from Frames.frame_enums import FrameEnums
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, color_t, R_ID
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock
 from Frames.choose_save_name_frame import ChooseSaveNameFrame
 from context_data import ContextData
+
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
 from Frames.widgets.text_slider import TextSlider
+from Frames.widgets.label import Label
+from Frames.widgets.button import Button
 
 class ChoosePlaysetFrame(Frame):
     """
@@ -33,15 +36,15 @@ class ChoosePlaysetFrame(Frame):
 
         super().__init__(FrameEnums.CHOOSE_PLAYSET_FRAME, data=data, frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group)
 
-
         self.playset_pages: list[page_t] = [[x] for x in os.listdir(PLAYSETS_FOLDER) if os.path.isdir(os.path.join(PLAYSETS_FOLDER, x))]
         """
         Playsets are loaded and put into a list.
         The playsets are loaded via getting the names of all folders at constants.PLAYSETS_FOLDER
         """
-        self.playsets_span: int = 2
+        self.playsets_span: int = 1
         """
         The span of the playlists.
+
 
         This means there are self.playsets_span rendered on top,
         then the main playset,
@@ -72,21 +75,9 @@ class ChoosePlaysetFrame(Frame):
         """
         The back text frame at the bottom left.
         """
-        self.back_text_selected_frame: pygame.Rect = None
+        self.back_button: Button = None
         """
-        The frame for the back text when it is selected.
-        """
-        self.back_text: str = "Back"
-        """
-        The text for the back option.
-        """
-        self.back_text_rendered: rendered_surface_position_tuples_t = None
-        """
-        The back text rendered.
-        """
-        self.selected_back_text_rendered: rendered_surface_position_tuples_t = None
-        """
-        Rendered text when the back option is selected.
+        The back button.
         """
         #the frames for the headline
         self.headline_frame_width_percentage: float = 1.0
@@ -199,6 +190,7 @@ class ChoosePlaysetFrame(Frame):
                                             horizontal=False,
                                             cutoff=True,
                                             max_slides=1,
+                                            text_span=self.playsets_span,
                                             text_color=self.option_color
                                         )
         #back text
@@ -213,30 +205,11 @@ class ChoosePlaysetFrame(Frame):
                                             int(self.width * self.back_text_frame_width_percentage),
                                             int(self.height * self.back_text_frame_height_percentage)
                                             )
-        #the frame for the 'back' text
-        self.back_text_selected_frame = graphics.apply_margins(
-                                                                self.back_text_frame,
-                                                                -self.back_text_size_increase_percentage,
-                                                                -self.back_text_size_increase_percentage
-                                                                )
         #rendering the back text
-        self.back_text_rendered = graphics.render_page_from_chars(
-                                                                    font=Fonts.STANDARD_FONT,
-                                                                    page=[self.back_text],
-                                                                    frame=self.back_text_frame,
-                                                                    text_color=self.option_color,
-                                                                    centered=True,
-                                                                    vertical_centered=True
-                                                                    )
+        self.back_button = Button(
+                                    frame_dim=self.back_text_frame,
 
-        self.selected_back_text_rendered = graphics.render_page_from_chars(
-                                                                            font=Fonts.STANDARD_FONT,
-                                                                            page=[self.back_text],
-                                                                            frame=self.back_text_selected_frame,
-                                                                            text_color=self.option_selected_color,
-                                                                            centered=True,
-                                                                            vertical_centered=True
-                                                                            )
+                                    )
         #changing next_frame
         self._next_frame = None
         #resetting the exit flag

@@ -3,11 +3,14 @@ from typing import Any, Callable
 
 
 import pygame
-from constants import color_t, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID
+from constants import color_t, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID, Mouse
 import graphics
 from graphics import rendered_surface_position_tuples_t
 from clock import Clock
+from calculations import point_collides, rect_collides
 import time
+
+from context_data import ContextData
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -34,9 +37,6 @@ class IntroMenuFrame(Frame):
     NOTHING_FOCUSED: int = R_ID()
     MAIN_OPTIONS_FOCUSED: int = R_ID()
     BACK_OPTION_FOCUSED: int = R_ID()
-
-    SELECTED_COLOR: color_t = Colors.YELLOW
-
 
     def __init__(self,
                 data: Any = None,
@@ -260,7 +260,6 @@ class IntroMenuFrame(Frame):
         """
         Binding the events.
         """
-
         if self.is_focused():
 
             #adding generic exit
@@ -280,6 +279,73 @@ class IntroMenuFrame(Frame):
 
             self.add_pygame_key_callback(pygame.K_RETURN, None, putback=False, func=self.enter_pressed)
             self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, None, putback=False, func=self.enter_pressed)
+
+            if type(self.data) == ContextData:
+                if self.data.mouse_enabled:
+
+                    self.add_pygame_event_callback(type=pygame.MOUSEMOTION, data=None, putback=False, func=self.mouse_motion)
+                    self.add_pygame_event_callback(type=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down)
+
+    def mouse_motion(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        When mouse motion is detected.
+        """
+        #getting the selected button
+        selected_button: Button = None
+
+        if self.state == IntroMenuFrame.BACK_OPTION_FOCUSED:
+            selected_button = self.back_button
+        elif self.state == IntroMenuFrame.MAIN_OPTIONS_FOCUSED:
+            selected_button = self.option_buttons[self.text_options_index]
+
+        #checking for collisions
+        if point_collides(event.pos, self.back_button.frame_dim):
+            if self.state != IntroMenuFrame.BACK_OPTION_FOCUSED:
+                #deselecting the selected button
+                if selected_button is not None:
+                    selected_button.unselect()
+                #selecting the back button
+                self.back_button.select()
+                #setting new state
+                self.state = IntroMenuFrame.BACK_OPTION_FOCUSED
+
+        #checking for collision in the option buttons
+        for i in range(len(self.option_buttons)):
+
+            button: Button = self.option_buttons[i]
+
+            if point_collides(event.pos, button.frame_dim):
+                if selected_button is not button: #only when the button is not selected.
+                    if selected_button is not None:
+                        selected_button.unselect()
+                    #selecting the button
+                    button.select()
+                    #setting the index
+                    self.text_options_index = i
+                    #setting the state
+                    self.state = IntroMenuFrame.MAIN_OPTIONS_FOCUSED
+
+
+    def mouse_button_down(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Getting the button to press
+        """
+        if event.button == Mouse.LEFT_BUTTON:
+            if self.state == IntroMenuFrame.BACK_OPTION_FOCUSED:
+                if point_collides(event.pos, self.back_button.frame_dim):
+                    #back was pressed
+                    self.back_button.press()
+
+            if self.state == IntroMenuFrame.MAIN_OPTIONS_FOCUSED:
+                for i in range(len(self.option_buttons)):
+
+                    button: Button = self.option_buttons[i]
+
+                    if point_collides(event.pos, button.frame_dim):
+                        #pressing the button
+                        self.text_options_index = i
+                        button.press()
+
 
 
     def left_pressed(self, event, data) -> None:

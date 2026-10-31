@@ -105,6 +105,15 @@ def R_ID() -> int:
     return hash(str(x))
 
 
+"""
+Mouse constants
+"""
+class Mouse:
+
+    LEFT_BUTTON: int = 1
+    WHEEL: int = 2
+    RIGHT_BUTTON: int = 3
+
 class Alpha:
     """
     Stores standardized alpha values.

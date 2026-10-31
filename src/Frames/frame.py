@@ -211,11 +211,10 @@ class Frame(EventQueueManager):
         self.exit_flag_raised() == True.
         """
 
-        self.bind_events()
-        #binding events
-
         if has_focus:
             self.focus()
+        else:
+            self.bind_events()
         """
         has_focus indicates if the frame receives the focus
         in its group upon instantiation.
@@ -230,6 +229,9 @@ class Frame(EventQueueManager):
     @frame_dim.setter
     def frame_dim(self, oframe):
 
+        #only rerender when width or height changed
+        should_rerender: bool = (self._width != oframe.width or self._height != oframe.height)
+
         self._x = oframe.x
         self._y = oframe.y
         self._width = oframe.width
@@ -242,7 +244,10 @@ class Frame(EventQueueManager):
                         )
 
         self._frame_dim = oframe.copy()
-        self.rerender()
+
+        #rerender on width or size change
+        if should_rerender:
+            self.rerender()
 
     @property
     def x(self):
@@ -397,7 +402,7 @@ class Frame(EventQueueManager):
         pre = Frame.FOCUS_GROUPS[self.focus_group]
         Frame.FOCUS_GROUPS[self.focus_group] = self
 
-        if pre != self:
+        if pre is not self:
             if pre is not None:
                 pre._on_focus_changed()
             self._on_focus_changed()
@@ -406,18 +411,26 @@ class Frame(EventQueueManager):
     def unfocus(self) -> None:
         """
         Takes the focus from this frame.
-        If this frame had the focus, and the parent frame has the same focus group as this frame,
-        the parent frame will receive the focus via parent_frame.focus().
+
+        If an ancestor belongs to the same focus group,
+        the nearest such ancestor receives the focus.
         """
-        if self.focus_group is not None and self.focus_group in Frame.FOCUS_GROUPS and Frame.FOCUS_GROUPS[self.focus_group] == self:
-            pre = Frame.FOCUS_GROUPS[self.focus_group]
-            Frame.FOCUS_GROUPS[self.focus_group] = None
 
-            if pre == self:
-                self._on_focus_changed()
+        if self.focus_group is None:
+            return
 
-            if self.parent_frame is not None and self.parent_frame.focus_group == self.focus_group:
-                self.parent_frame.focus()
+        if Frame.FOCUS_GROUPS.get(self.focus_group) is not self:
+            return
+
+        # Find the nearest ancestor belonging to the same focus group.
+        for ancestor in self._parent_frame_list:
+            if ancestor.focus_group == self.focus_group:
+                ancestor.focus()
+                return
+
+        # No matching ancestor exists, so the group has no focused frame.
+        Frame.FOCUS_GROUPS[self.focus_group] = None
+        self._on_focus_changed()
 
     def is_focused(self) -> bool:
         """
@@ -426,10 +439,10 @@ class Frame(EventQueueManager):
         to a focus group is always focused.
         """
         if self.focus_group is None:
-            return None
+            return True
 
         if self.focus_group not in Frame.FOCUS_GROUPS:
-            return False
+            return True
 
         return (Frame.FOCUS_GROUPS[self.focus_group] == self)
 
