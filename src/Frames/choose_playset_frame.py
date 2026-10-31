@@ -4,12 +4,13 @@ from typing import Any, Callable
 import os
 import pygame
 
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, color_t, R_ID
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, color_t, R_ID, Mouse
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock
 from Frames.choose_save_name_frame import ChooseSaveNameFrame
 from context_data import ContextData
+from calculations import point_collides, rect_collides
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -49,6 +50,14 @@ class ChoosePlaysetFrame(Frame):
         This means there are self.playsets_span rendered on top,
         then the main playset,
         then self.playsets_span again.
+        """
+        self.back_color: color_t = Colors.STANDARD_TEXT_COLOR
+        """
+        The back color for the back button
+        """
+        self.selected_back_color: color_t = Colors.YELLOW
+        """
+        Selected text color.
         """
         self.back_text_frame_width_percentage: float = 0.15
         """
@@ -104,9 +113,9 @@ class ChoosePlaysetFrame(Frame):
         """
         The text as a page that will be rendered as the headline.
         """
-        self.rendered_headline: rendered_surface_position_tuples_t = None
+        self.headline_label: Label = None
         """
-        The rendered headline.
+        The headline label.
         """
         self.headline_color: color_t = Colors.CYAN
         """
@@ -148,6 +157,11 @@ class ChoosePlaysetFrame(Frame):
         """
         Delay after the frame is made the main frame.
         """
+        self.wheel_clock: Clock = Clock()
+        """
+        Clock for mousewheel events.
+        """
+        self.wheel_delay: float = 250#ms
         self.rerender()
 
     def rerender(self):
@@ -162,14 +176,12 @@ class ChoosePlaysetFrame(Frame):
 
         self.headline_frame = graphics.apply_margins(headline_rect, self.headline_frame_hmargin, self.headline_frame_vmargin)
 
-        self.rendered_headline = graphics.render_page_from_chars(
-                                                                    font=Fonts.STANDARD_FONT,
-                                                                    page=self.headline_text,
-                                                                    frame=self.headline_frame,
-                                                                    text_color=self.headline_color,
-                                                                    centered=True,
-                                                                    vertical_centered=True
-                                                                )
+        self.headline_label = Label(
+                                        frame_dim=self.headline_frame,
+                                        font=Fonts.STANDARD_FONT,
+                                        label_page=graphics.page_to_colored_page(self.headline_text, self.headline_color),
+                                        background_color=Colors.TRANSPARENT
+                                    )
         #the text slider
         options_rect: pygame.Rect = self.frame_dim.copy()
         options_rect.y = self.headline_frame.y + self.headline_frame.height
@@ -191,7 +203,8 @@ class ChoosePlaysetFrame(Frame):
                                             cutoff=True,
                                             max_slides=1,
                                             text_span=self.playsets_span,
-                                            text_color=self.option_color
+                                            text_color=self.option_color,
+                                            outline_color=Colors.STANDARD_TEXT_COLOR
                                         )
         #back text
         self.back_text_frame_margin = min(  int(self.width * self.back_text_frame_margin_percentage),
@@ -208,7 +221,11 @@ class ChoosePlaysetFrame(Frame):
         #rendering the back text
         self.back_button = Button(
                                     frame_dim=self.back_text_frame,
-
+                                    font=Fonts.STANDARD_FONT,
+                                    button_page=graphics.str_to_colored_page(text="Back", text_color=self.back_color),
+                                    selected_button_page=graphics.str_to_colored_page(text="Back", text_color=self.selected_back_color),
+                                    callback_func=self.back_pressed,
+                                    background_color=Colors.TRANSPARENT
                                     )
         #changing next_frame
         self._next_frame = None
@@ -216,6 +233,7 @@ class ChoosePlaysetFrame(Frame):
         self.reset_exit_flag()
         #starting the intro delay clock
         self.intro_delay_clock.start()
+        self.wheel_clock.start()
 
     def bind_events(self):
 
@@ -238,6 +256,64 @@ class ChoosePlaysetFrame(Frame):
             self.add_pygame_key_callback(pygame.K_RETURN, None, putback=False, func=self.enter_pressed)
             self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, None, putback=False, func=self.enter_pressed)
 
+            if type(self.data) == ContextData:
+                if self.data.mouse_enabled:
+
+                    self.add_pygame_event_callback(type=pygame.MOUSEMOTION, data=None, putback=False, func=self.mouse_motion)
+                    self.add_pygame_event_callback(type=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down)
+                    self.add_pygame_event_callback(type=pygame.MOUSEWHEEL, data=None, putback=False, func=self.mouse_wheel)
+
+    def mouse_motion(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Mouse motion events.
+        """
+
+        #checking for collisions
+        if point_collides(event.pos, self.back_button.frame_dim):
+            if self.state != ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
+                self.state = ChoosePlaysetFrame.BACK_OPTION_FOCUSED
+                self.back_button.select()
+        else:
+            if self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
+                self.back_button.unselect()
+                self.state = ChoosePlaysetFrame.NOTHING_FOCUSED
+
+        #checking for collision with the option box
+        if point_collides(event.pos, self.text_slider.frame_dim):
+            if self.state != ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
+                self.state = ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED
+        else:
+            if self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
+                self.state = ChoosePlaysetFrame.NOTHING_FOCUSED
+
+
+    def mouse_button_down(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Mouse button press.
+        """
+        if event.button == Mouse.LEFT_BUTTON:
+
+            if point_collides(event.pos, self.back_button.frame_dim):
+                if self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
+                    self.back_button.press()
+
+            if point_collides(event.pos, self.text_slider.frame_dim):
+                if self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
+                    self.text_slider.select()
+
+    def mouse_wheel(self, event: pygame.event.Event, data: Any) -> Any:
+        """
+        Mouse wheel event.
+        """
+        if self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
+            if self.wheel_clock.elapsed() > self.wheel_delay:
+
+                if event.precise_y < -1.0:
+                    self.text_slider.slide_up()
+                    self.wheel_clock.start()
+                elif event.precise_y > 1.0:
+                    self.text_slider.slide_down()
+                    self.wheel_clock.start()
 
     def left_pressed(self, event, data) -> None:
         """
@@ -245,8 +321,10 @@ class ChoosePlaysetFrame(Frame):
         """
         if self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
             self.state = ChoosePlaysetFrame.NOTHING_FOCUSED
+            self.back_button.unselect()
         elif self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
             self.state = ChoosePlaysetFrame.BACK_OPTION_FOCUSED
+            self.back_button.select()
 
     def right_pressed(self, event, data) -> None:
         """
@@ -254,8 +332,10 @@ class ChoosePlaysetFrame(Frame):
         """
         if self.state == ChoosePlaysetFrame.NOTHING_FOCUSED:
             self.state = ChoosePlaysetFrame.BACK_OPTION_FOCUSED
+            self.back_button.select()
         elif self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
             self.state = ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED
+            self.back_button.unselect()
 
     def up_pressed(self, event, data):
         """
@@ -282,12 +362,18 @@ class ChoosePlaysetFrame(Frame):
         Callback function.
         """
         if self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
-            self._next_frame = self.parent_frame
-            self.parent_frame.focus()
-            self.parent_frame.rerender()
-            self.raise_exit_flag()
+            self.back_button.press()
         elif self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
-            self.text_slider.play_select_animation()
+            self.text_slider.select()
+
+    def back_pressed(self, data: Any) -> None:
+        """
+        Excecutes logic for when back is pressed.
+        """
+        self._next_frame = self.parent_frame
+        self.parent_frame.focus()
+        self.parent_frame.rerender()
+        self.raise_exit_flag()
 
     def tick(self):
 
@@ -298,7 +384,9 @@ class ChoosePlaysetFrame(Frame):
                 self._next_frame.focus()
             return self._next_frame
 
+        self.back_button.tick()
         self.text_slider.tick()
+        self.headline_label.tick()
 
         #getting all events
         for event in self.text_slider.poll_events():
@@ -316,17 +404,7 @@ class ChoosePlaysetFrame(Frame):
 
         screen.fill(Colors.BLACK)
 
-        for surface, pos in self.rendered_headline:
-            screen.blit(surface, pos)
-
-        if self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
-            for surface, pos in self.selected_back_text_rendered:
-                screen.blit(surface, pos)
-        else:
-            for surface, pos in self.back_text_rendered:
-                screen.blit(surface, pos)
-
-        if self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
-            pygame.draw.rect(screen, self.option_color, self.playset_options_frame, width=4)
+        self.headline_label.render(screen)
+        self.back_button.render(screen)
 
         self.text_slider.render(screen)

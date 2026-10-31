@@ -251,7 +251,7 @@ class Slider(Frame):
     # Initial rendering
     # =============================================================
 
-    def play_select_animation(self):
+    def select(self):
         if not self.state == Slider.SELECT_ANIMATION_PLAYING:
             self.select_animation_queued = True
             return True

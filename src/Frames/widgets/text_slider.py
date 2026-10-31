@@ -12,6 +12,7 @@ from constants import (
     KeyAlternatives
 )
 import graphics
+from graphics import page_t, colored_page_t
 from clock import Clock
 from modules import Modules
 import constants
@@ -39,7 +40,8 @@ class TextSlider(Slider):
         cutoff=False,
         max_slides=10,
         line_margin_percentage=0.05,
-        text_color=Colors.BLACK,
+        outline_color=Colors.TRANSPARENT,
+        text_color=Colors.STANDARD_TEXT_COLOR,
         text_is_colored=False,
         text_width_to_height_ratio=7/5
     ):
@@ -47,6 +49,7 @@ class TextSlider(Slider):
         self.text = text
         self.back_text = (back_text if back_text is not None else text)
         self.font = font
+        self.outline_color = outline_color
         self.text_is_colored = text_is_colored
         self.text_color = text_color
         self.text_width_to_height_ratio = text_width_to_height_ratio
@@ -147,3 +150,18 @@ class TextSlider(Slider):
                     surf.blit(s, pos)
 
                 self.back_surfaces.append(surf)
+
+    def prerender(self):
+
+        Slider.prerender(self)
+
+        surf, x, y, rendered = self.rendered_surfaces[self.span]
+        out_rect = pygame.Rect(x, y, surf.get_width(), surf.get_height())
+        inc_margin = 0.1
+        if self.horizontal:
+            out_rect.y = 0
+            out_rect.height = self.height
+        else:
+            out_rect.x = 0
+            out_rect.width = self.width
+        pygame.draw.rect(self.top_surface, self.outline_color, out_rect, width=5)

@@ -192,7 +192,7 @@ class ExplorerInfoFrame(Frame):
     def enter_pressed(self, event, data):
 
         if self.state == ExplorerInfoFrame.MENU_FOCUSED:
-            self.slider_menu.play_select_animation()
+            self.slider_menu.select()
 
         return None
 
