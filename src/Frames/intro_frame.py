@@ -250,7 +250,7 @@ class IntroFrame(Frame):
         self.press_text_label = Label(
                                         frame_dim=self.press_text_frame,
                                         font=Fonts.STANDARD_FONT,
-                                        label_page=[[("Press enter to coninue...", Colors.STANDARD_TEXT_COLOR)]],
+                                        label_page=graphics.str_to_colored_page("Press enter to continue...", Colors.STANDARD_TEXT_COLOR),
                                         background_color=Colors.TRANSPARENT
                                         )
 
@@ -306,6 +306,12 @@ class IntroFrame(Frame):
         """
 
         screen.fill(Colors.BLACK)
+
+        if self.exit_flag_raised():
+            return None
+
+        self.headline_label.tick()
+        self.press_text_label.tick()
 
         if self.headline_label is not None:
             self.headline_label.render(screen)

@@ -3,7 +3,7 @@ from typing import Callable
 
 import pygame
 import constants
-from constants import fequal, color_t
+from constants import fequal, color_t, Colors
 from collections import deque
 import re
 """
@@ -57,6 +57,24 @@ def copy_rendered_surface_position_tuples(rspt: rendered_surface_position_tuples
     Creates a copy of the rendered_surface_position_tuples.
     """
     return [(surf.copy(), pos) for surf, pos in rspt]
+
+def str_to_page(text: str) -> page_t:
+    """
+    Returns a str as a page.
+    """
+    return [text]
+
+def str_to_colored_page(text: str, text_color: color_t = Colors.STANDARD_TEXT_COLOR) -> colored_page_t:
+    """
+    Converts a string to a colored page, where all is colored in the same text_color.
+    """
+    return [[(text, text_color)]]
+
+def page_to_colored_page(page: page_t, text_color: color_t) -> colored_page_t:
+    """
+    Converts a page to a colored page, where all is colored in the same text_color.
+    """
+    return [[(line, text_color)] for line in page]
 
 class _NewPage:
     """Marker requesting a page break after a given number of blank lines."""

@@ -3,14 +3,16 @@ from typing import Any, Callable
 
 
 import pygame
-from Frames.frame import Frame
-from Frames.frame_enums import FrameEnums
 from constants import color_t, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID
 import graphics
 from graphics import rendered_surface_position_tuples_t
 from clock import Clock
 import time
 
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
+from Frames.widgets.label import Label
+from Frames.widgets.button import Button
 from Frames.choose_playset_frame import ChoosePlaysetFrame
 
 class IntroMenuFrame(Frame):
@@ -32,6 +34,8 @@ class IntroMenuFrame(Frame):
     NOTHING_FOCUSED: int = R_ID()
     MAIN_OPTIONS_FOCUSED: int = R_ID()
     BACK_OPTION_FOCUSED: int = R_ID()
+
+    SELECTED_COLOR: color_t = Colors.YELLOW
 
 
     def __init__(self,
@@ -102,43 +106,18 @@ class IntroMenuFrame(Frame):
         """
         The margin for a option box inside self.main_text_frame.
         """
-        self.option_box_size_increase: float = 0.1
-        """
-        The size increase for an option box that is selected
-        """
         self.option_boxes: list[pygame.Rect] = None
         """
         The inner option boxes, with the margins already applied.
         """
-        self.selected_option_boxes: list[pygame.Rect] = None
-        """
-        Option boxes when an option is selected
-        """
-        self.options_rendered: list[rendered_surface_position_tuples_t] = None
+        self.option_buttons: list[Button] = None
         """
         The options actually rendered.
         Rendering is done in self.rerender()
         """
-        self.selected_options_rendered: list[rendered_surface_position_tuples_t] = None
+        self.back_button: Button = None
         """
-        The options rendered as selected options.
-        Rendering is done in self.rerender().
-        """
-        self.back_text: str = "Back"
-        """
-        The text for the back option.
-        """
-        self.back_text_callback: Callable[[], None] = self.back_pressed
-        """
-        The callback function for what should happen when self.back is pressed.
-        """
-        self.back_text_rendered: rendered_surface_position_tuples_t = None
-        """
-        The back text rendered.
-        """
-        self.selected_back_text_rendered: rendered_surface_position_tuples_t = None
-        """
-        Rendered text when the back option is selected.
+        The back button.
         """
         self.text_options_index: int = 0
         """
@@ -200,12 +179,7 @@ class IntroMenuFrame(Frame):
                                             int(self.width * self.back_text_frame_width_percentage),
                                             int(self.height * self.back_text_frame_height_percentage)
                                             )
-        #the frame for the 'back' text
-        self.back_text_selected_frame = graphics.apply_margins(
-                                                                self.back_text_frame,
-                                                                -self.back_text_size_increase_percentage,
-                                                                -self.back_text_size_increase_percentage
-                                                                )
+
         #frame for selected back option
         self.option_boxes = list(
                                 map(
@@ -223,62 +197,34 @@ class IntroMenuFrame(Frame):
 
                                     )
                                 )
-        #the inner option boxes
-        self.selected_option_boxes = list(
-                                        map(
-                                                    lambda rect: graphics.apply_margins(
-                                                                                            rect,
-                                                                                            -self.option_box_size_increase,
-                                                                                            -self.option_box_size_increase
-                                                                                        ),
-
-                                                    self.option_boxes
-                                            )
-                                    )
         #the frames for the selected options
 
         #now rendering the texts
-        self.options_rendered = [
-                                    graphics.render_page_from_chars(
-                                                                        font=Fonts.STANDARD_FONT,
-                                                                        page=[self.text_options[i][0]],
-                                                                        frame=self.option_boxes[i],
-                                                                        text_color=self.option_color,
-                                                                        centered=True,
-                                                                        vertical_centered=True
-                                                                    )
-                                    for i in range(len(self.text_options))
-                                ]
+        self.option_buttons = []
 
-        self.selected_options_rendered = [
-                                                graphics.render_page_from_chars(
-                                                                                    font=Fonts.STANDARD_FONT,
-                                                                                    page=[self.text_options[i][0]],
-                                                                                    frame=self.selected_option_boxes[i],
-                                                                                    text_color=self.option_selected_color,
-                                                                                    centered=True,
-                                                                                    vertical_centered=True
-                                                                                )
-                                                for i in range(len(self.text_options))
-                                            ]
+        for i in range(len(self.text_options)):
 
-        self.back_text_rendered = graphics.render_page_from_chars(
-                                                                    font=Fonts.STANDARD_FONT,
-                                                                    page=[self.back_text],
-                                                                    frame=self.back_text_frame,
-                                                                    text_color=self.option_color,
-                                                                    centered=True,
-                                                                    vertical_centered=True
-                                                                    )
-        self.selected_back_text_rendered = graphics.render_page_from_chars(
-                                                                            font=Fonts.STANDARD_FONT,
-                                                                            page=[self.back_text],
-                                                                            frame=self.back_text_selected_frame,
-                                                                            text_color=self.option_selected_color,
-                                                                            centered=True,
-                                                                            vertical_centered=True
+            text, callback_func = self.text_options[i]
+            frame_dim = self.option_boxes[i]
 
-                                                                            )
+            self.option_buttons.append(
+                                        Button(
+                                                frame_dim=frame_dim,
+                                                font=Fonts.STANDARD_FONT,
+                                                button_page=graphics.str_to_colored_page(text, self.option_color),
+                                                selected_button_page=graphics.str_to_colored_page(text, self.option_selected_color),
+                                                callback_func=callback_func
+                                                )
+                                        )
+
+
+        self.back_button = Button(
+                                    frame_dim=self.back_text_frame,
+                                    font=Fonts.STANDARD_FONT,
+                                    button_page=graphics.str_to_colored_page(text="Back", text_color=self.option_color),
+                                    selected_button_page=graphics.str_to_colored_page(text="Back", text_color=self.option_selected_color),
+                                    callback_func=self.back_pressed
+                                    )
         #changing next_frame
         self._next_frame = None
         #resetting the exit flag
@@ -287,7 +233,7 @@ class IntroMenuFrame(Frame):
         self.intro_delay_clock.start()
 
 
-    def new_game_pressed(self) -> None:
+    def new_game_pressed(self, arg: Any) -> None:
         """
         If new game is pressed, make a new choose playset frame,
         then raise the exit flag.
@@ -295,13 +241,13 @@ class IntroMenuFrame(Frame):
         self._next_frame = ChoosePlaysetFrame(data=self.data, frame_dim=self.frame_dim.copy(), parent_frame=self, focus_group=self.focus_group)
         self.raise_exit_flag()
 
-    def load_save_pressed(self) -> None:
+    def load_save_pressed(self, arg: Any) -> None:
         """
         Not implemented yet.
         """
         pass
 
-    def back_pressed(self) -> None:
+    def back_pressed(self, arg: Any) -> None:
         """
         Back is pressed, means go back to parent frame.
         """
@@ -343,8 +289,11 @@ class IntroMenuFrame(Frame):
 
         if self.state == IntroMenuFrame.BACK_OPTION_FOCUSED:
             self.state = IntroMenuFrame.NOTHING_FOCUSED
+            self.back_button.unselect()
         elif self.state == IntroMenuFrame.MAIN_OPTIONS_FOCUSED:
             self.state = IntroMenuFrame.BACK_OPTION_FOCUSED
+            self.back_button.select()
+            self.option_buttons[self.text_options_index].unselect()
 
     def right_pressed(self, event, data) -> None:
         """
@@ -353,8 +302,11 @@ class IntroMenuFrame(Frame):
 
         if self.state == IntroMenuFrame.NOTHING_FOCUSED:
             self.state = IntroMenuFrame.BACK_OPTION_FOCUSED
+            self.back_button.select()
         elif self.state == IntroMenuFrame.BACK_OPTION_FOCUSED:
             self.state = IntroMenuFrame.MAIN_OPTIONS_FOCUSED
+            self.back_button.unselect()
+            self.option_buttons[self.text_options_index].select()
 
     def up_pressed(self, event, data) -> None:
         """
@@ -363,9 +315,12 @@ class IntroMenuFrame(Frame):
 
         if self.state == IntroMenuFrame.NOTHING_FOCUSED:
             self.state = IntroMenuFrame.MAIN_OPTIONS_FOCUSED
+            self.option_buttons[self.text_options_index].select()
         elif self.state == IntroMenuFrame.MAIN_OPTIONS_FOCUSED:
+            self.option_buttons[self.text_options_index].unselect()
             self.text_options_index -= 1
             self.text_options_index %= len(self.text_options)
+            self.option_buttons[self.text_options_index].select()
 
 
     def down_pressed(self, event, data) -> None:
@@ -375,19 +330,21 @@ class IntroMenuFrame(Frame):
 
         if self.state == IntroMenuFrame.NOTHING_FOCUSED:
             self.state = IntroMenuFrame.MAIN_OPTIONS_FOCUSED
+            self.option_buttons[self.text_options_index].select()
         elif self.state == IntroMenuFrame.MAIN_OPTIONS_FOCUSED:
+            self.option_buttons[self.text_options_index].unselect()
             self.text_options_index += 1
             self.text_options_index %= len(self.text_options)
+            self.option_buttons[self.text_options_index].select()
 
     def enter_pressed(self, event, data) -> None:
         """
         Callback
         """
         if self.state == IntroMenuFrame.BACK_OPTION_FOCUSED:
-            self.back_text_callback()
+            self.back_button.press()
         elif self.state == IntroMenuFrame.MAIN_OPTIONS_FOCUSED:
-            #calling the callback
-            self.text_options[self.text_options_index][1]()
+            self.option_buttons[self.text_options_index].press()
 
 
 
@@ -403,6 +360,10 @@ class IntroMenuFrame(Frame):
                 self._next_frame.focus()
             return self._next_frame
 
+        self.back_button.tick()
+        for button in self.option_buttons:
+            button.tick()
+
         return self
 
     def render(self, screen: pygame.Surface) -> None:
@@ -412,20 +373,7 @@ class IntroMenuFrame(Frame):
 
         screen.fill(Colors.BLACK)
 
-        renderables: list[rendered_surface_position_tuples_t] = []
+        self.back_button.render(screen)
 
-        if self.state == IntroMenuFrame.BACK_OPTION_FOCUSED:
-            renderables.append(self.selected_back_text_rendered)
-        else:
-            renderables.append(self.back_text_rendered)
-
-        for i in range(len(self.text_options)):
-
-            if self.state == IntroMenuFrame.MAIN_OPTIONS_FOCUSED and i == self.text_options_index:
-                renderables.append(self.selected_options_rendered[i])
-            else:
-                renderables.append(self.options_rendered[i])
-
-        for rspt in renderables:
-            for surface, position in rspt:
-                screen.blit(surface, position)
+        for button in self.option_buttons:
+            button.render(screen)

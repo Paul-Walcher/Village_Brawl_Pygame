@@ -35,6 +35,7 @@ class Label(Frame):
                 text_selected_hmargin: float = 0.1, #margin for when the text is selected
                 text_selected_vmargin: float = 0.05, #margin for when the text is selected.
 
+                selected_size_increase: float = 0.0, #amount by which the size increases when the label is selected
 
                 font: pygame.font.Font = Fonts.STANDARD_FONT, #used for the text
 
@@ -75,11 +76,11 @@ class Label(Frame):
         """
         The vertical margin for placing text inside self.inner_frame_dim.
         """
-        self.text_selected_hmargin: float = text_hmargin
+        self.text_selected_hmargin: float = text_selected_hmargin
         """
         The horizontal margin for placing text inside self.inner_frame_dim when self.state == Label.SELECTED or Label.PRESSED_ANIMATION_PLAYING.
         """
-        self.text_selected_vmargin: float = text_vmargin
+        self.text_selected_vmargin: float = text_selected_vmargin
         """
         The vertical margin for placing text inside self.inner_frame_dim when self.state == Label.SELECTED or Label.PRESSED_ANIMATION_PLAYING.
         """
@@ -176,6 +177,7 @@ class Label(Frame):
         self.inner_frame_dim = graphics.apply_margins(self.frame_dim, self.hmargin, self.vmargin)
         self.inner_text_frame_dim = graphics.apply_margins(self.inner_frame_dim, self.text_hmargin, self.text_vmargin)
         self.inner_selected_text_frame_dim = graphics.apply_margins(self.inner_frame_dim, self.text_selected_hmargin, self.text_selected_vmargin)
+
         #relative text frame dim to the inner frame
         self.relative_inner_text_frame_dim = self.inner_text_frame_dim.copy()
         self.relative_inner_text_frame_dim.x -= self.inner_frame_dim.x
@@ -184,6 +186,7 @@ class Label(Frame):
         self.relative_inner_selected_text_frame_dim = self.inner_selected_text_frame_dim.copy()
         self.relative_inner_selected_text_frame_dim.x -= self.inner_frame_dim.x
         self.relative_inner_selected_text_frame_dim.y -= self.inner_frame_dim.y
+
         #creating the surfaces
         self.label_not_selected_surface = pygame.Surface(
                                                             (self.inner_frame_dim.width, self.inner_frame_dim.height),
@@ -214,7 +217,7 @@ class Label(Frame):
 
         #rendering the text
         if self.label_page is not None:
-            self.label_page_rendered = graphics.render_page_from_chars_color(  font=self.font,
+            self.label_page_rendered = graphics.render_page_from_chars_color(   font=self.font,
                                                                                 page=self.label_page,
                                                                                 frame=self.relative_inner_text_frame_dim,
                                                                                 text_color=Colors.STANDARD_TEXT_COLOR,
