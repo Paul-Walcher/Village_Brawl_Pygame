@@ -12,7 +12,7 @@ from constants import (
     KeyAlternatives
 )
 import graphics
-from graphics import page_t, colored_page_t
+from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock
 from modules import Modules
 import constants
@@ -24,9 +24,11 @@ class TextSlider(Slider):
 
     def __init__(
         self,
-        text,
         frame_dim,
-        back_text=None,
+        text_pages: list[colored_page_t], #the list of colored pages
+        selected_text_pages: list[colored_page_t] = None, #the list of colored pages for when the text is selected
+        back_text_pages: list[colored_page_t] = None, #back text pages
+        selected_back_text_pages: list[colored_page_t] = None,
         font=Fonts.MINECRAFT,
         sliding_duration=500,  # ms
         select_animation_duration=800,#ms
@@ -40,20 +42,16 @@ class TextSlider(Slider):
         cutoff=False,
         max_slides=10,
         line_margin_percentage=0.05,
-        outline_color=Colors.TRANSPARENT,
-        text_color=Colors.STANDARD_TEXT_COLOR,
-        text_is_colored=False,
-        text_width_to_height_ratio=7/5
+        text_color=Colors.STANDARD_TEXT_COLOR
     ):
 
-        self.text = text
-        self.back_text = (back_text if back_text is not None else text)
+        self.text_pages = text_pages
+        self.selected_text_pages = (self.text_pages if selected_text_pages is None else selected_text_pages)
+        self.back_text_pages = (back_text_pages if back_text_pages is not None else text_pages)
+        self.selected_back_text_pages = (self.selected_text_pages if selected_back_text_pages is None else selected_back_text_pages)
         self.font = font
-        self.outline_color = outline_color
-        self.text_is_colored = text_is_colored
         self.text_color = text_color
-        self.text_width_to_height_ratio = text_width_to_height_ratio
-        self.line_margin_width = int(line_margin_percentage * frame_dim.height)
+        self.line_margin_percentage: float = line_margin_percentage
 
         Slider.__init__(
                         self,
@@ -74,94 +72,77 @@ class TextSlider(Slider):
     def create_surfaces(self):
 
         self.surfaces = []
+        self.selected_surfaces = []
 
-        ssize = (int(100 * self.text_width_to_height_ratio), 100)
+        for page in self.text_pages:
 
-        if self.text_is_colored:
+            surf: pygame.Surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
-            for i in range(len(self.text)):
-                surf = pygame.Surface(ssize, pygame.SRCALPHA)
-                txt = graphics.render_page_from_chars_color(self.font, self.text[i],
-                                                            pygame.Rect(0, 0, *ssize),
-                                                            text_color=self.text_color,
-                                                            centered=True,
-                                                            vertical_centered=True,
-                                                            line_margin=self.line_margin_width
-                                                            )
+            rendered_text: rendered_surface_position_tuples_t = graphics.render_page_from_chars_color(
+                                                                                                        font=self.font,
+                                                                                                        page=page,
+                                                                                                        frame=pygame.Rect(0, 0, self.width, self.height),
+                                                                                                        text_color=Colors.STANDARD_TEXT_COLOR,
+                                                                                                        centered=True,
+                                                                                                        vertical_centered=True,
+                                                                                                        line_margin_as_percentage=self.line_margin_percentage
+                                                                                                    )
+            graphics.render_rendered_surface_position_tuples(surf, rendered_text)
+            self.surfaces.append(surf)
 
-                for s, pos in txt:
-                    surf.blit(s, pos)
 
-                self.surfaces.append(surf)
+        for page in self.selected_text_pages:
 
-        else:
+            surf: pygame.Surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
-            for i in range(len(self.text)):
-                surf = pygame.Surface(ssize, pygame.SRCALPHA)
-                txt = graphics.render_page_from_chars(self.font, self.text[i],
-                                                            pygame.Rect(0, 0, *ssize),
-                                                            text_color=self.text_color,
-                                                            centered=True,
-                                                            vertical_centered=True,
-                                                            line_margin=self.line_margin_width
-                                                            )
+            rendered_text: rendered_surface_position_tuples_t = graphics.render_page_from_chars_color(
+                                                                                                        font=self.font,
+                                                                                                        page=page,
+                                                                                                        frame=pygame.Rect(0, 0, self.width, self.height),
+                                                                                                        text_color=Colors.STANDARD_TEXT_COLOR,
+                                                                                                        centered=True,
+                                                                                                        vertical_centered=True,
+                                                                                                        line_margin_as_percentage=self.line_margin_percentage
+                                                                                                    )
+            graphics.render_rendered_surface_position_tuples(surf, rendered_text)
+            self.selected_surfaces.append(surf)
 
-                for s, pos in txt:
-                    surf.blit(s, pos)
 
-                self.surfaces.append(surf)
 
     def create_back_surfaces(self):
 
         self.back_surfaces = []
+        self.selected_back_surfaces = []
 
-        ssize = (int(100 * self.text_width_to_height_ratio), 100)
+        for page in self.back_text_pages:
 
-        if self.text_is_colored:
+            surf: pygame.Surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
-            for i in range(len(self.back_text)):
-                surf = pygame.Surface(ssize, pygame.SRCALPHA)
-                txt = graphics.render_page_from_chars_color(self.font, self.back_text[i],
-                                                            pygame.Rect(0, 0, *ssize),
-                                                            text_color=self.text_color,
-                                                            centered=True,
-                                                            vertical_centered=True,
-                                                            line_margin=self.line_margin_width
-                                                            )
+            rendered_text: rendered_surface_position_tuples_t = graphics.render_page_from_chars_color(
+                                                                                                        font=self.font,
+                                                                                                        page=page,
+                                                                                                        frame=pygame.Rect(0, 0, self.width, self.height),
+                                                                                                        text_color=Colors.STANDARD_TEXT_COLOR,
+                                                                                                        centered=True,
+                                                                                                        vertical_centered=True,
+                                                                                                        line_margin_as_percentage=self.line_margin_percentage
+                                                                                                    )
+            graphics.render_rendered_surface_position_tuples(surf, rendered_text)
+            self.back_surfaces.append(surf)
 
-                for s, pos in txt:
-                    surf.blit(s, pos)
 
-                self.back_surfaces.append(surf)
+        for page in self.selected_back_text_pages:
 
-        else:
+            surf: pygame.Surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
-            for i in range(len(self.back_text)):
-                surf = pygame.Surface(ssize, pygame.SRCALPHA)
-                txt = graphics.render_page_from_chars(self.font, self.back_text[i],
-                                                            pygame.Rect(0, 0, *ssize),
-                                                            text_color=self.text_color,
-                                                            centered=True,
-                                                            vertical_centered=True,
-                                                            line_margin=self.line_margin_width
-                                                            )
-
-                for s, pos in txt:
-                    surf.blit(s, pos)
-
-                self.back_surfaces.append(surf)
-
-    def prerender(self):
-
-        Slider.prerender(self)
-
-        surf, x, y, rendered = self.rendered_surfaces[self.span]
-        out_rect = pygame.Rect(x, y, surf.get_width(), surf.get_height())
-        inc_margin = 0.1
-        if self.horizontal:
-            out_rect.y = 0
-            out_rect.height = self.height
-        else:
-            out_rect.x = 0
-            out_rect.width = self.width
-        pygame.draw.rect(self.top_surface, self.outline_color, out_rect, width=5)
+            rendered_text: rendered_surface_position_tuples_t = graphics.render_page_from_chars_color(
+                                                                                                        font=self.font,
+                                                                                                        page=page,
+                                                                                                        frame=pygame.Rect(0, 0, self.width, self.height),
+                                                                                                        text_color=Colors.STANDARD_TEXT_COLOR,
+                                                                                                        centered=True,
+                                                                                                        vertical_centered=True,
+                                                                                                        line_margin_as_percentage=self.line_margin_percentage
+                                                                                                    )
+            graphics.render_rendered_surface_position_tuples(surf, rendered_text)
+            self.selected_back_surfaces.append(surf)

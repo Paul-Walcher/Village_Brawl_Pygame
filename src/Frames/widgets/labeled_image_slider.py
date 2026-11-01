@@ -37,13 +37,19 @@ class LabeledImageSlider(Frame):
 
     def __init__(
         self,
-        images,
-        text,
         frame_dim,
+        images,
+        text_pages,
+        selected_text_pages=None,
+        selected_images=None,
+        back_images=None,
+        selected_back_images=None,
+        back_text_pages=None,
+        selected_back_text_pages=None,
         font=Fonts.MINECRAFT,
         text_location=None,
         sliding_duration=500,  # ms
-        select_animation_duration=800,#ms
+        select_animation_duration=400,#ms
         alphas=None,
         span=1,
         background_color=Colors.TRANSPARENT,
@@ -56,21 +62,20 @@ class LabeledImageSlider(Frame):
         max_slides=10,
         font_startsize=30,
         line_margin_percentage=0.05,
-        text_color=Colors.BLACK,
-        text_is_colored=False,
-        back_images = None,
-        back_text=None,
-        text_width_to_height_ratio=7/5,
-        flipping_animation_duration = 500#ms
+        text_color=Colors.STANDARD_TEXT_COLOR,
+        flipping_animation_duration = 400#ms
     ):
 
         super().__init__(FrameEnums.LABELED_IMAGE_SLIDER_WIDGET, None, frame_dim, focus_group=None)
         self.images = images
+        self.selected_images = selected_images
         self.back_images = back_images
-        self.back_text = back_text
-        self.text = text
+        self.selected_back_images = selected_back_images
+        self.text_pages = text_pages
+        self.selected_text_pages = selected_text_pages
+        self.back_text_pages = back_text_pages
+        self.selected_back_text_pages = selected_back_text_pages
         self.font = font
-        self.text_is_colored = text_is_colored
         self.text_location = (text_location if text_location is not None else LabeledImageSlider.BOTTOM)
         self.sliding_duration = sliding_duration
         self.select_animation_duration = select_animation_duration
@@ -87,7 +92,6 @@ class LabeledImageSlider(Frame):
         self.image_to_text_distribution = image_to_text_distribution
         self.image_text_distance_percentage = image_text_distance_percentage
         self.flipping_animation_duration = flipping_animation_duration
-        self.text_width_to_height_ratio = text_width_to_height_ratio
 
         if self.horizontal and self.text_location not in [LabeledImageSlider.BOTTOM, LabeledImageSlider.TOP]:
             raise RuntimeError("Text Location not appropriate")
@@ -110,14 +114,14 @@ class LabeledImageSlider(Frame):
 
         self.rerender()
 
-    def play_select_animation(self):
-        self.select_animation_queued = True
+    def select(self):
+        self.image_slider.select()
 
     def flip_card(self):
-        self.cardflip_queued = True
+        self.image_slider.flip_card()
 
     def flip_all_cards(self):
-        self.cardflips_queued = True
+        self.image_slider.flip_all_cards()
 
     def select_animation_playing(self):
         return self.image_slider.select_animation_playing()
@@ -184,9 +188,11 @@ class LabeledImageSlider(Frame):
         self.trect = trect
 
         self.image_slider = ImageSlider(
-                                        images=self.images,
                                         frame_dim=irect,
+                                        images=self.images,
+                                        selected_images=self.selected_images,
                                         back_images=self.back_images,
+                                        selected_back_images=self.selected_back_images,
                                         sliding_duration=self.sliding_duration,  # ms
                                         select_animation_duration=self.select_animation_duration,
                                         images_alphas=self.alphas,
@@ -201,9 +207,11 @@ class LabeledImageSlider(Frame):
                                         )
 
         self.text_slider = TextSlider(
-                                        text=self.text,
                                         frame_dim=trect,
-                                        back_text=self.back_text,
+                                        text_pages=self.text_pages,
+                                        selected_text_pages=self.selected_text_pages,
+                                        back_text_pages=self.back_text_pages,
+                                        selected_back_text_pages=self.selected_back_text_pages,
                                         font=self.font,
                                         sliding_duration=self.sliding_duration,  # ms
                                         select_animation_duration=self.select_animation_duration,
@@ -217,9 +225,7 @@ class LabeledImageSlider(Frame):
                                         cutoff=self.cutoff,
                                         max_slides=self.max_slides,
                                         line_margin_percentage=self.line_margin_percentage,
-                                        text_color=self.text_color,
-                                        text_is_colored=self.text_is_colored,
-                                        text_width_to_height_ratio=self.text_width_to_height_ratio
+                                        text_color=self.text_color
                                         )
 
         self.background_surface = pygame.Surface((self.frame_dim.width , self.frame_dim.height), pygame.SRCALPHA)

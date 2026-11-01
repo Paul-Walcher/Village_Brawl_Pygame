@@ -37,10 +37,34 @@ class ChoosePlaysetFrame(Frame):
 
         super().__init__(FrameEnums.CHOOSE_PLAYSET_FRAME, data=data, frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group)
 
-        self.playset_pages: list[page_t] = [[x] for x in os.listdir(PLAYSETS_FOLDER) if os.path.isdir(os.path.join(PLAYSETS_FOLDER, x))]
+        self.back_color: color_t = Colors.STANDARD_TEXT_COLOR
+        """
+        The back color for the back button
+        """
+        self.selected_back_color: color_t = Colors.YELLOW
+        """
+        Selected text color.
+        """
+        self.option_color: color_t = Colors.STANDARD_TEXT_COLOR
+        """
+        Color for the options
+        """
+        self.option_selected_color: color_t = Colors.YELLOW
+        """
+        Color for selected options
+        """
+        self.playsets: list[str] = [x for x in os.listdir(PLAYSETS_FOLDER) if os.path.isdir(os.path.join(PLAYSETS_FOLDER, x))]
         """
         Playsets are loaded and put into a list.
         The playsets are loaded via getting the names of all folders at constants.PLAYSETS_FOLDER
+        """
+        self.playset_pages: list[colored_page_t] = [graphics.str_to_colored_page(text=pset, text_color=self.option_color) for pset in self.playsets]
+        """
+        Colored pages for the playsets.
+        """
+        self.selected_playset_pages: list[colored_page_t] = [graphics.str_to_colored_page(text=pset, text_color=self.option_selected_color) for pset in self.playsets]
+        """
+        Selected playset pages
         """
         self.playsets_span: int = 1
         """
@@ -50,14 +74,6 @@ class ChoosePlaysetFrame(Frame):
         This means there are self.playsets_span rendered on top,
         then the main playset,
         then self.playsets_span again.
-        """
-        self.back_color: color_t = Colors.STANDARD_TEXT_COLOR
-        """
-        The back color for the back button
-        """
-        self.selected_back_color: color_t = Colors.YELLOW
-        """
-        Selected text color.
         """
         self.back_text_frame_width_percentage: float = 0.15
         """
@@ -137,14 +153,6 @@ class ChoosePlaysetFrame(Frame):
         """
         The text slider showing the playset options.
         """
-        self.option_color: color_t = Colors.STANDARD_TEXT_COLOR
-        """
-        Color for the options
-        """
-        self.option_selected_color: color_t = Colors.YELLOW
-        """
-        Color for selected options
-        """
         self.state: int = ChoosePlaysetFrame.NOTHING_FOCUSED
         """
         The current state.
@@ -196,15 +204,15 @@ class ChoosePlaysetFrame(Frame):
                                                                                                         )
                                                                             )
         self.text_slider = TextSlider(
-                                            text=self.playset_pages,
                                             frame_dim=self.playset_options_frame,
+                                            text_pages=self.playset_pages,
+                                            selected_text_pages=self.selected_playset_pages,
                                             font=Fonts.STANDARD_FONT,
                                             horizontal=False,
                                             cutoff=True,
                                             max_slides=1,
                                             text_span=self.playsets_span,
-                                            text_color=self.option_color,
-                                            outline_color=Colors.STANDARD_TEXT_COLOR
+                                            text_color=self.option_color
                                         )
         #back text
         self.back_text_frame_margin = min(  int(self.width * self.back_text_frame_margin_percentage),
@@ -393,7 +401,7 @@ class ChoosePlaysetFrame(Frame):
             if event.type == TextSlider.EventTypes.SELECT_ANIMATION_ENDED:
 
                 if type(self.data) == ContextData:
-                    self.data.current_playset = self.playset_pages[self.text_slider.get_selected_index()][0]
+                    self.data.current_playset = self.playsets[self.text_slider.get_selected_index()]
 
                     self._next_frame = ChooseSaveNameFrame(data=self.data, frame_dim=self.frame_dim.copy(), parent_frame=self, focus_group=self.focus_group)
                     self.raise_exit_flag()

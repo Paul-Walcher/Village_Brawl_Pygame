@@ -48,7 +48,8 @@ class ExplorerInfoFrame(Frame):
                         IIMAGE("Terrain_Icon.png")
                 ]
 
-        self.slider_labels = [["Cards"], ["Supporters"], ["Items"], ["Blueprints"], ["Packs"], ["Villagers"], ["Terrain"]]
+        self.image_labels = ["Cards", "Supporters", "Items", "Blueprints", "Packs", "Villagers", "Terrain"]
+        self.slider_labels = [graphics.str_to_colored_page(x, Colors.WHITE) for x in self.image_labels]
 
 
         self.key_delay = 200#ms
@@ -88,13 +89,12 @@ class ExplorerInfoFrame(Frame):
 
     def render_slider_menu(self):
 
-        self.slider_menu = LabeledImageSlider(  self.icon_imgs,
-                                                self.slider_labels,
+        self.slider_menu = LabeledImageSlider(
                                                 self.slider_frame,
+                                                text_pages=self.slider_labels,
+                                                images=self.icon_imgs,
                                                 text_location=LabeledImageSlider.BOTTOM,
-                                                text_color=Colors.WHITE,
-                                                max_slides=3,
-                                                text_width_to_height_ratio=9/5
+                                                max_slides=3
                                                 )
 
 

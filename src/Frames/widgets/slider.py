@@ -57,7 +57,6 @@ class Slider(Frame):
         start_index=0,
         cutoff=False,
         max_slides=2,
-        back_surfaces=None,
         flip_duration=400,#ms
         slide_input_delay=250#ms
     ):
@@ -65,7 +64,9 @@ class Slider(Frame):
         super().__init__(FrameEnums.SLIDER_WIDGET, None, frame_dim, focus_group=None)
 
         self.surfaces = []
+        self.selected_surfaces = []
         self.back_surfaces = []
+        self.selected_back_surfaces = []
         self.flip_duration = flip_duration
         self.flipping_animation_queued = False
         self.flipping_all_animation_queued = False
@@ -151,7 +152,7 @@ class Slider(Frame):
         self.slide_input_delay = slide_input_delay
         self.slide_input_delay_clock.start()
 
-        self.rerender_images()
+        self.rerender()
 
     # =============================================================
     # General
@@ -278,8 +279,6 @@ class Slider(Frame):
         self.top_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.bottom_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
-        self.create_surfaces() #creates the surfaces for self.surfaces
-        self.create_back_surfaces()
         self.rendered_surfaces = []
         self.rects = []
         self.scale_factors = []
@@ -318,7 +317,11 @@ class Slider(Frame):
                                     pixel_pos[1]
                                 )
 
-            surf = self.surfaces[self.indices[i]]
+            surf = None
+            if i == self.span:
+                surf = self.selected_surfaces[self.indices[i]]
+            else:
+                surf = self.surfaces[self.indices[i]]
 
             # Base scale needed to fit this particular image
             # into this particular slot.
@@ -486,7 +489,12 @@ class Slider(Frame):
             # Do not use self.rendered_surfaces[old_index][0]
             # for scale calculations, because that surface is
             # already scaled.
-            surf = self.surfaces[self.indices[old_index]]
+
+            surf = None
+            if old_index == self.span:
+                surf = self.selected_surfaces[self.indices[old_index]]
+            else:
+                surf = self.surfaces[self.indices[old_index]]
 
             start_scale = (self.scale_factors[old_index] * self.scale_mults[old_index])
             target_base_scale = (self.get_scale_fraction(surf, self.rects[new_slot]))
@@ -536,7 +544,11 @@ class Slider(Frame):
 
         for i in range(len(self.indices)):
 
-            surf = self.surfaces[self.indices[i]]
+            surf = None
+            if i == self.span:
+                surf = self.selected_surfaces[self.indices[i]]
+            else:
+                surf = self.surfaces[self.indices[i]]
 
             # Interpolate the COMPLETE scale.
             scale = (self.start_scales[i] + (self.target_scales[i] - self.start_scales[i]) * progress)
@@ -580,6 +592,8 @@ class Slider(Frame):
     # RIGHT SLIDE
     # =============================================================
     def rerender(self):
+        self.create_surfaces() #creates the surfaces for self.surfaces
+        self.create_back_surfaces()
         self.rerender_images()
 
     def initialize_slide_right(self):
@@ -643,7 +657,11 @@ class Slider(Frame):
 
             # Again, prerender the original image instead of using
             # the already-scaled rendered surface.
-            surf = self.surfaces[self.indices[old_list_index]]
+            surf = None
+            if new_slot == self.span:
+                surf = self.selected_surfaces[self.indices[new_slot]]
+            else:
+                surf = self.surfaces[self.indices[new_slot]]
 
             start_scale = (self.scale_factors[old_index] * self.scale_mults[old_index])
 
@@ -692,7 +710,11 @@ class Slider(Frame):
 
         for i in range(len(self.indices)):
 
-            surf = self.surfaces[self.indices[i]]
+            surf = None
+            if i == self.span:
+                surf = self.selected_surfaces[self.indices[i]]
+            else:
+                surf = self.surfaces[self.indices[i]]
             # Interpolate the COMPLETE scale.
             scale = (self.start_scales[i] + (self.target_scales[i] - self.start_scales[i]) * progress)
             alpha = (self.start_alphas[i] + (self.target_alphas[i] - self.start_alphas[i]) * progress)
@@ -789,8 +811,11 @@ class Slider(Frame):
             self.push_event(Event(Slider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
             #changing images
             save = self.surfaces[self.surface_index]
+            save2 = self.selected_surfaces[self.surface_index]
             self.surfaces[self.surface_index] = self.back_surfaces[self.surface_index]
+            self.selected_surfaces[self.surface_index] = self.selected_back_surfaces[self.surface_index]
             self.back_surfaces[self.surface_index] = save
+            self.selected_back_surfaces[self.surface_index] = save2
             self.rerender_images()
 
         else:
@@ -828,8 +853,11 @@ class Slider(Frame):
             self.push_event(Event(Slider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
             #changing images
             save = self.surfaces
+            save2 = self.selected_surfaces
             self.surfaces = self.back_surfaces
+            self.selected_surfaces = self.selected_back_surfaces
             self.back_surfaces = save
+            self.selected_back_surfaces = save2
             self.rerender_images()
 
         else:

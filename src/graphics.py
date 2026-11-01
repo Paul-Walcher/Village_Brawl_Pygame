@@ -52,6 +52,13 @@ type rendered_surface_position_tuples_t = list[surface_with_position_t]
 A list of rendered (surface, position) tuples
 """
 
+def render_rendered_surface_position_tuples(screen: pygame.Surface, rspt: rendered_surface_position_tuples_t) -> None:
+    """
+    Renders the render_rendered_surface_position_tuples onto the screen.
+    """
+    for surf, pos in rspt:
+        screen.blit(surf, pos)
+
 def copy_rendered_surface_position_tuples(rspt: rendered_surface_position_tuples_t) -> rendered_surface_position_tuples_t:
     """
     Creates a copy of the rendered_surface_position_tuples.

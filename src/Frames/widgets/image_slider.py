@@ -26,9 +26,11 @@ class ImageSlider(Slider):
 
     def __init__(
         self,
-        images,
         frame_dim,
-        back_images=None,
+        images: list[str],#the image list
+        selected_images: list[str] = None, #the selected images
+        back_images: list[str] = None, #back images
+        selected_back_images: list[str] = None, #back images for when an image is selected
         sliding_duration=500,  # ms
         select_animation_duration=800,#ms
         images_alphas=None,
@@ -43,7 +45,9 @@ class ImageSlider(Slider):
     ):
 
         self.images = images
+        self.selected_images = (selected_images if selected_images is not None else images)
         self.back_images = (back_images if back_images is not None else images)
+        self.selected_back_images = (selected_back_images if selected_back_images is not None else self.selected_images)
 
         Slider.__init__(
                         self,
@@ -63,6 +67,8 @@ class ImageSlider(Slider):
 
     def create_surfaces(self):
         self.surfaces = list(map(lambda x: graphics.render_image(x), self.images))
+        self.selected_surfaces = list(map(lambda x: graphics.render_image(x), self.selected_images))
 
     def create_back_surfaces(self):
         self.back_surfaces = list(map(lambda x: graphics.render_image(x), self.back_images))
+        self.selected_back_surfaces = list(map(lambda x: graphics.render_image(x), self.selected_back_images))

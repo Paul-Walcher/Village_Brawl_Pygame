@@ -144,7 +144,7 @@ class IntroFrame(Frame):
         application, they might be registered immediately as inputs.
         Therefore we wait a bit before accepting inputs.
         """
-        self.entry_delay: float = 250#ms
+        self.entry_delay: float = 50#ms
 
         #starting all clocks
         self.headline_clock.start()
