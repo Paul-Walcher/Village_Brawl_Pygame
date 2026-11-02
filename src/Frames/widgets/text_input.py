@@ -1,282 +1,562 @@
+from __future__ import annotations
+from typing import Any, Callable
+
 import os
 import pygame
 import threading
 
-from Frames.frame import Frame
-from Frames.frame_enums import FrameEnums
 from constants import (
     PLAYSETS_FOLDER,
     Colors,
     Fonts,
     Fontsizes,
     KeyAlternatives,
-    R_ID
+    R_ID, color_t
 )
 import graphics
+from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock
 from modules import Modules
 import constants
 
 from event_queue_manager import EventQueueManager, Event
 
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
+
 class TextInput(Frame):
+    """
+    Provides a textfield, that when it has focus saves the textinput from the used.
+    Deactivates textinput via pygame.key.stop_text_input() when losing focus.
+    """
+
     #symbols
-    CURSOR_SYMBOL = "|"
+    CURSOR_SYMBOL: str = "|"
 
     class EventTypes:
         #events
-        ENTER_PRESSED = R_ID()
+        TEXT_ENTERED: int = R_ID()
+        UNFOCUSED: int = R_ID()
+
+
+    #events
+    class TextEnteredEvent(Event):
+        """
+        Event for when enter is pressed on the text input.
+        Contains the text entered.
+        """
+
+        def __init__(self, input_text: str, data: Any = None):
+
+            Event.__init__(self, etype=TextInput.EventTypes.TEXT_ENTERED, data=data)
+
+            self.input_text: str = input_text
+            """
+            The text inside the textinput when enter was pressed.
+            """
+
+        def copy(self) -> TextEnteredEvent:
+            """
+            Returns a copy of the event.
+            """
+            copy_event: TextEnteredEvent = TextEnteredEvent(self.input_text, self.data)
+            return copy_event
+
+    class UnfocusedEvent(Event):
+        """
+        Event that signals this frame unfocused itself.
+        """
+
+        def __init__(self, data: Any = None):
+
+            Event.__init__(self, etype=TextInput.EventTypes.UNFOCUSED, data=data)
+
+        #uses parent class copy function
+
 
     def __init__(self,
-                frame_dim,
-                focus_group="",
-                parent_frame=None,
-                font=Fonts.MINECRAFT,
-                text_color=Colors.BLACK,
-                background_color=Colors.WHITE,
-                outline_size=5,
-                outline_color=Colors.BLACK,
-                textfield_hmargin=0.1,
-                textfield_vmargin=0.2,
-                starting_text="",
-                n_chars_shown=30,
-                max_textlength=50,
-                cursor_color=Colors.BLACK,
-                cursor_margin=5,#px
-                cursor_width=5,#px
-                input_delay=500,#ms
-                key_delay=0#ms
+                frame_dim: pygame.Rect,
+                parent_frame: Frame = None,
+                focus_group: str = "",
+                has_focus: bool = False,
+                textfield_hmargin: float = 0.1,
+                textfield_vmargin: float = 0.2,
+                font: pygame.font.Font = Fonts.STANDARD_FONT,
+                text_color: color_t = Colors.BLACK,
+                background_color: color_t = Colors.WHITE,
+                outline_size_p: float = 0.05,
+                outline_color: color_t = Colors.BLACK,
+                outline_shown: bool = False,
+                starting_text: str = "",
+                cursor_color: color_t = Colors.BLACK,
+                cursor_margin_p: float = 0.025,#px
+                cursor_width_p: float = 0.02,#px
+                cursor_height_p: float = 0.5, #px
+                cursor_shown: bool = True,
+                n_chars_shown: int = 30,
+                max_textlength: int = 50,
+                intro_delay: float = 250,#ms
+                input_delay: float = 50,#ms
+                backspace_delay: float = 100,#ma
+                tab_out_key_combination: list[int] = None
                 ):
 
-        super().__init__(FrameEnums.TEXTINPUT_WIDGET, None, frame_dim, focus_group=focus_group, parent_frame=parent_frame)
+        Frame.__init__(
+                        self,
+                        frame_enum=FrameEnums.TEXTINPUT_WIDGET,
+                        data=None,
+                        frame_dim=frame_dim,
+                        parent_frame=parent_frame,
+                        focus_group=focus_group,
+                        has_focus=has_focus
+                        )
 
-        self.font = font
-        self.fontsize = 0
-        self.text_color = text_color
-        self.background_color = background_color
-        self.outline_size = outline_size
-        self.outline_color = outline_color
-        self.textfield_hmargin = textfield_hmargin
-        self.textfield_vmargin = textfield_vmargin
-
-        self.text = starting_text
-        self.fontsize = None
-        self.cursor_pos = 0
-        self.cursor_color = cursor_color
-        self.cursor_offset = 0
-        self.cursor_margin = cursor_margin
-        self.cursor_width = cursor_width
-
-        self.n_chars_shown = n_chars_shown
-        self.max_textlength = max_textlength
-
-        self.text_rendered = None
-
-        self.outline_shown = False
-        self.cursor_shown = False
-
-        self.input_active = self.has_focus
-        self.key_delay = key_delay
-        self.key_clock = Clock()
-
-        self.input_delay = input_delay
-        self.input_delay_clock = Clock()
-
-        self.button_down = None
-
+        self.surface: pygame.Surface = None
+        """
+        The own surface, onto which everything is rendered.
+        """
+        self.textfield_hmargin: float = textfield_hmargin
+        """
+        The horizontal margin for the textrect.
+        """
+        self.textfield_vmargin: float = textfield_vmargin
+        """
+        The vertical margin for the textrect.
+        """
+        self.textfield_frame_dim: pygame.Rect = None
+        """
+        The dimension for the inner textfield.
+        """
+        self.relative_textfield_frame_dim: pygame.Rect = None
+        """
+        The textfield_frame_dim relative to self.surface.
+        """
+        self.font: pygame.font.Font = font
+        """
+        The font for the TextInput
+        """
+        self.text_color: color_t = text_color
+        """
+        Color of the text inside the TextInput.
+        """
+        self.background_color: color_t = background_color
+        """
+        Color of the background for the TextInput.
+        """
+        self.outline_size_p: float = outline_size_p
+        """
+        Percentage of the outline size,
+        relative to self.width, self.height,
+        whatever is lower.
+        """
+        self.outline_size: int = None
+        """
+        The actual outline size.
+        """
+        self.outline_color: color_t = outline_color
+        """
+        The color of the outline.
+        """
+        self.outline_shown: bool = outline_shown
+        """
+        If the outline is shown.
+        """
+        self.text: str = starting_text
+        """
+        The text inside the InputText.
+        """
+        self.cursor_pos: int = 0
+        """
+        The cursor position, element of[0, self.n_chars_shown]
+        """
+        self.cursor_offset: int = 0
+        """
+        Offset of the cursor, the cursor is shown at: self.cursor_offset+self.cursor_pos
+        """
+        self.cursor_color: color_t = cursor_color
+        """
+        Color of the cursor.
+        """
+        self.cursor_margin_p: float = cursor_margin_p
+        """
+        Distance from the cursor to the text as a percentage of self.textfield_frame_dim.width
+        """
+        self.cursor_margin: int = None
+        """
+        The actual cursor margin
+        """
+        self.cursor_width_p: float = cursor_width_p
+        """
+        Width of the cursor as a percentage of self.textfield_frame_dim.width
+        """
+        self.cursor_width: int = None
+        """
+        The actual cursor width.
+        """
+        self.cursor_height_p: float = cursor_height_p
+        """
+        Height of the cursor as a percentage of self.textfield_frame_dim.height.
+        """
+        self.cursor_height: int = None
+        """
+        Actual cursor height.
+        """
+        self.cursor_render_pos: tuple[int, int] = None
+        """
+        The cursor render pos.
+        """
+        self.cursor_shown: bool = cursor_shown
+        """
+        If the cursor is shown or not.
+        """
+        self.n_chars_shown: int = n_chars_shown
+        """
+        The number of characters after which the text starts being offset.
+        """
+        self.max_textlength: int = max_textlength
+        """
+        Number after which the TextInput stops accepting input if len(self.text) >= self.max_textlength.
+        """
+        self.rendered_front_text: rendered_surface_position_tuples_t = None
+        """
+        The rendered text before the cursor.
+        """
+        self.rendered_back_text: rendered_surface_position_tuples_t = None
+        """
+        The rendered text after the cursor.
+        """
+        self.input_delay: float = input_delay
+        """
+        The delay between inputs.
+        """
+        self.input_delay_clock: Clock = Clock()
+        """
+        The clock for the input delay.
+        """
+        self.backspace_delay: float = backspace_delay
+        """
+        Delay between backspace pressed detections.
+        """
+        self.backspace_delay_clock: Clock = Clock()
+        """
+        Clock for backspace delay.
+        """
+        self.intro_delay: float = intro_delay
+        """
+        Delay when this frame becomes focused, as not to swallow key pressed events.
+        """
+        self.intro_delay_clock: Clock = Clock()
+        """
+        Clock for the intro delay.
+        """
+        self.input_active: bool = True
+        """
+        If the input is active or not.
+        """
+        self.tab_out_key_combination: list[int] = ([pygame.K_LCTRL, KeyAlternatives.BACK_KEY] if tab_out_key_combination is None else tab_out_key_combination)
+        """
+        If all of the keys in the list are pressed at once, the textinput will act as if escape was pressed.
+        """
         self.rerender()
 
-        self.key_clock.start()
-        self.input_delay_clock.start()
 
-    def __del__(self):
-        if self.input_active:
-            pygame.key.stop_text_input()
+    def on_focus_gained(self, lost_focus_frame: Frame) -> None:
+        """
+        Activates the text input.
+        """
+        pygame.key.start_text_input()
+        self.reset_keys_pressed()
+        self.intro_delay_clock.start()
 
-    def rerender(self):
+    def on_focus_lost(self, gained_focus_frame: Frame) -> None:
+        """
+        Deactivates the text input.
+        """
+        pygame.key.stop_text_input()
 
+
+    def rerender(self) -> None:
+        """
+        Recalculates positions, then renders.
+        """
+        #resetting the text.
+        self.text = ""
+        self.cursor_pos = 0
+        self.cursor_offset = 0
+        self.input_active = True
+        #creating the surface
         self.surface = pygame.Surface((self.width, self.height))
+        #the size of the outline
+        self.outline_size = int(min(self.width * self.outline_size_p, self.height * self.outline_size_p))
 
-        textrect = pygame.Rect(0, 0, self.width, self.height)
-
+        trect: pygame.Rect = self.frame_dim.copy()
         if self.outline_shown:
             trect = pygame.Rect(self.outline_size, self.outline_size, self.width - self.outline_size, self.height - self.outline_size)
-            textrect = graphics.apply_margins(trect, self.textfield_hmargin, self.textfield_vmargin)
-        else:
-            textrect = graphics.apply_margins(textrect, self.textfield_hmargin, self.textfield_vmargin)
 
-        if self.cursor_shown:
-            textrect.x += (2 * self.cursor_margin + self.cursor_width) // 2
-            textrect.width -= (2 * self.cursor_margin + self.cursor_width)
+        self.textfield_frame_dim = graphics.apply_margins(trect, self.textfield_hmargin, self.textfield_vmargin)
+        self.relative_textfield_frame_dim = pygame.Rect(
+                                                        self.textfield_frame_dim.x-self.x,
+                                                        self.textfield_frame_dim.y-self.y,
+                                                        self.textfield_frame_dim.width,
+                                                        self.textfield_frame_dim.height
+                                                        )
 
-        self.textrect = textrect
-
-        self.fontsize = graphics.get_fontsize(self.font, ["W"*self.n_chars_shown], textrect)
-
-        self.rtext = self.text[self.cursor_offset:self.cursor_offset+self.n_chars_shown]
-
-        self.front_text = self.rtext[:self.cursor_pos]
-        self.cursor_text = TextInput.CURSOR_SYMBOL
-        self.back_text = self.rtext[self.cursor_pos:]
-
-        self.front_text_rendered = graphics.render_text(self.font, self.fontsize, self.front_text, self.text_color)
-        self.back_text_rendered = graphics.render_text(self.font, self.fontsize, self.back_text, self.text_color)
-
-        textlen = self.front_text_rendered.get_width() + self.back_text_rendered.get_width() + (2* self.cursor_margin + self.cursor_width if self.cursor_shown else 0)
-        textheight = max([self.front_text_rendered.get_height(), self.back_text_rendered.get_height()])
-
-        x_offset = (0 if not self.cursor_shown else self.cursor_margin)
-        y_offset = (textrect.height - textheight) // 2
-
-        cx = textrect.x + x_offset
-        cy = textrect.y + y_offset
-
-        full_length = self.front_text_rendered.get_width() + self.back_text_rendered.get_width() + (2*self.cursor_margin + self.cursor_width if self.cursor_shown else 0)
-
-        cx += (textrect.width - full_length) // 2
-
-        ftext_pos = (cx, cy)
-        cx += self.front_text_rendered.get_width()
-        if self.cursor_shown:
-            cx += self.cursor_margin
-            self.cursor_render_pos = pygame.Rect(cx, cy, self.cursor_width, textheight)
-            cx += self.cursor_margin + self.cursor_width
-        btext_pos = (cx, cy)
-
-        self.text_rendered = [(self.front_text_rendered, ftext_pos),
-                            (self.back_text_rendered, btext_pos)]
+        #calculating the cursor dimensions
+        self.cursor_margin = max(int(self.textfield_frame_dim.width * self.cursor_margin_p), 1)
+        self.cursor_width = max(int(self.textfield_frame_dim.width * self.cursor_width_p), 1)
+        self.cursor_height = max(int(self.textfield_frame_dim.height * self.cursor_height_p), 1)
 
         self.prerender()
 
-    def prerender(self):
+        self.reset_exit_flag()
+        self.input_delay_clock.start()
+        self.backspace_delay_clock.start()
 
+
+    def render_text(self) -> None:
+        """
+        Renders the text inside the textfield.
+        """
+        front_text: str = self.get_front_text()
+        back_text: str = self.get_back_text()
+
+        front_page: colored_page_t = graphics.str_to_colored_page(text=front_text, text_color=self.text_color)
+        back_page: colored_page_t = graphics.str_to_colored_page(text=back_text, text_color=self.text_color)
+        #creating the partitioned rects
+        width_without_cursor: int = self.relative_textfield_frame_dim.width - self.get_cursor_widths()
+        front_width: int = int((len(front_text) / self.n_chars_shown) * width_without_cursor)
+        back_width: int = int((len(back_text) / self.n_chars_shown) * width_without_cursor)
+
+        front_rect: pygame.Rect = pygame.Rect(
+                                                self.relative_textfield_frame_dim.x,
+                                                self.relative_textfield_frame_dim.y,
+                                                front_width,
+                                                self.relative_textfield_frame_dim.height
+                                                )
+
+        self.cursor_render_pos = (front_rect.x + front_rect.width + self.cursor_margin,
+                                    self.relative_textfield_frame_dim.y + (self.relative_textfield_frame_dim.height - self.cursor_height) // 2)
+
+        back_rect: pygame.Rect = pygame.Rect(
+                                                front_rect.x + front_rect.width + self.get_cursor_widths(),
+                                                self.relative_textfield_frame_dim.y,
+                                                back_width,
+                                                self.relative_textfield_frame_dim.height
+                                                )
+        #rendering the front text
+        if front_text:
+            self.rendered_front_text = graphics.render_page_from_chars_color(
+                                                                                font=self.font,
+                                                                                page=front_page,
+                                                                                frame=front_rect,
+                                                                                text_color=self.text_color,
+                                                                                centered=True,
+                                                                                vertical_centered=True
+                                                                                )
+        else:
+            self.rendered_front_text = None
+
+        if back_text:
+            self.rendered_back_text = graphics.render_page_from_chars_color(
+                                                                                font=self.font,
+                                                                                page=back_page,
+                                                                                frame=back_rect,
+                                                                                text_color=self.text_color,
+                                                                                centered=True,
+                                                                                vertical_centered=True
+                                                                                )
+        else:
+            self.rendered_back_text = None
+
+    def prerender(self) -> None:
+        """
+        Prerendering occurs whenever something changes
+        """
         self.surface.fill(self.background_color)
+        #getting the rendered text
+        self.render_text()
 
-        for surf, pos in self.text_rendered:
-            self.surface.blit(surf, pos)
-
+        #then rendering the text
+        if self.rendered_front_text is not None:
+            graphics.render_rendered_surface_position_tuples(self.surface, self.rendered_front_text)
+        if self.rendered_back_text is not None:
+            graphics.render_rendered_surface_position_tuples(self.surface, self.rendered_back_text)
         #drawing cursor
         if self.cursor_shown:
-            pygame.draw.rect(self.surface, self.cursor_color, self.cursor_render_pos)
-
+            pygame.draw.rect(self.surface, self.cursor_color, (*self.cursor_render_pos, self.cursor_width, self.cursor_height))
+        #drawing the outline
         if self.outline_shown:
             pygame.draw.rect(self.surface, self.outline_color, self.frame_dim, width=self.outline_size)
 
-    def render(self, screen):
-
-        self.prerender()
+    def render(self, screen: pygame.Surface) -> None:
+        """
+        Blitting the surface.
+        """
         screen.blit(self.surface, (self.x, self.y))
 
-    def bind_events(self):
-        self.clear_event_callbacks()
+    def get_front_text(self) -> str:
+        """
+        Getting the text before the cursor to render.
+        """
+        return self.text[self.cursor_offset:self.cursor_offset+self.cursor_pos]
 
-    def tick(self):
+    def get_back_text(self) -> str:
+        """
+        Getting the text after the cursor to render.
+        """
+        return self.text[self.cursor_offset+self.cursor_pos:self.cursor_offset+self.n_chars_shown]
 
-        if self.input_delay_clock.elapsed() > self.input_delay:
-            events_processed = []
-            should_rerender = False
-
-            if self.has_focus:
-
-                for event in pygame.event.get():
-
-                    etext = False
-
-                    if event.type == pygame.TEXTINPUT:
-                        etext = True
-
-                        if self.key_clock.elapsed() >= self.key_delay:
-                            if self.input_active:
-                                tadd = event.text
-                                addlen = self.max_textlength - len(self.text)
-                                tadd = tadd[:addlen]
-
-                                self.text = self.text[:self.cursor_offset+self.cursor_pos] + tadd + self.text[self.cursor_offset+self.cursor_pos:]
-                                self.move_cursor_right(len(tadd))
-                                self.key_clock.start()
-
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_BACKSPACE:
-                            etext = True
-
-                            if self.key_clock.elapsed() >= self.key_delay:
-                                if self.input_active:
-                                    if self.cursor_pos > 0:
-                                        self.text = self.text[:self.cursor_offset+self.cursor_pos-1] + self.text[self.cursor_offset+self.cursor_pos:]
-                                        if self.cursor_offset > 0:
-                                            self.cursor_offset -= 1
-                                        else:
-                                            self.cursor_pos -= 1
-                                        should_rerender = True
-                                    self.key_clock.start()
-
-                        if event.key == pygame.K_LEFT:
-                            etext = True
-
-                            if self.key_clock.elapsed() >= self.key_delay:
-                                if self.input_active:
-                                    self.move_cursor_left()
-                                    self.key_clock.start()
-
-                        if event.key == pygame.K_RIGHT:
-                            etext = True
-
-                            if self.key_clock.elapsed() >= self.key_delay:
-                                if self.input_active:
-                                    self.move_cursor_right()
-                                    self.key_clock.start()
-
-                        if event.key == pygame.K_ESCAPE:
-                            self.unfocus()
-
-                        if event.key == pygame.K_RETURN:
-                            self.push_event(Event(TextInput.EventTypes.ENTER_PRESSED, None))
-
-
-            for event in events_processed:
-                pygame.event.post(event)
-
-            if should_rerender:
-                self.rerender()
+    def get_cursor_widths(self) -> int:
+        """
+        Returns all the width occupied by the cursor.
+        """
+        if self.cursor_shown:
+            return (2 * self.cursor_margin + self.cursor_width)
         else:
-             if self.has_focus:
-                 for event in pygame.event.get():
-                     pass
+            return 0
+
+    def bind_events(self) -> None:
+        """
+        Binding events.
+        """
+        if self.is_focused():
+            #adding textinput event
+            self.add_pygame_event_callback(etype=pygame.TEXTINPUT, data=None, putback=False, func=self.on_textinput)
+            self.add_pygame_key_callback(key=pygame.K_LEFT, data=None, putback=False, func=self.on_left_pressed)
+            self.add_pygame_key_callback(key=KeyAlternatives.LEFT_ALTERNATIVE, data=None, putback=False, func=self.on_left_pressed)
+            self.add_pygame_key_callback(key=pygame.K_RIGHT, data=None, putback=False, func=self.on_right_pressed)
+            self.add_pygame_key_callback(key=KeyAlternatives.RIGHT_ALTERNATIVE, data=None, putback=False, func=self.on_right_pressed)
+            self.add_pygame_key_callback(key=pygame.K_ESCAPE, data=None, putback=False, func=self.on_escape_pressed)
+            self.add_pygame_key_callback(key=pygame.K_RETURN, data=None, putback=False, func=self.on_enter_pressed)
+            self.add_pygame_event_callback(etype=pygame.KEYDOWN, data=None, putback=True, func=self.on_keypress)
+
+
+    def on_textinput(self, event: pygame.event.Event, data=None) -> None:
+        """
+        When textinput is done.
+        """
+        if self.input_delay_clock.elapsed() > self.input_delay:
+            if self.input_active:
+
+                tadd = event.text
+                addlen = self.max_textlength - len(self.text)
+                tadd = tadd[:addlen]
+
+                self.text = self.text[:self.cursor_offset+self.cursor_pos] + tadd + self.text[self.cursor_offset+self.cursor_pos:]
+                self.move_cursor_right(len(tadd))
+
+                self.prerender()
+                self.input_delay_clock.start()
+
+
+    def on_left_pressed(self, event: pygame.event.Event, data=None) -> None:
+        """
+        left pressed event.
+        """
+        self.move_cursor_left()
+
+    def on_right_pressed(self, event: pygame.event.Event, data=None) -> None:
+        """
+        left pressed event.
+        """
+        self.move_cursor_right()
+
+    def on_escape_pressed(self, event: pygame.event.Event, data=None) -> None:
+        """
+        Escape pressed event.
+        """
+        self.unfocus()
+        self.push_event(TextInput.UnfocusedEvent())
+
+    def on_enter_pressed(self, event: pygame.event.Event, data=None) -> None:
+        """
+        enter pressed event.
+        """
+        self.push_event(TextInput.TextEnteredEvent(input_text=self.get_text()))
+
+    def on_keypress(self, event: pygame.event.Event, data=None) -> None:
+        """
+        Checks for tab out.
+        """
+        if all([self.key_pressed(key) for key in self.tab_out_key_combination]):
+            self.on_escape_pressed(event, data)
+            return Frame.EventCallback.SUCCESS
+
+        return Frame.EventCallback.FAILURE
+
+    def tick(self) -> None:
+        """
+        Tick function.
+        """
+
+        self.manage_pygame_events()
+
+        if self.exit_flag_raised():
+            return None
+
+        if self.key_pressed(pygame.K_BACKSPACE) and self.backspace_delay_clock.elapsed() > self.backspace_delay:
+            if self.input_active:
+                if self.cursor_pos > 0:
+
+                    self.text = self.text[:self.cursor_offset+self.cursor_pos-1] + self.text[self.cursor_offset+self.cursor_pos:]
+                    self.cursor_pos -= 1
+                    self.prerender()
+                    self.backspace_delay_clock.start()
+
+                else:
+
+                    self.cursor_offset -= 1
+                    self.cursor_offset = max(self.cursor_offset, 0)
+                    self.prerender()
+                    self.backspace_delay_clock.start()
 
         return self
 
-    def get_text(self):
+    def get_text(self) -> str:
+        """
+        Gets the text.
+        """
         return self.text
 
-    def set_text(self, text):
-
+    def set_text(self, text: str) -> None:
+        """
+        Sets the text.
+        """
         self.text = text
         self.cursor_pos = 0
         self.cursor_offset = 0
-        self.rerender()
+        self.prerender()
 
-    def focus(self):
-        pygame.key.start_text_input()
-        self.has_focus = True
+    def activate_input(self) -> None:
+        """
+        activates the input.
+        """
         self.input_active = True
-        self.show_cursor()
 
-    def unfocus(self):
-        pygame.key.stop_text_input()
-        self.has_focus = False
+    def deactivate_input(self) -> None:
+        """
+        deactivates the input.
+        """
         self.input_active = False
-        self.hide_cursor()
 
-    def show_outline(self):
+    def show_outline(self) -> None:
+        """
+        Makes the outline visible.
+        """
         self.outline_shown = True
         self.prerender()
 
-    def hide_outline(self):
+    def hide_outline(self) -> None:
+        """
+        Hides the outline.
+        """
         self.outline_shown = False
         self.prerender()
 
-    def move_cursor_left(self, n=1):
-
+    def move_cursor_left(self, n: int = 1) -> None:
+        """
+        Moves the cursor left.
+        """
         for i in range(n):
             if self.cursor_pos == 0:
                 if self.cursor_offset > 0:
@@ -284,10 +564,12 @@ class TextInput(Frame):
             else:
                 self.cursor_pos -= 1
 
-        self.rerender()
+        self.prerender()
 
-
-    def move_cursor_right(self, n=1):
+    def move_cursor_right(self, n: int = 1) -> None:
+        """
+        Moves the cursor right.
+        """
 
         for i in range(n):
             if self.cursor_pos == self.n_chars_shown:
@@ -296,13 +578,18 @@ class TextInput(Frame):
             else:
                 self.cursor_pos += 1
 
-        self.rerender()
+        self.prerender()
 
-    def show_cursor(self):
-
+    def show_cursor(self) -> None:
+        """
+        Makes the cursor shown.
+        """
         self.cursor_shown = True
-        self.rerender()
+        self.prerender()
 
-    def hide_cursor(self):
+    def hide_cursor(self) -> None:
+        """
+        Hides the cursor.
+        """
         self.cursor_shown = False
-        self.rerender()
+        self.prerender()

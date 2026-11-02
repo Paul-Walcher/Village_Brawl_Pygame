@@ -283,8 +283,8 @@ class IntroMenuFrame(Frame):
             if type(self.data) == ContextData:
                 if self.data.mouse_enabled:
 
-                    self.add_pygame_event_callback(type=pygame.MOUSEMOTION, data=None, putback=False, func=self.mouse_motion)
-                    self.add_pygame_event_callback(type=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEMOTION, data=None, putback=False, func=self.mouse_motion)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down)
 
     def mouse_motion(self, event: pygame.event.Event, data: Any) -> None:
         """

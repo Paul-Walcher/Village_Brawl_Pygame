@@ -4,20 +4,28 @@ from typing import Any, Callable
 import os
 import pygame
 
-from Frames.frame import Frame
-from Frames.frame_enums import FrameEnums
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID
 import graphics
 from graphics import text_t, colored_text_t, page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock
 
-from Frames.load_playset_frame import LoadPlaysetFrame
 from context_data import ContextData
+
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
+from Frames.load_playset_frame import LoadPlaysetFrame
+from Frames.widgets.label import Label
+from Frames.widgets.button import Button
+from Frames.widgets.text_input import TextInput
 
 class ChooseSaveNameFrame(Frame):
     """
     This frame lets the player choose the name for the savefile.
     """
+    #states
+    NOTHING_FOCUSED: int = R_ID()
+    BACK_OPTION_FOCUSED: int = R_ID()
+    TEXTINPUT_FOCUSED: int = R_ID()
 
     def __init__(self, data: Any = None, frame_dim: pygame.Rect = None, parent_frame: Frame = None, focus_group: str = ""):
 
@@ -48,21 +56,35 @@ class ChooseSaveNameFrame(Frame):
         """
         The back text frame at the bottom left.
         """
-        self.back_text_selected_frame: pygame.Rect = None
+        self.back_button: Button = None
         """
-        The frame for the back text when it is selected.
+        The back button.
         """
-        self.back_text: str = "Back"
+        self.back_color: color_t = Colors.STANDARD_TEXT_COLOR
         """
-        The text for the back option.
+        Unselected back color.
         """
-        self.back_text_rendered: rendered_surface_position_tuples_t = None
+        self.selected_back_color: color_t = Colors.YELLOW
         """
-        The back text rendered.
+        Selected back color.
         """
-        self.selected_back_text_rendered: rendered_surface_position_tuples_t = None
+
+        #textinput
+        self.text_input_width_percentage: float = 0.5
         """
-        Rendered text when the back option is selected.
+        width of the text input relative to self.width.
+        """
+        self.text_input_height_percentage: float = 0.15
+        """
+        height of the text input relative to self.height
+        """
+        self.text_input_frame: pygame.Rect = None
+        """
+        The frame for the text input
+        """
+        self.text_input: TextInput = None
+        """
+        The text input
         """
 
         self.highlighted_index = -1
@@ -84,168 +106,147 @@ class ChooseSaveNameFrame(Frame):
         self.go_back_flag = False
         self.load_playset_flag = False
 
+        #the state
+        self.state: int = ChooseSaveNameFrame.NOTHING_FOCUSED
+        """
+        current state.
+        """
+        self.intro_delay_clock: Clock = Clock()
+        """
+        The intro delay clock.
+        """
+        self.intro_delay: float = 250#ms
+        """
+        The intro delay.
+        """
+
         self.rerender()
 
     def rerender(self):
+        """
+        rerendering.
+        """
 
-        center_pos = (self.width // 2, self.height // 2)
-
-        self.widgets = []
         self.frame_rect = pygame.Rect(0, 0, self.width, self.height)
 
-        self.typing_frame = pygame.Surface((self.width // 2, self.height // 4))
-        self.typing_frame.fill(Colors.WHITE)
-        self.typing_frame.set_alpha(127)
-        self.typing_frame_pos = (graphics.center_horizontally(self.typing_frame, self.frame_rect),
-                                graphics.center_vertically(self.typing_frame, self.frame_rect))
+        #creating the text input
+        text_input_width: int = int(self.text_input_width_percentage * self.width)
+        text_input_height: int = int(self.text_input_height_percentage * self.height)
 
-        frame_margin = 5
-        selected_frame_size = (self.typing_frame.get_width() + 2*frame_margin, self.typing_frame.get_height() + 2*frame_margin)
-        self.typing_selected_frame = pygame.Surface(selected_frame_size)
-        self.typing_selected_frame.fill(Colors.WHITE)
-        self.typing_selected_frame_pos = graphics.center_at(self.typing_selected_frame, center_pos)
+        self.text_input_frame = pygame.Rect(0, 0, text_input_width, text_input_height)
+        self.text_input_frame = graphics.get_center_with_rect_as_rect(self.frame_dim, self.text_input_frame)
 
-        self.render_text()
+        self.text_input = TextInput(
+                                        frame_dim=self.text_input_frame,
+                                        parent_frame=self,
+                                        focus_group=self.focus_group,
+                                        font=Fonts.STANDARD_FONT,
+                                        text_color=Colors.BLACK,
+                                        background_color=Colors.WHITE,
+                                        cursor_color=Colors.BLACK
+                                    )
+        #back text
+        self.back_text_frame_margin = min(  int(self.width * self.back_text_frame_margin_percentage),
+                                            int(self.height * self.back_text_frame_margin_percentage)
+                                        )
+        #the distance from the corner for the back text
+        #main frame for the main options
+        self.back_text_frame = pygame.Rect(
+                                            self.back_text_frame_margin,
+                                            self.height - self.back_text_frame_margin - int(self.height * self.back_text_frame_height_percentage),
+                                            int(self.width * self.back_text_frame_width_percentage),
+                                            int(self.height * self.back_text_frame_height_percentage)
+                                            )
+        #rendering the back text
+        self.back_button = Button(
+                                    frame_dim=self.back_text_frame,
+                                    font=Fonts.STANDARD_FONT,
+                                    button_page=graphics.str_to_colored_page(text="Back", text_color=self.back_color),
+                                    selected_button_page=graphics.str_to_colored_page(text="Back", text_color=self.selected_back_color),
+                                    callback_func=self.back_pressed,
+                                    background_color=Colors.TRANSPARENT
+                                    )
+
+        self.intro_delay_clock.start()
 
 
-    def render_text(self):
 
-        center_pos = (self.width // 2, self.height // 2)
 
-        self.savefile_name_font = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG, self.savefile_name, Colors.BLACK)
-        self.savefile_name_font_pos = graphics.center_at(self.savefile_name_font, center_pos)
-
-        self.headline = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE, "Savefile Name", color=Colors.CYAN)
-        self.headline_pos = (graphics.center_horizontally(self.headline, self.frame_rect), self.height // 20)
-
-        if self.highlighted_index == 0:
-            self.back_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.AVERAGE + 10, "Back", color=Colors.YELLOW)
-        else:
-            self.back_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.AVERAGE + 4, "Back", color=Colors.WHITE)
-
-        self.back_pos = (self.width//20,
-                            self.height - self.back_text.get_height() - self.height // 20)
-
-        if self.highlighted_index == 2:
-            self.enter_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.AVERAGE + 10, "Enter", color=Colors.YELLOW)
-        else:
-            self.enter_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.AVERAGE + 4, "Enter", color=Colors.WHITE)
-
-        self.enter_pos = (self.width - self.width//20 - self.enter_text.get_width(),
-                            self.height - self.enter_text.get_height() - self.height // 20)
 
     def bind_events(self):
 
-        cdata = {"frame_ref": self}
+        if self.is_focused():
 
-        self.clear_event_callbacks()
+            self.add_pygame_key_callback(pygame.K_ESCAPE, None, putback=False, func=self.escape_pressed)
 
-        self.add_pygame_key_callback(pygame.K_ESCAPE, cdata, putback=False, func=self.escape_pressed)
+            self.add_pygame_key_callback(pygame.K_LEFT, None, putback=False, func=self.left_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, None, putback=False, func=self.left_pressed)
 
-        self.add_pygame_key_callback(pygame.K_LEFT, cdata, putback=False, func=self.left_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, cdata, putback=False, func=self.left_pressed)
+            self.add_pygame_key_callback(pygame.K_RIGHT, None, putback=False, func=self.right_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, None, putback=False, func=self.right_pressed)
 
-        self.add_pygame_key_callback(pygame.K_RIGHT, cdata, putback=False, func=self.right_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.RIGHT_ALTERNATIVE, cdata, putback=False, func=self.right_pressed)
+            self.add_pygame_key_callback(pygame.K_RETURN, None, putback=False, func=self.enter_pressed)
+            self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, None, putback=False, func=self.enter_pressed)
 
-        self.add_pygame_key_callback(pygame.K_RETURN, cdata, putback=False, func=self.enter_pressed)
-        self.add_pygame_key_callback(KeyAlternatives.ENTER_ALTERNATIVE, cdata, putback=False, func=self.enter_pressed)
 
-        self.add_pygame_key_callback(pygame.K_BACKSPACE, cdata, putback=False, func=self.backspace_pressed)
 
-        self.add_pygame_event_callback(pygame.TEXTINPUT, cdata, putback=False, func=self.handle_text_input)
-
-    def handle_text_input(self, event, data):
-
-        ref = data["frame_ref"]
-
-        if ref.is_typing:
-            ref.savefile_name += event.text
-            if (len(ref.savefile_name)) > ref.max_name_length:
-                ref.savefile_name = ref.savefile_name[:ref.max_name_length]
-            ref.render_text()
 
 
     def escape_pressed(self, event, data):
 
-        ref = data["frame_ref"]
-
-        if ref.is_typing:
-            ref.is_typing = False
-            pygame.key.stop_text_input()
+        if self.state == ChooseSaveNameFrame.TEXTINPUT_FOCUSED:
+            self.focus()
+            self.state = ChooseSaveNameFrame.NOTHING_FOCUSED
         else:
             return Frame.EventCallback.EXIT
 
 
     def left_pressed(self, event, data):
 
-        ref = data["frame_ref"]
-
-        if not ref.is_typing:
-            ref.highlighted_index -= 1
-            ref.highlighted_index %= 3
-
-            if self.highlighted_index == 1:
-                pygame.key.start_text_input()
-                ref.is_typing = True
-
-            ref.render_text()
+        if self.state == ChooseSaveNameFrame.BACK_OPTION_FOCUSED:
+            self.back_button.unselect()
+            self.state = ChooseSaveNameFrame.NOTHING_FOCUSED
+        elif self.state == ChooseSaveNameFrame.NOTHING_FOCUSED:
+            self.state = ChooseSaveNameFrame.BACK_OPTION_FOCUSED
+            self.back_button.select()
 
     def right_pressed(self, event, data):
 
-        ref = data["frame_ref"]
+        if self.state == ChooseSaveNameFrame.BACK_OPTION_FOCUSED:
+            self.back_button.unselect()
+            self.text_input.focus()
+            self.state = ChooseSaveNameFrame.TEXTINPUT_FOCUSED
+        elif self.state == ChooseSaveNameFrame.NOTHING_FOCUSED:
 
-        if not ref.is_typing:
-
-            ref.highlighted_index += 1
-            ref.highlighted_index %= 3
-
-            if self.highlighted_index == 1:
-                pygame.key.start_text_input()
-                ref.is_typing = True
-
-            ref.render_text()
-
-    def backspace_pressed(self, event, data):
-
-        ref = data["frame_ref"]
-
-        if ref.is_typing and ref.savefile_name:
-            ref.savefile_name = ref.savefile_name[:-1]
-            ref.render_text()
+            self.state = ChooseSaveNameFrame.BACK_OPTION_FOCUSED
+            self.back_button.select()
 
     def enter_pressed(self, event, data):
+        pass
 
-        ref = data["frame_ref"]
-
-        if ref.highlighted_index == 0:
-            ref.go_back_flag = True
-        if ref.highlighted_index == 2 and len(ref.savefile_name) > 0:
-            ref.load_playset_flag = True
-
-
+    def back_pressed(self, data):
+        self._next_frame = self.parent_frame
+        self.raise_exit_flag()
 
     def tick(self):
 
-
-        self.manage_pygame_events()
+        if self.intro_delay_clock.elapsed() > self.intro_delay:
+            self.manage_pygame_events()
 
         if self.exit_flag_raised():
-            return None
+            if self._next_frame is not None:
+                self._next_frame.focus()
+                self._next_frame.rerender()
+            return self._next_frame
 
+        self.back_button.tick()
+        self.text_input.tick()
 
-        if self.go_back_flag:
-            self.go_back_flag = False
-            return self.parent_frame
-
-        if self.load_playset_flag:
-            self.load_playset_flag = False
-
-            if type(self.data) == ContextData:
-                self.data.current_savefile_name = self.savefile_name
-            lpframe = LoadPlaysetFrame(self.data, self.frame_dim.copy(), self)
-            return lpframe
-
+        #polling events
+        for event in self.text_input.poll_events():
+            if event.type == TextInput.EventTypes.UNFOCUSED:
+                self.focus()
+                self.state = ChooseSaveNameFrame.NOTHING_FOCUSED
 
         return self
 
@@ -253,10 +254,5 @@ class ChooseSaveNameFrame(Frame):
 
         screen.fill(Colors.BLACK)
 
-        screen.blit(self.headline, self.headline_pos)
-        if self.is_typing:
-            screen.blit(self.typing_selected_frame, self.typing_selected_frame_pos)
-        screen.blit(self.typing_frame, self.typing_frame_pos)
-        screen.blit(self.savefile_name_font, self.savefile_name_font_pos)
-        screen.blit(self.back_text, self.back_pos)
-        screen.blit(self.enter_text, self.enter_pos)
+        self.back_button.render(screen)
+        self.text_input.render(screen)

@@ -31,7 +31,7 @@ class TextSlider(Slider):
         selected_back_text_pages: list[colored_page_t] = None,
         font=Fonts.MINECRAFT,
         sliding_duration=500,  # ms
-        select_animation_duration=800,#ms
+        select_animation_duration=400,#ms
         flip_duration=400,#ms
         text_alphas=None,
         text_span=1,

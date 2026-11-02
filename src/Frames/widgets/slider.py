@@ -48,7 +48,7 @@ class Slider(Frame):
         self,
         frame_dim,
         sliding_duration=500,  # ms
-        select_animation_duration=800,#ms
+        select_animation_duration=400,#ms
         alphas=None,
         span=1,
         background_color=Colors.TRANSPARENT,

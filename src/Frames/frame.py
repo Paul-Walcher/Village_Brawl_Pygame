@@ -96,7 +96,7 @@ class Frame(EventQueueManager):
         FAILURE = R_ID()
         SUCCESS = R_ID()
 
-        def __init__(self, type: int, data: Any, putback: bool, func: event_callback_t):
+        def __init__(self, etype: int, data: Any, putback: bool, func: event_callback_t):
 
             self.putback: bool = putback
             """
@@ -106,7 +106,7 @@ class Frame(EventQueueManager):
             """
             The function executed when this class is called.
             """
-            super().__init__(type, data)
+            super().__init__(etype, data)
 
         def __call__(self, event: pygame.event.Event) -> event_callback_result_t:
             """
@@ -273,8 +273,6 @@ class Frame(EventQueueManager):
     def width(self, val):
         pre_w = self.width
         self.frame_dim = pygame.Rect(self.x, self.y, val, self.height)
-        if pre_w != self.width:
-            self.rerender()
 
     @property
     def height(self):
@@ -284,8 +282,6 @@ class Frame(EventQueueManager):
     def height(self, val):
         pre_h = self.height
         self.frame_dim = pygame.Rect(self.x, self.y, self.width, val)
-        if pre_h != self.height:
-            self.rerender()
 
 
     def __prune_parent_frames(self) -> None:
@@ -327,15 +323,17 @@ class Frame(EventQueueManager):
     that are called when the own focus gets either lost or gained
     """
 
-    def on_focus_gained(self) -> None:
+    def on_focus_gained(self, lost_focus_frame: Frame) -> None:
         """
         Callback function for when this frame gains focus.
+        Gets the frame reference for the frame that lost the focus
         """
         pass
 
-    def on_focus_lost(self) -> None:
+    def on_focus_lost(self, gained_focus_frame: Frame) -> None:
         """
         Callback function for when this frame looses focus.
+        Gets a reference to the frame that gained focus.
         """
         pass
 
@@ -371,20 +369,22 @@ class Frame(EventQueueManager):
 
         self.frame_dim = r
 
-    def _on_focus_changed(self) -> None:
+    def _on_focus_changed(self, focus_lost_frame: Frame, focus_gained_frame: Frame) -> None:
         """
         Internal function, this function calls
         the on_focus_gained and on_focus_lost
         callback functions after clearing the event callbacks,
         and rebinding the events via self.bind_events().
+
+        Gets the reference of the frames involved in focus exchange.
         """
 
         self.clear_event_callbacks()
         self.bind_events()
         if self.is_focused():
-            self.on_focus_gained()
+            self.on_focus_gained(focus_lost_frame)
         else:
-            self.on_focus_lost()
+            self.on_focus_lost(focus_gained_frame)
 
 
 
@@ -404,8 +404,8 @@ class Frame(EventQueueManager):
 
         if pre is not self:
             if pre is not None:
-                pre._on_focus_changed()
-            self._on_focus_changed()
+                pre._on_focus_changed(pre, self)
+            self._on_focus_changed(pre, self)
 
 
     def unfocus(self) -> None:
@@ -430,7 +430,7 @@ class Frame(EventQueueManager):
 
         # No matching ancestor exists, so the group has no focused frame.
         Frame.FOCUS_GROUPS[self.focus_group] = None
-        self._on_focus_changed()
+        self._on_focus_changed(self, None)
 
     def is_focused(self) -> bool:
         """
@@ -462,6 +462,12 @@ class Frame(EventQueueManager):
             return False
         else:
             return self.__key_scancodes[scancode]
+
+    def reset_keys_pressed(self) -> None:
+        """
+        Resets the key pressed dictionary
+        """
+        self.__key_scancodes = {}
 
     def add_default_escape_callback(self) -> None:
         """
@@ -562,14 +568,14 @@ class Frame(EventQueueManager):
         """
         return self.__event_callbacks.copy()
 
-    def add_pygame_event_callback(self, type: int, data: Any, putback: bool, func: event_callback_t) -> Frame.EventCallback:
+    def add_pygame_event_callback(self, etype: int, data: Any, putback: bool, func: event_callback_t) -> Frame.EventCallback:
         """
         adds a EventCallback class into self.__event_callbacks.
         See Frame.EventCallback.
         Returns the created EventCallback.
         """
 
-        cb = Frame.EventCallback(type, data, putback, func)
+        cb = Frame.EventCallback(etype, data, putback, func)
         self.__event_callbacks.append(cb)
         return cb
 

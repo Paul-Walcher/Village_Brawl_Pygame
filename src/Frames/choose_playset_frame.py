@@ -267,9 +267,9 @@ class ChoosePlaysetFrame(Frame):
             if type(self.data) == ContextData:
                 if self.data.mouse_enabled:
 
-                    self.add_pygame_event_callback(type=pygame.MOUSEMOTION, data=None, putback=False, func=self.mouse_motion)
-                    self.add_pygame_event_callback(type=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down)
-                    self.add_pygame_event_callback(type=pygame.MOUSEWHEEL, data=None, putback=False, func=self.mouse_wheel)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEMOTION, data=None, putback=False, func=self.mouse_motion)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEWHEEL, data=None, putback=False, func=self.mouse_wheel)
 
     def mouse_motion(self, event: pygame.event.Event, data: Any) -> None:
         """
@@ -385,7 +385,8 @@ class ChoosePlaysetFrame(Frame):
 
     def tick(self):
 
-        self.manage_pygame_events()
+        if self.intro_delay_clock.elapsed() > self.intro_delay:
+            self.manage_pygame_events()
 
         if self.exit_flag_raised():
             if self._next_frame is not None:

@@ -32,7 +32,7 @@ class ImageSlider(Slider):
         back_images: list[str] = None, #back images
         selected_back_images: list[str] = None, #back images for when an image is selected
         sliding_duration=500,  # ms
-        select_animation_duration=800,#ms
+        select_animation_duration=400,#ms
         images_alphas=None,
         images_span=1,
         background_color=Colors.TRANSPARENT,
