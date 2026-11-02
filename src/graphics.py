@@ -83,6 +83,39 @@ def page_to_colored_page(page: page_t, text_color: color_t) -> colored_page_t:
     """
     return [[(line, text_color)] for line in page]
 
+def page_to_str(page: page_t) -> str:
+    """
+    Concatenates all lines with \\n
+    """
+    return "\n".join(page)
+
+def colored_page_to_page(colored_page: colored_page_t) -> page_t:
+    """
+    Returns the colored page as a normal page.
+    """
+    new_page: page_t = []
+
+    for line in colored_page:
+        full_line_text: str = ""
+
+        for text, color in line:
+            full_line_text += text
+
+        new_page.append(full_line_text)
+
+    return new_page
+
+def colored_page_to_str(colored_page: colored_page_t) -> str:
+    """
+    Returns the colored page as a string, with lines separated by \\n.
+    """
+    new_page: page_t = colored_page_to_page(colored_page)
+    return page_to_str(new_page)
+
+
+
+
+
 class _NewPage:
     """Marker requesting a page break after a given number of blank lines."""
 
@@ -120,7 +153,7 @@ def text_size(font: pygame.font.Font, fontsize: int, text: str) -> tuple[int, in
 
 
 
-def get_fontsize(font: pygame.font.Font, lines: list[str], frame: pygame.Rect, line_margin: int=5, min_size: int=1, max_size: int=1024) -> int:
+def get_fontsize(font: pygame.font.Font, lines: page_t, frame: pygame.Rect, line_margin: int=5, min_size: int=1, max_size: int=1024) -> int:
     """
     Returns the largest font size for which all lines fit inside frame.
 

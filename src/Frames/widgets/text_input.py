@@ -32,6 +32,8 @@ class TextInput(Frame):
 
     #symbols
     CURSOR_SYMBOL: str = "|"
+    #for determining the fontsize
+    SIZE_REFERENCE_CHARACTER: str = "W"
 
     class EventTypes:
         #events
@@ -89,13 +91,13 @@ class TextInput(Frame):
                 outline_shown: bool = False,
                 starting_text: str = "",
                 cursor_color: color_t = Colors.BLACK,
-                cursor_margin_p: float = 0.025,#px
-                cursor_width_p: float = 0.02,#px
+                cursor_margin_p: float = 0.01,#px
+                cursor_width_p: float = 0.01,#px
                 cursor_height_p: float = 0.5, #px
                 cursor_shown: bool = True,
                 n_chars_shown: int = 30,
                 max_textlength: int = 50,
-                intro_delay: float = 250,#ms
+                intro_delay: float = 100,#ms
                 input_delay: float = 50,#ms
                 backspace_delay: float = 100,#ma
                 tab_out_key_combination: list[int] = None
@@ -134,6 +136,10 @@ class TextInput(Frame):
         self.font: pygame.font.Font = font
         """
         The font for the TextInput
+        """
+        self.fontsize: int = -1
+        """
+        The fontsize of the whole textinput.
         """
         self.text_color: color_t = text_color
         """
@@ -221,9 +227,17 @@ class TextInput(Frame):
         """
         The rendered text before the cursor.
         """
+        self.front_text_pos: tuple[int, int] = None
+        """
+        Position of the front text.
+        """
         self.rendered_back_text: rendered_surface_position_tuples_t = None
         """
         The rendered text after the cursor.
+        """
+        self.back_text_pos: tuple[int, int] = None
+        """
+        Position of the back text.
         """
         self.input_delay: float = input_delay
         """
@@ -301,6 +315,12 @@ class TextInput(Frame):
                                                         self.textfield_frame_dim.height
                                                         )
 
+        self.fontsize = graphics.get_fontsize(
+                                                font=self.font,
+                                                lines=graphics.str_to_page(TextInput.SIZE_REFERENCE_CHARACTER * self.n_chars_shown),
+                                                frame=self.textfield_frame_dim
+                                                )
+
         #calculating the cursor dimensions
         self.cursor_margin = max(int(self.textfield_frame_dim.width * self.cursor_margin_p), 1)
         self.cursor_width = max(int(self.textfield_frame_dim.width * self.cursor_width_p), 1)
@@ -309,6 +329,7 @@ class TextInput(Frame):
         self.prerender()
 
         self.reset_exit_flag()
+        self.intro_delay_clock.start()
         self.input_delay_clock.start()
         self.backspace_delay_clock.start()
 
@@ -320,53 +341,27 @@ class TextInput(Frame):
         front_text: str = self.get_front_text()
         back_text: str = self.get_back_text()
 
-        front_page: colored_page_t = graphics.str_to_colored_page(text=front_text, text_color=self.text_color)
-        back_page: colored_page_t = graphics.str_to_colored_page(text=back_text, text_color=self.text_color)
-        #creating the partitioned rects
-        width_without_cursor: int = self.relative_textfield_frame_dim.width - self.get_cursor_widths()
-        front_width: int = int((len(front_text) / self.n_chars_shown) * width_without_cursor)
-        back_width: int = int((len(back_text) / self.n_chars_shown) * width_without_cursor)
+        cx: int = self.relative_textfield_frame_dim.x
+        cy: int = self.relative_textfield_frame_dim.y
 
-        front_rect: pygame.Rect = pygame.Rect(
-                                                self.relative_textfield_frame_dim.x,
-                                                self.relative_textfield_frame_dim.y,
-                                                front_width,
-                                                self.relative_textfield_frame_dim.height
-                                                )
-
-        self.cursor_render_pos = (front_rect.x + front_rect.width + self.cursor_margin,
-                                    self.relative_textfield_frame_dim.y + (self.relative_textfield_frame_dim.height - self.cursor_height) // 2)
-
-        back_rect: pygame.Rect = pygame.Rect(
-                                                front_rect.x + front_rect.width + self.get_cursor_widths(),
-                                                self.relative_textfield_frame_dim.y,
-                                                back_width,
-                                                self.relative_textfield_frame_dim.height
-                                                )
-        #rendering the front text
         if front_text:
-            self.rendered_front_text = graphics.render_page_from_chars_color(
-                                                                                font=self.font,
-                                                                                page=front_page,
-                                                                                frame=front_rect,
-                                                                                text_color=self.text_color,
-                                                                                centered=True,
-                                                                                vertical_centered=True
-                                                                                )
+            self.rendered_front_text = graphics.render_text(font=self.font, fontsize=self.fontsize, text=front_text, color=self.text_color)
+            self.front_text_pos = (cx, cy + (self.relative_textfield_frame_dim.height - self.rendered_front_text.get_height()) // 2) #centered pos
+            cx += self.rendered_front_text.get_width()
+            self.cursor_render_pos = (cx + self.cursor_margin, cy + (self.relative_textfield_frame_dim.height - self.cursor_height) // 2)
+            cx += self.get_cursor_widths()
         else:
             self.rendered_front_text = None
+            self.front_text_pos = None
+            self.cursor_render_pos = (cx + self.cursor_margin, cy + (self.relative_textfield_frame_dim.height - self.cursor_height) // 2)
+            cx += self.get_cursor_widths()
 
         if back_text:
-            self.rendered_back_text = graphics.render_page_from_chars_color(
-                                                                                font=self.font,
-                                                                                page=back_page,
-                                                                                frame=back_rect,
-                                                                                text_color=self.text_color,
-                                                                                centered=True,
-                                                                                vertical_centered=True
-                                                                                )
+            self.rendered_back_text = graphics.render_text(font=self.font, fontsize=self.fontsize, text=back_text, color=self.text_color)
+            self.back_text_pos = (cx, cy + (self.relative_textfield_frame_dim.height - self.rendered_back_text.get_height()) // 2) #centered pos
         else:
             self.rendered_back_text = None
+            self.back_text_pos = None
 
     def prerender(self) -> None:
         """
@@ -378,9 +373,9 @@ class TextInput(Frame):
 
         #then rendering the text
         if self.rendered_front_text is not None:
-            graphics.render_rendered_surface_position_tuples(self.surface, self.rendered_front_text)
+            self.surface.blit(self.rendered_front_text, self.front_text_pos)
         if self.rendered_back_text is not None:
-            graphics.render_rendered_surface_position_tuples(self.surface, self.rendered_back_text)
+            self.surface.blit(self.rendered_back_text, self.back_text_pos)
         #drawing cursor
         if self.cursor_shown:
             pygame.draw.rect(self.surface, self.cursor_color, (*self.cursor_render_pos, self.cursor_width, self.cursor_height))
@@ -423,9 +418,7 @@ class TextInput(Frame):
             #adding textinput event
             self.add_pygame_event_callback(etype=pygame.TEXTINPUT, data=None, putback=False, func=self.on_textinput)
             self.add_pygame_key_callback(key=pygame.K_LEFT, data=None, putback=False, func=self.on_left_pressed)
-            self.add_pygame_key_callback(key=KeyAlternatives.LEFT_ALTERNATIVE, data=None, putback=False, func=self.on_left_pressed)
             self.add_pygame_key_callback(key=pygame.K_RIGHT, data=None, putback=False, func=self.on_right_pressed)
-            self.add_pygame_key_callback(key=KeyAlternatives.RIGHT_ALTERNATIVE, data=None, putback=False, func=self.on_right_pressed)
             self.add_pygame_key_callback(key=pygame.K_ESCAPE, data=None, putback=False, func=self.on_escape_pressed)
             self.add_pygame_key_callback(key=pygame.K_RETURN, data=None, putback=False, func=self.on_enter_pressed)
             self.add_pygame_event_callback(etype=pygame.KEYDOWN, data=None, putback=True, func=self.on_keypress)
@@ -443,9 +436,9 @@ class TextInput(Frame):
                 tadd = tadd[:addlen]
 
                 self.text = self.text[:self.cursor_offset+self.cursor_pos] + tadd + self.text[self.cursor_offset+self.cursor_pos:]
+
                 self.move_cursor_right(len(tadd))
 
-                self.prerender()
                 self.input_delay_clock.start()
 
 
@@ -489,7 +482,8 @@ class TextInput(Frame):
         Tick function.
         """
 
-        self.manage_pygame_events()
+        if self.intro_delay_clock.elapsed() > self.intro_delay:
+            self.manage_pygame_events()
 
         if self.exit_flag_raised():
             return None
@@ -575,7 +569,7 @@ class TextInput(Frame):
             if self.cursor_pos == self.n_chars_shown:
                 if self.cursor_offset < len(self.text)-1:
                     self.cursor_offset += 1
-            else:
+            elif self.cursor_pos < len(self.text):
                 self.cursor_pos += 1
 
         self.prerender()
