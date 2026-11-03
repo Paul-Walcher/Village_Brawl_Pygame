@@ -5,16 +5,18 @@ import os
 import pygame
 import threading
 
-from Frames.frame import Frame
-from Frames.frame_enums import FrameEnums
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
+from context_data import ContextData
 from clock import Clock
 from modules import Modules
 import constants
 
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
 from Frames.choose_explorer_frame import ChooseExplorerFrame
-from context_data import ContextData
+from Frames.widgets.label import Label
+from Frames.widgets.button import Button
 
 class LoadPlaysetFrame(Frame):
 
@@ -37,44 +39,120 @@ class LoadPlaysetFrame(Frame):
 
                         )
 
-        self.modules = None
+        self.loading_text: str = "Loading"
+        """
+        Text shown while loading
+        """
+        self.n_dots: int = 0
+        """
+        Current number of dots in the animation.
+        """
+        self.max_dots: int = 5
+        """
+        Maximum number of dots in the animation.
+        """
+        self.loading_text_wp: float = 0.5
+        """
+        Width of the loading text relative to self.width.
+        """
+        self.loading_text_hp: float = 0.4
+        """
+        Height of the loading text relative to self.height.
+        """
+        self.rendered_loading_text: pygame.Surface = None
+        """
+        The Rendered Loading text.
+        """
+        self.rendered_loading_text_pos: tuple[int, int] = None
+        """
+        Position of the rendered text.
+        """
+        self.loading_text_fontsize: int = None
+        """
+        The loading text fontsize.
+        """
+        self.loading_delay: int = 200#ms
+        """
+        Loading delay for the text animation.
+        """
+        self.loading_clock: Clock = Clock()
+        """
+        The clock for the loading animation.
+        """
+        self.extra_clock: Clock = Clock()
+        """
+        The extra clock, for waiting for constants.__ADDITIONAL_LOAD_TIME__.
+        """
+        self.loading_finished: bool = False
+        """
+        If the loading is finished or not.
+        """
+        self.loading_lock: threading.Lock = threading.Lock()
+        """
+        Lock for setting self.loading finished.
+        """
+        self.intro_delay: float = 100#ms
+        """
+        Intro delay.
+        """
+        self.intro_delay_clock: Clock = Clock()
+        """
+        Clock for the intro delay.
+        """
+        self.thread: threading.Thread = None
+        """
+        The thread loading the playset.
+        """
+        self.rerender()
 
-        self.loading_text = None
-        self.loading_text_pos = None
-        self.n_dots = 0
-        self.max_dots = 5
-
-        self.loading_delay = 200#ms
-        self.loading_clock = Clock()
-        self.loading_clock.start()
-
-        self.extra_clock = Clock()
+    def rerender(self) -> None:
+        """
+        Recalculating and rerendering from scratch.
+        """
 
         self.loading_finished = False
-        self.loading_lock = threading.Lock()
+        self.n_dots = 0
 
+        text_rect: pygame.Rect = pygame.Rect(
+                                                0, 0,
+                                                int(self.width * self.loading_text_hp),
+                                                int(self.height * self.loading_text_hp)
+                                            )
+        self.loading_text_fontsize = graphics.get_fontsize(font=Fonts.STANDARD_FONT, lines=[self.loading_text + "." * self.max_dots], frame=text_rect)
+        self.loading_text_pos = graphics.get_center_with_rect(outer_rect=self.frame_dim, inner_rect=text_rect)
+
+        self.render_loading_text()
+
+        self.reset_exit_flag()
+        self._next_frame = None
+
+        self.loading_clock.start()
+        self.intro_delay_clock.start()
+
+        #starting the loading thread
         self.thread = threading.Thread(target=self.load_playset)
         self.thread.start()
 
-        self.render_loading()
 
+    def render_loading_text(self) ->  None:
+        """
+        Renders the loading text.
+        """
 
-    def render_loading(self):
+        self.rendered_loading_text = graphics.render_text(  Fonts.STANDARD_FONT,
+                                                            self.loading_text_fontsize,
+                                                            self.loading_text + "."*self.n_dots,
+                                                            Colors.STANDARD_TEXT_COLOR
+                                                            )
 
-        self.loading_text = graphics.render_text(Fonts.MINECRAFT, Fontsizes.BIG_HEADLINE,
-                                                "Loading." + "."*(self.n_dots-1),
-                                                Colors.WHITE
-                                                )
-
-        self.loading_text_pos = graphics.center_at(self.loading_text, self.center)
-
-
-
-    def load_playset(self):
-
-        playset_name = None
+    def load_playset(self) -> None:
+        """
+        Used by self.thread to load the playset in contextdata.current_playset
+        """
         if type(self.data) == ContextData:
             self.data.modules = Modules.load_playset(self.data.current_playset)
+        else:
+            return
 
         with self.loading_lock:
             self.loading_finished = True
@@ -86,29 +164,39 @@ class LoadPlaysetFrame(Frame):
         self.manage_pygame_events()
 
         if self.exit_flag_raised():
-            return None
+            if self._next_frame is not None:
+                self._next_frame.rerender()
+                self._next_frame.focus()
+            return self._next_frame
 
         if self.loading_clock.elapsed() > self.loading_delay:
 
             self.n_dots += 1
-            self.n_dots %= (self.max_dots-1)
+            self.n_dots %= self.max_dots
 
-            self.render_loading()
+            self.render_loading_text()
             self.loading_clock.start()
 
         with self.loading_lock:
-
             if self.loading_finished and self.extra_clock.elapsed() > constants.__ADDITIONAL_LOAD_TIME__:
 
-                ceframe = ChooseExplorerFrame(self.data, self.frame_dim.copy(), None) #resetting parent_frame_list
-                return ceframe
+                self._next_frame = ChooseExplorerFrame(
+                                                data=self.data,
+                                                frame_dim=self.frame_dim.copy(),
+                                                parent_frame=None, #resetting parent_frame_list
+                                                focus_group=self.focus_group,
+                                                has_focus=True
+                                                )
+                self.raise_exit_flag()
 
 
         return self
 
 
-    def render(self, screen):
+    def render(self, screen: pygame.Surface) -> None:
+        """
+        Rendering function.
+        """
 
         screen.fill(Colors.BLACK)
-
-        screen.blit(self.loading_text, self.loading_text_pos)
+        screen.blit(self.rendered_loading_text, self.loading_text_pos)

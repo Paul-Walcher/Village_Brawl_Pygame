@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import Any, Callable
+
 import os
 import pygame
 import threading
@@ -15,9 +18,24 @@ from context_data import ContextData
 
 class ChooseExplorerFrame(Frame):
 
-    def __init__(self, data=None, frame_dim=None, parent_frame=None):
+    def __init__(
+                    self,
+                    data: Any = None,
+                    frame_dim: pygame.Rect = None,
+                    parent_frame: Frame = None,
+                    focus_group: str = "",
+                    has_focus: bool = True
 
-        super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame_dim, parent_frame)
+                    ):
+
+        super().__init__(
+                            frame_enum=FrameEnums.CHOOSE_EXPLORER_FRAME,
+                            data=data,
+                            frame_dim=frame_dim,
+                            parent_frame=parent_frame,
+                            focus_group=focus_group,
+                            has_focus=has_focus
+                            )
 
         self.modules = None
 
