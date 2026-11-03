@@ -100,6 +100,8 @@ class TextInput(Frame):
                 intro_delay: float = 100,#ms
                 input_delay: float = 50,#ms
                 backspace_delay: float = 100,#ma
+                cursor_flickering: bool = True, #if the cursor flickers when the textinput is focused
+                cursor_flickering_frequency: float = 400,#ms
                 tab_out_key_combination: list[int] = None
                 ):
 
@@ -211,7 +213,7 @@ class TextInput(Frame):
         """
         The cursor render pos.
         """
-        self.cursor_shown: bool = cursor_shown
+        self._cursor_shown: bool = cursor_shown
         """
         If the cursor is shown or not.
         """
@@ -267,11 +269,31 @@ class TextInput(Frame):
         """
         If the input is active or not.
         """
+        self.cursor_flickering: bool = cursor_flickering
+        """
+        If the cursor should flicker when the textinput is focused.
+        """
+        self.cursor_flickering_frequency: float = cursor_flickering_frequency
+        """
+        The time until the state of the cursor makes one round of (shown, unshown) and reverts
+        back to shown. Both states last self.cursor_flickering_frequency // 2.
+        """
+        self.cursor_flickering_clock: Clock = Clock()
+        """
+        Clock for cursor flickering.
+        """
         self.tab_out_key_combination: list[int] = ([pygame.K_LCTRL, KeyAlternatives.BACK_KEY] if tab_out_key_combination is None else tab_out_key_combination)
         """
         If all of the keys in the list are pressed at once, the textinput will act as if escape was pressed.
         """
         self.rerender()
+
+    @property
+    def cursor_shown(self):
+        """
+        If the cursor is shown or not.
+        """
+        return self._cursor_shown
 
 
     def on_focus_gained(self, lost_focus_frame: Frame) -> None:
@@ -280,13 +302,19 @@ class TextInput(Frame):
         """
         pygame.key.start_text_input()
         self.reset_keys_pressed()
+        self.prerender()
         self.intro_delay_clock.start()
+        self._cursor_shown = True
+        if self.cursor_flickering:
+            self.cursor_flickering_clock.start()
 
     def on_focus_lost(self, gained_focus_frame: Frame) -> None:
         """
         Deactivates the text input.
         """
+        self._cursor_shown = True
         pygame.key.stop_text_input()
+        self.prerender()
 
 
     def rerender(self) -> None:
@@ -441,18 +469,30 @@ class TextInput(Frame):
 
                 self.input_delay_clock.start()
 
+                #resetting the flickering#
+                if self.cursor_flickering:
+                    self._cursor_shown = True
+                    self.cursor_flickering_clock.start()
+
+
 
     def on_left_pressed(self, event: pygame.event.Event, data=None) -> None:
         """
         left pressed event.
         """
         self.move_cursor_left()
+        if self.cursor_flickering:
+            self._cursor_shown = True
+            self.cursor_flickering_clock.start()
 
     def on_right_pressed(self, event: pygame.event.Event, data=None) -> None:
         """
         left pressed event.
         """
         self.move_cursor_right()
+        if self.cursor_flickering:
+            self._cursor_shown = True
+            self.cursor_flickering_clock.start()
 
     def on_escape_pressed(self, event: pygame.event.Event, data=None) -> None:
         """
@@ -503,6 +543,14 @@ class TextInput(Frame):
                     self.cursor_offset = max(self.cursor_offset, 0)
                     self.prerender()
                     self.backspace_delay_clock.start()
+
+        #checking for flickering
+        if self.cursor_flickering and self.is_focused():
+            if self.cursor_flickering_clock.elapsed() > self.cursor_flickering_frequency:
+
+                self._cursor_shown = not self._cursor_shown
+                self.prerender()
+                self.cursor_flickering_clock.start()
 
         return self
 
