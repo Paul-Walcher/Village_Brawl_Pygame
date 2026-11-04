@@ -118,8 +118,6 @@ class ExplorerInfoFrame(Frame):
 
     def bind_events(self):
 
-        self.clear_event_callbacks()
-
         if self.is_focused():
             self.add_pygame_key_callback(pygame.K_LEFT, None, putback=False, func=self.left_pressed)
             self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, None, putback=False, func=self.left_pressed)

@@ -142,7 +142,7 @@ class Slider(Frame):
         #indices without modulo. invalid indices included
         self.original_indices = []
 
-        self.fixed_image_positions = self.get_fixed_image_positions()
+        self.fixed_image_positions = None
 
         self.sliding_clock = Clock()
         self.select_animation_clock = Clock()
@@ -168,9 +168,6 @@ class Slider(Frame):
 
     def get_focus_index(self):
         return self.surface_index
-
-    def get_focus_surface(self):
-        return self.surfaces[self.surface_index]
 
     def slide_left(self):
 
@@ -276,6 +273,8 @@ class Slider(Frame):
 
     def rerender_images(self):
 
+        self.fixed_image_positions = self.get_fixed_image_positions()
+
         self.top_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.bottom_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
@@ -372,7 +371,7 @@ class Slider(Frame):
 
             for i in range(1 + self.span * 2):
 
-                dspaces.append((lp, nic))
+                dspaces.append((lp, inc))
                 inc += lp
 
         else:

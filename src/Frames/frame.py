@@ -380,12 +380,11 @@ class Frame(EventQueueManager):
         """
 
         self.clear_event_callbacks()
-        self.bind_events()
         if self.is_focused():
             self.on_focus_gained(focus_lost_frame)
         else:
             self.on_focus_lost(focus_gained_frame)
-
+        self.bind_events()
 
 
     def focus(self) -> None:
@@ -444,7 +443,7 @@ class Frame(EventQueueManager):
         if self.focus_group not in Frame.FOCUS_GROUPS:
             return True
 
-        return (Frame.FOCUS_GROUPS[self.focus_group] == self)
+        return (Frame.FOCUS_GROUPS[self.focus_group] is self)
 
     def bind_events(self) -> None:
         """

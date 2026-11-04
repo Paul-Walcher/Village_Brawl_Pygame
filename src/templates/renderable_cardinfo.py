@@ -243,7 +243,8 @@ class Renderable_CardInfo:
         """
         Returns a rendered page.
         """
-        return graphics.render_page_from_chars(font=font, page=self.name, frame=target_frame_dim, line_margin=line_margin, centered=True, vertical_centered=True)
+        return graphics.render_page_from_chars_color(font=font, page=graphics.page_to_colored_page(self.name, self.name_color),
+                                                        frame=target_frame_dim, line_margin=line_margin, centered=True, vertical_centered=True)
 
     def get_card_image_rendered(self, frame_dim: pygame.Rect) -> surface_with_position_t:
         """
