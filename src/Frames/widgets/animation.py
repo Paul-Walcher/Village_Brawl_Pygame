@@ -5,6 +5,7 @@ import pygame
 
 from clock import Clock
 from enum import Enum, auto
+from event_queue_manager import Event
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -24,10 +25,76 @@ class Animation(Frame):
         The events of the animation.
         """
         ANIMATION_STARTED = auto()
+        ANIMATION_RESTARTED = auto()
         ANIMATION_ENDED = auto()
-
         ANIMATION_PAUSED = auto()
+        ANIMATION_LOOPED = auto()
 
+    class AnimationStartedEvent(Event):
+        """
+        Animation started event is called when a new animation is started from ground up.
+        """
+        def __init__(self, animation_ref: Animation) -> None:
+
+            Event.__init__(self, etype=Animation.EventTypes.ANIMATION_STARTED, data=None)
+            self.animation_ref: Animation = animation_ref
+
+        @override
+        def copy(self) -> AnimationStartedEvent:
+            return AnimationStartedEvent(animation_ref=self.animation_ref)
+
+
+    class AnimationRestartedEvent(Event):
+        """
+        Animation restarted event is called when the animation is unpaused.
+        """
+        def __init__(self, animation_ref: Animation) -> None:
+
+            Event.__init__(self, etype=Animation.EventTypes.ANIMATION_RESTARTED, data=None)
+            self.animation_ref: Animation = animation_ref
+
+        @override
+        def copy(self) -> AnimationRestartedEvent:
+            return AnimationRestartedEvent(animation_ref=self.animation_ref)
+
+    class AnimationEndedEvent(Event):
+        """
+        Animation ended event gets pushed if the animation and all loops ended.
+        """
+        def __init__(self, animation_ref: Animation) -> None:
+
+            Event.__init__(self, etype=Animation.EventTypes.ANIMATION_ENDED, data=None)
+            self.animation_ref: Animation = animation_ref
+
+        @override
+        def copy(self) -> AnimationEndedEvent:
+            return AnimationEndedEvent(animation_ref=self.animation_ref)
+
+    class AnimationPausedEvent(Event):
+        """
+        Animation paused event is created when the animation is paused.
+        """
+        def __init__(self, animation_ref: Animation) -> None:
+
+            Event.__init__(self, etype=Animation.EventTypes.ANIMATION_PAUSED, data=None)
+            self.animation_ref: Animation = animation_ref
+
+        @override
+        def copy(self) -> AnimationPausedEvent:
+            return AnimationPausedEvent(animation_ref=self.animation_ref)
+
+    class AnimationLoopedEvent(Event):
+        """
+        Animation looped event is called when one loop is finished
+        """
+        def __init__(self, animation_ref: Animation) -> None:
+
+            Event.__init__(self, etype=Animation.EventTypes.ANIMATION_LOOPED, data=None)
+            self.animation_ref: Animation = animation_ref
+
+        @override
+        def copy(self) -> AnimationLoopedEvent:
+            return AnimationLoopedEvent(animation_ref=self.animation_ref)
 
     def __init__(
                     self,
@@ -177,8 +244,26 @@ class Animation(Frame):
                                         new_surface_blit_durations=new_surface_blit_durations
                                         )
 
+            self.push_event(Animation.AnimationStartedEvent(self))
+
+        else:
+
+            self.push_event(Animation.AnimationRestartedEvent(self))
+
         self.is_paused = False
         self.animation_clock.start()
+
+    def reset_animation(self) -> None:
+        """
+        Resets and pauses the animation.
+        """
+        self.is_paused = True
+        self.elapsed_time = 0
+        self.looping_index = 0
+        self.surface_index = self.shift
+        self.animation_finished = False
+        #creates a pause event
+        self.push_event(Animation.AnimationPausedEvent(self))
 
     def pause_animation(self) -> None:
         """
@@ -186,6 +271,7 @@ class Animation(Frame):
         """
         self.is_paused = True
         self.elapsed_time = self.animation_clock.elapsed()
+        self.push_event(Animation.AnimationPausedEvent(self))
 
     def is_paused(self) -> bool:
         """
@@ -198,6 +284,34 @@ class Animation(Frame):
         Returns the elapsed time since the last animation was started.
         """
         return (self.elapsed_time + self.looping_index * sum(self.surface_blit_durations))
+
+    def get_loops(self) -> tuple[int, int]:
+        """
+        Returns a tuple of (self.looping_index, self.n_loops),
+        if this animation is active or paused, else None
+        """
+        if self.animation_finished:
+            return None
+        else:
+            return (self.looping_index, self.n_loops)
+
+    def get_surface_blit_durations(self) -> list[float]:
+        """
+        Returns a copy of the surface blit durations.
+        """
+        return self.surface_blit_durations.copy()
+
+    def get_surface_copies(self) -> list[pygame.Surface]:
+        """
+        Returns a list of surface copies.
+        """
+        return [surf.copy() for surf in self.surfaces]
+
+    def get_surfaces(self) -> list[pygame.Surface]:
+        """
+        Returns a reference to the surface list for this animation.
+        """
+        return self.surfaces
 
     @override
     def tick(self) -> None:
@@ -222,11 +336,13 @@ class Animation(Frame):
                     if self.looping_index < (self.n_loops-1):
                         self.looping_index += 1
                         self.elapsed_time = 0
+                        self.push_event(Animation.AnimationLoopedEvent(self))
                         self.animation_clock.start()
                     else:
                         #stop the animation
                         self.is_paused = True
                         self.animation_finished = True
+                        self.push_event(Animation.AnimationEndedEvent(self))
 
     @override
     def render(self, screen: pygame.Surface) -> None:
