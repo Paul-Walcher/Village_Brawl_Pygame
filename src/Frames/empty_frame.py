@@ -7,8 +7,10 @@ from constants import Colors
 
 class EmptyFrame(Frame):
 
-    def __init__(self, data, frame_dim, parent_frame=None, background_color=(*Colors.BLACK, 255)):
-        super().__init__(FrameEnums.EMPTY_FRAME, data, frame_dim, parent_frame)
+    def __init__(self, data, frame_dim, parent_frame=None, focus_group="", has_focus=True, background_color=(*Colors.BLACK, 255)):
+        super().__init__(frame_enum=FrameEnums.EMPTY_FRAME, data=data, frame_dim=frame_dim, parent_frame=parent_frame,
+                        focus_group=focus_group, has_focus=has_focus
+                        )
         self.background_color = background_color
 
         self.surface = pygame.Surface((self.frame_dim.width, self.frame_dim.height), pygame.SRCALPHA)

@@ -3,6 +3,7 @@ from typing import Callable, Any
 
 import pygame
 from abc import ABC, abstractmethod
+from enum import Enum, auto
 from event_queue_manager import EventQueueManager, Event
 from clock import Clock
 from constants import R_ID
@@ -63,6 +64,51 @@ class Frame(EventQueueManager):
     the reference to the frame that currently has the focus
     in this group (key).
     """
+
+    class EventTypes(Enum):
+        #types of the standard frame events
+        FOCUS_CHANGED = auto()
+        SUBFRAME_CREATED = auto()
+        SUBFRAME_DELETED = auto()
+
+    class FocusChangedEvent(Event):
+
+        def __init__(self, focus_lost_frame: Frame, focus_gained_frame: Frame):
+
+            Event.__init__(self, Frame.EventTypes.FOCUS_CHANGED, None)
+
+            self.focus_lost_frame: Frame = focus_lost_frame
+            self.focus_gained_frame: Frame = focus_gained_frame
+
+        def copy(self) -> FocusChangedEvent:
+
+            return FocusChangedEvent(self.focus_lost_frame, self.focus_gained_frame)
+
+    class SubframeCreatedEvent(Event):
+
+        def __init__(self, created_subframe: Frame, n_subframes_active: int):
+
+            Event.__init__(self, Frame.EventTypes.SUBFRAME_CREATED, None)
+            self.created_subframe: Frame = created_subframe
+            self.n_subframes_active: int = n_subframes_active #number of subframes active after the subframe was created
+
+        def copy(self) -> SubframeCreatedEvent:
+
+            return SubframeCreatedEvent(self.created_subframe, self.n_subframes_active)
+
+    class SubframeDeletedEvent(Event):
+
+        def __init__(self, deleted_subframe: Frame, n_subframes_active: int):
+
+            Event.__init__(self, Frame.EventTypes.SUBFRAME_DELETED, None)
+            self.deleted_subframe: Frame = deleted_subframe
+            self.n_subframes_active: int = n_subframes_active #number of subframes after deletion
+
+        def copy(self) -> SubframeDeletedEvent:
+
+            return SubframDeletedEvent(self.deleted_subframe, self.n_subframes_active)
+
+
 
     class EventCallback(Event):
 
@@ -385,6 +431,8 @@ class Frame(EventQueueManager):
         else:
             self.on_focus_lost(focus_gained_frame)
         self.bind_events()
+
+        self.push_event(Frame.FocusChangedEvent(focus_lost_frame, focus_gained_frame))
 
 
     def focus(self) -> None:

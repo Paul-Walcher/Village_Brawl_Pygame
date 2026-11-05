@@ -16,9 +16,25 @@ from context_data import ContextData
 
 class ShowExplorerStartingCardsFrame(Frame):
 
-    def __init__(self, explorer_enum, data=None, frame_dim=None, parent_frame=None):
+    def __init__(
+                    self,
+                    explorer_enum,
+                    data=None,
+                    frame_dim=None,
+                    parent_frame=None,
+                    focus_group="",
+                    has_focus=True
+                    ):
 
-        super().__init__(FrameEnums.SHOW_EXPLORER_STARTING_CARDS_FRAME, data, frame_dim, parent_frame)
+        super().__init__(
+                            frame_enum=FrameEnums.SHOW_EXPLORER_STARTING_CARDS_FRAME,
+                            data=data,
+                            frame_dim=frame_dim,
+                            parent_frame=parent_frame,
+                            focus_group=focus_group,
+                            has_focus=has_focus
+
+                        )
 
         self.modules = None
         if type(self.data) == ContextData:
@@ -87,7 +103,10 @@ class ShowExplorerStartingCardsFrame(Frame):
                                                         }
                                                         },
 
-                                                        shown_group="Deck"
+                                                        shown_group="Deck",
+                                                        parent_frame=self,
+                                                        focus_group=self.focus_group,
+                                                        has_focus=self.is_focused()
                                                         )
 
     def bind_events(self):

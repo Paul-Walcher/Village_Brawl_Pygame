@@ -332,6 +332,7 @@ class RenderableCardListviewer(Frame):
 
                 #focus group
                 focus_group="",
+                has_focus=True,
                 parent_frame=None,
 
                 shown_group=None, #the name of the first shown group, must be the name of a group or None
@@ -434,7 +435,14 @@ class RenderableCardListviewer(Frame):
         if cards_per_line <= 0 or cards_per_column <= 0:
             raise RuntimeError("cards_per_line and cards_per_column have to be greater than 0")
 
-        super().__init__(FrameEnums.RENDERABLE_CARDLIST_VIEWER_WIDGET, None, frame_dim, focus_group=focus_group, parent_frame=parent_frame)
+        super().__init__(
+                            frame_enum=FrameEnums.RENDERABLE_CARDLIST_VIEWER_WIDGET,
+                            data=None,
+                            frame_dim=frame_dim,
+                            parent_frame=parent_frame,
+                            focus_group=focus_group,
+                            has_focus=has_focus
+                            )
 
         #deepcopying, to avoid altering the references
         self.full_cardlist = full_cardlist.copy()

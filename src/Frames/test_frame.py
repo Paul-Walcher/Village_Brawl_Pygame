@@ -13,8 +13,15 @@ import time
 
 class TestFrame(EmptyFrame):
 
-    def __init__(self, data, frame_dim, parent_frame=None):
-        super().__init__(data, frame_dim, parent_frame)
+    def __init__(
+                    self,
+                    data,
+                    frame_dim,
+                    parent_frame=None,
+                    focus_group="",
+                    has_focus=True
+                    ):
+        super().__init__(data=data, frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group, has_focus=has_focus)
 
         self.rerender()
 

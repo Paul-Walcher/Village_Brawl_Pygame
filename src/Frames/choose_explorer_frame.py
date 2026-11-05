@@ -249,6 +249,8 @@ class ChooseExplorerFrame(Frame):
                                             )
 
         self.state = ChooseExplorerFrame.INFO_FRAME_SLIDING_IN
+        self.push_event(Frame.SubframeCreatedEvent(created_subframe=self.info_frame, n_subframes_active=1))
+
         self.info_frame_clock.start()
 
     def render_info_frame_sliding(self) -> None:
@@ -293,6 +295,7 @@ class ChooseExplorerFrame(Frame):
         Resets the state to idle and deletes the info frame.
         """
 
+        self.push_event(Frame.SubframeDeletedEvent(deleted_subframe=self.info_frame, n_subframes_active=0))
         self.state = ChooseExplorerFrame.IDLE
         self.info_frame = None
 
@@ -390,6 +393,18 @@ class ChooseExplorerFrame(Frame):
                     self.state = ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT
                     self.info_frame_clock.start()
 
+            #going through the events
+            for event in self.info_frame.poll_events():
+
+                if event.type == Frame.EventTypes.SUBFRAME_CREATED:
+                    #if the info frame has created a new subframe, clear all events
+                    self.clear_event_callbacks()
+                elif event.type == Frame.EventTypes.SUBFRAME_DELETED:
+                    #if after subframe deletion only the own info frame is active, reregister the events
+                    if event.n_subframes_active == 0:
+                        #adding callback
+                        self.add_pygame_key_callback(key=pygame.K_i, data=None, putback=True, func=self.i_pressed_info_frame_active)
+                        self.add_pygame_key_callback(key=KeyAlternatives.BACK_KEY, data=None, putback=True, func=self.i_pressed_info_frame_active)
 
         if self.state in [ChooseExplorerFrame.INFO_FRAME_SLIDING_IN, ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT]:
             self.render_info_frame_sliding()
