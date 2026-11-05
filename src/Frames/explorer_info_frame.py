@@ -93,6 +93,10 @@ class ExplorerInfoFrame(Frame):
         """
         Actual size of the outline.
         """
+        self.textbox_outline_size_p: float = 0.05
+        """
+        Outline for the textbox
+        """
 
         self.icon_imgs: list[str] = [
                                         IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
@@ -200,12 +204,12 @@ class ExplorerInfoFrame(Frame):
         #creating the surface
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
+        #getting outline size
+        self.focused_outline_size = int(min(self.width, self.height) * self.focused_outline_size_p)
+
         #getting the explorer ref and info
         self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
         self.explorer_info = self.explorer_ref.info()
-
-        #size of the focused outline for self.menu_slider
-        self.focused_outline_size = int(min(self.width, self.height) * self.focused_outline_size_p)
 
         #text for the labeled image slider rendered as colored pages
         self.slider_labels = [
@@ -280,7 +284,7 @@ class ExplorerInfoFrame(Frame):
 
         if self.state == ExplorerInfoFrame.NO_FOCUS:
             self.state = ExplorerInfoFrame.DESCRIPTION_FOCUSED
-            self.textbox.set_outline_size(self.focused_outline_size)
+            self.textbox.set_outline_size(self.textbox_outline_size_p)
             self.prerender()
         elif self.state == ExplorerInfoFrame.DESCRIPTION_FOCUSED:
             self.textbox.prev_page()
@@ -294,7 +298,7 @@ class ExplorerInfoFrame(Frame):
 
         if self.state == ExplorerInfoFrame.NO_FOCUS:
             self.state = ExplorerInfoFrame.DESCRIPTION_FOCUSED
-            self.textbox.set_outline_size(self.focused_outline_size)
+            self.textbox.set_outline_size(self.textbox_outline_size_p)
             self.prerender()
         elif self.state == ExplorerInfoFrame.DESCRIPTION_FOCUSED:
             self.textbox.next_page()
@@ -308,7 +312,7 @@ class ExplorerInfoFrame(Frame):
 
         if self.state == ExplorerInfoFrame.NO_FOCUS or self.state == ExplorerInfoFrame.MENU_FOCUSED:
             self.state = ExplorerInfoFrame.DESCRIPTION_FOCUSED
-            self.textbox.set_outline_size(self.focused_outline_size)
+            self.textbox.set_outline_size(self.textbox_outline_size_p)
             self.prerender()
 
         return Frame.EventCallback.SUCCESS
@@ -408,7 +412,7 @@ class ExplorerInfoFrame(Frame):
             tocolor = None
 
             if self.state == self.DESCRIPTION_FOCUSED:
-                tosize = 5
+                tosize = self.textbox_outline_size_p
                 tocolor = Colors.WHITE
 
             self.explorer_info.render_info_page_parts(

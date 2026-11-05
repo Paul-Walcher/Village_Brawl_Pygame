@@ -35,8 +35,6 @@ class Label(Frame):
                 text_selected_hmargin: float = 0.1, #margin for when the text is selected
                 text_selected_vmargin: float = 0.05, #margin for when the text is selected.
 
-                selected_size_increase: float = 0.0, #amount by which the size increases when the label is selected
-
                 font: pygame.font.Font = Fonts.STANDARD_FONT, #used for the text
 
                 label_page: colored_page_t = None, #the text renderd onto self.frame_dim, as colored text

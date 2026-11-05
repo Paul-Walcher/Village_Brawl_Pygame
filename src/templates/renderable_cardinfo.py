@@ -261,8 +261,8 @@ class Renderable_CardInfo:
                                 colored: bool = True,
                                 font: pygame.font.Font = Fonts.MINECRAFT,
                                 text_color: color_t = Colors.STANDARD_TEXT_COLOR,
-                                line_margin: int = 5,
-                                wmargin: int = 5, hmargin: int = 5
+                                line_margin: int = 0.02,
+                                wmargin: int = 0.2, hmargin: int = 0.1
                                 ) -> Textbox:
         """
         Creates the textbox for the info frame.
@@ -271,16 +271,15 @@ class Renderable_CardInfo:
         wmargin, hmargin specify the margins inside the textbox, between frame and text.
         """
 
-        return Textbox(frame_dim,
-                        font,
-                        (self._colored_description if colored else self._description),
-                        line_length=self._description_line_length,
-                        paragraph_length=self._description_lines_per_page,
-                        wmargin=wmargin,
-                        hmargin=hmargin,
-                        text_color=text_color,
-                        centered=True,
-                        text_colored=colored
+        return Textbox(
+                        frame_dim=frame_dim,
+                        font=font,
+                        text=self._colored_description,
+                        chars_per_line=self._description_line_length,
+                        lines_per_page=self._description_lines_per_page,
+                        hmargin=wmargin,
+                        vmargin=hmargin,
+                        line_margin_p=line_margin
                         )
 
     def get_areas(      self,
@@ -378,9 +377,7 @@ class Renderable_CardInfo:
 
         description_textbox = self.get_description_textbox(
                                                             frame_dim=description_area,
-                                                            colored=True,
-                                                            font=font,
-                                                            text_color=Colors.STANDARD_TEXT_COLOR
+                                                            font=font
                                                             )
 
         description_textbox.show_pagenumber()
