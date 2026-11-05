@@ -35,3 +35,4 @@ class FrameEnums(Enum):
     DROPDOWN_MENU_WIDGET = auto()
     LABEL_WIDGET = auto()
     BUTTON_WIDGET = auto()
+    ANIMATION_WIDGET = auto()
