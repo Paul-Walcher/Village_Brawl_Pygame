@@ -49,7 +49,8 @@ class Label(Frame):
                 selected_background_color: color_t = Colors.TRANSPARENT, #the background color for when the button is selected
 
                 image_scaling_function: Callable[[pygame.Surface, tuple[int, int]], pygame.Surface] \
-                                        = pygame.transform.smoothscale #the function for scaling the image
+                                        = pygame.transform.smoothscale, #the function for scaling the image
+                line_margin_percentage: float = 0.02 #the line margin percentage
                 ):
 
         Frame.__init__(
@@ -165,6 +166,10 @@ class Label(Frame):
         """
         The state of the label.
         """
+        self.line_margin_percentage: float = line_margin_percentage
+        """
+        The line margin percentage.
+        """
 
         self.rerender()
 
@@ -223,7 +228,7 @@ class Label(Frame):
                                                                                 text_color=Colors.STANDARD_TEXT_COLOR,
                                                                                 centered=True,
                                                                                 vertical_centered=True,
-                                                                                line_margin_as_percentage=0.02
+                                                                                line_margin_as_percentage=self.line_margin_percentage
                                                                                 )
 
             self.selected_label_page_rendered = graphics.copy_rendered_surface_position_tuples(self.label_page_rendered)
@@ -235,7 +240,7 @@ class Label(Frame):
                                                                                         text_color=Colors.STANDARD_TEXT_COLOR,
                                                                                         centered=True,
                                                                                         vertical_centered=True,
-                                                                                        line_margin_as_percentage=0.02
+                                                                                        line_margin_as_percentage=self.line_margin_percentage
                                                                                         )
 
         #prerendering

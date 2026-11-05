@@ -3,6 +3,7 @@ from typing import Any, Callable
 
 import pygame
 
+from constants import Colors
 from Frames.widgets.slider import Slider
 
 class CustomSlider(Slider):

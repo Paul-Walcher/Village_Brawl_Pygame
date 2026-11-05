@@ -57,11 +57,11 @@ class TextInput(Frame):
             The text inside the textinput when enter was pressed.
             """
 
-        def copy(self) -> TextEnteredEvent:
+        def copy(self) -> TextInput.TextEnteredEvent:
             """
             Returns a copy of the event.
             """
-            copy_event: TextEnteredEvent = TextEnteredEvent(self.input_text, self.data)
+            copy_event: TextInput.TextEnteredEvent = TextInput.TextEnteredEvent(self.input_text, self.data)
             return copy_event
 
     class UnfocusedEvent(Event):

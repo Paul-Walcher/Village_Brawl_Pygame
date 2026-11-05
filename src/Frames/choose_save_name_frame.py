@@ -4,7 +4,7 @@ from typing import Any, Callable
 import os
 import pygame
 
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID, Mouse
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID, Mouse, color_t
 import graphics
 from graphics import text_t, colored_text_t, page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 import calculations

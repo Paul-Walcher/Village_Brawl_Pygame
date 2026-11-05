@@ -6,6 +6,7 @@ from constants import Colors, Fonts, fequal, color_t
 import graphics
 from graphics import text_t, colored_text_t ,page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from Frames.widgets.textbox import Textbox
+from Frames.widgets.label import Label
 
 class Renderable_CardInfo:
     """
@@ -28,7 +29,7 @@ class Renderable_CardInfo:
         def __init__(
                     self,
                     frame_dim: pygame.Rect,
-                    headline: rendered_surface_position_tuples_t,
+                    headline: Label,
                     image_surface: pygame.Surface,
                     image_pos: tuple[int, int],
                     textbox: Textbox,
@@ -42,18 +43,17 @@ class Renderable_CardInfo:
             """
             The rectangle defining the pages position, width and length.
             """
-            self.headline = headline
+            self.headline: Label = headline
             """
             (surface, position) tuples for the headline
             """
             self.image_surface: pygame.Surface = image_surface
             """
-            Surface for the image displayed.
+            The image surface
             """
             self.image_pos: tuple[int, int] = image_pos
             """
-            (x, y) position of the image. This is not relative to
-            the frame_dim origin (0, 0), but is (actual_position_inside_frame_dim + frame_dim_origin)
+            The image position.
             """
             self.textbox: Textbox = textbox
             """
@@ -78,18 +78,11 @@ class Renderable_CardInfo:
             List of the areas the frame_dim is split up into from top to bottom.
             """
 
-        def get_blit_surface_position_tuples(self) -> rendered_surface_position_tuples_t:
+        def tick(self):
             """
-            Returns a list of (surface, position),
-            of all the parts that should be rendered this way.
+            Tick function for updating widgets.
             """
-
-            sp_list =   [
-                        *self.headline,
-                        (self.image_surface, self.image_pos)
-                        ]
-
-            return sp_list
+            self.headline.tick()
 
 
     def __init__(self,
@@ -239,12 +232,17 @@ class Renderable_CardInfo:
         self._n_pages = len(self._description_pages)
         self._n_pages_color = (len(self._colored_description_pages) if self._colored_description_pages is not None else -1)
 
-    def get_name_rendered(self, target_frame_dim: pygame.Rect, font: pygame.font.Font = Fonts.MINECRAFT, line_margin: int = 5) -> rendered_surface_position_tuples_t:
+    def get_name_rendered(self, target_frame_dim: pygame.Rect, font: pygame.font.Font = Fonts.MINECRAFT, line_margin_percentage: int = 0.02) -> Label:
         """
         Returns a rendered page.
         """
-        return graphics.render_page_from_chars_color(font=font, page=graphics.page_to_colored_page(self.name, self.name_color),
-                                                        frame=target_frame_dim, line_margin=line_margin, centered=True, vertical_centered=True)
+        return Label(
+                        frame_dim=target_frame_dim,
+                        font=font,
+                        label_page=graphics.page_to_colored_page(self.name, self.name_color),
+                        background_color=Colors.TRANSPARENT,
+                        line_margin_percentage=line_margin_percentage
+                        )
 
     def get_card_image_rendered(self, frame_dim: pygame.Rect) -> surface_with_position_t:
         """
@@ -430,12 +428,10 @@ class Renderable_CardInfo:
 
         screen.fill(background_color)
 
+        info_page_part_container.headline.render(screen)
         tbox.render(screen)
 
-        for surf, pos in info_page_part_container.get_blit_surface_position_tuples():
-            screen.blit(surf, pos)
-
-        tbox.render(screen)
+        screen.blit(info_page_part_container.image_surface, info_page_part_container.image_pos)
 
         if full_image_shown:
 

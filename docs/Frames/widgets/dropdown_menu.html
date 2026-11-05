@@ -1021,7 +1021,7 @@ Frame.add_pygame_event_callback.</p>
                             <div id="DropdownMenu.NOTHING_SELECTED" class="classattr">
                                 <div class="attr variable">
             <span class="name">NOTHING_SELECTED</span>        =
-<span class="default_value">96338891692057481</span>
+<span class="default_value">2195278543428676781</span>
 
         
     </div>
@@ -1033,7 +1033,7 @@ Frame.add_pygame_event_callback.</p>
                             <div id="DropdownMenu.OPTION_SELECTED" class="classattr">
                                 <div class="attr variable">
             <span class="name">OPTION_SELECTED</span>        =
-<span class="default_value">510789852297130384</span>
+<span class="default_value">6896820816696871161</span>
 
         
     </div>
@@ -1045,7 +1045,7 @@ Frame.add_pygame_event_callback.</p>
                             <div id="DropdownMenu.SELECT_ANIMATION_PLAYING" class="classattr">
                                 <div class="attr variable">
             <span class="name">SELECT_ANIMATION_PLAYING</span>        =
-<span class="default_value">-1931516486185557247</span>
+<span class="default_value">-6446847754752929750</span>
 
         
     </div>
@@ -1631,9 +1631,10 @@ focus changes. Make event bindings dependent on self.is_focused().</p>
 </span></pre></div>
 
 
-            <div class="docstring"><p>Takes the focus from this frame.
-If this frame had the focus, and the parent frame has the same focus group as this frame,
-the parent frame will receive the focus via parent_frame.focus().</p>
+            <div class="docstring"><p>Takes the focus from this frame.</p>
+
+<p>If an ancestor belongs to the same focus group,
+the nearest such ancestor receives the focus.</p>
 </div>
 
 
@@ -1850,6 +1851,7 @@ If it returns None, this signals the frame is set to be deleted.</p>
                 <dd id="DropdownMenu.focus" class="function"><a href="../frame.html#Frame.focus">focus</a></dd>
                 <dd id="DropdownMenu.is_focused" class="function"><a href="../frame.html#Frame.is_focused">is_focused</a></dd>
                 <dd id="DropdownMenu.key_pressed" class="function"><a href="../frame.html#Frame.key_pressed">key_pressed</a></dd>
+                <dd id="DropdownMenu.reset_keys_pressed" class="function"><a href="../frame.html#Frame.reset_keys_pressed">reset_keys_pressed</a></dd>
                 <dd id="DropdownMenu.add_default_escape_callback" class="function"><a href="../frame.html#Frame.add_default_escape_callback">add_default_escape_callback</a></dd>
                 <dd id="DropdownMenu.manage_pygame_events" class="function"><a href="../frame.html#Frame.manage_pygame_events">manage_pygame_events</a></dd>
                 <dd id="DropdownMenu.clear_event_callbacks" class="function"><a href="../frame.html#Frame.clear_event_callbacks">clear_event_callbacks</a></dd>
@@ -1898,7 +1900,7 @@ If it returns None, this signals the frame is set to be deleted.</p>
                             <div id="DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED" class="classattr">
                                 <div class="attr variable">
             <span class="name">SELECT_ANIMATION_ENDED</span>        =
-<span class="default_value">-4082288833736890857</span>
+<span class="default_value">-7853732585823753787</span>
 
         
     </div>

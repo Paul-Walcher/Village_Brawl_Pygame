@@ -26,9 +26,17 @@ class ExplorerInfoFrame(Frame):
     DESCRIPTION_FOCUSED = R_ID()
     MENU_FOCUSED = R_ID()
 
-    def __init__(self, explorer_enum, data=None, frame_dim=None, parent_frame=None):
+    def __init__(self, explorer_enum, data=None, frame_dim=None, parent_frame=None, focus_group="", has_focus=True):
 
-        super().__init__(FrameEnums.CHOOSE_EXPLORER_FRAME, data, frame_dim, parent_frame)
+        super().__init__(
+                            frame_enum=FrameEnums.CHOOSE_EXPLORER_FRAME,
+                            data=data,
+                            frame_dim=frame_dim,
+                            parent_frame=parent_frame,
+                            focus_group=focus_group,
+                            has_focus=has_focus
+
+                        )
 
         self.explorer_enum = explorer_enum
         self.modules = None
@@ -115,6 +123,8 @@ class ExplorerInfoFrame(Frame):
 
         self.render_slider_menu()
 
+        self.prerender()
+
 
     def bind_events(self):
 
@@ -148,8 +158,10 @@ class ExplorerInfoFrame(Frame):
         if self.state == ExplorerInfoFrame.NO_FOCUS:
             self.state = ExplorerInfoFrame.DESCRIPTION_FOCUSED
             self.textbox.set_outline_size(self.focused_outline_size)
+            self.prerender()
         elif self.state == ExplorerInfoFrame.DESCRIPTION_FOCUSED:
             self.textbox.prev_page()
+            self.prerender()
             self.key_clock.start()
         elif self.state == ExplorerInfoFrame.MENU_FOCUSED:
             self.slider_menu.slide_right()
@@ -162,9 +174,11 @@ class ExplorerInfoFrame(Frame):
         if self.state == ExplorerInfoFrame.NO_FOCUS:
             self.state = ExplorerInfoFrame.DESCRIPTION_FOCUSED
             self.textbox.set_outline_size(self.focused_outline_size)
+            self.prerender()
         elif self.state == ExplorerInfoFrame.DESCRIPTION_FOCUSED:
             self.textbox.next_page()
             self.key_clock.start()
+            self.prerender()
         elif self.state == ExplorerInfoFrame.MENU_FOCUSED:
             self.slider_menu.slide_left()
             self.key_clock.start()
@@ -176,6 +190,7 @@ class ExplorerInfoFrame(Frame):
         if self.state == ExplorerInfoFrame.NO_FOCUS or self.state == ExplorerInfoFrame.MENU_FOCUSED:
             self.state = ExplorerInfoFrame.DESCRIPTION_FOCUSED
             self.textbox.set_outline_size(self.focused_outline_size)
+            self.prerender()
 
         return None
 
@@ -184,6 +199,7 @@ class ExplorerInfoFrame(Frame):
         if self.state == ExplorerInfoFrame.NO_FOCUS or self.state == ExplorerInfoFrame.DESCRIPTION_FOCUSED:
             self.state = ExplorerInfoFrame.MENU_FOCUSED
             self.textbox.set_outline_size(0)
+            self.prerender()
 
         return None
 
@@ -198,11 +214,13 @@ class ExplorerInfoFrame(Frame):
 
         if event.key == KeyAlternatives.SHOW_IMAGE_KEY:
             self.full_image_shown = True
+            self.prerender()
 
     def keyup(self, event, data):
 
         if event.key == KeyAlternatives.SHOW_IMAGE_KEY:
             self.full_image_shown = False
+            self.prerender()
 
     def tick(self):
 
@@ -227,11 +245,12 @@ class ExplorerInfoFrame(Frame):
                     eframe = TestFrame(data=None, frame_dim=pygame.Rect(0, 0, constants.WIDTH, constants.HEIGHT), parent_frame=self.parent_frame)
                     return eframe
 
+        if self.slider_menu.any_animation_playing():
+            self.prerender()
+
         return self
 
-
-    def render(self, screen):
-
+    def prerender(self):
 
         if self.surface is not None:
 
@@ -259,4 +278,8 @@ class ExplorerInfoFrame(Frame):
                 pygame.draw.rect(self.surface, (*Colors.WHITE, 255), self.slider_border_frame, width=self.focused_outline_size)
 
 
-            screen.blit(self.surface, (self.x, self.y))
+
+
+    def render(self, screen):
+
+        screen.blit(self.surface, (self.x, self.y))

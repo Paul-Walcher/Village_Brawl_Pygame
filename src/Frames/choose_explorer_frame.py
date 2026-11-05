@@ -6,7 +6,7 @@ import pygame
 import threading
 
 import constants
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID, color_t
 import graphics
 from clock import Clock
 from modules import Modules
@@ -67,7 +67,7 @@ class ChooseExplorerFrame(Frame):
         """
         List of loaded explorer enums.
         """
-        self.explorer_refs: list[Type(Explorer_Card_Template)] = [self.modules.mappings.explorer_mappings[explorer_enum] for explorer_enum in self.explorer_enums]
+        self.explorer_refs: list[type[Explorer_Card_Template]] = [self.modules.mappings.explorer_mappings[explorer_enum] for explorer_enum in self.explorer_enums]
         """
         List of loaded explorer classes
         """
@@ -91,7 +91,7 @@ class ChooseExplorerFrame(Frame):
         """
         State of this frame.
         """
-        self.info_frame_sliding_time: float = 500#ms
+        self.info_frame_sliding_time: float = 250#ms
         """
         Time the sliding animation of the info frame takes.
         """
@@ -103,6 +103,54 @@ class ChooseExplorerFrame(Frame):
         """
         Slider for the explorer.
         """
+        self.info_frame: ExplorerInfoFrame = None
+        """
+        The info frame for the explorer.
+        """
+        self.info_frame_width: int = self.width // 2
+        """
+        width of the info frame.
+        """
+        self.info_frame_height: int = self.height
+        """
+        height of the info frame.
+        """
+        self.info_frame_starting_pos: tuple[int, int] = (self.width, 0)
+        """
+        The starting location of the info frame before sliding in.
+        """
+        self.info_frame_target_pos: tuple[int, int] = (self.width // 2, 0)
+        """
+        The target location of the info frame after the sliding process finished.
+        """
+        self.info_text: str = "Press i to see the explorer's info"
+        """
+        Info text.
+        """
+        self.info_text_width_p: float = 0.2
+        """
+        the width of the info text relative to self.width
+        """
+        self.info_text_height_p: float = 0.05
+        """
+        the height of the info text relative to self.height.
+        """
+        self.info_text_width: int = -1
+        """
+        Actual width of the info text.
+        """
+        self.info_text_height: int = -1
+        """
+        Actual height of the info text.
+        """
+        self.info_text_color: color_t = Colors.STANDARD_TEXT_COLOR
+        """
+        Color of the info text.
+        """
+        self.info_text_label: Label = None
+        """
+        Info text label.
+        """
 
         self.rerender()
 
@@ -110,9 +158,19 @@ class ChooseExplorerFrame(Frame):
         """
         Rerendering.
         """
-
         #creating the image surfaces
         explorer_surfaces: list[pygame.Surface] = self.create_explorer_surfaces()
+
+        #info text label calculations
+        self.info_text_width = int(self.width * self.info_text_width_p)
+        self.info_text_height = int(self.height * self.info_text_height_p)
+
+        info_label_rect: pygame.Rect = pygame.Rect(
+                                                    self.width - self.info_text_width,
+                                                    self.height - self.info_text_height,
+                                                    self.info_text_width,
+                                                    self.info_text_height
+                                                    )
 
         self.explorer_slider = CustomSameSizeSlider(
                                                         frame_dim=self.frame_dim.copy(),
@@ -120,6 +178,13 @@ class ChooseExplorerFrame(Frame):
                                                         span=0,
                                                         sliding_duration=250#ms
                                                     )
+
+        self.info_text_label = Label(
+                                        frame_dim=info_label_rect,
+                                        font=Fonts.STANDARD_FONT,
+                                        label_page=graphics.str_to_colored_page(self.info_text, self.info_text_color),
+                                        background_color=Colors.TRANSPARENT
+                                        )
 
         self._next_frame = None
         self.state = ChooseExplorerFrame.IDLE
@@ -167,32 +232,87 @@ class ChooseExplorerFrame(Frame):
         return esurfaces
 
 
+    def initialize_info_frame(self) -> None:
+        """
+        Creates the info frame regarding the currently selected explorer.
+        """
 
 
-    def initialize_info_frame(self):
-
-
-        iframe = pygame.Rect(self.width, 0, self.width // 2, self.height)
-        self.info_frame = ExplorerInfoFrame(self.explorer_enums[self.explorer_index], self.data, iframe, self)
+        iframe: pygame.Rect = pygame.Rect(*self.info_frame_starting_pos, self.info_frame_width, self.info_frame_height)
+        self.info_frame = ExplorerInfoFrame(
+                                            explorer_enum=self.explorer_enums[self.explorer_index],
+                                            data=self.data,
+                                            frame_dim=iframe,
+                                            parent_frame=self,
+                                            focus_group=self.focus_group,
+                                            has_focus=True
+                                            )
 
         self.state = ChooseExplorerFrame.INFO_FRAME_SLIDING_IN
         self.info_frame_clock.start()
 
-    def deinitialize_info_frame(self):
+    def render_info_frame_sliding(self) -> None:
+        """
+        Handles the info frame sliding in animation.
+        """
+        if self.state == ChooseExplorerFrame.INFO_FRAME_SLIDING_IN:
+
+            percentage: float = self.info_frame_clock.elapsed() / self.info_frame_sliding_time
+
+            if percentage >= 1.0:
+                self.finalize_info_frame()
+            else:
+                sx, sy = self.info_frame_starting_pos
+                tx, ty = self.info_frame_target_pos
+
+                x: int = int(sx + (tx - sx) * percentage)
+                y: int = int(sy + (ty - sy) * percentage)
+
+                self.info_frame.x = x
+                self.info_frame.y = y
+
+        elif self.state == ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT:
+
+            percentage: float = self.info_frame_clock.elapsed() / self.info_frame_sliding_time
+
+            if percentage >= 1.0:
+                self.deinitialize_info_frame()
+            else:
+                #this time starting and end os are reversed
+                sx, sy = self.info_frame_starting_pos
+                tx, ty = self.info_frame_target_pos
+
+                x: int = int(tx + (sx - tx) * percentage)
+                y: int = int(ty + (sy - ty) * percentage)
+
+                self.info_frame.x = x
+                self.info_frame.y = y
+
+    def deinitialize_info_frame(self) -> None:
+        """
+        Resets the state to idle and deletes the info frame.
+        """
 
         self.state = ChooseExplorerFrame.IDLE
         self.info_frame = None
 
-    def finalize_info_frame(self):
+    def finalize_info_frame(self) -> None:
+        """
+        After loading in the info frame and sliding finished,
+        this method initializes the frame.
+        """
 
-        final_frame = pygame.Rect(self.width//2, 0, self.width//2, self.height)
-        self.info_frame.frame_dim = final_frame
+        x, y = self.info_frame_target_pos
+        self.info_frame.x = x
+        self.info_frame.y = y
 
         self.state = ChooseExplorerFrame.INFO_FRAME_ACTIVE
 
-        #adding callback
-        self.add_pygame_key_callback(key=pygame.K_i, data=None, putback=True, func=self.i_pressed_info_frame_active)
-        self.add_pygame_key_callback(key=KeyAlternatives.BACK_KEY, data=None, putback=True, func=self.i_pressed_info_frame_active)
+        #now if this frame lost focus and self.info_frame gained focus, add new callbacks
+        if self.info_frame.focus_group == self.focus_group and self.info_frame.is_focused():
+            #adding callback
+            self.add_pygame_key_callback(key=pygame.K_i, data=None, putback=True, func=self.i_pressed_info_frame_active)
+            self.add_pygame_key_callback(key=KeyAlternatives.BACK_KEY, data=None, putback=True, func=self.i_pressed_info_frame_active)
 
     def bind_events(self):
 
@@ -228,12 +348,20 @@ class ChooseExplorerFrame(Frame):
             self.state = ChooseExplorerFrame.SLIDING
 
     def i_pressed(self, event, data):
+        """
+        Loads the info frame if not currently sliding
+        """
 
         if self.state == ChooseExplorerFrame.IDLE:
             self.initialize_info_frame()
 
     def i_pressed_info_frame_active(self, event, data):
-        self.info_frame.raise_exit_flag()
+        """
+        Unloads the info frame if not currently sliding.
+        """
+
+        if self.state == ChooseExplorerFrame.INFO_FRAME_ACTIVE:
+            self.info_frame.raise_exit_flag()
 
 
     def tick(self):
@@ -248,6 +376,7 @@ class ChooseExplorerFrame(Frame):
             return self._next_frame
 
         self.explorer_slider.tick()
+        self.info_text_label.tick()
 
         for event in self.explorer_slider.poll_events():
             if event.type == CustomSameSizeSlider.EventTypes.SLIDING_ANIMATION_ENDED:
@@ -262,21 +391,8 @@ class ChooseExplorerFrame(Frame):
                     self.info_frame_clock.start()
 
 
-        if self.state == ChooseExplorerFrame.INFO_FRAME_SLIDING_IN:
-
-            if self.info_frame_clock.elapsed() >= self.info_frame_sliding_time:
-                self.finalize_info_frame()
-            else:
-                info_frame_frame_dim = pygame.Rect(int(self.width - (self.info_frame_clock.elapsed() / self.info_frame_sliding_time * self.width//2)), 0, self.width//2, self.height)
-                self.info_frame.frame_dim = info_frame_frame_dim
-
-        elif self.state == ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT:
-
-            if self.info_frame_clock.elapsed() >= self.info_frame_sliding_time:
-                self.deinitialize_info_frame()
-            else:
-                info_frame_frame = pygame.Rect(int(self.width // 2 + (self.info_frame_clock.elapsed() / self.info_frame_sliding_time * self.width//2)), 0, self.width//2, self.height)
-                self.info_frame.frame_dim = info_frame_frame
+        if self.state in [ChooseExplorerFrame.INFO_FRAME_SLIDING_IN, ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT]:
+            self.render_info_frame_sliding()
 
 
         return self
@@ -287,6 +403,7 @@ class ChooseExplorerFrame(Frame):
         screen.fill(Colors.BLACK)
 
         self.explorer_slider.render(screen)
+        self.info_text_label.render(screen)
 
         if self.info_frame is not None:
             self.info_frame.render(screen)

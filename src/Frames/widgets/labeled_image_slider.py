@@ -127,7 +127,14 @@ class LabeledImageSlider(Frame):
         return self.image_slider.select_animation_playing()
 
     def flipping_animation_playing(self):
-        self.image_slider.flipping_animation_playing()
+        return self.image_slider.flipping_animation_playing()
+
+    def sliding_animation_playing(self):
+        return self.image_slider.sliding_animation_playing()
+
+    def any_animation_playing(self):
+        return self.image_slider.any_animation_playing()
+
 
     def rerender(self):
 

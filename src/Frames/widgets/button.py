@@ -65,6 +65,8 @@ class Button(Label):
                 image_scaling_function: Callable[[pygame.Surface, tuple[int, int]], pygame.Surface] \
                                         = pygame.transform.smoothscale, #the function for scaling the image
 
+                line_margin_percentage: float = 0.02, #the line margin percentage
+
                 press_animation_size_decrease: float= 0.5, #how much the frame descreases in size during the press animation
                 press_animation_duration: float = 400#ms
 
@@ -88,7 +90,8 @@ class Button(Label):
                         selected_background_image_path=selected_background_image_path,
                         background_color=background_color,
                         selected_background_color=selected_background_color,
-                        image_scaling_function=image_scaling_function
+                        image_scaling_function=image_scaling_function,
+                        line_margin_percentage=line_margin_percentage
                         )
 
         self.frame_enum = FrameEnums.BUTTON_WIDGET

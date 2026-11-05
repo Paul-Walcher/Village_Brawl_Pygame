@@ -901,6 +901,9 @@ class Slider(Frame):
         else:
             return False
 
+    def sliding_animation_playing(self):
+        return (self.state == Slider.SLIDING_LEFT or self.state == Slider.SLIDING_RIGHT)
+
     def select_animation_playing(self):
         return self.state == Slider.SELECT_ANIMATION_PLAYING
 
@@ -908,7 +911,7 @@ class Slider(Frame):
         return (self.state == Slider.FLIPPING_ANIMATION_PLAYING or self.state == Slider.FLIPPING_ALL_ANIMATION_PLAYING)
 
     def any_animation_playing(self):
-        return (self.select_animation_playing() or self.flipping_animation_playing())
+        return (self.select_animation_playing() or self.flipping_animation_playing() or self.sliding_animation_playing())
 
     def render(self, screen):
 
