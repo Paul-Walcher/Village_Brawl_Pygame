@@ -67,8 +67,12 @@ class TestFrame(EmptyFrame):
 
         start_options = [["AAA"], ["BBB", "CCC"], ["DDD", "EEE", "FFF"]]
 
+        #creating the option pages
+
+        page_options = ScrollableDropdownMenu.page_keys_to_dropdownkey(options, Colors.WHITE, Colors.BLACK)
+
         self.dropdown = ScrollableDropdownMenu(     self.dropdown_frame,
-                                                    options
+                                                    page_options
                                                     )
 
     def tick(self):

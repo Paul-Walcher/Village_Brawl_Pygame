@@ -1,146 +1,244 @@
+from __future__ import annotations
+from typing import Type, Any, Callable, override
+
 import pygame
 
 from collections import deque
 from copy import deepcopy
 import graphics
+from event_queue_manager import Event
+from constants import Colors, Fonts, R_ID, IIMAGE, color_t
+from clock import Clock
+
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from event_queue_manager import Event
-from constants import Colors, Fonts, R_ID, IIMAGE
-from clock import Clock
 from Frames.widgets.dropdown_menu import DropdownMenu
-from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu
+from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu, DropDownKey, expandable_dropdown_options_t, option_trace_t
+
+type scrollable_option_trace_t = list[tuple[tuple[colored_page_t, colored_page_t], int, int]]
 
 class ScrollableDropdownMenu(ExpandableDropdownMenu):
+    """
+    This class provides a scrollable dropdown menu, that is also expandable.
+    """
 
-    #states
+    #New States
     SCROLLING_UP = R_ID()
     SCROLLING_DOWN = R_ID()
 
 
-    N_OPTIONS_SHOWN_KEY = "n_options_shown"
-    ARROW_IMG_PATH = IIMAGE("Arrow_Icon.png")
+    N_OPTIONS_SHOWN_KEY: str = "n_options_shown"
+    """
+    The key, for which the value defines the number of options shown.
+    """
+    ARROW_IMG_PATH: str = IIMAGE("Arrow_Icon.png")
+    """
+    The arrow, shown when scrolling is possible.
+    """
 
 
     def __init__(
                     self,
-                    frame_dim,
+                    frame_dim: pygame.Rect,
                     #Options is a dict like:
                     #
                     # {
                     #   (("line1", "line2"), options_shown): {OPTIONS FOR THE NEXT DROPDOWN MENU} //or if there is no Menu its just None
                     #   and one extra key_value pair: "options_shown": n, which
                     #}
-                    options,
-                    arrow_frame_margin=0.2,#amount of height used to show the arrows
-                    arrow_to_text_margin=0.7,
-                    arrow_text_color=Colors.BLACK,
+                    options: expandable_dropdown_options_t,
 
-                    precalculated_depth_and_max_length=None,#depth == how many dropdown manus follow this one,
-                                                            #max_length == number of options in the dropdown menu with the most options
-                                                            #only the first dropdown menu needs to calculate this,
-                                                            #and can pass the information on
-                    parent_frame=None, #since this class works recursively, each expandable dropdown menu needs to know which menu it is attached to
+                    arrow_frame_margin: float = 0.2, #amount of height used to show the arrows
+                    arrow_to_text_margin: float = 0.7, #amount of occupied space by the arrow, the rest is reserved for the text.
+                    arrow_text_color: color_t = Colors.BLACK,
+
+                    precalculated_depth_and_max_length: tuple[int, int] = None,         #depth == how many dropdown menus follow this one,
+                                                                                        #max_length == number of options in the dropdown menu with the most options
+                                                                                        #only the first dropdown menu needs to calculate this,
+                                                                                        #and can pass the information on
+                    parent_frame: Frame = None,
+                    dropdown_parent: Frame = None, #since this class works recursively, each expandable dropdown menu needs to know which menu it is attached to
 
 
                     #for the rest see dropdown_menu.py
-                    focus_group="",
-                    font=Fonts.MINECRAFT,
-                    background_color=Colors.T(Colors.BLACK),
-                    highlighted_background_color=Colors.T(Colors.WHITE),
-                    text_color=Colors.T(Colors.WHITE),
-                    highlighted_text_color=Colors.T(Colors.BLACK),
-                    in_option_line_margin=5,#px
-                    line_margin=5,#px,
-                    line_color = Colors.GRAY,
-                    lines_shown = True,
-                    outline_size=10,
-                    outline_color=Colors.T(Colors.BLACK),
-                    text_margins_percentage=(0.4, 0.4),
-                    highlighted_text_margins_percentage=(0.1, 0.1),
-                    initial_selected_index=-1,
-                    selected_animation_duration=800,#ms
-                    scrolling_animation_duration=300#ms
+                    font: pygame.font.Font = Fonts.STANDARD_FONT,
+                    background_color: color_t = Colors.BLACK,
+                    highlighted_background_color: color_t = Colors.WHITE,
+                    in_option_line_margin_p: float = 0.02,#px
+                    line_margin_p: float = 0.02,#px,
+                    line_color: color_t = Colors.GRAY,
+                    lines_shown: bool = True,
+                    outline_size_p: float = 0.05,
+                    outline_color: color_t = Colors.BLACK,
+                    text_margins_percentage: tuple[int, int] = (0.4, 0.4),
+                    highlighted_text_margins_percentage: tuple[int, int] = (0.1, 0.1),
+                    initial_selected_index = -1,
+                    selected_animation_duration: float = 400,#ms
+                    scrolling_animation_duration: float = 300#ms
 
                 ):
 
 
         #since we need to reduce the height to show the image arrows,
         #we need to save the full height
-        self.arrow_frame_margin = arrow_frame_margin
-        self.arrow_to_text_margin = arrow_to_text_margin
-        self.with_arrows_frame_dim = None
-        self.arrows_shown = False
-        self.frame_dim_copy = frame_dim.copy()
-        self.arrow_text_color = arrow_text_color
+        self.arrow_frame_margin: float = arrow_frame_margin
+        """
+        amount of height used to show the arrows, relative to self.height.
+        """
+        self.arrow_to_text_margin: float = arrow_to_text_margin
+        """
+        amount of occupied space by the arrow, the rest is reserved for the text.
+        """
+        self.with_arrows_frame_dim: pygame.Rect = None
+        """
+        The frame dim after applying self.arrow_frame_margin to self.height.
+        """
+        self.arrows_shown: bool = False
+        """
+        Arrows shown starts out as False.
+        """
+        self.original_frame_dim: pygame.Rect = frame_dim.copy()
+        """
+        The original frame dimension received.
+        """
+        self.arrow_text_color: color_t = arrow_text_color
+        """
+        Color of the text displayed along the arrows, showing the remaining options
+        not shown.
+        """
+        self.top_arrow_frame: pygame.Rect = None
+        """
+        Frame for the top arrow image.
+        """
+        self.top_arrow_surface: pygame.Surface = None
+        """
+        The surface the top arrow and its text will be rendered onto.
+        """
+        self.bottom_arrow_frame: pygame.Rect = None
+        """
+        The frame for the bottom arrow image.
+        """
+        self.bottom_arrow_surface: pygame.Surface = None
+        """
+        The surface the bottom arrow and its text will be rendered on.
+        """
+        self.top_arrow_surface_pos: tuple[int, int] = None
+        """
+        Position of the top arrow surface
+        """
+        self.bottom_arrow_surface_pos: tuple[int, int] = None
+        """
+        Position of the bottom arrow surface.
+        """
+        self.top_arrow_rendered: pygame.Surface = None
+        """
+        The rendered image of the top arrow.
+        """
+        self.top_arrow_pos: tuple[int, int] = None
+        """
+        Position of the top arrow image
+        """
+        self.bottom_arrow_rendered: pygame.Surface = None
+        """
+        The rendered image of the bottom arrow.
+        """
+        self.bottom_arrow_pos: tuple[int, int] = None
+        """
+        Position of the bottom arrow image.
+        """
+        self.top_arrow_text_frame: pygame.Rect = None
+        """
+        Frame for the top arrow text.
+        """
+        self.top_arrow_text_rendered: rendered_surface_position_tuples_t = None
+        """
+        The rendered top arrow text.
+        """
+        self.bottom_arrow_text_frame: pygame.Rect = None
+        """
+        Frame for the bottom arrow text.
+        """
+        self.bottom_arrow_text_rendered: rendered_surface_position_tuples_t = None
+        """
+        The rendered bottom arrow text.
+        """
+        self.full_options_dict: expandable_dropdown_options_t = options
+        """
+        A deep copy of all the options given to this dropdownmenu.
+        """
+        self.dropdown_options: list[DropDownKey] = None
+        """
+        The current option pages shown.
+        """
 
-        self.top_arrow_frame = None
-        self.top_arrow_surface = None
-        self.bottom_arrow_frame = None
-        self.bottom_arrow_surface = None
+        self.n_options_shown: int = -1
+        """
+        The number of options shown, influenced by N_OPTIONS_SHOWN_KEY
+        """
 
-        self.top_arrow_surface_pos = None
-        self.bottom_arrow_surface_pos = None
-
-        self.top_arrow_rendered = None
-        self.top_arrow_pos = None
-        self.bottom_arrow_rendered = None
-        self.bottom_arrow_pos = None
-
-        self.top_arrow_text_frame = None
-        self.top_arrow_text = None
-        self.top_arrow_text_pos = None
-        self.bottom_arrow_text_frame = None
-        self.bottom_arrow_text = None
-        self.bottom_arrow_text_pos = None
-
-
-
-        self.full_options = list(options.keys())
-        self.full_options_dict = deepcopy(options)
-        if ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY in self.full_options:
-            self.full_options.remove(ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY)
-        self.n_options_shown = -1
         if ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY in options:
             self.n_options_shown = options[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY]
         else:
-            self.n_options_shown = len(options)
+            self.n_options_shown = len(options) #showing all if the n_options shown is not defined
 
         if self.n_options_shown <= 0:
             raise RuntimeError("N options shown must be > 0")
 
-        self._scroll_index = 0
-
-        self.scrolling_animation_duration = scrolling_animation_duration
-        self.scrolling_animation_clock = Clock()
-
+        self._scroll_index: int = 0
+        """
+        How far this dropdown menu is scrolled.
+        """
+        self.scrolling_animation_duration: float = scrolling_animation_duration
+        """
+        Duration of the scrolling animation duration.
+        """
+        self.scrolling_animation_clock: Clock = Clock()
+        """
+        The clock for the scrolling animation.
+        """
+        self.boxframes_copy: list[tuple[pygame.Rect, pygame.Rect, pygame.Rect]] = None
+        """
+        The boxframe copies, for scrolling.
+        """
+        self.rendered_texts_copy: list[rendered_surface_position_tuples_t] = None
+        """
+        Copy of the rendered texts, for scrolling.
+        """
+        self.rendered_highlighted_texts_copy: list[rendered_surface_position_tuples_t] = None
+        """
+        Copy of the rendered highlighted texts, for scrolling.
+        """
         #calculating depth and len
-        precalculated_depth_and_max_length = (self._calculate_depth_and_max_length(options) if precalculated_depth_and_max_length is None else precalculated_depth_and_max_length)
+        precalculated_depth_and_max_length: tuple[int, int] = (self._calculate_depth_and_max_length(options) if precalculated_depth_and_max_length is None else precalculated_depth_and_max_length)
+        """
+        The precalculated depth and max length if given-
+        """
+        self.max_depth: int = -1
+        """
+        The calculated max depth
+        """
+        self.max_length: int = -1
+        """
+        The max number of shown options
+        """
+        self.max_depth, self.max_length = precalculated_depth_and_max_length
 
-        mdepth, mlen = precalculated_depth_and_max_length
-        self.max_depth, self.max_length = mdepth, mlen
-
-        #checking for rendering the arrows
-        if self.n_options_shown < len(self.full_options):
-            self.arrows_shown = True
-
+        #initializing superclass
         ExpandableDropdownMenu.__init__(
                                             self,
                                             frame_dim=frame_dim,
                                             options=options,
                                             precalculated_depth_and_max_length=precalculated_depth_and_max_length,
                                             parent_frame=parent_frame,
-                                            focus_group=focus_group,
+                                            dropdown_parent=dropdown_parent,
                                             font=font,
                                             background_color=background_color,
                                             highlighted_background_color=highlighted_background_color,
-                                            text_color=text_color,
-                                            highlighted_text_color=highlighted_text_color,
-                                            in_option_line_margin=in_option_line_margin,
-                                            line_margin=line_margin,
+                                            in_option_line_margin_p=in_option_line_margin_p,
+                                            line_margin_p=line_margin_p,
                                             line_color=line_color,
                                             lines_shown=lines_shown,
-                                            outline_size=outline_size,
+                                            outline_size_p=outline_size_p,
                                             outline_color=outline_color,
                                             text_margins_percentage=text_margins_percentage,
                                             highlighted_text_margins_percentage=highlighted_text_margins_percentage,
@@ -148,9 +246,13 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                             selected_animation_duration=selected_animation_duration
                                         )
 
+        #removing the shown key from the full options
+        if ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY in self.dropdown_keys:
+            self.dropdown_keys.remove(ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY)
 
 
-    def _calculate_depth_and_max_length(self, options):
+    @override
+    def _calculate_depth_and_max_length(self, options: expandable_dropdown_options_t) -> tuple[int, int]:
         #returns the depth of the deepest nested dropdown menu
         #we use a deque in order to avoid putting to many calls on the stack
         mdepth = deque([(options, 1)])
@@ -186,31 +288,59 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             self._scroll_index = val
             self.rerender_arrow_text()
 
-    def get_options_n_showed(self):
+    @override
+    def n_options(self) -> int:
+        """
+        returns the number of options currently shown
+        """
+        n_opt: int = self.n_options_shown
+        if self.state in [ScrollableDropdownMenu.SCROLLING_UP, ScrollableDropdownMenu.SCROLLING_DOWN]:
+            n_opt += 1
 
-        return self.full_options[self.scroll_index: self.scroll_index+self.n_options_shown]
+        return n_opt
 
-    def rerender(self):
+    def n_all_options(self) -> int:
+        """
+        returns the number of all options available.
+        """
+        return len(self.dropdown_keys)
 
-        hframe = self.frame_dim_copy.copy()
+    def get_options_n_showed(self) -> list[tuple[colored_page_t, colored_page_t]]:
+        """
+        Returns the slice of pages of options currently shown.
+        """
+        return self.dropdown_keys[self.scroll_index: self.scroll_index+self.n_options_shown]
+
+    @override
+    def rerender(self) -> None:
+        """
+        Rerendering.
+        """
+        self.arrows_shown = False
+
+        hframe: pygame.Rect = self.original_frame_dim.copy()
         hframe.width //= self.max_depth
         self.with_arrows_frame_dim = graphics.apply_margins(hframe, 0, self.arrow_frame_margin)
-        self.frame_dim = self.with_arrows_frame_dim.copy()
-        self.original_frame_dim = self.frame_dim_copy.copy()
 
-        self.scroll_index = 0
-        self.options = self.get_options_n_showed()
+        #preparing the own frame for rerendering
+        self.frame_dim = self.with_arrows_frame_dim.copy()
+
+        #resetting the scroll indeex
+        self._scroll_index = 0
+        self.dropdown_options = self.get_options_n_showed()
         #getting the arrow_frames if necessary
-        #rerendering the dropdown
+
+        #rerendering the dropdown, calling the dropdown menu, since we need ScrollableDropdownMenus as deferred menus.
         DropdownMenu.rerender(self)
         #adding the other dropdown menus
         self.expanded_dropdown_menus = {}
         #we need to cut the frame of the currernt dopdown menu from the frame for the remaining dropdowns
 
         #POSSIBLE ERROR: if self.frame_width != self.with_arrows_frame_dim.width
-        expanded_frame_dim = self.frame_dim_copy.copy()
+        expanded_frame_dim: pygame.Rect = self.original_frame_dim.copy()
         expanded_frame_dim.x = self.frame_dim.x + self.frame_dim.width
         expanded_frame_dim.width -= self.frame_dim.width
+
         #adding dropdown menus recursively
         for key, eoptions in self.full_options_dict.items():
             if type(eoptions) == dict:
@@ -224,17 +354,16 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                             self.max_depth - 1,
                                                             self.max_length
                                                         ),
-                                                        parent_frame=self,
+                                                        parent_frame=self.parent_frame,
+                                                        dropdown_parent=self,
                                                         font=self.font,
                                                         background_color=self.background_color,
                                                         highlighted_background_color=self.highlighted_background_color,
-                                                        text_color=self.text_color,
-                                                        in_option_line_margin=self.in_option_line_margin,
-                                                        highlighted_text_color=self.highlighted_text_color,
-                                                        line_margin=self.line_margin,
+                                                        in_option_line_margin_p=self.in_option_line_margin_p,
+                                                        line_margin_p=self.line_margin_p,
                                                         line_color=self.line_color,
-                                                        lines_shown=self.lines_shown,
-                                                        outline_size=self.outline_size,
+                                                        lines_shown =self.lines_shown,
+                                                        outline_size_p=self.outline_size_p,
                                                         outline_color=self.outline_color,
                                                         text_margins_percentage=self.text_margins_percentage,
                                                         highlighted_text_margins_percentage=self.highlighted_text_margins_percentage,
@@ -243,8 +372,11 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                     )
 
                 self.expanded_dropdown_menus[key] = new_dropdown #associating the dropdown with the corresponding option
-        #calculating arrows if arrows_shown == True
 
+        #checking for rendering the arrows
+        if self.n_options_shown < len(self.dropdown_keys):
+            self.arrows_shown = True
+        #calculating arrows if arrows_shown == True
         if self.arrows_shown:
 
             #self.frame_dim == self.with_arrows_frame_dim
@@ -253,108 +385,124 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             self.bottom_arrow_surface_pos = (self.original_frame_dim.x, self.original_frame_dim.y + self.original_frame_dim.height - int(self.original_frame_dim.height * self.arrow_frame_margin / 2))
 
 
-            topframe = pygame.Rect( 0,
-                                    0,
-                                    self.width,
-                                    int(self.original_frame_dim.height * self.arrow_frame_margin / 2)
-                                    )
+            topframe: pygame.Rect = pygame.Rect(    0,
+                                                    0,
+                                                    self.width,
+                                                    int(self.original_frame_dim.height * self.arrow_frame_margin / 2)
+                                                    )
 
-            bottomframe = pygame.Rect(  0,
-                                        0,
-                                        self.width,
-                                        int(self.original_frame_dim.height * self.arrow_frame_margin / 2)
-                                        )
+            bottomframe: pygame.Rect = pygame.Rect(     0,
+                                                        0,
+                                                        self.width,
+                                                        int(self.original_frame_dim.height * self.arrow_frame_margin / 2)
+                                                        )
 
-            split_p = [(1.0 - self.arrow_to_text_margin), self.arrow_to_text_margin]
+            #splitting percentages
+            split_p: list[float] = [(1.0 - self.arrow_to_text_margin), self.arrow_to_text_margin]
+            #getting the text and image frames.
             self.top_arrow_text_frame, self.top_arrow_frame = graphics.split_rect_vertically(topframe, split_p)
             self.bottom_arrow_frame, self.bottom_arrow_text_frame = graphics.split_rect_vertically(bottomframe, split_p[::-1])
 
-            self.top_arrow_rendered, self.top_arrow_pos  = graphics.img_load_and_position(ScrollableDropdownMenu.ARROW_IMG_PATH,
+            #rendering the arrows
+            self.top_arrow_rendered, self.top_arrow_pos  = graphics.img_load_and_position(  ScrollableDropdownMenu.ARROW_IMG_PATH,
                                                                                             self.top_arrow_frame)
-
-            self.bottom_arrow_rendered, self.bottom_arrow_pos  = graphics.img_load_and_position(ScrollableDropdownMenu.ARROW_IMG_PATH,
-                                                                    self.bottom_arrow_frame)
+            self.bottom_arrow_rendered, self.bottom_arrow_pos  = graphics.img_load_and_position(    ScrollableDropdownMenu.ARROW_IMG_PATH,
+                                                                                                    self.bottom_arrow_frame)
+            #rotating the bottom arrow
             self.bottom_arrow_rendered = pygame.transform.rotate(self.bottom_arrow_rendered, 180.0)
             #surfaces
             self.top_arrow_surface = pygame.Surface((topframe.width, topframe.height), pygame.SRCALPHA)
             self.bottom_arrow_surface = pygame.Surface((bottomframe.width, bottomframe.height), pygame.SRCALPHA)
 
             self.rerender_arrow_text()
+            self.prerender()
 
-    def rerender_arrow_text(self):
-
-        if self.top_arrow_text_frame is None or self.bottom_arrow_text_frame is None:
+    def rerender_arrow_text(self) -> None:
+        """
+        Rerenders the text above the arrows.
+        """
+        #if no arrows are shown, return
+        if not self.arrows_shown:
             return
 
-        topnum = self.scroll_index
-        bottomnum = len(self.full_options) - self.scroll_index - self.n_options_shown
+        topnum: int = self.scroll_index
+        bottomnum: int = len(self.dropdown_keys) - self.scroll_index - self.n_options_shown
 
         self.top_arrow_text_rendered = graphics.render_page_from_chars_color(
-                                                                        self.font,
-                                                                        [[(str(topnum), self.arrow_text_color)]],
-                                                                        self.top_arrow_text_frame,
-                                                                        text_color=self.arrow_text_color,
-                                                                        centered=True,
-                                                                        vertical_centered=True
-                                                                        )
+                                                                                self.font,
+                                                                                graphics.str_to_colored_page(str(topnum), self.arrow_text_color),
+                                                                                self.top_arrow_text_frame,
+                                                                                centered=True,
+                                                                                vertical_centered=True
+                                                                                )
 
         self.bottom_arrow_text_rendered = graphics.render_page_from_chars_color(
-                                                                        self.font,
-                                                                        [[(str(bottomnum), self.arrow_text_color)]],
-                                                                        self.bottom_arrow_text_frame,
-                                                                        text_color=self.arrow_text_color,
-                                                                        centered=True,
-                                                                        vertical_centered=True
-                                                                        )
-
+                                                                                    self.font,
+                                                                                    graphics.str_to_colored_page(str(bottomnum), self.arrow_text_color),
+                                                                                    self.bottom_arrow_text_frame,
+                                                                                    centered=True,
+                                                                                    vertical_centered=True
+                                                                                )
+    @override
     def prerender(self):
-
+        """
+        Prerendering
+        """
+        #prerendering using the expandable dropdown menu
         ExpandableDropdownMenu.prerender(self)
 
-        if self.arrows_shown and self.top_arrow_surface is not None:
+        #rendering the arrows extra
+        if self.arrows_shown:
 
             self.top_arrow_surface.fill(Colors.TRANSPARENT)
             self.bottom_arrow_surface.fill(Colors.TRANSPARENT)
 
             self.top_arrow_surface.blit(self.top_arrow_rendered, self.top_arrow_pos)
-            for surf, pos in self.top_arrow_text_rendered:
-                self.top_arrow_surface.blit(surf, pos)
+            graphics.render_rendered_surface_position_tuples(self.top_arrow_surface, self.top_arrow_text_rendered)
 
             self.bottom_arrow_surface.blit(self.bottom_arrow_rendered, self.bottom_arrow_pos)
-            for surf, pos in self.bottom_arrow_text_rendered:
-                self.bottom_arrow_surface.blit(surf, pos)
+            graphics.render_rendered_surface_position_tuples(self.bottom_arrow_surface, self.bottom_arrow_text_rendered)
 
+    @override
     def render(self, screen):
 
         ExpandableDropdownMenu.render(self, screen)
-        if self.arrows_shown and self.top_arrow_surface is not None:
+        if self.arrows_shown:
             screen.blit(self.top_arrow_surface, self.top_arrow_surface_pos)
             screen.blit(self.bottom_arrow_surface, self.bottom_arrow_surface_pos)
 
-    def select_option_expanded(self, option_trace):
+    def select_option_expanded(self, option_trace: scrollable_option_trace_t) -> None:
+        """
+        Focuses the option indicated by the option trace.
+        """
         if not option_trace:
             return
+
         #selects the option with subselecting deferred dropdown menus
         coption, state, sindex = option_trace[0]
         self.scroll_index = sindex
-        self.options = self.get_options_n_showed()
-        self.selected_index = self.options.index(coption)
+        self.dropdown_options = self.get_options_n_showed()
+        self.selected_index = self.dropdown_options.index(coption)
 
         if type(self.full_options_dict[coption]) == dict:
             self.deferred_dropdown_menu = self.expanded_dropdown_menus[coption]
             #getting if it is a full end or not
-            full_end = self.deferred_dropdown_menu.select_option_expanded(option_trace[1:])
+            self.deferred_dropdown_menu.select_option_expanded(option_trace[1:])
 
         self.state = state
+        self.prerender()
 
-    def get_option_trace(self):
-        #returns the scroll index as well
+    @override
+    def get_option_trace(self) -> scrollable_option_trace_t:
+        """
+        Returns the trace for a scrollable dropdownmenu
+        """
 
         if self.state == ScrollableDropdownMenu.NOTHING_SELECTED:
             return None
         else:
 
-            trace = [(self.options[self.selected_index], self.state, self.scroll_index)]
+            trace = [(self.dropdown_options[self.selected_index], self.state, self.scroll_index)]
             if self.deferred_dropdown_menu is not None:
                 ext = self.deferred_dropdown_menu.get_option_trace()
                 if ext is not None:
@@ -362,7 +510,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
             return trace
 
-
+    @override
     def tick(self):
 
         #giving tick command to currently expanded dropdownmenu
@@ -370,25 +518,35 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             self.deferred_dropdown_menu.tick()
 
         if self.state in self.move_states:
+
+            #saving the previously selected index.
             prev_sindex = self.selected_index
             self.selected_index += self.moves_buffered
+
+            #if we hit the the ceiling, and scrolling is possible, try scrolling up
             if self.selected_index < 0 and prev_sindex >= 0:
                 self.selected_index = 0
                 self.state = ScrollableDropdownMenu.SCROLLING_UP
                 self.initialize_scrolling_up()
-            elif self.selected_index >= self.n_options:
-                self.selected_index = self.n_options - 1
+            #if we hit the bottom, and scrolling is possible, try scrolling down
+            elif self.selected_index >= self.n_options():
+                self.selected_index = self.n_options() - 1
                 self.state = ScrollableDropdownMenu.SCROLLING_DOWN
                 self.initialize_scrolling_down()
+
+            #resetting moves buffered
             self.moves_buffered = 0
+
             #after a move, check if we need to show another dropdown menu
             if self.state not in [ScrollableDropdownMenu.SCROLLING_UP, ScrollableDropdownMenu.SCROLLING_DOWN]:
-                if self.options[self.selected_index] in self.expanded_dropdown_menus:
-                    self.deferred_dropdown_menu = self.expanded_dropdown_menus[self.options[self.selected_index]]
+
+                if self.dropdown_options[self.selected_index] in self.expanded_dropdown_menus:
+                    self.deferred_dropdown_menu = self.expanded_dropdown_menus[self.dropdown_options[self.selected_index]]
                     self.state = ExpandableDropdownMenu.DEFERRED_MENU_SHOWN
                 else:
                     self.deferred_dropdown_menu = None
                     self.state = DropdownMenu.OPTION_SELECTED
+
             self.prerender()
 
         elif self.state == DropdownMenu.SELECT_ANIMATION_PLAYING:
@@ -400,18 +558,16 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         elif self.state == ScrollableDropdownMenu.SCROLLING_DOWN:
             self.scroll_down()
 
-        #checking events
-        if self.deferred_dropdown_menu is not None:
-            for event in self.deferred_dropdown_menu.poll_events():
-                if event.type == ExpandableDropdownMenu.EventTypes.SELECTION_FINISHED_EVENT:
-                    #if we got a selection finished event, append the own current option, then add it to the event queue
-                    event.add_selected_name(self.options[self.selected_index])
-                    self.push_event(event)
 
 
-    def initialize_scrolling_up(self):
 
-        if self.scroll_index == 0 or len(self.full_options) <= self.n_options_shown:
+    def initialize_scrolling_up(self) -> None:
+        """
+        Starts the scrolling up animation
+        """
+
+        #if no scrolling possible, return
+        if self.scroll_index == 0 or len(self.dropdown_keys) <= self.n_options_shown:
             self.state = DropdownMenu.OPTION_SELECTED
             return
 
@@ -425,29 +581,51 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         htmb.y += -self.full_box_height + self.outline_size
 
 
-        box = pygame.Rect(self.outline_size,
+        box = pygame.Rect(
+                            self.outline_size,
                             -self.full_box_height + self.outline_size,
                             self.inner_frame_dim.width,
-                            self.option_box_height)
+                            self.option_box_height
+                            )
 
         self.boxframes.insert(0, (box, tmb, htmb))
         self.boxframes_copy = [(b.copy(), t.copy(), h.copy()) for b, t, h in self.boxframes]
 
-        page = self.full_options[self.scroll_index-1]
-        rtext = graphics.render_page_from_chars(self.font, page, tmb, self.text_color, centered=True, vertical_centered=True, line_margin=self.in_option_line_margin)
-        hrtext = graphics.render_page_from_chars(self.font, page, htmb, self.highlighted_text_color, centered=True, vertical_centered=True, line_margin=self.in_option_line_margin)
+        dropdownkey = self.dropdown_keys[self.scroll_index-1]
+        page = dropdownkey.option_page
+        hpage = dropdownkey.highlighted_option_page
+
+        rtext = graphics.render_page_from_chars_color(
+                                                        font=self.font,
+                                                        page=page,
+                                                        frame=tmb,
+                                                        centered=True,
+                                                        vertical_centered=True,
+                                                        line_margin_as_percentage=self.in_option_line_margin_p
+                                                        )
+        hrtext = graphics.render_page_from_chars_color(
+                                                        font=self.font,
+                                                        page=hpage,
+                                                        frame=htmb,
+                                                        centered=True,
+                                                        vertical_centered=True,
+                                                        line_margin_as_percentage=self.in_option_line_margin_p
+                                                        )
 
         self.rendered_texts.insert(0, rtext)
         self.rendered_highlighted_texts.insert(0, hrtext)
         self.rendered_texts_copy = [[(tr.copy(), pos) for tr, pos in rtext] for rtext in self.rendered_texts]
         self.rendered_highlighted_texts_copy = [[(tr.copy(), pos) for tr, pos in rtext] for rtext in self.rendered_highlighted_texts]
 
-        self.n_options += 1 #only temporarily
+        #setting the selected index down by 1
         self.selected_index = 1
-
+        #starting the clock
         self.scrolling_animation_clock.start()
 
-    def scroll_up(self):
+    def scroll_up(self) -> None:
+        """
+        Rendering the scrolling animation.
+        """
 
         percentage = self.scrolling_animation_clock.elapsed() / self.scrolling_animation_duration
 
@@ -457,7 +635,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
             scroll_px = int(percentage * self.full_box_height)
 
-            for i in range(self.n_options):
+            for i in range(self.n_options()):
 
                 cpbox, cptmb, cphtmb = self.boxframes_copy[i]
                 box, tmb, htmb = self.boxframes[i]
@@ -478,26 +656,38 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     rta.append(rt)
                 self.rendered_highlighted_texts[i] = rta
 
-    def finalize_scrolling_up(self):
+            self.prerender()
 
+    def finalize_scrolling_up(self) -> None:
+        """
+        Ends the scrolling up animation.
+        """
+        #we dont need the first box that is not rendered
         self.boxframes = self.boxframes_copy[1:]
-
+        #cutting out the last texts
         self.rendered_texts = self.rendered_texts_copy[:-1]
+        #moving all texts one box down
         self.rendered_texts = [[(text, (x, y+self.full_box_height)) for text, (x, y) in op] for op in self.rendered_texts]
-
+        #cutting out the last highlighted texts
         self.rendered_highlighted_texts = self.rendered_highlighted_texts_copy[:-1]
+        #moving all texts one box down
         self.rendered_highlighted_texts = [[(text, (x, y+self.full_box_height)) for text, (x, y) in op] for op in self.rendered_highlighted_texts]
 
-        self.n_options -= 1
+        #decrementing the scroll index
         self.scroll_index -= 1
-        self.options = self.get_options_n_showed()
+        self.dropdown_options = self.get_options_n_showed()
 
         self.selected_index = 0
         self.state = DropdownMenu.OPTION_SELECTED
 
-    def initialize_scrolling_down(self):
+        self.prerender()
 
-        if self.scroll_index + self.n_options_shown >= len(self.full_options) or len(self.full_options) <= self.n_options_shown:
+    def initialize_scrolling_down(self) -> None:
+        """
+        Initializes the scrolling down animation.
+        """
+
+        if self.scroll_index + self.n_options_shown >= len(self.dropdown_keys) or len(self.dropdown_keys) <= self.n_options_shown:
             self.state = DropdownMenu.OPTION_SELECTED
             return
 
@@ -515,23 +705,40 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         self.boxframes.append((box, tmb, htmb))
         self.boxframes_copy = [(b.copy(), t.copy(), h.copy()) for b, t, h in self.boxframes]
 
-        page = self.full_options[self.scroll_index+self.n_options_shown]
-        rtext = graphics.render_page_from_chars(self.font, page, tmb, self.text_color, centered=True, vertical_centered=True, line_margin=self.in_option_line_margin)
-        hrtext = graphics.render_page_from_chars(self.font, page, htmb, self.highlighted_text_color, centered=True, vertical_centered=True, line_margin=self.in_option_line_margin)
+        dropdownkey = self.dropdown_keys[self.scroll_index+self.n_options_shown]
+        page = dropdownkey.option_page
+        hpage = dropdownkey.highlighted_option_page
+
+        rtext = graphics.render_page_from_chars_color(
+                                                        font=self.font,
+                                                        page=page,
+                                                        frame=tmb,
+                                                        centered=True,
+                                                        vertical_centered=True,
+                                                        line_margin_as_percentage=self.in_option_line_margin_p
+                                                        )
+        hrtext = graphics.render_page_from_chars_color(
+                                                        font=self.font,
+                                                        page=hpage,
+                                                        frame=htmb,
+                                                        centered=True,
+                                                        vertical_centered=True,
+                                                        line_margin_as_percentage=self.in_option_line_margin_p
+                                                        )
 
         self.rendered_texts.append(rtext)
         self.rendered_highlighted_texts.append(hrtext)
         self.rendered_texts_copy = [[(tr.copy(), pos) for tr, pos in rtext] for rtext in self.rendered_texts]
         self.rendered_highlighted_texts_copy = [[(tr.copy(), pos) for tr, pos in rtext] for rtext in self.rendered_highlighted_texts]
 
-        self.n_options += 1 #only temporarily
-        self.selected_index = self.n_options - 2
+        self.selected_index = self.n_options() - 2 #setting the selected index
 
         self.scrolling_animation_clock.start()
 
-    def scroll_down(self):
-
-
+    def scroll_down(self) -> None:
+        """
+        Rendering the scrolling down animation.
+        """
         percentage = self.scrolling_animation_clock.elapsed() / self.scrolling_animation_duration
 
         if percentage >= 1.0:
@@ -540,7 +747,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
             scroll_px = int(percentage * self.full_box_height)
 
-            for i in range(self.n_options):
+            for i in range(self.n_options()):
 
                 cpbox, cptmb, cphtmb = self.boxframes_copy[i]
                 box, tmb, htmb = self.boxframes[i]
@@ -561,8 +768,14 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     rta.append(rt)
                 self.rendered_highlighted_texts[i] = rta
 
+            self.prerender()
 
-    def finalize_scrolling_down(self):
+
+    def finalize_scrolling_down(self) -> None:
+        """
+        Ending the scrolling animation.
+        """
+
 
         self.boxframes = self.boxframes_copy[:-1]
 
@@ -572,9 +785,11 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         self.rendered_highlighted_texts = self.rendered_highlighted_texts_copy[1:]
         self.rendered_highlighted_texts = [[(text, (x, y-self.full_box_height)) for text, (x, y) in op] for op in self.rendered_highlighted_texts]
 
-        self.n_options -= 1
         self.scroll_index += 1
-        self.options = self.get_options_n_showed()
+        self.dropdown_options = self.get_options_n_showed()
 
-        self.selected_index = self.n_options - 1
         self.state = DropdownMenu.OPTION_SELECTED
+        #we need to set the selected index after changing the state
+        self.selected_index = self.n_options() - 1
+
+        self.prerender()

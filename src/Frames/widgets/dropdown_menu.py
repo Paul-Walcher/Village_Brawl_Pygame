@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Typing, Callable, Any, override
+from typing import Type, Callable, Any, override
 
 import pygame
 
@@ -85,7 +85,7 @@ class DropdownMenu(Frame):
                 text_margins_percentage: tuple[float, float] = (0.4, 0.4), #means the text will be moved in by text_margins_percentage / 2
                 highlighted_text_margins_percentage: tuple[float, float] = (0.1, 0.1), #if the text is highlighted, the box of it
                                                                 #should not be moved in and made smaller as much
-                initial_selected_index: int = DropdownMenu.NOTHING_SELECTED_INDEX, #what will initially be selected. if initial_selected_index==-1, nothing is selected at first
+                initial_selected_index: int = -1, #what will initially be selected. if initial_selected_index==-1, nothing is selected at first
                 selected_animation_duration: float = 400#ms, #how long the selection animation plays
                 ):
 
@@ -113,6 +113,9 @@ class DropdownMenu(Frame):
         """
         The selected index.
         """
+        if self.selected_index == -1:
+            self.selected_index = DropdownMenu.NOTHING_SELECTED_INDEX
+
         self.font: pygame.font.Font = font
         """
         Font for the option texts
@@ -331,7 +334,7 @@ class DropdownMenu(Frame):
         #drawing the lines
         lwidth = self.inner_frame_dim.width
         lstart = self.outline_size
-        for i in range(1, self.n_options):
+        for i in range(1, self.n_options()):
             cy = (self.inner_frame_dim.y - self.y) + i*self.full_box_height
             pygame.draw.line(self.surface, self.line_color, (lstart, cy), (lstart + lwidth, cy), width=self.line_margin)
         #rendering the text
@@ -472,7 +475,7 @@ class DropdownMenu(Frame):
                                                         page=self.highlighted_options[self.selected_index],
                                                         frame=rframe,
                                                         centered=True,
-                                                        vertical_centered=True
+                                                        vertical_centered=True,
                                                         line_margin_as_percentage=self.in_option_line_margin_p
                                                         )
 

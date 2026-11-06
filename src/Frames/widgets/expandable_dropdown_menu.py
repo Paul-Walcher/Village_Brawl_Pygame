@@ -16,8 +16,16 @@ from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.widgets.dropdown_menu import DropdownMenu
 
-type expandable_dropdown_options_t = dict[tuple[colored_page_t, colored_page_t], dict]
-type option_trace_t = list[tuple[tuple[colored_page_t, colored_page_t], int]]
+class DropDownKey:
+    """
+    Class used for defining a dropdown key.
+    """
+    def __init__(self, option_page: colored_page_t, highlighted_option_page: colored_page_t):
+        self.option_page: colored_page_t = option_page
+        self.highlighted_option_page: colored_page_t = highlighted_option_page
+
+type expandable_dropdown_options_t = dict[DropDownKey, dict]
+type option_trace_t = list[tuple[DropDownKey, int]]
 
 class ExpandableDropdownMenu(DropdownMenu):
     """
@@ -55,7 +63,66 @@ class ExpandableDropdownMenu(DropdownMenu):
             return NewOptionHighlightedEvent(self.indices, self.selected_option_strings)
 
 
+    @staticmethod
+    def page_keys_to_dropdownkey(
+                                    options_dict: dict[tuple[str], dict],
+                                    text_color: color_t,
+                                    highlighted_text_color: color_t
 
+                                    ) -> expandable_dropdown_options_t:
+        """
+        Given a dictionary with keys like:
+
+        options = {
+                    ("line 1", "line 2"): {
+                                                ("E",): None,
+                                                ("RT", "TZ", "IO"): {
+                                                                        ("ERERER", "BZTT"): None,
+                                                                        ("HBEDZG",): None,
+                                                                        ("EE", "RR"): None,
+                                                                        ("WWW", "TT"): None,
+
+                                                                        "n_options_shown": 2
+                                                                            }
+                                            },
+                    ("LINE",): None,
+                    ("JJ", "JJ", "JJ", "JJ"): None,
+                    ("GGG",): None,
+                    ("JKIJI", "IJUHU"): None,
+                    "n_options_shown": 3
+
+                    }
+        This function returns the same dictionary, but with the tuple keys
+        transformed into (colored_page, highlighted_colored_page) tuples.
+        """
+
+        back_dict: expandable_dropdown_options_t = {}
+
+        for key, value in options_dict.items():
+
+            if type(key) == tuple:
+
+                #transforming the key
+                option_page: colored_page_t = graphics.page_to_colored_page(list(key), text_color)
+                highlighted_option_page: colored_page_t = graphics.page_to_colored_page(list(key), highlighted_text_color)
+
+                new_value: Any = value
+
+                if type(value) == dict:
+                    new_value = ExpandableDropdownMenu.page_keys_to_dropdownkey(
+                                                                                    options_dict=value,
+                                                                                    text_color=text_color,
+                                                                                    highlighted_text_color=highlighted_text_color
+                                                                                    )
+
+                new_key = DropDownKey(option_page=option_page, highlighted_option_page=highlighted_option_page)
+
+                back_dict[new_key] = new_value
+
+            else:
+                back_dict[key] = value
+
+        return back_dict
 
     def __init__(
                 self,
@@ -84,11 +151,11 @@ class ExpandableDropdownMenu(DropdownMenu):
                 outline_color: color_t = Colors.BLACK,
                 text_margins_percentage: tuple[float, float] = (0.4, 0.4),
                 highlighted_text_margins_percentage: tuple[float, float] = (0.1, 0.1),
-                initial_selected_index: int = ExpandableDropdownMenu.NOTHING_SELECTED_INDEX,
+                initial_selected_index: int = -1,
                 selected_animation_duration: float = 400#ms
                 ):
 
-        self.expanded_dropdown_menus: dict[tuple[colored_page_t, colored_page_t], ExpandableDropdownMenu] = {}
+        self.expanded_dropdown_menus: dict[DropdownKey, ExpandableDropdownMenu] = {}
         """
         list of immediate dropdown menus. if an option tuple has a follow up menu,
         the option tuple is the key and the follow up dropdown menu is the value
@@ -127,8 +194,9 @@ class ExpandableDropdownMenu(DropdownMenu):
         frame_dim.height = (frame_dim.height // self.max_length) * len(options) #adjusting the frame dimension based on the maximum options
 
         #calculating the options as a list of pages
-        option_pages: list[colored_page_t] = [key[0] for key in options.keys()]
-        highlighed_option_pages: list[colored_page_t] = [key[1] for key in options.keys()]
+        self.dropdown_keys: list[DropDownKey] = [key for key in options.keys() if type(key) == DropDownKey]
+        option_pages: list[colored_page_t] = [key.option_page for key in self.dropdown_keys]
+        highlighed_option_pages: list[colored_page_t] = [key.highlighted_option_page for key in self.dropdown_keys]
         #calling the superconstructor
         DropdownMenu.__init__(
                                 self,
@@ -182,7 +250,7 @@ class ExpandableDropdownMenu(DropdownMenu):
         """
         returns if this dropdown menu is deferred
         """
-        return self.state == ExpandableDropdownMenu.FOCUS_DEFERRED
+        return (self.state == ExpandableDropdownMenu.FOCUS_DEFERRED)
 
     @override
     def rerender(self):
@@ -309,6 +377,7 @@ class ExpandableDropdownMenu(DropdownMenu):
             self.deferred_dropdown_menu.select_option_expanded(option_trace[1:])
 
         self.state = state
+        self.prerender()
 
     def get_option_trace(self) -> option_trace_t:
         """
@@ -317,7 +386,7 @@ class ExpandableDropdownMenu(DropdownMenu):
         if self.state == ExpandableDropdownMenu.NOTHING_SELECTED:
             return None
         else:
-            trace = [(self.options[self.selected_index], self.state)]
+            trace = [(self.dropdown_keys[self.selected_index], self.state)]
             if self.deferred_dropdown_menu is not None:
                 ext = self.deferred_dropdown_menu.get_option_trace()
                 if ext is not None:
@@ -377,11 +446,11 @@ class ExpandableDropdownMenu(DropdownMenu):
             self.deferred_dropdown_menu.render(screen)
         screen.blit(self.surface, (self.x, self.y))
 
-    def options_key_from_index(self, index: int) -> tuple[colored_page_t, colored_page_t]:
+    def options_key_from_index(self, index: int) -> DropDownKey:
         """
         Creates the key for the options from the selected index.
         """
-        return (self.options[index], self.highlighted_options[index])
+        return self.dropdown_keys[index]
 
     @override
     def tick(self):
