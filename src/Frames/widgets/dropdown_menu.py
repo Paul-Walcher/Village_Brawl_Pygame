@@ -50,8 +50,8 @@ class DropdownMenu(Frame):
             self.selected_option_str: str = selected_option_str
 
         @override
-        def copy(self) -> SelectAnimationEndedEvent:
-            return SelectAnimationEndedEvent(self.selected_index, self.selected_option_str)
+        def copy(self) -> DropdownMenu.SelectAnimationEndedEvent:
+            return DropdownMenu.SelectAnimationEndedEvent(self.selected_index, self.selected_option_str)
 
     class NewOptionHighlightedEvent(Event):
 
@@ -63,8 +63,8 @@ class DropdownMenu(Frame):
             self.selected_option_str: str = selected_option_str
 
         @override
-        def copy(self) -> NewOptionHighlightedEvent:
-            return NewOptionHighlightedEvent(self.selected_index, self.selected_option_str)
+        def copy(self) -> DropdownMenu.NewOptionHighlightedEvent:
+            return DropdownMenu.NewOptionHighlightedEvent(self.selected_index, self.selected_option_str)
 
     def __init__(
                 self,
@@ -470,14 +470,15 @@ class DropdownMenu(Frame):
                 sframe = pygame.Rect(cx, cy, cw, ch)
                 rframe = graphics.apply_margins(sframe, mxd, myd)
 
-                rtext = graphics.render_page_from_chars(
-                                                        font=self.font,
-                                                        page=self.highlighted_options[self.selected_index],
-                                                        frame=rframe,
-                                                        centered=True,
-                                                        vertical_centered=True,
-                                                        line_margin_as_percentage=self.in_option_line_margin_p
-                                                        )
+
+                rtext = graphics.render_page_from_chars_color(
+                                                                font=self.font,
+                                                                page=self.highlighted_options[self.selected_index],
+                                                                frame=rframe,
+                                                                centered=True,
+                                                                vertical_centered=True,
+                                                                line_margin_as_percentage=self.in_option_line_margin_p
+                                                                )
 
                 self.rendered_highlighted_texts[self.selected_index] = rtext
 

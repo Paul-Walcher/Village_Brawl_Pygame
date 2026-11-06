@@ -96,8 +96,10 @@ class TestFrame(EmptyFrame):
             return None
 
         for event in self.dropdown.poll_events():
-            if event.type == ExpandableDropdownMenu.EventTypes.SELECTION_FINISHED_EVENT:
-                print(event.data)
+            if event.type == DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED:
+                print(event.selected_option_strings)
+            elif event.type == DropdownMenu.EventTypes.NEW_OPTION_HIGHLIGHTED:
+                print(event.selected_option_strings)
 
         if self.key_clock.elapsed() > self.key_delay:
 
@@ -108,7 +110,7 @@ class TestFrame(EmptyFrame):
                 self.dropdown.move_down()
                 self.key_clock.start()
             elif keys[pygame.K_RETURN] or keys[KeyAlternatives.ENTER_ALTERNATIVE]:
-                self.button.press()
+                self.dropdown.select()
                 self.key_clock.start()
             elif keys[pygame.K_LEFT] or keys[KeyAlternatives.LEFT_ALTERNATIVE]:
                 self.dropdown.move_left()

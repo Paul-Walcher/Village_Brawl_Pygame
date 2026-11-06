@@ -46,8 +46,8 @@ class ExpandableDropdownMenu(DropdownMenu):
             self.selected_option_strings: list[str] = selected_option_strings
 
         @override
-        def copy(self) -> SelectAnimationEndedEvent:
-            return SelectAnimationEndedEvent(self.indices, self.selected_option_strings)
+        def copy(self) -> ExpandableDropdownMenu.SelectAnimationEndedEvent:
+            return ExpandableDropdownMenu.SelectAnimationEndedEvent(self.indices, self.selected_option_strings)
 
     class NewOptionHighlightedEvent(Event):
 
@@ -59,8 +59,8 @@ class ExpandableDropdownMenu(DropdownMenu):
             self.selected_option_strings: list[str] = selected_option_strings
 
         @override
-        def copy(self) -> NewOptionHighlightedEvent:
-            return NewOptionHighlightedEvent(self.indices, self.selected_option_strings)
+        def copy(self) -> ExpandableDropdownMenu.NewOptionHighlightedEvent:
+            return ExpandableDropdownMenu.NewOptionHighlightedEvent(self.indices, self.selected_option_strings)
 
 
     @staticmethod
@@ -352,14 +352,19 @@ class ExpandableDropdownMenu(DropdownMenu):
         Unselects the options.
         """
         self.deferred_dropdown_menu = None
-        DropdownMenu.unselect_options(self)
+
+        self.selected_index = DropdownMenu.NOTHING_SELECTED_INDEX
+        self.moves_buffered = 0
+        self.state = DropdownMenu.NOTHING_SELECTED
 
         self.push_event(
                         ExpandableDropdownMenu.NewOptionHighlightedEvent(
-                                                                            indices=ExpandableDropdownMenu.NOTHING_SELECTED_INDEX,
-                                                                            selected_option_strings=None
+                                                                            indices=[ExpandableDropdownMenu.NOTHING_SELECTED_INDEX],
+                                                                            selected_option_strings=[None]
                                                                         )
                         )
+
+        self.prerender()
 
     def select_option_expanded(self, option_trace: option_trace_t) -> None:
         """
@@ -424,6 +429,8 @@ class ExpandableDropdownMenu(DropdownMenu):
                                                                                 selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index])]
                                                                             )
                         )
+
+        self.prerender()
 
 
     @override

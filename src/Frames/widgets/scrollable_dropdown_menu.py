@@ -28,6 +28,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
 
     N_OPTIONS_SHOWN_KEY: str = "n_options_shown"
+
     """
     The key, for which the value defines the number of options shown.
     """
@@ -36,6 +37,33 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
     The arrow, shown when scrolling is possible.
     """
 
+    class SelectAnimationEndedEvent(Event):
+
+        def __init__(self, scroll_indices: list[int], indices: list[int], selected_option_strings: list[str]):
+
+            Event.__init__(self, etype=DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED, data=None)
+
+            self.scroll_indices: list[int] = scroll_indices
+            self.indices: list[int] = indices
+            self.selected_option_strings: list[str] = selected_option_strings
+
+        @override
+        def copy(self) -> ScrollableDropdownMenu.SelectAnimationEndedEvent:
+            return ScrollableDropdownMenu.SelectAnimationEndedEvent(self.scroll_indices, self.indices, self.selected_option_strings)
+
+    class NewOptionHighlightedEvent(Event):
+
+        def __init__(self, scroll_indices: int, indices: list[int], selected_option_strings: list[str]):
+
+            Event.__init__(self, etype=DropdownMenu.EventTypes.NEW_OPTION_HIGHLIGHTED, data=None)
+
+            self.scroll_indices: list[int] = scroll_indices
+            self.indices: list[int] = indices
+            self.selected_option_strings: list[str] = selected_option_strings
+
+        @override
+        def copy(self) -> ScrollableDropdownMenu.NewOptionHighlightedEvent:
+            return ScrollableDropdownMenu.NewOptionHighlightedEvent(self.scroll_indices, self.indices, self.selected_option_strings)
 
     def __init__(
                     self,
@@ -312,6 +340,27 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         return self.dropdown_keys[self.scroll_index: self.scroll_index+self.n_options_shown]
 
     @override
+    def unselect_options(self) -> None:
+        """
+        Unselects the options.
+        """
+        self.deferred_dropdown_menu = None
+
+        self.selected_index = DropdownMenu.NOTHING_SELECTED_INDEX
+        self.moves_buffered = 0
+        self.state = DropdownMenu.NOTHING_SELECTED
+
+        self.push_event(
+                        ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                            scroll_indices=[self.scroll_index],
+                                                                            indices=[ExpandableDropdownMenu.NOTHING_SELECTED_INDEX],
+                                                                            selected_option_strings=[None]
+                                                                        )
+                        )
+        self.prerender()
+
+
+    @override
     def rerender(self) -> None:
         """
         Rerendering.
@@ -517,6 +566,8 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         if self.deferred_dropdown_menu is not None:
             self.deferred_dropdown_menu.tick()
 
+
+
         if self.state in self.move_states:
 
             #saving the previously selected index.
@@ -534,9 +585,6 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                 self.state = ScrollableDropdownMenu.SCROLLING_DOWN
                 self.initialize_scrolling_down()
 
-            #resetting moves buffered
-            self.moves_buffered = 0
-
             #after a move, check if we need to show another dropdown menu
             if self.state not in [ScrollableDropdownMenu.SCROLLING_UP, ScrollableDropdownMenu.SCROLLING_DOWN]:
 
@@ -546,6 +594,17 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                 else:
                     self.deferred_dropdown_menu = None
                     self.state = DropdownMenu.OPTION_SELECTED
+
+                if self.moves_buffered != 0:
+                    self.push_event(
+                                        ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                            scroll_indices=[self.scroll_index],
+                                                                                            indices=[self.selected_index],
+                                                                                            selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
+                                                                                            )
+                                    )
+            #resetting moves buffered
+            self.moves_buffered = 0
 
             self.prerender()
 
@@ -557,6 +616,28 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
         elif self.state == ScrollableDropdownMenu.SCROLLING_DOWN:
             self.scroll_down()
+
+        #checking events
+        if self.deferred_dropdown_menu is not None:
+            for event in self.deferred_dropdown_menu.poll_events():
+
+                if event.type == DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED:
+                    #if we got a selection finished event, append the own current option, then add it to the event queue
+                    #modifying the event
+                    event.scroll_indices.insert(0, self.scroll_index)
+                    event.indices.insert(0, self.selected_index)
+                    event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index]))
+
+                    self.push_event(event)
+
+                elif event.type == DropdownMenu.EventTypes.NEW_OPTION_HIGHLIGHTED:
+
+                    #modifying the event
+                    event.scroll_indices.insert(0, self.scroll_index)
+                    event.indices.insert(0, self.selected_index)
+                    event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index]))
+
+                    self.push_event(event)
 
 
 
@@ -680,6 +761,14 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         self.selected_index = 0
         self.state = DropdownMenu.OPTION_SELECTED
 
+        self.push_event(
+                            ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                scroll_indices=[self.scroll_index],
+                                                                                indices=[self.selected_index],
+                                                                                selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
+                                                                                )
+                        )
+
         self.prerender()
 
     def initialize_scrolling_down(self) -> None:
@@ -792,4 +881,31 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         #we need to set the selected index after changing the state
         self.selected_index = self.n_options() - 1
 
+        self.push_event(
+                            ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                scroll_indices=[self.scroll_index],
+                                                                                indices=[self.selected_index],
+                                                                                selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
+                                                                                )
+                        )
+
+        self.prerender()
+
+    @override
+    def finalize_select_animation(self) -> None:
+        """
+        Finalizes the select animation.
+        """
+        self.rendered_highlighted_texts[self.selected_index] = self.rtext_copy
+
+        if self.deferred_dropdown_menu is None:
+            self.state = DropdownMenu.OPTION_SELECTED
+
+        self.push_event(
+                            ScrollableDropdownMenu.SelectAnimationEndedEvent(
+                                                                                scroll_indices=[self.scroll_index],
+                                                                                indices=[self.selected_index],
+                                                                                selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
+                                                                            )
+                        )
         self.prerender()
