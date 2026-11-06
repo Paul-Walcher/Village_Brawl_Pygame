@@ -37,12 +37,14 @@ class EventQueueManager(ABC):
     def __init__(self):
         self._event_queue: list[Event] = []
         """The event queue. Contains all current events that were not polled."""
+        self.event_queue_active: bool = True
 
     def push_event(self, event: Event) -> None:
         """
-        Adds an event to the event queue.
+        Adds an event to the event queue, if the queue is active.
         """
-        self._event_queue.append(event)
+        if self.event_queue_active:
+            self._event_queue.append(event)
 
     def poll_events(self) -> None:
         """
@@ -59,3 +61,17 @@ class EventQueueManager(ABC):
         without clearing the queue.
         """
         return [event.copy() for event in self._event_queue]
+
+    def deactivate_event_queue(self) -> None:
+        """
+        Deactivates the even queue. clears the event queue,
+        then discards all future event pushed until the queue is reactivated.
+        """
+        self._event_queue = []
+        self.event_queue_active = False
+
+    def activate_event_queue(self) -> None:
+        """
+        Reactivates the event queue.
+        """
+        self.event_queue_active = True

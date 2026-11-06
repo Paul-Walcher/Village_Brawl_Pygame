@@ -37,6 +37,8 @@ class DropdownMenu(Frame):
 
         SELECT_ANIMATION_ENDED = auto() #indicates the selection animation is over,
                                         #and the selection process finished
+        NEW_OPTION_HIGHLIGHTED = auto()
+
 
     class SelectAnimationEndedEvent(Event):
 
@@ -50,6 +52,19 @@ class DropdownMenu(Frame):
         @override
         def copy(self) -> SelectAnimationEndedEvent:
             return SelectAnimationEndedEvent(self.selected_index, self.selected_option_str)
+
+    class NewOptionHighlightedEvent(Event):
+
+        def __init__(self, selected_index: int, selected_option_str: str):
+
+            Event.__init__(self, etype=DropdownMenu.EventTypes.NEW_OPTION_HIGHLIGHTED, data=None)
+
+            self.selected_index: int = selected_index
+            self.selected_option_str: str = selected_option_str
+
+        @override
+        def copy(self) -> NewOptionHighlightedEvent:
+            return NewOptionHighlightedEvent(self.selected_index, self.selected_option_str)
 
     def __init__(
                 self,
@@ -376,6 +391,8 @@ class DropdownMenu(Frame):
         self.moves_buffered = 0
         self.state = DropdownMenu.NOTHING_SELECTED
 
+        self.push_event(DropdownMenu.NewOptionHighlightedEvent(DropdownMenu.NOTHING_SELECTED_INDEX, None))
+
         self.prerender()
 
     def select_option(self, index: int) -> None:
@@ -494,6 +511,13 @@ class DropdownMenu(Frame):
         if self.state in self.move_states:
             self.selected_index += self.moves_buffered
             self.selected_index %= self.n_options
+            if self.moves_buffered != 0:
+                self.push_event(
+                                    DropdownMenu.NewOptionHighlightedEvent(
+                                                                            self.selected_index,
+                                                                            graphics.colored_page_to_str(self.highlighted_options[self.selected_index])
+                                                                            )
+                                )
             self.moves_buffered = 0
             self.prerender()
 
