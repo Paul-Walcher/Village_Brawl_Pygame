@@ -78,6 +78,7 @@ def str_to_colored_page(text: str, text_color: color_t = Colors.STANDARD_TEXT_CO
     return [[(text, text_color)]]
 
 def page_to_colored_page(page: page_t, text_color: color_t) -> colored_page_t:
+
     """
     Converts a page to a colored page, where all is colored in the same text_color.
     """

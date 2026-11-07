@@ -6,7 +6,8 @@ from modules import Modules
 
 class ContextData:
     """
-    Saves all important data passed from frame to frame.
+    Saves all important data pa
+    ssed from frame to frame.
     """
 
     def __init__(
