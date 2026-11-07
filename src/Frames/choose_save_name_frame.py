@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Callable
+from typing import Any, Callable, override
 
 import os
 import pygame
@@ -164,6 +164,7 @@ class ChooseSaveNameFrame(Frame):
 
         self.rerender()
 
+    @override
     def rerender(self):
         """
         rerendering.
@@ -236,14 +237,25 @@ class ChooseSaveNameFrame(Frame):
                                     )
 
 
-        self.intro_delay_clock.start()
         self._next_frame = None
         self.reset_exit_flag()
 
+        self.prerender()
+        self.intro_delay_clock.start()
+
+    @override
+    def prerender(self):
+
+        self.surface.fill(Colors.BLACK)
+
+        self.headline_label.render(self.surface)
+        self.back_button.render(self.surface)
+        self.enter_button.render(self.surface)
+        self.text_input.render(self.surface)
 
 
 
-
+    @override
     def bind_events(self):
 
         if self.is_focused():
@@ -414,6 +426,7 @@ class ChooseSaveNameFrame(Frame):
         self._next_frame = self.parent_frame
         self.raise_exit_flag()
 
+    @override
     def tick(self):
 
         if self.intro_delay_clock.elapsed() > self.intro_delay:
@@ -442,13 +455,6 @@ class ChooseSaveNameFrame(Frame):
                 self.enter_button.select()
                 self.enter_button.press()
 
+        self.prerender()
+
         return self
-
-    def render(self, screen):
-
-        screen.fill(Colors.BLACK)
-
-        self.headline_label.render(screen)
-        self.back_button.render(screen)
-        self.enter_button.render(screen)
-        self.text_input.render(screen)

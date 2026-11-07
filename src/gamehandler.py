@@ -53,7 +53,7 @@ class Gamehandler:
 
                 self.current_frame = frame_back
 
-            self.current_frame.clear_pygame_events()
+            #self.current_frame.clear_pygame_events()
 
 
             self.screen.fill((0, 0, 0))

@@ -469,7 +469,7 @@ class ExpandableDropdownMenu(DropdownMenu):
         if self.state in self.move_states:
 
             self.selected_index += self.moves_buffered
-            self.selected_index %= self.n_options
+            self.selected_index %= self.n_options()
 
             #after a move, check if we need to show another dropdown menu
             if self.options_key_from_index(self.index) in self.expanded_dropdown_menus:
@@ -479,7 +479,7 @@ class ExpandableDropdownMenu(DropdownMenu):
                 self.deferred_dropdown_menu = None
                 self.state = DropdownMenu.OPTION_SELECTED
 
-            if self.moves_buffer != 0:
+            if self.moves_buffered != 0:
 
                 self.push_event(
                                     ExpandableDropdownMenu.NewOptionHighlightedEvent(

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Callable
+from typing import Any, Callable, override
 
 import os
 import pygame
@@ -172,6 +172,7 @@ class ChoosePlaysetFrame(Frame):
         self.wheel_delay: float = 250#ms
         self.rerender()
 
+    @override
     def rerender(self):
 
 
@@ -243,6 +244,19 @@ class ChoosePlaysetFrame(Frame):
         self.intro_delay_clock.start()
         self.wheel_clock.start()
 
+        self.prerender()
+
+    @override
+    def prerender(self) -> None:
+
+        self.surface.fill(Colors.BLACK)
+
+        self.headline_label.render(self.surface)
+        self.back_button.render(self.surface)
+
+        self.text_slider.render(self.surface)
+
+    @override
     def bind_events(self):
 
         if self.is_focused():
@@ -383,6 +397,7 @@ class ChoosePlaysetFrame(Frame):
         self.parent_frame.rerender()
         self.raise_exit_flag()
 
+    @override
     def tick(self):
 
         if self.intro_delay_clock.elapsed() > self.intro_delay:
@@ -407,13 +422,6 @@ class ChoosePlaysetFrame(Frame):
                     self._next_frame = ChooseSaveNameFrame(data=self.data, frame_dim=self.frame_dim.copy(), parent_frame=self, focus_group=self.focus_group)
                     self.raise_exit_flag()
 
+        self.prerender()
+
         return self
-
-    def render(self, screen):
-
-        screen.fill(Colors.BLACK)
-
-        self.headline_label.render(screen)
-        self.back_button.render(screen)
-
-        self.text_slider.render(screen)

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Callable, Any
+from typing import Callable, Any, override
 
 import pygame
 from constants import Colors
@@ -230,7 +230,7 @@ class IntroFrame(Frame):
 
             self.image.set_alpha(alpha)
 
-
+    @override
     def rerender(self) -> None:
         """
         Renders the frame as it should be as the beginning.
@@ -260,9 +260,11 @@ class IntroFrame(Frame):
         self.handle_image_animation()
 
         self.reset_exit_flag()
+
+        self.prerender()
         self.entry_delay_clock.start()
 
-
+    @override
     def bind_events(self) -> None:
         """
         Binds the enter events as triggering a transition into the IntroMenuFrame.
@@ -292,7 +294,7 @@ class IntroFrame(Frame):
         if self.entry_delay_clock.elapsed() > self.entry_delay:
             self.enter_intro_menu = True
 
-
+    @override
     def tick(self):
         """
         Basic tick function.
@@ -302,8 +304,14 @@ class IntroFrame(Frame):
         if self.exit_flag_raised():
             return None
 
+        self.headline_label.tick()
+        self.press_text_label.tick()
+
         self.handle_headline_animation()
         self.handle_image_animation()
+
+        #due to the animation, we rerender
+        self.prerender()
 
         if self.enter_intro_menu:
 
@@ -313,24 +321,19 @@ class IntroFrame(Frame):
 
         return self
 
-    def render(self, screen: pygame.Surface) -> None:
+    @override
+    def prerender(self) -> None:
         """
         Rendering function, see Frame class.
         """
 
-        screen.fill(Colors.BLACK)
-
-        if self.exit_flag_raised():
-            return None
-
-        self.headline_label.tick()
-        self.press_text_label.tick()
+        self.surface.fill(Colors.BLACK)
 
         if self.headline_label is not None:
-            self.headline_label.render(screen)
+            self.headline_label.render(self.surface)
 
         if self.image is not None:
-            screen.blit(self.image, self.image_pos)
+            self.surface.blit(self.image, self.image_pos)
 
         if self.press_text_label is not None:
-            self.press_text_label.render(screen)
+            self.press_text_label.render(self.surface)

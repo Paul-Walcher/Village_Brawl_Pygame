@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Callable
+from typing import Any, Callable, override
 
 import os
 import pygame
@@ -105,6 +105,7 @@ class LoadPlaysetFrame(Frame):
         """
         self.rerender()
 
+    @override
     def rerender(self) -> None:
         """
         Recalculating and rerendering from scratch.
@@ -126,12 +127,23 @@ class LoadPlaysetFrame(Frame):
         self.reset_exit_flag()
         self._next_frame = None
 
+        self.prerender()
+
         self.loading_clock.start()
         self.intro_delay_clock.start()
 
         #starting the loading thread
         self.thread = threading.Thread(target=self.load_playset)
         self.thread.start()
+
+    @override
+    def prerender(self) -> None:
+        """
+        Rendering function.
+        """
+
+        self.surface.fill(Colors.BLACK)
+        self.surface.blit(self.rendered_loading_text, self.loading_text_pos)
 
 
     def render_loading_text(self) ->  None:
@@ -158,7 +170,7 @@ class LoadPlaysetFrame(Frame):
             self.loading_finished = True
             self.extra_clock.start()
 
-
+    @override
     def tick(self):
 
         self.manage_pygame_events()
@@ -189,14 +201,7 @@ class LoadPlaysetFrame(Frame):
                                                 )
                 self.raise_exit_flag()
 
+        self.prerender()
+
 
         return self
-
-
-    def render(self, screen: pygame.Surface) -> None:
-        """
-        Rendering function.
-        """
-
-        screen.fill(Colors.BLACK)
-        screen.blit(self.rendered_loading_text, self.loading_text_pos)

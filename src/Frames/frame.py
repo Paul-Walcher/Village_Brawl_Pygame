@@ -201,6 +201,11 @@ class Frame(EventQueueManager):
         """
         height of this frame.
         """
+        self.surface: pygame.Surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        """
+        The own surface.
+        """
+
         self.focus_group: str = focus_group
         """
         The focus group this frame belongs to.
@@ -293,6 +298,7 @@ class Frame(EventQueueManager):
 
         #rerender on width or size change
         if should_rerender:
+            self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
             self.rerender()
 
     @property
@@ -752,14 +758,6 @@ class Frame(EventQueueManager):
 
         return self
 
-    @abstractmethod
-    def render(self, screen: pygame.Surface) -> None:
-        """
-        Renders this frame onto the given surface.
-        Is called once per frame.
-        """
-        pass
-
     def rerender(self) -> None:
         """
         Can be called upon reentry into this frame.
@@ -767,5 +765,28 @@ class Frame(EventQueueManager):
         made to it.
         This should e.g. cancel animations, reset the state...,
         and should also clear the exit flag.
+
+        This should be called whenever new calculations that define the
+        basis of what will be visually shown is changed.
         """
         pass
+
+    def prerender(self) -> None:
+        """
+        This function should be called whenever changes
+        that need to be visually shown happen to this frame.
+
+        """
+
+    def render(self, screen: pygame.Surface) -> None:
+        """
+        Renders this frame onto the given surface.
+        Is called once per frame.
+        """
+        screen.blit(self.surface, (self.x, self.y))
+
+    def render_at(self, screen: pygame.Surface, x: int, y: int) -> None:
+        """
+        Renders this frame at the given coordinates
+        """
+        screen.blit(self.surface, (x, y))

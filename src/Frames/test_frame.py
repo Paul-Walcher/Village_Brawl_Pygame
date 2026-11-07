@@ -97,9 +97,9 @@ class TestFrame(EmptyFrame):
 
         for event in self.dropdown.poll_events():
             if event.type == DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED:
-                print(event.selected_option_strings)
+                print(event.scroll_indices, event.indices)
             elif event.type == DropdownMenu.EventTypes.NEW_OPTION_HIGHLIGHTED:
-                print(event.selected_option_strings)
+                print(event.scroll_indices, event.indices)
 
         if self.key_clock.elapsed() > self.key_delay:
 

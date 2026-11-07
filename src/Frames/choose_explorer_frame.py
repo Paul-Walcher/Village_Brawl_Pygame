@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Callable, Type
+from typing import Any, Callable, Type, override
 
 import os
 import pygame
@@ -91,7 +91,7 @@ class ChooseExplorerFrame(Frame):
         """
         State of this frame.
         """
-        self.info_frame_sliding_time: float = 250#ms
+        self.info_frame_sliding_time: float = 500#ms
         """
         Time the sliding animation of the info frame takes.
         """
@@ -119,7 +119,7 @@ class ChooseExplorerFrame(Frame):
         """
         The starting location of the info frame before sliding in.
         """
-        self.info_frame_target_pos: tuple[int, int] = (self.width // 2, 0)
+        self.info_frame_target_pos: tuple[int, int] = (0, 0)
         """
         The target location of the info frame after the sliding process finished.
         """
@@ -151,9 +151,14 @@ class ChooseExplorerFrame(Frame):
         """
         Info text label.
         """
+        self.subframe_rendered: bool = False
+        """
+        If the subframe is rendered, we can stop rendering.
+        """
 
         self.rerender()
 
+    @override
     def rerender(self):
         """
         Rerendering.
@@ -188,7 +193,22 @@ class ChooseExplorerFrame(Frame):
 
         self._next_frame = None
         self.state = ChooseExplorerFrame.IDLE
+
+        self.prerender()
+
         self.intro_delay_clock.start()
+
+    @override
+    def prerender(self):
+
+        self.surface.fill(Colors.BLACK)
+
+        if not self.subframe_rendered:
+            self.explorer_slider.render(self.surface)
+            self.info_text_label.render(self.surface)
+
+        if self.info_frame is not None:
+            self.info_frame.render(self.surface)
 
     def create_explorer_surfaces(self) -> list[pygame.Surface]:
         """
@@ -238,7 +258,7 @@ class ChooseExplorerFrame(Frame):
         """
 
 
-        iframe: pygame.Rect = pygame.Rect(*self.info_frame_starting_pos, self.info_frame_width, self.info_frame_height)
+        iframe: pygame.Rect = pygame.Rect(*self.info_frame_starting_pos, self.width, self.height)
         self.info_frame = ExplorerInfoFrame(
                                             explorer_enum=self.explorer_enums[self.explorer_index],
                                             data=self.data,
@@ -252,6 +272,8 @@ class ChooseExplorerFrame(Frame):
         self.push_event(Frame.SubframeCreatedEvent(created_subframe=self.info_frame, n_subframes_active=1))
 
         self.info_frame_clock.start()
+        #now blocking inputs shortly
+        self.intro_delay_clock.start()
 
     def render_info_frame_sliding(self) -> None:
         """
@@ -317,6 +339,7 @@ class ChooseExplorerFrame(Frame):
             self.add_pygame_key_callback(key=pygame.K_i, data=None, putback=True, func=self.i_pressed_info_frame_active)
             self.add_pygame_key_callback(key=KeyAlternatives.BACK_KEY, data=None, putback=True, func=self.i_pressed_info_frame_active)
 
+    @override
     def bind_events(self):
 
         if self.is_focused():
@@ -365,8 +388,9 @@ class ChooseExplorerFrame(Frame):
 
         if self.state == ChooseExplorerFrame.INFO_FRAME_ACTIVE:
             self.info_frame.raise_exit_flag()
+            self.intro_delay_clock.start()
 
-
+    @override
     def tick(self):
 
         if self.intro_delay_clock.elapsed() > self.intro_delay:
@@ -399,6 +423,8 @@ class ChooseExplorerFrame(Frame):
                 if event.type == Frame.EventTypes.SUBFRAME_CREATED:
                     #if the info frame has created a new subframe, clear all events
                     self.clear_event_callbacks()
+                    self.subframe_rendered = True
+
                 elif event.type == Frame.EventTypes.SUBFRAME_DELETED:
                     #if after subframe deletion only the own info frame is active, reregister the events
                     if event.n_subframes_active == 0:
@@ -406,19 +432,13 @@ class ChooseExplorerFrame(Frame):
                         self.add_pygame_key_callback(key=pygame.K_i, data=None, putback=True, func=self.i_pressed_info_frame_active)
                         self.add_pygame_key_callback(key=KeyAlternatives.BACK_KEY, data=None, putback=True, func=self.i_pressed_info_frame_active)
 
+                        self.subframe_rendered = False
+
         if self.state in [ChooseExplorerFrame.INFO_FRAME_SLIDING_IN, ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT]:
             self.render_info_frame_sliding()
 
+        if self.state != ChooseExplorerFrame.IDLE:
+            self.prerender()
+
 
         return self
-
-
-    def render(self, screen):
-
-        screen.fill(Colors.BLACK)
-
-        self.explorer_slider.render(screen)
-        self.info_text_label.render(screen)
-
-        if self.info_frame is not None:
-            self.info_frame.render(screen)

@@ -98,7 +98,7 @@ class TextInput(Frame):
                 n_chars_shown: int = 30,
                 max_textlength: int = 50,
                 intro_delay: float = 100,#ms
-                input_delay: float = 50,#ms
+                input_delay: float = 10,#ms
                 backspace_delay: float = 100,#ma
                 cursor_flickering: bool = True, #if the cursor flickers when the textinput is focused
                 cursor_flickering_frequency: float = 400,#ms

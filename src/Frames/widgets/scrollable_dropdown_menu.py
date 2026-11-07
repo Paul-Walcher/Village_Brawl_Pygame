@@ -251,6 +251,11 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         """
         self.max_depth, self.max_length = precalculated_depth_and_max_length
 
+        self.pre_select_highlighted_page: colored_page_t = None
+        """
+        Saving for displaying the highlighted text.
+        """
+
         #initializing superclass
         ExpandableDropdownMenu.__init__(
                                             self,
@@ -558,6 +563,42 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     trace.extend(ext)
 
             return trace
+
+    @override
+    def move_up(self) -> None:
+        """
+        For pushing events.
+        """
+        if self.state == DropdownMenu.NOTHING_SELECTED:
+
+            self.push_event(
+                                ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                    scroll_indices=[self.scroll_index],
+                                                                                    indices=[0],
+                                                                                    selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.scroll_index])]
+                                                                                    )
+                            )
+
+        ExpandableDropdownMenu.move_up(self)
+
+    @override
+    def move_down(self) -> None:
+        """
+        For pushing events.
+        """
+        if self.state == DropdownMenu.NOTHING_SELECTED:
+
+            self.push_event(
+                                ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                    scroll_indices=[self.scroll_index],
+                                                                                    indices=[0],
+                                                                                    selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.scroll_index])]
+                                                                                    )
+                            )
+
+        ExpandableDropdownMenu.move_down(self)
+
+
 
     @override
     def tick(self):
@@ -892,11 +933,30 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         self.prerender()
 
     @override
+    def select(self) -> None:
+        """
+        Selects recursively if the deferred menu is active.
+        """
+        #if deferred, defer the select command
+        if self.deferred_dropdown_menu is not None and self.state == ExpandableDropdownMenu.FOCUS_DEFERRED:
+            self.deferred_dropdown_menu.select()
+        elif self.state == ExpandableDropdownMenu.OPTION_SELECTED:
+
+            self.pre_select_highlighted_page = self.highlighted_options[self.selected_index]
+            self.highlighted_options[self.selected_index] = self.highlighted_options[self.selected_index+self.scroll_index]
+            #selects the current selected option
+            self.state = ExpandableDropdownMenu.SELECT_ANIMATION_PLAYING
+            self.rtext_copy = self.rendered_highlighted_texts[self.selected_index]
+            self.select_clock.start()
+
+    @override
     def finalize_select_animation(self) -> None:
         """
         Finalizes the select animation.
         """
         self.rendered_highlighted_texts[self.selected_index] = self.rtext_copy
+        self.highlighted_options[self.selected_index] = self.pre_select_highlighted_page
+        self.pre_select_highlighted_page = None
 
         if self.deferred_dropdown_menu is None:
             self.state = DropdownMenu.OPTION_SELECTED

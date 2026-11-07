@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Callable
+from typing import Any, Callable, override
 
 
 import pygame
@@ -151,6 +151,7 @@ class IntroMenuFrame(Frame):
         """
         self.rerender()
 
+    @override
     def rerender(self) -> None:
         """
         Calculates the rect positions and prerenders the texts.
@@ -229,8 +230,23 @@ class IntroMenuFrame(Frame):
         self._next_frame = None
         #resetting the exit flag
         self.reset_exit_flag()
+
+        self.prerender()
         #starting the intro delay clock
         self.intro_delay_clock.start()
+
+    @override
+    def prerender(self) -> None:
+        """
+        Overwritten from Frame class.
+        """
+
+        self.surface.fill(Colors.BLACK)
+
+        self.back_button.render(self.surface)
+
+        for button in self.option_buttons:
+            button.render(self.surface)
 
 
     def new_game_pressed(self, arg: Any) -> None:
@@ -255,7 +271,7 @@ class IntroMenuFrame(Frame):
         self._next_frame.rerender()
         self.raise_exit_flag()
 
-
+    @override
     def bind_events(self) -> None:
         """
         Binding the events.
@@ -324,6 +340,8 @@ class IntroMenuFrame(Frame):
                     self.text_options_index = i
                     #setting the state
                     self.state = IntroMenuFrame.MAIN_OPTIONS_FOCUSED
+
+
 
 
     def mouse_button_down(self, event: pygame.event.Event, data: Any) -> None:
@@ -413,7 +431,7 @@ class IntroMenuFrame(Frame):
             self.option_buttons[self.text_options_index].press()
 
 
-
+    @override
     def tick(self) -> None:
         """
         Overwritten from Frame class.
@@ -430,16 +448,7 @@ class IntroMenuFrame(Frame):
         for button in self.option_buttons:
             button.tick()
 
+        #we can rerender here, nothing too computing intensive
+        self.prerender()
+
         return self
-
-    def render(self, screen: pygame.Surface) -> None:
-        """
-        Overwritten from Frame class.
-        """
-
-        screen.fill(Colors.BLACK)
-
-        self.back_button.render(screen)
-
-        for button in self.option_buttons:
-            button.render(screen)
