@@ -221,6 +221,11 @@ class Frame(EventQueueManager):
         """
         If this flag is raised, the frame is set to exit and give control to another frame.
         """
+        self.__prerender_flag_raised: bool = False
+        """
+        This flag, if true, indicates a prerendering should take place.
+        (Means there was a visual update in this frame)
+        """
         self.__disabled_keys: dict[int, bool] = {}
         """
         saves the keys that are currently disabled,
@@ -739,6 +744,24 @@ class Frame(EventQueueManager):
         For checking if the exit flag is raised.
         """
         return self.__exit_flag_raised
+
+    def raise_prerender_flag(self) -> None:
+        """
+        Sets the prerender flag to true, indicating a visual update happened.
+        """
+        self.__prerender_flag_raised = True
+
+    def reset_prerender_flag(self) -> None:
+        """
+        Resets the prerender flag, after prerendering was done.
+        """
+        self.__prerender_flag_raised = False
+
+    def prerender_flag_raised(self) -> bool:
+        """
+        Returns if the prerender flag is raised or not.
+        """
+        return self.__prerender_flag_raised
 
 
     def tick(self) -> Frame:

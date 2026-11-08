@@ -14,6 +14,13 @@ pygame.init()
 Types
 """
 type color_t = tuple[int, int, int] | tuple[int, int, int, int]
+type point_t = tuple[int, int]
+
+def as_point(rect: pygame.Rect) -> point_t:
+    """
+    Returns (x, y) of the rect
+    """
+    return (rect.x, rect.y)
 
 EPSILON = 10E-6
 """
