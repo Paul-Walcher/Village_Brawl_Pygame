@@ -6,7 +6,7 @@ import pygame
 import threading
 
 import constants
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID, color_t, point_t
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID, color_t, point_t, Mouse
 import graphics
 from clock import Clock
 from modules import Modules
@@ -152,6 +152,12 @@ class ChooseExplorerFrame(Frame):
         """
         Info text label.
         """
+
+        if type(self.data) == ContextData:
+            if self.data.mouse_enabled:
+                self.info_text = "Press i or right-click to see the explorer's info"
+                self.info_text_width_p = 0.3
+
         self.subframe_rendered: bool = False
         """
         If the subframe is rendered, we can stop rendering.
@@ -163,6 +169,18 @@ class ChooseExplorerFrame(Frame):
         self.info_frame_sliding_out_flag: bool = False
         """
         If a slide out by the info frame is requested.
+        """
+        self.left_mouse_button_down: bool = False
+        """
+        If the left mouse button is pressed down.
+        """
+        self.swiped_distance: int = 0
+        """
+        How much distance was swiped.
+        """
+        self.mouse_swipe_distance_until_slide: int = 250
+        """
+        How much distance must be swiped until a slide happens.
         """
 
         self.rerender()
@@ -326,6 +344,59 @@ class ChooseExplorerFrame(Frame):
 
             self.add_pygame_key_callback(pygame.K_i, None, putback=False, func=self.i_pressed)
 
+            if type(self.data) == ContextData:
+                if self.data.mouse_enabled:
+                    self.add_pygame_event_callback(etype=pygame.MOUSEMOTION, data=None, putback=False, func=self.mouse_motion)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEBUTTONUP, data=None, putback=False, func=self.mouse_button_up)
+
+    def mouse_motion(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        If the mouse button is pressed, and motion is detected, slide.
+        """
+
+        x_rel: int = event.rel[0]
+
+        if self.state == ChooseExplorerFrame.IDLE:
+            if self.left_mouse_button_down:
+
+                self.swiped_distance += x_rel
+
+                if self.swiped_distance <= -self.mouse_swipe_distance_until_slide:
+
+                    self.swiped_distance = 0
+                    self.state = ChooseExplorerFrame.SLIDING
+                    self.explorer_slider.slide_left()
+
+                elif self.swiped_distance >= self.mouse_swipe_distance_until_slide:
+
+                    self.swiped_distance = 0
+                    self.state = ChooseExplorerFrame.SLIDING
+                    self.explorer_slider.slide_right()
+
+    def mouse_button_down(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Sets the self.left_mouse_button_down to True
+        """
+
+        if event.button == Mouse.LEFT_BUTTON:
+            self.left_mouse_button_down = True
+            self.swiped_distance = 0
+
+        elif event.button == Mouse.RIGHT_BUTTON:
+            if self.state == ChooseExplorerFrame.IDLE:
+                self.left_mouse_button_down = False
+                self.swiped_distance = 0
+                self.initialize_info_frame()
+
+    def mouse_button_up(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Sets the self.left_mouse_button_down to True
+        """
+
+        if event.button == Mouse.LEFT_BUTTON:
+            self.left_mouse_button_down = False
+            self.swiped_distance = 0
 
     def left_pressed(self, event, data):
         """
