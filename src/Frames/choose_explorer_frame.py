@@ -381,6 +381,7 @@ class ChooseExplorerFrame(Frame):
         for event in self.explorer_slider.poll_events():
             if event.type == CustomSameSizeSlider.EventTypes.SLIDING_ANIMATION_ENDED:
                 self.state = ChooseExplorerFrame.IDLE
+                self.prerender()
 
         if self.info_frame is not None:
             ret: Frame = self.info_frame.tick()
@@ -388,7 +389,8 @@ class ChooseExplorerFrame(Frame):
             if ret is not self.info_frame:
                 if self.state != ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT:
                     self.info_frame_sliding_out_flag = True
-
+                    self.focus()
+                    self.info_frame.reset_exit_flag()
             #going through the events
             for event in self.info_frame.poll_events():
 

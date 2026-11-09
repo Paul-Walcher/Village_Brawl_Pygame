@@ -398,7 +398,6 @@ class Renderable_CardInfo:
                                 screen: pygame.Surface,
                                 info_page_part_container: InfoPagePartContainer,
                                 page_index: int = -1,
-                                background_color: color_t = Colors.BLACK,
                                 textbox_outline_size: int = None,
                                 textbox_outline_color: int = None,
                                 full_image_shown: bool = False
@@ -422,8 +421,6 @@ class Renderable_CardInfo:
             tbox.set_outline_size(textbox_outline_size)
         if textbox_outline_color is not None:
             tbox.set_outline_color(textbox_outline_color)
-
-        screen.fill(background_color)
 
         info_page_part_container.headline.render(screen)
         tbox.render(screen)

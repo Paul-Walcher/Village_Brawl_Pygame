@@ -282,7 +282,14 @@ class ChooseSaveNameFrame(Frame):
                     self.add_pygame_event_callback(etype=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down)
 
 
+        elif self.text_input.is_focused():
 
+            #we add the exit event for the text input.
+
+            #mouse events
+            if type(self.data) == ContextData:
+                if self.data.mouse_enabled:
+                    self.add_pygame_event_callback(etype=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down_while_textinput_focused)
 
 
     def escape_pressed(self, event, data):
@@ -400,6 +407,20 @@ class ChooseSaveNameFrame(Frame):
 
                     self.state = ChooseSaveNameFrame.TEXTINPUT_FOCUSED
                     self.text_input.focus()
+
+    def mouse_button_down_while_textinput_focused(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Mouse button pressed while textinput is focused.
+        """
+        if self.state == ChooseSaveNameFrame.TEXTINPUT_FOCUSED and not calculations.point_collides(event.pos, self.text_input.frame_dim):
+
+            self.text_input.unfocus()
+            self.state = ChooseSaveNameFrame.NOTHING_FOCUSED
+
+            return Frame.EventCallback.SUCCESS
+
+        #failure, leave the event in the queue
+        return Frame.EventCallback.FAILURE
 
 
     def enter_button_pressed(self, data: Any) -> None:

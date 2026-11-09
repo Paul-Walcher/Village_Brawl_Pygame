@@ -330,10 +330,10 @@ class ChoosePlaysetFrame(Frame):
         if self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
             if self.wheel_clock.elapsed() > self.wheel_delay:
 
-                if event.precise_y < -1.0:
+                if event.precise_y < -0.5:
                     self.text_slider.slide_up()
                     self.wheel_clock.start()
-                elif event.precise_y > 1.0:
+                elif event.precise_y > 0.5:
                     self.text_slider.slide_down()
                     self.wheel_clock.start()
 

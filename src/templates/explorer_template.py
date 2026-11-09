@@ -208,7 +208,6 @@ class ExplorerInfo(Renderable_CardInfo):
                                 screen,
                                 info_page_part_container,
                                 page_index=-1,
-                                background_color=Colors.BLACK,
                                 textbox_outline_size=None,
                                 textbox_outline_color=None,
                                 full_image_shown=False
@@ -218,7 +217,6 @@ class ExplorerInfo(Renderable_CardInfo):
                                     screen,
                                     info_page_part_container=info_page_part_container,
                                     page_index=page_index,
-                                    background_color=background_color,
                                     textbox_outline_size=textbox_outline_size,
                                     textbox_outline_color=textbox_outline_color,
                                     full_image_shown=False

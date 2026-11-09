@@ -444,6 +444,9 @@ Frames<wbr>.widgets<wbr>.custom_same_size_slider    </h1>
             <div><dt><a href="slider.html#Slider">Frames.widgets.slider.Slider</a></dt>
                                 <dd id="CustomSameSizeSlider.NO_SIZE_DECREASE" class="variable"><a href="slider.html#Slider.NO_SIZE_DECREASE">NO_SIZE_DECREASE</a></dd>
                 <dd id="CustomSameSizeSlider.EventTypes" class="class"><a href="slider.html#Slider.EventTypes">EventTypes</a></dd>
+                <dd id="CustomSameSizeSlider.SelectAnimationEndedEvent" class="class"><a href="slider.html#Slider.SelectAnimationEndedEvent">SelectAnimationEndedEvent</a></dd>
+                <dd id="CustomSameSizeSlider.FlippingAnimationEndedEvent" class="class"><a href="slider.html#Slider.FlippingAnimationEndedEvent">FlippingAnimationEndedEvent</a></dd>
+                <dd id="CustomSameSizeSlider.SlidingAnimationEndedEvent" class="class"><a href="slider.html#Slider.SlidingAnimationEndedEvent">SlidingAnimationEndedEvent</a></dd>
                 <dd id="CustomSameSizeSlider.SLIDING_LEFT" class="variable"><a href="slider.html#Slider.SLIDING_LEFT">SLIDING_LEFT</a></dd>
                 <dd id="CustomSameSizeSlider.SLIDING_RIGHT" class="variable"><a href="slider.html#Slider.SLIDING_RIGHT">SLIDING_RIGHT</a></dd>
                 <dd id="CustomSameSizeSlider.NOT_SLIDING" class="variable"><a href="slider.html#Slider.NOT_SLIDING">NOT_SLIDING</a></dd>
@@ -502,6 +505,7 @@ Frames<wbr>.widgets<wbr>.custom_same_size_slider    </h1>
                 <dd id="CustomSameSizeSlider.render_flipping_animation" class="function"><a href="slider.html#Slider.render_flipping_animation">render_flipping_animation</a></dd>
                 <dd id="CustomSameSizeSlider.render_flipping_all_animation" class="function"><a href="slider.html#Slider.render_flipping_all_animation">render_flipping_all_animation</a></dd>
                 <dd id="CustomSameSizeSlider.flip_all_cards" class="function"><a href="slider.html#Slider.flip_all_cards">flip_all_cards</a></dd>
+                <dd id="CustomSameSizeSlider.sliding_animation_playing" class="function"><a href="slider.html#Slider.sliding_animation_playing">sliding_animation_playing</a></dd>
                 <dd id="CustomSameSizeSlider.select_animation_playing" class="function"><a href="slider.html#Slider.select_animation_playing">select_animation_playing</a></dd>
                 <dd id="CustomSameSizeSlider.flipping_animation_playing" class="function"><a href="slider.html#Slider.flipping_animation_playing">flipping_animation_playing</a></dd>
                 <dd id="CustomSameSizeSlider.any_animation_playing" class="function"><a href="slider.html#Slider.any_animation_playing">any_animation_playing</a></dd>
@@ -512,9 +516,13 @@ Frames<wbr>.widgets<wbr>.custom_same_size_slider    </h1>
             <div><dt><a href="../frame.html#Frame">Frames.frame.Frame</a></dt>
                                 <dd id="CustomSameSizeSlider.STANDARD_FOCUS_GROUP" class="variable"><a href="../frame.html#Frame.STANDARD_FOCUS_GROUP">STANDARD_FOCUS_GROUP</a></dd>
                 <dd id="CustomSameSizeSlider.FOCUS_GROUPS" class="variable"><a href="../frame.html#Frame.FOCUS_GROUPS">FOCUS_GROUPS</a></dd>
+                <dd id="CustomSameSizeSlider.FocusChangedEvent" class="class"><a href="../frame.html#Frame.FocusChangedEvent">FocusChangedEvent</a></dd>
+                <dd id="CustomSameSizeSlider.SubframeCreatedEvent" class="class"><a href="../frame.html#Frame.SubframeCreatedEvent">SubframeCreatedEvent</a></dd>
+                <dd id="CustomSameSizeSlider.SubframeDeletedEvent" class="class"><a href="../frame.html#Frame.SubframeDeletedEvent">SubframeDeletedEvent</a></dd>
                 <dd id="CustomSameSizeSlider.EventCallback" class="class"><a href="../frame.html#Frame.EventCallback">EventCallback</a></dd>
                 <dd id="CustomSameSizeSlider.frame_enum" class="variable"><a href="../frame.html#Frame.frame_enum">frame_enum</a></dd>
                 <dd id="CustomSameSizeSlider.data" class="variable"><a href="../frame.html#Frame.data">data</a></dd>
+                <dd id="CustomSameSizeSlider.surface" class="variable"><a href="../frame.html#Frame.surface">surface</a></dd>
                 <dd id="CustomSameSizeSlider.focus_group" class="variable"><a href="../frame.html#Frame.focus_group">focus_group</a></dd>
                 <dd id="CustomSameSizeSlider.parent_frame" class="variable"><a href="../frame.html#Frame.parent_frame">parent_frame</a></dd>
                 <dd id="CustomSameSizeSlider.max_parent_frames" class="variable"><a href="../frame.html#Frame.max_parent_frames">max_parent_frames</a></dd>
@@ -549,12 +557,21 @@ Frames<wbr>.widgets<wbr>.custom_same_size_slider    </h1>
                 <dd id="CustomSameSizeSlider.raise_exit_flag" class="function"><a href="../frame.html#Frame.raise_exit_flag">raise_exit_flag</a></dd>
                 <dd id="CustomSameSizeSlider.reset_exit_flag" class="function"><a href="../frame.html#Frame.reset_exit_flag">reset_exit_flag</a></dd>
                 <dd id="CustomSameSizeSlider.exit_flag_raised" class="function"><a href="../frame.html#Frame.exit_flag_raised">exit_flag_raised</a></dd>
+                <dd id="CustomSameSizeSlider.raise_prerender_flag" class="function"><a href="../frame.html#Frame.raise_prerender_flag">raise_prerender_flag</a></dd>
+                <dd id="CustomSameSizeSlider.reset_prerender_flag" class="function"><a href="../frame.html#Frame.reset_prerender_flag">reset_prerender_flag</a></dd>
+                <dd id="CustomSameSizeSlider.prerender_flag_raised" class="function"><a href="../frame.html#Frame.prerender_flag_raised">prerender_flag_raised</a></dd>
+                <dd id="CustomSameSizeSlider.render_at" class="function"><a href="../frame.html#Frame.render_at">render_at</a></dd>
 
             </div>
             <div><dt><a href="../../event_queue_manager.html#EventQueueManager">event_queue_manager.EventQueueManager</a></dt>
-                                <dd id="CustomSameSizeSlider.push_event" class="function"><a href="../../event_queue_manager.html#EventQueueManager.push_event">push_event</a></dd>
+                                <dd id="CustomSameSizeSlider.event_queue_active" class="variable"><a href="../../event_queue_manager.html#EventQueueManager.event_queue_active">event_queue_active</a></dd>
+                <dd id="CustomSameSizeSlider.max_events_queued" class="function"><a href="../../event_queue_manager.html#EventQueueManager.max_events_queued">max_events_queued</a></dd>
+                <dd id="CustomSameSizeSlider.set_max_events_queued" class="function"><a href="../../event_queue_manager.html#EventQueueManager.set_max_events_queued">set_max_events_queued</a></dd>
+                <dd id="CustomSameSizeSlider.push_event" class="function"><a href="../../event_queue_manager.html#EventQueueManager.push_event">push_event</a></dd>
                 <dd id="CustomSameSizeSlider.poll_events" class="function"><a href="../../event_queue_manager.html#EventQueueManager.poll_events">poll_events</a></dd>
                 <dd id="CustomSameSizeSlider.poll_events_with_putback" class="function"><a href="../../event_queue_manager.html#EventQueueManager.poll_events_with_putback">poll_events_with_putback</a></dd>
+                <dd id="CustomSameSizeSlider.deactivate_event_queue" class="function"><a href="../../event_queue_manager.html#EventQueueManager.deactivate_event_queue">deactivate_event_queue</a></dd>
+                <dd id="CustomSameSizeSlider.activate_event_queue" class="function"><a href="../../event_queue_manager.html#EventQueueManager.activate_event_queue">activate_event_queue</a></dd>
 
             </div>
                                 </dl>

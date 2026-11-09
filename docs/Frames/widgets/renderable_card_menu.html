@@ -3163,6 +3163,9 @@ This function should prepare the frame and adopt changes
 made to it.
 This should e.g. cancel animations, reset the state...,
 and should also clear the exit flag.</p>
+
+<p>This should be called whenever new calculations that define the
+basis of what will be visually shown is changed.</p>
 </div>
 
 
@@ -3432,7 +3435,10 @@ and should also clear the exit flag.</p>
 </span></pre></div>
 
 
-    
+            <div class="docstring"><p>This function should be called whenever changes
+that need to be visually shown happen to this frame.</p>
+</div>
+
 
                             </div>
                             <div id="RenderableCardListviewer.render" class="classattr">
@@ -3502,9 +3508,14 @@ Is called once per frame.</p>
                                     <div><dt><a href="../frame.html#Frame">Frames.frame.Frame</a></dt>
                                 <dd id="RenderableCardListviewer.STANDARD_FOCUS_GROUP" class="variable"><a href="../frame.html#Frame.STANDARD_FOCUS_GROUP">STANDARD_FOCUS_GROUP</a></dd>
                 <dd id="RenderableCardListviewer.FOCUS_GROUPS" class="variable"><a href="../frame.html#Frame.FOCUS_GROUPS">FOCUS_GROUPS</a></dd>
+                <dd id="RenderableCardListviewer.EventTypes" class="class"><a href="../frame.html#Frame.EventTypes">EventTypes</a></dd>
+                <dd id="RenderableCardListviewer.FocusChangedEvent" class="class"><a href="../frame.html#Frame.FocusChangedEvent">FocusChangedEvent</a></dd>
+                <dd id="RenderableCardListviewer.SubframeCreatedEvent" class="class"><a href="../frame.html#Frame.SubframeCreatedEvent">SubframeCreatedEvent</a></dd>
+                <dd id="RenderableCardListviewer.SubframeDeletedEvent" class="class"><a href="../frame.html#Frame.SubframeDeletedEvent">SubframeDeletedEvent</a></dd>
                 <dd id="RenderableCardListviewer.EventCallback" class="class"><a href="../frame.html#Frame.EventCallback">EventCallback</a></dd>
                 <dd id="RenderableCardListviewer.frame_enum" class="variable"><a href="../frame.html#Frame.frame_enum">frame_enum</a></dd>
                 <dd id="RenderableCardListviewer.data" class="variable"><a href="../frame.html#Frame.data">data</a></dd>
+                <dd id="RenderableCardListviewer.surface" class="variable"><a href="../frame.html#Frame.surface">surface</a></dd>
                 <dd id="RenderableCardListviewer.focus_group" class="variable"><a href="../frame.html#Frame.focus_group">focus_group</a></dd>
                 <dd id="RenderableCardListviewer.parent_frame" class="variable"><a href="../frame.html#Frame.parent_frame">parent_frame</a></dd>
                 <dd id="RenderableCardListviewer.max_parent_frames" class="variable"><a href="../frame.html#Frame.max_parent_frames">max_parent_frames</a></dd>
@@ -3539,12 +3550,21 @@ Is called once per frame.</p>
                 <dd id="RenderableCardListviewer.raise_exit_flag" class="function"><a href="../frame.html#Frame.raise_exit_flag">raise_exit_flag</a></dd>
                 <dd id="RenderableCardListviewer.reset_exit_flag" class="function"><a href="../frame.html#Frame.reset_exit_flag">reset_exit_flag</a></dd>
                 <dd id="RenderableCardListviewer.exit_flag_raised" class="function"><a href="../frame.html#Frame.exit_flag_raised">exit_flag_raised</a></dd>
+                <dd id="RenderableCardListviewer.raise_prerender_flag" class="function"><a href="../frame.html#Frame.raise_prerender_flag">raise_prerender_flag</a></dd>
+                <dd id="RenderableCardListviewer.reset_prerender_flag" class="function"><a href="../frame.html#Frame.reset_prerender_flag">reset_prerender_flag</a></dd>
+                <dd id="RenderableCardListviewer.prerender_flag_raised" class="function"><a href="../frame.html#Frame.prerender_flag_raised">prerender_flag_raised</a></dd>
+                <dd id="RenderableCardListviewer.render_at" class="function"><a href="../frame.html#Frame.render_at">render_at</a></dd>
 
             </div>
             <div><dt><a href="../../event_queue_manager.html#EventQueueManager">event_queue_manager.EventQueueManager</a></dt>
-                                <dd id="RenderableCardListviewer.push_event" class="function"><a href="../../event_queue_manager.html#EventQueueManager.push_event">push_event</a></dd>
+                                <dd id="RenderableCardListviewer.event_queue_active" class="variable"><a href="../../event_queue_manager.html#EventQueueManager.event_queue_active">event_queue_active</a></dd>
+                <dd id="RenderableCardListviewer.max_events_queued" class="function"><a href="../../event_queue_manager.html#EventQueueManager.max_events_queued">max_events_queued</a></dd>
+                <dd id="RenderableCardListviewer.set_max_events_queued" class="function"><a href="../../event_queue_manager.html#EventQueueManager.set_max_events_queued">set_max_events_queued</a></dd>
+                <dd id="RenderableCardListviewer.push_event" class="function"><a href="../../event_queue_manager.html#EventQueueManager.push_event">push_event</a></dd>
                 <dd id="RenderableCardListviewer.poll_events" class="function"><a href="../../event_queue_manager.html#EventQueueManager.poll_events">poll_events</a></dd>
                 <dd id="RenderableCardListviewer.poll_events_with_putback" class="function"><a href="../../event_queue_manager.html#EventQueueManager.poll_events_with_putback">poll_events_with_putback</a></dd>
+                <dd id="RenderableCardListviewer.deactivate_event_queue" class="function"><a href="../../event_queue_manager.html#EventQueueManager.deactivate_event_queue">deactivate_event_queue</a></dd>
+                <dd id="RenderableCardListviewer.activate_event_queue" class="function"><a href="../../event_queue_manager.html#EventQueueManager.activate_event_queue">activate_event_queue</a></dd>
 
             </div>
                                 </dl>

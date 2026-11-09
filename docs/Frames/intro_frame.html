@@ -135,7 +135,7 @@
                                 <a class="function" href="#IntroFrame.tick">tick</a>
                         </li>
                         <li>
-                                <a class="function" href="#IntroFrame.render">render</a>
+                                <a class="function" href="#IntroFrame.prerender">prerender</a>
                         </li>
                 </ul>
 
@@ -162,7 +162,7 @@ Frames<wbr>.intro_frame    </h1>
                         <label class="view-source-button" for="mod-intro_frame-view-source"><span>View Source</span></label>
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">  1</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos">  2</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">override</span>
 </span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a>
 </span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
 </span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">Colors</span>
@@ -393,7 +393,7 @@ Frames<wbr>.intro_frame    </h1>
 </span><span id="L-230"><a href="#L-230"><span class="linenos">230</span></a>
 </span><span id="L-231"><a href="#L-231"><span class="linenos">231</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
 </span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a>
-</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a>
+</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a>    <span class="nd">@override</span>
 </span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">rerender</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a><span class="w">        </span><span class="sd">"""</span>
 </span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a><span class="sd">        Renders the frame as it should be as the beginning.</span>
@@ -423,80 +423,83 @@ Frames<wbr>.intro_frame    </h1>
 </span><span id="L-260"><a href="#L-260"><span class="linenos">260</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_image_animation</span><span class="p">()</span>
 </span><span id="L-261"><a href="#L-261"><span class="linenos">261</span></a>
 </span><span id="L-262"><a href="#L-262"><span class="linenos">262</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">reset_exit_flag</span><span class="p">()</span>
-</span><span id="L-263"><a href="#L-263"><span class="linenos">263</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span id="L-264"><a href="#L-264"><span class="linenos">264</span></a>
-</span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a>
-</span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">bind_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-267"><a href="#L-267"><span class="linenos">267</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-268"><a href="#L-268"><span class="linenos">268</span></a><span class="sd">        Binds the enter events as triggering a transition into the IntroMenuFrame.</span>
-</span><span id="L-269"><a href="#L-269"><span class="linenos">269</span></a><span class="sd">        """</span>
-</span><span id="L-270"><a href="#L-270"><span class="linenos">270</span></a>
-</span><span id="L-271"><a href="#L-271"><span class="linenos">271</span></a>        <span class="c1">#adding generic escape exit function</span>
-</span><span id="L-272"><a href="#L-272"><span class="linenos">272</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_default_escape_callback</span><span class="p">()</span>
-</span><span id="L-273"><a href="#L-273"><span class="linenos">273</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
-</span><span id="L-274"><a href="#L-274"><span class="linenos">274</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">ENTER_ALTERNATIVE</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
-</span><span id="L-275"><a href="#L-275"><span class="linenos">275</span></a>        <span class="c1">#if mouse events are not disabled</span>
-</span><span id="L-276"><a href="#L-276"><span class="linenos">276</span></a>        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContextData</span><span class="p">:</span>
-</span><span id="L-277"><a href="#L-277"><span class="linenos">277</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mouse_enabled</span><span class="p">:</span>
-</span><span id="L-278"><a href="#L-278"><span class="linenos">278</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_event_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mousebutton_pressed</span><span class="p">)</span>
-</span><span id="L-279"><a href="#L-279"><span class="linenos">279</span></a>
-</span><span id="L-280"><a href="#L-280"><span class="linenos">280</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">mousebutton_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-</span><span id="L-281"><a href="#L-281"><span class="linenos">281</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-282"><a href="#L-282"><span class="linenos">282</span></a><span class="sd">        Starts the game on mousebutton.</span>
-</span><span id="L-283"><a href="#L-283"><span class="linenos">283</span></a><span class="sd">        """</span>
-</span><span id="L-284"><a href="#L-284"><span class="linenos">284</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="n">Mouse</span><span class="o">.</span><span class="n">LEFT_BUTTON</span><span class="p">:</span>
-</span><span id="L-285"><a href="#L-285"><span class="linenos">285</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</span><span id="L-286"><a href="#L-286"><span class="linenos">286</span></a>
-</span><span id="L-287"><a href="#L-287"><span class="linenos">287</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">enter_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-</span><span id="L-288"><a href="#L-288"><span class="linenos">288</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-289"><a href="#L-289"><span class="linenos">289</span></a><span class="sd">        If the entry delay has already passed, we set the enter intro menu flag to true.</span>
-</span><span id="L-290"><a href="#L-290"><span class="linenos">290</span></a><span class="sd">        """</span>
-</span><span id="L-291"><a href="#L-291"><span class="linenos">291</span></a>
-</span><span id="L-292"><a href="#L-292"><span class="linenos">292</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay</span><span class="p">:</span>
-</span><span id="L-293"><a href="#L-293"><span class="linenos">293</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="L-294"><a href="#L-294"><span class="linenos">294</span></a>
-</span><span id="L-295"><a href="#L-295"><span class="linenos">295</span></a>
-</span><span id="L-296"><a href="#L-296"><span class="linenos">296</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-297"><a href="#L-297"><span class="linenos">297</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-298"><a href="#L-298"><span class="linenos">298</span></a><span class="sd">        Basic tick function.</span>
-</span><span id="L-299"><a href="#L-299"><span class="linenos">299</span></a><span class="sd">        """</span>
-</span><span id="L-300"><a href="#L-300"><span class="linenos">300</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">manage_pygame_events</span><span class="p">()</span>
-</span><span id="L-301"><a href="#L-301"><span class="linenos">301</span></a>
-</span><span id="L-302"><a href="#L-302"><span class="linenos">302</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
-</span><span id="L-303"><a href="#L-303"><span class="linenos">303</span></a>            <span class="k">return</span> <span class="kc">None</span>
-</span><span id="L-304"><a href="#L-304"><span class="linenos">304</span></a>
-</span><span id="L-305"><a href="#L-305"><span class="linenos">305</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_headline_animation</span><span class="p">()</span>
-</span><span id="L-306"><a href="#L-306"><span class="linenos">306</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_image_animation</span><span class="p">()</span>
-</span><span id="L-307"><a href="#L-307"><span class="linenos">307</span></a>
-</span><span id="L-308"><a href="#L-308"><span class="linenos">308</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span><span class="p">:</span>
+</span><span id="L-263"><a href="#L-263"><span class="linenos">263</span></a>
+</span><span id="L-264"><a href="#L-264"><span class="linenos">264</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">prerender</span><span class="p">()</span>
+</span><span id="L-265"><a href="#L-265"><span class="linenos">265</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span id="L-266"><a href="#L-266"><span class="linenos">266</span></a>
+</span><span id="L-267"><a href="#L-267"><span class="linenos">267</span></a>    <span class="nd">@override</span>
+</span><span id="L-268"><a href="#L-268"><span class="linenos">268</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">bind_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-269"><a href="#L-269"><span class="linenos">269</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-270"><a href="#L-270"><span class="linenos">270</span></a><span class="sd">        Binds the enter events as triggering a transition into the IntroMenuFrame.</span>
+</span><span id="L-271"><a href="#L-271"><span class="linenos">271</span></a><span class="sd">        """</span>
+</span><span id="L-272"><a href="#L-272"><span class="linenos">272</span></a>
+</span><span id="L-273"><a href="#L-273"><span class="linenos">273</span></a>        <span class="c1">#adding generic escape exit function</span>
+</span><span id="L-274"><a href="#L-274"><span class="linenos">274</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_default_escape_callback</span><span class="p">()</span>
+</span><span id="L-275"><a href="#L-275"><span class="linenos">275</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
+</span><span id="L-276"><a href="#L-276"><span class="linenos">276</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">ENTER_ALTERNATIVE</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
+</span><span id="L-277"><a href="#L-277"><span class="linenos">277</span></a>        <span class="c1">#if mouse events are not disabled</span>
+</span><span id="L-278"><a href="#L-278"><span class="linenos">278</span></a>        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContextData</span><span class="p">:</span>
+</span><span id="L-279"><a href="#L-279"><span class="linenos">279</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mouse_enabled</span><span class="p">:</span>
+</span><span id="L-280"><a href="#L-280"><span class="linenos">280</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_event_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mousebutton_pressed</span><span class="p">)</span>
+</span><span id="L-281"><a href="#L-281"><span class="linenos">281</span></a>
+</span><span id="L-282"><a href="#L-282"><span class="linenos">282</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">mousebutton_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+</span><span id="L-283"><a href="#L-283"><span class="linenos">283</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-284"><a href="#L-284"><span class="linenos">284</span></a><span class="sd">        Starts the game on mousebutton.</span>
+</span><span id="L-285"><a href="#L-285"><span class="linenos">285</span></a><span class="sd">        """</span>
+</span><span id="L-286"><a href="#L-286"><span class="linenos">286</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="n">Mouse</span><span class="o">.</span><span class="n">LEFT_BUTTON</span><span class="p">:</span>
+</span><span id="L-287"><a href="#L-287"><span class="linenos">287</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span id="L-288"><a href="#L-288"><span class="linenos">288</span></a>
+</span><span id="L-289"><a href="#L-289"><span class="linenos">289</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">enter_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+</span><span id="L-290"><a href="#L-290"><span class="linenos">290</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-291"><a href="#L-291"><span class="linenos">291</span></a><span class="sd">        If the entry delay has already passed, we set the enter intro menu flag to true.</span>
+</span><span id="L-292"><a href="#L-292"><span class="linenos">292</span></a><span class="sd">        """</span>
+</span><span id="L-293"><a href="#L-293"><span class="linenos">293</span></a>
+</span><span id="L-294"><a href="#L-294"><span class="linenos">294</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay</span><span class="p">:</span>
+</span><span id="L-295"><a href="#L-295"><span class="linenos">295</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="L-296"><a href="#L-296"><span class="linenos">296</span></a>
+</span><span id="L-297"><a href="#L-297"><span class="linenos">297</span></a>    <span class="nd">@override</span>
+</span><span id="L-298"><a href="#L-298"><span class="linenos">298</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-299"><a href="#L-299"><span class="linenos">299</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-300"><a href="#L-300"><span class="linenos">300</span></a><span class="sd">        Basic tick function.</span>
+</span><span id="L-301"><a href="#L-301"><span class="linenos">301</span></a><span class="sd">        """</span>
+</span><span id="L-302"><a href="#L-302"><span class="linenos">302</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">manage_pygame_events</span><span class="p">()</span>
+</span><span id="L-303"><a href="#L-303"><span class="linenos">303</span></a>
+</span><span id="L-304"><a href="#L-304"><span class="linenos">304</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
+</span><span id="L-305"><a href="#L-305"><span class="linenos">305</span></a>            <span class="k">return</span> <span class="kc">None</span>
+</span><span id="L-306"><a href="#L-306"><span class="linenos">306</span></a>
+</span><span id="L-307"><a href="#L-307"><span class="linenos">307</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
+</span><span id="L-308"><a href="#L-308"><span class="linenos">308</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
 </span><span id="L-309"><a href="#L-309"><span class="linenos">309</span></a>
-</span><span id="L-310"><a href="#L-310"><span class="linenos">310</span></a>            <span class="n">imframe</span> <span class="o">=</span> <span class="n">IntroMenuFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_dim</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">parent_frame</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">focus_group</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_group</span><span class="p">)</span>
-</span><span id="L-311"><a href="#L-311"><span class="linenos">311</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="L-312"><a href="#L-312"><span class="linenos">312</span></a>            <span class="k">return</span> <span class="n">imframe</span>
-</span><span id="L-313"><a href="#L-313"><span class="linenos">313</span></a>
-</span><span id="L-314"><a href="#L-314"><span class="linenos">314</span></a>        <span class="k">return</span> <span class="bp">self</span>
+</span><span id="L-310"><a href="#L-310"><span class="linenos">310</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_headline_animation</span><span class="p">()</span>
+</span><span id="L-311"><a href="#L-311"><span class="linenos">311</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_image_animation</span><span class="p">()</span>
+</span><span id="L-312"><a href="#L-312"><span class="linenos">312</span></a>
+</span><span id="L-313"><a href="#L-313"><span class="linenos">313</span></a>        <span class="c1">#due to the animation, we rerender</span>
+</span><span id="L-314"><a href="#L-314"><span class="linenos">314</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">prerender</span><span class="p">()</span>
 </span><span id="L-315"><a href="#L-315"><span class="linenos">315</span></a>
-</span><span id="L-316"><a href="#L-316"><span class="linenos">316</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-317"><a href="#L-317"><span class="linenos">317</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-318"><a href="#L-318"><span class="linenos">318</span></a><span class="sd">        Rendering function, see Frame class.</span>
-</span><span id="L-319"><a href="#L-319"><span class="linenos">319</span></a><span class="sd">        """</span>
-</span><span id="L-320"><a href="#L-320"><span class="linenos">320</span></a>
-</span><span id="L-321"><a href="#L-321"><span class="linenos">321</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">Colors</span><span class="o">.</span><span class="n">BLACK</span><span class="p">)</span>
-</span><span id="L-322"><a href="#L-322"><span class="linenos">322</span></a>
-</span><span id="L-323"><a href="#L-323"><span class="linenos">323</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
-</span><span id="L-324"><a href="#L-324"><span class="linenos">324</span></a>            <span class="k">return</span> <span class="kc">None</span>
-</span><span id="L-325"><a href="#L-325"><span class="linenos">325</span></a>
-</span><span id="L-326"><a href="#L-326"><span class="linenos">326</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
-</span><span id="L-327"><a href="#L-327"><span class="linenos">327</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
-</span><span id="L-328"><a href="#L-328"><span class="linenos">328</span></a>
-</span><span id="L-329"><a href="#L-329"><span class="linenos">329</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-330"><a href="#L-330"><span class="linenos">330</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">screen</span><span class="p">)</span>
+</span><span id="L-316"><a href="#L-316"><span class="linenos">316</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span><span class="p">:</span>
+</span><span id="L-317"><a href="#L-317"><span class="linenos">317</span></a>
+</span><span id="L-318"><a href="#L-318"><span class="linenos">318</span></a>            <span class="n">imframe</span> <span class="o">=</span> <span class="n">IntroMenuFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_dim</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">parent_frame</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">focus_group</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_group</span><span class="p">)</span>
+</span><span id="L-319"><a href="#L-319"><span class="linenos">319</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-320"><a href="#L-320"><span class="linenos">320</span></a>            <span class="k">return</span> <span class="n">imframe</span>
+</span><span id="L-321"><a href="#L-321"><span class="linenos">321</span></a>
+</span><span id="L-322"><a href="#L-322"><span class="linenos">322</span></a>        <span class="k">return</span> <span class="bp">self</span>
+</span><span id="L-323"><a href="#L-323"><span class="linenos">323</span></a>
+</span><span id="L-324"><a href="#L-324"><span class="linenos">324</span></a>    <span class="nd">@override</span>
+</span><span id="L-325"><a href="#L-325"><span class="linenos">325</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">prerender</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-326"><a href="#L-326"><span class="linenos">326</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-327"><a href="#L-327"><span class="linenos">327</span></a><span class="sd">        Rendering function, see Frame class.</span>
+</span><span id="L-328"><a href="#L-328"><span class="linenos">328</span></a><span class="sd">        """</span>
+</span><span id="L-329"><a href="#L-329"><span class="linenos">329</span></a>
+</span><span id="L-330"><a href="#L-330"><span class="linenos">330</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">Colors</span><span class="o">.</span><span class="n">BLACK</span><span class="p">)</span>
 </span><span id="L-331"><a href="#L-331"><span class="linenos">331</span></a>
-</span><span id="L-332"><a href="#L-332"><span class="linenos">332</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-333"><a href="#L-333"><span class="linenos">333</span></a>            <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_pos</span><span class="p">)</span>
+</span><span id="L-332"><a href="#L-332"><span class="linenos">332</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-333"><a href="#L-333"><span class="linenos">333</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">)</span>
 </span><span id="L-334"><a href="#L-334"><span class="linenos">334</span></a>
-</span><span id="L-335"><a href="#L-335"><span class="linenos">335</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-336"><a href="#L-336"><span class="linenos">336</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">screen</span><span class="p">)</span>
+</span><span id="L-335"><a href="#L-335"><span class="linenos">335</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-336"><a href="#L-336"><span class="linenos">336</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_pos</span><span class="p">)</span>
+</span><span id="L-337"><a href="#L-337"><span class="linenos">337</span></a>
+</span><span id="L-338"><a href="#L-338"><span class="linenos">338</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-339"><a href="#L-339"><span class="linenos">339</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -725,7 +728,7 @@ Frames<wbr>.intro_frame    </h1>
 </span><span id="IntroFrame-231"><a href="#IntroFrame-231"><span class="linenos">231</span></a>
 </span><span id="IntroFrame-232"><a href="#IntroFrame-232"><span class="linenos">232</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
 </span><span id="IntroFrame-233"><a href="#IntroFrame-233"><span class="linenos">233</span></a>
-</span><span id="IntroFrame-234"><a href="#IntroFrame-234"><span class="linenos">234</span></a>
+</span><span id="IntroFrame-234"><a href="#IntroFrame-234"><span class="linenos">234</span></a>    <span class="nd">@override</span>
 </span><span id="IntroFrame-235"><a href="#IntroFrame-235"><span class="linenos">235</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">rerender</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="IntroFrame-236"><a href="#IntroFrame-236"><span class="linenos">236</span></a><span class="w">        </span><span class="sd">"""</span>
 </span><span id="IntroFrame-237"><a href="#IntroFrame-237"><span class="linenos">237</span></a><span class="sd">        Renders the frame as it should be as the beginning.</span>
@@ -755,80 +758,83 @@ Frames<wbr>.intro_frame    </h1>
 </span><span id="IntroFrame-261"><a href="#IntroFrame-261"><span class="linenos">261</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_image_animation</span><span class="p">()</span>
 </span><span id="IntroFrame-262"><a href="#IntroFrame-262"><span class="linenos">262</span></a>
 </span><span id="IntroFrame-263"><a href="#IntroFrame-263"><span class="linenos">263</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">reset_exit_flag</span><span class="p">()</span>
-</span><span id="IntroFrame-264"><a href="#IntroFrame-264"><span class="linenos">264</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span id="IntroFrame-265"><a href="#IntroFrame-265"><span class="linenos">265</span></a>
-</span><span id="IntroFrame-266"><a href="#IntroFrame-266"><span class="linenos">266</span></a>
-</span><span id="IntroFrame-267"><a href="#IntroFrame-267"><span class="linenos">267</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">bind_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IntroFrame-268"><a href="#IntroFrame-268"><span class="linenos">268</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="IntroFrame-269"><a href="#IntroFrame-269"><span class="linenos">269</span></a><span class="sd">        Binds the enter events as triggering a transition into the IntroMenuFrame.</span>
-</span><span id="IntroFrame-270"><a href="#IntroFrame-270"><span class="linenos">270</span></a><span class="sd">        """</span>
-</span><span id="IntroFrame-271"><a href="#IntroFrame-271"><span class="linenos">271</span></a>
-</span><span id="IntroFrame-272"><a href="#IntroFrame-272"><span class="linenos">272</span></a>        <span class="c1">#adding generic escape exit function</span>
-</span><span id="IntroFrame-273"><a href="#IntroFrame-273"><span class="linenos">273</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_default_escape_callback</span><span class="p">()</span>
-</span><span id="IntroFrame-274"><a href="#IntroFrame-274"><span class="linenos">274</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
-</span><span id="IntroFrame-275"><a href="#IntroFrame-275"><span class="linenos">275</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">ENTER_ALTERNATIVE</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
-</span><span id="IntroFrame-276"><a href="#IntroFrame-276"><span class="linenos">276</span></a>        <span class="c1">#if mouse events are not disabled</span>
-</span><span id="IntroFrame-277"><a href="#IntroFrame-277"><span class="linenos">277</span></a>        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContextData</span><span class="p">:</span>
-</span><span id="IntroFrame-278"><a href="#IntroFrame-278"><span class="linenos">278</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mouse_enabled</span><span class="p">:</span>
-</span><span id="IntroFrame-279"><a href="#IntroFrame-279"><span class="linenos">279</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_event_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mousebutton_pressed</span><span class="p">)</span>
-</span><span id="IntroFrame-280"><a href="#IntroFrame-280"><span class="linenos">280</span></a>
-</span><span id="IntroFrame-281"><a href="#IntroFrame-281"><span class="linenos">281</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">mousebutton_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-</span><span id="IntroFrame-282"><a href="#IntroFrame-282"><span class="linenos">282</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="IntroFrame-283"><a href="#IntroFrame-283"><span class="linenos">283</span></a><span class="sd">        Starts the game on mousebutton.</span>
-</span><span id="IntroFrame-284"><a href="#IntroFrame-284"><span class="linenos">284</span></a><span class="sd">        """</span>
-</span><span id="IntroFrame-285"><a href="#IntroFrame-285"><span class="linenos">285</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="n">Mouse</span><span class="o">.</span><span class="n">LEFT_BUTTON</span><span class="p">:</span>
-</span><span id="IntroFrame-286"><a href="#IntroFrame-286"><span class="linenos">286</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</span><span id="IntroFrame-287"><a href="#IntroFrame-287"><span class="linenos">287</span></a>
-</span><span id="IntroFrame-288"><a href="#IntroFrame-288"><span class="linenos">288</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">enter_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-</span><span id="IntroFrame-289"><a href="#IntroFrame-289"><span class="linenos">289</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="IntroFrame-290"><a href="#IntroFrame-290"><span class="linenos">290</span></a><span class="sd">        If the entry delay has already passed, we set the enter intro menu flag to true.</span>
-</span><span id="IntroFrame-291"><a href="#IntroFrame-291"><span class="linenos">291</span></a><span class="sd">        """</span>
-</span><span id="IntroFrame-292"><a href="#IntroFrame-292"><span class="linenos">292</span></a>
-</span><span id="IntroFrame-293"><a href="#IntroFrame-293"><span class="linenos">293</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay</span><span class="p">:</span>
-</span><span id="IntroFrame-294"><a href="#IntroFrame-294"><span class="linenos">294</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="IntroFrame-295"><a href="#IntroFrame-295"><span class="linenos">295</span></a>
-</span><span id="IntroFrame-296"><a href="#IntroFrame-296"><span class="linenos">296</span></a>
-</span><span id="IntroFrame-297"><a href="#IntroFrame-297"><span class="linenos">297</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="IntroFrame-298"><a href="#IntroFrame-298"><span class="linenos">298</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="IntroFrame-299"><a href="#IntroFrame-299"><span class="linenos">299</span></a><span class="sd">        Basic tick function.</span>
-</span><span id="IntroFrame-300"><a href="#IntroFrame-300"><span class="linenos">300</span></a><span class="sd">        """</span>
-</span><span id="IntroFrame-301"><a href="#IntroFrame-301"><span class="linenos">301</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">manage_pygame_events</span><span class="p">()</span>
-</span><span id="IntroFrame-302"><a href="#IntroFrame-302"><span class="linenos">302</span></a>
-</span><span id="IntroFrame-303"><a href="#IntroFrame-303"><span class="linenos">303</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
-</span><span id="IntroFrame-304"><a href="#IntroFrame-304"><span class="linenos">304</span></a>            <span class="k">return</span> <span class="kc">None</span>
-</span><span id="IntroFrame-305"><a href="#IntroFrame-305"><span class="linenos">305</span></a>
-</span><span id="IntroFrame-306"><a href="#IntroFrame-306"><span class="linenos">306</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_headline_animation</span><span class="p">()</span>
-</span><span id="IntroFrame-307"><a href="#IntroFrame-307"><span class="linenos">307</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_image_animation</span><span class="p">()</span>
-</span><span id="IntroFrame-308"><a href="#IntroFrame-308"><span class="linenos">308</span></a>
-</span><span id="IntroFrame-309"><a href="#IntroFrame-309"><span class="linenos">309</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span><span class="p">:</span>
+</span><span id="IntroFrame-264"><a href="#IntroFrame-264"><span class="linenos">264</span></a>
+</span><span id="IntroFrame-265"><a href="#IntroFrame-265"><span class="linenos">265</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">prerender</span><span class="p">()</span>
+</span><span id="IntroFrame-266"><a href="#IntroFrame-266"><span class="linenos">266</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span id="IntroFrame-267"><a href="#IntroFrame-267"><span class="linenos">267</span></a>
+</span><span id="IntroFrame-268"><a href="#IntroFrame-268"><span class="linenos">268</span></a>    <span class="nd">@override</span>
+</span><span id="IntroFrame-269"><a href="#IntroFrame-269"><span class="linenos">269</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">bind_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="IntroFrame-270"><a href="#IntroFrame-270"><span class="linenos">270</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="IntroFrame-271"><a href="#IntroFrame-271"><span class="linenos">271</span></a><span class="sd">        Binds the enter events as triggering a transition into the IntroMenuFrame.</span>
+</span><span id="IntroFrame-272"><a href="#IntroFrame-272"><span class="linenos">272</span></a><span class="sd">        """</span>
+</span><span id="IntroFrame-273"><a href="#IntroFrame-273"><span class="linenos">273</span></a>
+</span><span id="IntroFrame-274"><a href="#IntroFrame-274"><span class="linenos">274</span></a>        <span class="c1">#adding generic escape exit function</span>
+</span><span id="IntroFrame-275"><a href="#IntroFrame-275"><span class="linenos">275</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_default_escape_callback</span><span class="p">()</span>
+</span><span id="IntroFrame-276"><a href="#IntroFrame-276"><span class="linenos">276</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
+</span><span id="IntroFrame-277"><a href="#IntroFrame-277"><span class="linenos">277</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">ENTER_ALTERNATIVE</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
+</span><span id="IntroFrame-278"><a href="#IntroFrame-278"><span class="linenos">278</span></a>        <span class="c1">#if mouse events are not disabled</span>
+</span><span id="IntroFrame-279"><a href="#IntroFrame-279"><span class="linenos">279</span></a>        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContextData</span><span class="p">:</span>
+</span><span id="IntroFrame-280"><a href="#IntroFrame-280"><span class="linenos">280</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mouse_enabled</span><span class="p">:</span>
+</span><span id="IntroFrame-281"><a href="#IntroFrame-281"><span class="linenos">281</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_event_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mousebutton_pressed</span><span class="p">)</span>
+</span><span id="IntroFrame-282"><a href="#IntroFrame-282"><span class="linenos">282</span></a>
+</span><span id="IntroFrame-283"><a href="#IntroFrame-283"><span class="linenos">283</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">mousebutton_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+</span><span id="IntroFrame-284"><a href="#IntroFrame-284"><span class="linenos">284</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="IntroFrame-285"><a href="#IntroFrame-285"><span class="linenos">285</span></a><span class="sd">        Starts the game on mousebutton.</span>
+</span><span id="IntroFrame-286"><a href="#IntroFrame-286"><span class="linenos">286</span></a><span class="sd">        """</span>
+</span><span id="IntroFrame-287"><a href="#IntroFrame-287"><span class="linenos">287</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="n">Mouse</span><span class="o">.</span><span class="n">LEFT_BUTTON</span><span class="p">:</span>
+</span><span id="IntroFrame-288"><a href="#IntroFrame-288"><span class="linenos">288</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span id="IntroFrame-289"><a href="#IntroFrame-289"><span class="linenos">289</span></a>
+</span><span id="IntroFrame-290"><a href="#IntroFrame-290"><span class="linenos">290</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">enter_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+</span><span id="IntroFrame-291"><a href="#IntroFrame-291"><span class="linenos">291</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="IntroFrame-292"><a href="#IntroFrame-292"><span class="linenos">292</span></a><span class="sd">        If the entry delay has already passed, we set the enter intro menu flag to true.</span>
+</span><span id="IntroFrame-293"><a href="#IntroFrame-293"><span class="linenos">293</span></a><span class="sd">        """</span>
+</span><span id="IntroFrame-294"><a href="#IntroFrame-294"><span class="linenos">294</span></a>
+</span><span id="IntroFrame-295"><a href="#IntroFrame-295"><span class="linenos">295</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay</span><span class="p">:</span>
+</span><span id="IntroFrame-296"><a href="#IntroFrame-296"><span class="linenos">296</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="IntroFrame-297"><a href="#IntroFrame-297"><span class="linenos">297</span></a>
+</span><span id="IntroFrame-298"><a href="#IntroFrame-298"><span class="linenos">298</span></a>    <span class="nd">@override</span>
+</span><span id="IntroFrame-299"><a href="#IntroFrame-299"><span class="linenos">299</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="IntroFrame-300"><a href="#IntroFrame-300"><span class="linenos">300</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="IntroFrame-301"><a href="#IntroFrame-301"><span class="linenos">301</span></a><span class="sd">        Basic tick function.</span>
+</span><span id="IntroFrame-302"><a href="#IntroFrame-302"><span class="linenos">302</span></a><span class="sd">        """</span>
+</span><span id="IntroFrame-303"><a href="#IntroFrame-303"><span class="linenos">303</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">manage_pygame_events</span><span class="p">()</span>
+</span><span id="IntroFrame-304"><a href="#IntroFrame-304"><span class="linenos">304</span></a>
+</span><span id="IntroFrame-305"><a href="#IntroFrame-305"><span class="linenos">305</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
+</span><span id="IntroFrame-306"><a href="#IntroFrame-306"><span class="linenos">306</span></a>            <span class="k">return</span> <span class="kc">None</span>
+</span><span id="IntroFrame-307"><a href="#IntroFrame-307"><span class="linenos">307</span></a>
+</span><span id="IntroFrame-308"><a href="#IntroFrame-308"><span class="linenos">308</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
+</span><span id="IntroFrame-309"><a href="#IntroFrame-309"><span class="linenos">309</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
 </span><span id="IntroFrame-310"><a href="#IntroFrame-310"><span class="linenos">310</span></a>
-</span><span id="IntroFrame-311"><a href="#IntroFrame-311"><span class="linenos">311</span></a>            <span class="n">imframe</span> <span class="o">=</span> <span class="n">IntroMenuFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_dim</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">parent_frame</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">focus_group</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_group</span><span class="p">)</span>
-</span><span id="IntroFrame-312"><a href="#IntroFrame-312"><span class="linenos">312</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="IntroFrame-313"><a href="#IntroFrame-313"><span class="linenos">313</span></a>            <span class="k">return</span> <span class="n">imframe</span>
-</span><span id="IntroFrame-314"><a href="#IntroFrame-314"><span class="linenos">314</span></a>
-</span><span id="IntroFrame-315"><a href="#IntroFrame-315"><span class="linenos">315</span></a>        <span class="k">return</span> <span class="bp">self</span>
+</span><span id="IntroFrame-311"><a href="#IntroFrame-311"><span class="linenos">311</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_headline_animation</span><span class="p">()</span>
+</span><span id="IntroFrame-312"><a href="#IntroFrame-312"><span class="linenos">312</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_image_animation</span><span class="p">()</span>
+</span><span id="IntroFrame-313"><a href="#IntroFrame-313"><span class="linenos">313</span></a>
+</span><span id="IntroFrame-314"><a href="#IntroFrame-314"><span class="linenos">314</span></a>        <span class="c1">#due to the animation, we rerender</span>
+</span><span id="IntroFrame-315"><a href="#IntroFrame-315"><span class="linenos">315</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">prerender</span><span class="p">()</span>
 </span><span id="IntroFrame-316"><a href="#IntroFrame-316"><span class="linenos">316</span></a>
-</span><span id="IntroFrame-317"><a href="#IntroFrame-317"><span class="linenos">317</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IntroFrame-318"><a href="#IntroFrame-318"><span class="linenos">318</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="IntroFrame-319"><a href="#IntroFrame-319"><span class="linenos">319</span></a><span class="sd">        Rendering function, see Frame class.</span>
-</span><span id="IntroFrame-320"><a href="#IntroFrame-320"><span class="linenos">320</span></a><span class="sd">        """</span>
-</span><span id="IntroFrame-321"><a href="#IntroFrame-321"><span class="linenos">321</span></a>
-</span><span id="IntroFrame-322"><a href="#IntroFrame-322"><span class="linenos">322</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">Colors</span><span class="o">.</span><span class="n">BLACK</span><span class="p">)</span>
-</span><span id="IntroFrame-323"><a href="#IntroFrame-323"><span class="linenos">323</span></a>
-</span><span id="IntroFrame-324"><a href="#IntroFrame-324"><span class="linenos">324</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
-</span><span id="IntroFrame-325"><a href="#IntroFrame-325"><span class="linenos">325</span></a>            <span class="k">return</span> <span class="kc">None</span>
-</span><span id="IntroFrame-326"><a href="#IntroFrame-326"><span class="linenos">326</span></a>
-</span><span id="IntroFrame-327"><a href="#IntroFrame-327"><span class="linenos">327</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
-</span><span id="IntroFrame-328"><a href="#IntroFrame-328"><span class="linenos">328</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
-</span><span id="IntroFrame-329"><a href="#IntroFrame-329"><span class="linenos">329</span></a>
-</span><span id="IntroFrame-330"><a href="#IntroFrame-330"><span class="linenos">330</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IntroFrame-331"><a href="#IntroFrame-331"><span class="linenos">331</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">screen</span><span class="p">)</span>
+</span><span id="IntroFrame-317"><a href="#IntroFrame-317"><span class="linenos">317</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span><span class="p">:</span>
+</span><span id="IntroFrame-318"><a href="#IntroFrame-318"><span class="linenos">318</span></a>
+</span><span id="IntroFrame-319"><a href="#IntroFrame-319"><span class="linenos">319</span></a>            <span class="n">imframe</span> <span class="o">=</span> <span class="n">IntroMenuFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_dim</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">parent_frame</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">focus_group</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_group</span><span class="p">)</span>
+</span><span id="IntroFrame-320"><a href="#IntroFrame-320"><span class="linenos">320</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="IntroFrame-321"><a href="#IntroFrame-321"><span class="linenos">321</span></a>            <span class="k">return</span> <span class="n">imframe</span>
+</span><span id="IntroFrame-322"><a href="#IntroFrame-322"><span class="linenos">322</span></a>
+</span><span id="IntroFrame-323"><a href="#IntroFrame-323"><span class="linenos">323</span></a>        <span class="k">return</span> <span class="bp">self</span>
+</span><span id="IntroFrame-324"><a href="#IntroFrame-324"><span class="linenos">324</span></a>
+</span><span id="IntroFrame-325"><a href="#IntroFrame-325"><span class="linenos">325</span></a>    <span class="nd">@override</span>
+</span><span id="IntroFrame-326"><a href="#IntroFrame-326"><span class="linenos">326</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">prerender</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="IntroFrame-327"><a href="#IntroFrame-327"><span class="linenos">327</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="IntroFrame-328"><a href="#IntroFrame-328"><span class="linenos">328</span></a><span class="sd">        Rendering function, see Frame class.</span>
+</span><span id="IntroFrame-329"><a href="#IntroFrame-329"><span class="linenos">329</span></a><span class="sd">        """</span>
+</span><span id="IntroFrame-330"><a href="#IntroFrame-330"><span class="linenos">330</span></a>
+</span><span id="IntroFrame-331"><a href="#IntroFrame-331"><span class="linenos">331</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">Colors</span><span class="o">.</span><span class="n">BLACK</span><span class="p">)</span>
 </span><span id="IntroFrame-332"><a href="#IntroFrame-332"><span class="linenos">332</span></a>
-</span><span id="IntroFrame-333"><a href="#IntroFrame-333"><span class="linenos">333</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IntroFrame-334"><a href="#IntroFrame-334"><span class="linenos">334</span></a>            <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_pos</span><span class="p">)</span>
+</span><span id="IntroFrame-333"><a href="#IntroFrame-333"><span class="linenos">333</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="IntroFrame-334"><a href="#IntroFrame-334"><span class="linenos">334</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">)</span>
 </span><span id="IntroFrame-335"><a href="#IntroFrame-335"><span class="linenos">335</span></a>
-</span><span id="IntroFrame-336"><a href="#IntroFrame-336"><span class="linenos">336</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IntroFrame-337"><a href="#IntroFrame-337"><span class="linenos">337</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">screen</span><span class="p">)</span>
+</span><span id="IntroFrame-336"><a href="#IntroFrame-336"><span class="linenos">336</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="IntroFrame-337"><a href="#IntroFrame-337"><span class="linenos">337</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_pos</span><span class="p">)</span>
+</span><span id="IntroFrame-338"><a href="#IntroFrame-338"><span class="linenos">338</span></a>
+</span><span id="IntroFrame-339"><a href="#IntroFrame-339"><span class="linenos">339</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="IntroFrame-340"><a href="#IntroFrame-340"><span class="linenos">340</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1440,7 +1446,8 @@ Is called once per tick.</p>
                             <div id="IntroFrame.rerender" class="classattr">
                                         <input id="IntroFrame.rerender-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-            
+                    <div class="decorator decorator-override">@override</div>
+
         <span class="def">def</span>
         <span class="name">rerender</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
 
@@ -1448,7 +1455,8 @@ Is called once per tick.</p>
 
     </div>
     <a class="headerlink" href="#IntroFrame.rerender"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.rerender-235"><a href="#IntroFrame.rerender-235"><span class="linenos">235</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">rerender</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.rerender-234"><a href="#IntroFrame.rerender-234"><span class="linenos">234</span></a>    <span class="nd">@override</span>
+</span><span id="IntroFrame.rerender-235"><a href="#IntroFrame.rerender-235"><span class="linenos">235</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">rerender</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="IntroFrame.rerender-236"><a href="#IntroFrame.rerender-236"><span class="linenos">236</span></a><span class="w">        </span><span class="sd">"""</span>
 </span><span id="IntroFrame.rerender-237"><a href="#IntroFrame.rerender-237"><span class="linenos">237</span></a><span class="sd">        Renders the frame as it should be as the beginning.</span>
 </span><span id="IntroFrame.rerender-238"><a href="#IntroFrame.rerender-238"><span class="linenos">238</span></a><span class="sd">        This resets all render data.</span>
@@ -1477,7 +1485,9 @@ Is called once per tick.</p>
 </span><span id="IntroFrame.rerender-261"><a href="#IntroFrame.rerender-261"><span class="linenos">261</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_image_animation</span><span class="p">()</span>
 </span><span id="IntroFrame.rerender-262"><a href="#IntroFrame.rerender-262"><span class="linenos">262</span></a>
 </span><span id="IntroFrame.rerender-263"><a href="#IntroFrame.rerender-263"><span class="linenos">263</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">reset_exit_flag</span><span class="p">()</span>
-</span><span id="IntroFrame.rerender-264"><a href="#IntroFrame.rerender-264"><span class="linenos">264</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span id="IntroFrame.rerender-264"><a href="#IntroFrame.rerender-264"><span class="linenos">264</span></a>
+</span><span id="IntroFrame.rerender-265"><a href="#IntroFrame.rerender-265"><span class="linenos">265</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">prerender</span><span class="p">()</span>
+</span><span id="IntroFrame.rerender-266"><a href="#IntroFrame.rerender-266"><span class="linenos">266</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -1490,7 +1500,8 @@ This resets all render data.</p>
                             <div id="IntroFrame.bind_events" class="classattr">
                                         <input id="IntroFrame.bind_events-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-            
+                    <div class="decorator decorator-override">@override</div>
+
         <span class="def">def</span>
         <span class="name">bind_events</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
 
@@ -1498,19 +1509,20 @@ This resets all render data.</p>
 
     </div>
     <a class="headerlink" href="#IntroFrame.bind_events"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.bind_events-267"><a href="#IntroFrame.bind_events-267"><span class="linenos">267</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">bind_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IntroFrame.bind_events-268"><a href="#IntroFrame.bind_events-268"><span class="linenos">268</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="IntroFrame.bind_events-269"><a href="#IntroFrame.bind_events-269"><span class="linenos">269</span></a><span class="sd">        Binds the enter events as triggering a transition into the IntroMenuFrame.</span>
-</span><span id="IntroFrame.bind_events-270"><a href="#IntroFrame.bind_events-270"><span class="linenos">270</span></a><span class="sd">        """</span>
-</span><span id="IntroFrame.bind_events-271"><a href="#IntroFrame.bind_events-271"><span class="linenos">271</span></a>
-</span><span id="IntroFrame.bind_events-272"><a href="#IntroFrame.bind_events-272"><span class="linenos">272</span></a>        <span class="c1">#adding generic escape exit function</span>
-</span><span id="IntroFrame.bind_events-273"><a href="#IntroFrame.bind_events-273"><span class="linenos">273</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_default_escape_callback</span><span class="p">()</span>
-</span><span id="IntroFrame.bind_events-274"><a href="#IntroFrame.bind_events-274"><span class="linenos">274</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
-</span><span id="IntroFrame.bind_events-275"><a href="#IntroFrame.bind_events-275"><span class="linenos">275</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">ENTER_ALTERNATIVE</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
-</span><span id="IntroFrame.bind_events-276"><a href="#IntroFrame.bind_events-276"><span class="linenos">276</span></a>        <span class="c1">#if mouse events are not disabled</span>
-</span><span id="IntroFrame.bind_events-277"><a href="#IntroFrame.bind_events-277"><span class="linenos">277</span></a>        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContextData</span><span class="p">:</span>
-</span><span id="IntroFrame.bind_events-278"><a href="#IntroFrame.bind_events-278"><span class="linenos">278</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mouse_enabled</span><span class="p">:</span>
-</span><span id="IntroFrame.bind_events-279"><a href="#IntroFrame.bind_events-279"><span class="linenos">279</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_event_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mousebutton_pressed</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.bind_events-268"><a href="#IntroFrame.bind_events-268"><span class="linenos">268</span></a>    <span class="nd">@override</span>
+</span><span id="IntroFrame.bind_events-269"><a href="#IntroFrame.bind_events-269"><span class="linenos">269</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">bind_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="IntroFrame.bind_events-270"><a href="#IntroFrame.bind_events-270"><span class="linenos">270</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="IntroFrame.bind_events-271"><a href="#IntroFrame.bind_events-271"><span class="linenos">271</span></a><span class="sd">        Binds the enter events as triggering a transition into the IntroMenuFrame.</span>
+</span><span id="IntroFrame.bind_events-272"><a href="#IntroFrame.bind_events-272"><span class="linenos">272</span></a><span class="sd">        """</span>
+</span><span id="IntroFrame.bind_events-273"><a href="#IntroFrame.bind_events-273"><span class="linenos">273</span></a>
+</span><span id="IntroFrame.bind_events-274"><a href="#IntroFrame.bind_events-274"><span class="linenos">274</span></a>        <span class="c1">#adding generic escape exit function</span>
+</span><span id="IntroFrame.bind_events-275"><a href="#IntroFrame.bind_events-275"><span class="linenos">275</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_default_escape_callback</span><span class="p">()</span>
+</span><span id="IntroFrame.bind_events-276"><a href="#IntroFrame.bind_events-276"><span class="linenos">276</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
+</span><span id="IntroFrame.bind_events-277"><a href="#IntroFrame.bind_events-277"><span class="linenos">277</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_key_callback</span><span class="p">(</span><span class="n">KeyAlternatives</span><span class="o">.</span><span class="n">ENTER_ALTERNATIVE</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">)</span>
+</span><span id="IntroFrame.bind_events-278"><a href="#IntroFrame.bind_events-278"><span class="linenos">278</span></a>        <span class="c1">#if mouse events are not disabled</span>
+</span><span id="IntroFrame.bind_events-279"><a href="#IntroFrame.bind_events-279"><span class="linenos">279</span></a>        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContextData</span><span class="p">:</span>
+</span><span id="IntroFrame.bind_events-280"><a href="#IntroFrame.bind_events-280"><span class="linenos">280</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">mouse_enabled</span><span class="p">:</span>
+</span><span id="IntroFrame.bind_events-281"><a href="#IntroFrame.bind_events-281"><span class="linenos">281</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">add_pygame_event_callback</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mousebutton_pressed</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1530,12 +1542,12 @@ This resets all render data.</p>
 
     </div>
     <a class="headerlink" href="#IntroFrame.mousebutton_pressed"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.mousebutton_pressed-281"><a href="#IntroFrame.mousebutton_pressed-281"><span class="linenos">281</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">mousebutton_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-</span><span id="IntroFrame.mousebutton_pressed-282"><a href="#IntroFrame.mousebutton_pressed-282"><span class="linenos">282</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="IntroFrame.mousebutton_pressed-283"><a href="#IntroFrame.mousebutton_pressed-283"><span class="linenos">283</span></a><span class="sd">        Starts the game on mousebutton.</span>
-</span><span id="IntroFrame.mousebutton_pressed-284"><a href="#IntroFrame.mousebutton_pressed-284"><span class="linenos">284</span></a><span class="sd">        """</span>
-</span><span id="IntroFrame.mousebutton_pressed-285"><a href="#IntroFrame.mousebutton_pressed-285"><span class="linenos">285</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="n">Mouse</span><span class="o">.</span><span class="n">LEFT_BUTTON</span><span class="p">:</span>
-</span><span id="IntroFrame.mousebutton_pressed-286"><a href="#IntroFrame.mousebutton_pressed-286"><span class="linenos">286</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.mousebutton_pressed-283"><a href="#IntroFrame.mousebutton_pressed-283"><span class="linenos">283</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">mousebutton_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+</span><span id="IntroFrame.mousebutton_pressed-284"><a href="#IntroFrame.mousebutton_pressed-284"><span class="linenos">284</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="IntroFrame.mousebutton_pressed-285"><a href="#IntroFrame.mousebutton_pressed-285"><span class="linenos">285</span></a><span class="sd">        Starts the game on mousebutton.</span>
+</span><span id="IntroFrame.mousebutton_pressed-286"><a href="#IntroFrame.mousebutton_pressed-286"><span class="linenos">286</span></a><span class="sd">        """</span>
+</span><span id="IntroFrame.mousebutton_pressed-287"><a href="#IntroFrame.mousebutton_pressed-287"><span class="linenos">287</span></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="n">Mouse</span><span class="o">.</span><span class="n">LEFT_BUTTON</span><span class="p">:</span>
+</span><span id="IntroFrame.mousebutton_pressed-288"><a href="#IntroFrame.mousebutton_pressed-288"><span class="linenos">288</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_pressed</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1555,13 +1567,13 @@ This resets all render data.</p>
 
     </div>
     <a class="headerlink" href="#IntroFrame.enter_pressed"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.enter_pressed-288"><a href="#IntroFrame.enter_pressed-288"><span class="linenos">288</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">enter_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-</span><span id="IntroFrame.enter_pressed-289"><a href="#IntroFrame.enter_pressed-289"><span class="linenos">289</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="IntroFrame.enter_pressed-290"><a href="#IntroFrame.enter_pressed-290"><span class="linenos">290</span></a><span class="sd">        If the entry delay has already passed, we set the enter intro menu flag to true.</span>
-</span><span id="IntroFrame.enter_pressed-291"><a href="#IntroFrame.enter_pressed-291"><span class="linenos">291</span></a><span class="sd">        """</span>
-</span><span id="IntroFrame.enter_pressed-292"><a href="#IntroFrame.enter_pressed-292"><span class="linenos">292</span></a>
-</span><span id="IntroFrame.enter_pressed-293"><a href="#IntroFrame.enter_pressed-293"><span class="linenos">293</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay</span><span class="p">:</span>
-</span><span id="IntroFrame.enter_pressed-294"><a href="#IntroFrame.enter_pressed-294"><span class="linenos">294</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">True</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.enter_pressed-290"><a href="#IntroFrame.enter_pressed-290"><span class="linenos">290</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">enter_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+</span><span id="IntroFrame.enter_pressed-291"><a href="#IntroFrame.enter_pressed-291"><span class="linenos">291</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="IntroFrame.enter_pressed-292"><a href="#IntroFrame.enter_pressed-292"><span class="linenos">292</span></a><span class="sd">        If the entry delay has already passed, we set the enter intro menu flag to true.</span>
+</span><span id="IntroFrame.enter_pressed-293"><a href="#IntroFrame.enter_pressed-293"><span class="linenos">293</span></a><span class="sd">        """</span>
+</span><span id="IntroFrame.enter_pressed-294"><a href="#IntroFrame.enter_pressed-294"><span class="linenos">294</span></a>
+</span><span id="IntroFrame.enter_pressed-295"><a href="#IntroFrame.enter_pressed-295"><span class="linenos">295</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_delay</span><span class="p">:</span>
+</span><span id="IntroFrame.enter_pressed-296"><a href="#IntroFrame.enter_pressed-296"><span class="linenos">296</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">True</span>
 </span></pre></div>
 
 
@@ -1573,7 +1585,8 @@ This resets all render data.</p>
                             <div id="IntroFrame.tick" class="classattr">
                                         <input id="IntroFrame.tick-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-            
+                    <div class="decorator decorator-override">@override</div>
+
         <span class="def">def</span>
         <span class="name">tick</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
 
@@ -1581,25 +1594,32 @@ This resets all render data.</p>
 
     </div>
     <a class="headerlink" href="#IntroFrame.tick"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.tick-297"><a href="#IntroFrame.tick-297"><span class="linenos">297</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="IntroFrame.tick-298"><a href="#IntroFrame.tick-298"><span class="linenos">298</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="IntroFrame.tick-299"><a href="#IntroFrame.tick-299"><span class="linenos">299</span></a><span class="sd">        Basic tick function.</span>
-</span><span id="IntroFrame.tick-300"><a href="#IntroFrame.tick-300"><span class="linenos">300</span></a><span class="sd">        """</span>
-</span><span id="IntroFrame.tick-301"><a href="#IntroFrame.tick-301"><span class="linenos">301</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">manage_pygame_events</span><span class="p">()</span>
-</span><span id="IntroFrame.tick-302"><a href="#IntroFrame.tick-302"><span class="linenos">302</span></a>
-</span><span id="IntroFrame.tick-303"><a href="#IntroFrame.tick-303"><span class="linenos">303</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
-</span><span id="IntroFrame.tick-304"><a href="#IntroFrame.tick-304"><span class="linenos">304</span></a>            <span class="k">return</span> <span class="kc">None</span>
-</span><span id="IntroFrame.tick-305"><a href="#IntroFrame.tick-305"><span class="linenos">305</span></a>
-</span><span id="IntroFrame.tick-306"><a href="#IntroFrame.tick-306"><span class="linenos">306</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_headline_animation</span><span class="p">()</span>
-</span><span id="IntroFrame.tick-307"><a href="#IntroFrame.tick-307"><span class="linenos">307</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_image_animation</span><span class="p">()</span>
-</span><span id="IntroFrame.tick-308"><a href="#IntroFrame.tick-308"><span class="linenos">308</span></a>
-</span><span id="IntroFrame.tick-309"><a href="#IntroFrame.tick-309"><span class="linenos">309</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span><span class="p">:</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.tick-298"><a href="#IntroFrame.tick-298"><span class="linenos">298</span></a>    <span class="nd">@override</span>
+</span><span id="IntroFrame.tick-299"><a href="#IntroFrame.tick-299"><span class="linenos">299</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="IntroFrame.tick-300"><a href="#IntroFrame.tick-300"><span class="linenos">300</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="IntroFrame.tick-301"><a href="#IntroFrame.tick-301"><span class="linenos">301</span></a><span class="sd">        Basic tick function.</span>
+</span><span id="IntroFrame.tick-302"><a href="#IntroFrame.tick-302"><span class="linenos">302</span></a><span class="sd">        """</span>
+</span><span id="IntroFrame.tick-303"><a href="#IntroFrame.tick-303"><span class="linenos">303</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">manage_pygame_events</span><span class="p">()</span>
+</span><span id="IntroFrame.tick-304"><a href="#IntroFrame.tick-304"><span class="linenos">304</span></a>
+</span><span id="IntroFrame.tick-305"><a href="#IntroFrame.tick-305"><span class="linenos">305</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
+</span><span id="IntroFrame.tick-306"><a href="#IntroFrame.tick-306"><span class="linenos">306</span></a>            <span class="k">return</span> <span class="kc">None</span>
+</span><span id="IntroFrame.tick-307"><a href="#IntroFrame.tick-307"><span class="linenos">307</span></a>
+</span><span id="IntroFrame.tick-308"><a href="#IntroFrame.tick-308"><span class="linenos">308</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
+</span><span id="IntroFrame.tick-309"><a href="#IntroFrame.tick-309"><span class="linenos">309</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
 </span><span id="IntroFrame.tick-310"><a href="#IntroFrame.tick-310"><span class="linenos">310</span></a>
-</span><span id="IntroFrame.tick-311"><a href="#IntroFrame.tick-311"><span class="linenos">311</span></a>            <span class="n">imframe</span> <span class="o">=</span> <span class="n">IntroMenuFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_dim</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">parent_frame</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">focus_group</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_group</span><span class="p">)</span>
-</span><span id="IntroFrame.tick-312"><a href="#IntroFrame.tick-312"><span class="linenos">312</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="IntroFrame.tick-313"><a href="#IntroFrame.tick-313"><span class="linenos">313</span></a>            <span class="k">return</span> <span class="n">imframe</span>
-</span><span id="IntroFrame.tick-314"><a href="#IntroFrame.tick-314"><span class="linenos">314</span></a>
-</span><span id="IntroFrame.tick-315"><a href="#IntroFrame.tick-315"><span class="linenos">315</span></a>        <span class="k">return</span> <span class="bp">self</span>
+</span><span id="IntroFrame.tick-311"><a href="#IntroFrame.tick-311"><span class="linenos">311</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_headline_animation</span><span class="p">()</span>
+</span><span id="IntroFrame.tick-312"><a href="#IntroFrame.tick-312"><span class="linenos">312</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">handle_image_animation</span><span class="p">()</span>
+</span><span id="IntroFrame.tick-313"><a href="#IntroFrame.tick-313"><span class="linenos">313</span></a>
+</span><span id="IntroFrame.tick-314"><a href="#IntroFrame.tick-314"><span class="linenos">314</span></a>        <span class="c1">#due to the animation, we rerender</span>
+</span><span id="IntroFrame.tick-315"><a href="#IntroFrame.tick-315"><span class="linenos">315</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">prerender</span><span class="p">()</span>
+</span><span id="IntroFrame.tick-316"><a href="#IntroFrame.tick-316"><span class="linenos">316</span></a>
+</span><span id="IntroFrame.tick-317"><a href="#IntroFrame.tick-317"><span class="linenos">317</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span><span class="p">:</span>
+</span><span id="IntroFrame.tick-318"><a href="#IntroFrame.tick-318"><span class="linenos">318</span></a>
+</span><span id="IntroFrame.tick-319"><a href="#IntroFrame.tick-319"><span class="linenos">319</span></a>            <span class="n">imframe</span> <span class="o">=</span> <span class="n">IntroMenuFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">frame_dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_dim</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">parent_frame</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">focus_group</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_group</span><span class="p">)</span>
+</span><span id="IntroFrame.tick-320"><a href="#IntroFrame.tick-320"><span class="linenos">320</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">enter_intro_menu</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="IntroFrame.tick-321"><a href="#IntroFrame.tick-321"><span class="linenos">321</span></a>            <span class="k">return</span> <span class="n">imframe</span>
+</span><span id="IntroFrame.tick-322"><a href="#IntroFrame.tick-322"><span class="linenos">322</span></a>
+</span><span id="IntroFrame.tick-323"><a href="#IntroFrame.tick-323"><span class="linenos">323</span></a>        <span class="k">return</span> <span class="bp">self</span>
 </span></pre></div>
 
 
@@ -1608,38 +1628,34 @@ This resets all render data.</p>
 
 
                             </div>
-                            <div id="IntroFrame.render" class="classattr">
-                                        <input id="IntroFrame.render-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+                            <div id="IntroFrame.prerender" class="classattr">
+                                        <input id="IntroFrame.prerender-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">render</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">Surface</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
+                    <div class="decorator decorator-override">@override</div>
 
-                <label class="view-source-button" for="IntroFrame.render-view-source"><span>View Source</span></label>
+        <span class="def">def</span>
+        <span class="name">prerender</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
+
+                <label class="view-source-button" for="IntroFrame.prerender-view-source"><span>View Source</span></label>
 
     </div>
-    <a class="headerlink" href="#IntroFrame.render"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.render-317"><a href="#IntroFrame.render-317"><span class="linenos">317</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IntroFrame.render-318"><a href="#IntroFrame.render-318"><span class="linenos">318</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="IntroFrame.render-319"><a href="#IntroFrame.render-319"><span class="linenos">319</span></a><span class="sd">        Rendering function, see Frame class.</span>
-</span><span id="IntroFrame.render-320"><a href="#IntroFrame.render-320"><span class="linenos">320</span></a><span class="sd">        """</span>
-</span><span id="IntroFrame.render-321"><a href="#IntroFrame.render-321"><span class="linenos">321</span></a>
-</span><span id="IntroFrame.render-322"><a href="#IntroFrame.render-322"><span class="linenos">322</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">Colors</span><span class="o">.</span><span class="n">BLACK</span><span class="p">)</span>
-</span><span id="IntroFrame.render-323"><a href="#IntroFrame.render-323"><span class="linenos">323</span></a>
-</span><span id="IntroFrame.render-324"><a href="#IntroFrame.render-324"><span class="linenos">324</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_flag_raised</span><span class="p">():</span>
-</span><span id="IntroFrame.render-325"><a href="#IntroFrame.render-325"><span class="linenos">325</span></a>            <span class="k">return</span> <span class="kc">None</span>
-</span><span id="IntroFrame.render-326"><a href="#IntroFrame.render-326"><span class="linenos">326</span></a>
-</span><span id="IntroFrame.render-327"><a href="#IntroFrame.render-327"><span class="linenos">327</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
-</span><span id="IntroFrame.render-328"><a href="#IntroFrame.render-328"><span class="linenos">328</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">tick</span><span class="p">()</span>
-</span><span id="IntroFrame.render-329"><a href="#IntroFrame.render-329"><span class="linenos">329</span></a>
-</span><span id="IntroFrame.render-330"><a href="#IntroFrame.render-330"><span class="linenos">330</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IntroFrame.render-331"><a href="#IntroFrame.render-331"><span class="linenos">331</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">screen</span><span class="p">)</span>
-</span><span id="IntroFrame.render-332"><a href="#IntroFrame.render-332"><span class="linenos">332</span></a>
-</span><span id="IntroFrame.render-333"><a href="#IntroFrame.render-333"><span class="linenos">333</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IntroFrame.render-334"><a href="#IntroFrame.render-334"><span class="linenos">334</span></a>            <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_pos</span><span class="p">)</span>
-</span><span id="IntroFrame.render-335"><a href="#IntroFrame.render-335"><span class="linenos">335</span></a>
-</span><span id="IntroFrame.render-336"><a href="#IntroFrame.render-336"><span class="linenos">336</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="IntroFrame.render-337"><a href="#IntroFrame.render-337"><span class="linenos">337</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">screen</span><span class="p">)</span>
+    <a class="headerlink" href="#IntroFrame.prerender"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="IntroFrame.prerender-325"><a href="#IntroFrame.prerender-325"><span class="linenos">325</span></a>    <span class="nd">@override</span>
+</span><span id="IntroFrame.prerender-326"><a href="#IntroFrame.prerender-326"><span class="linenos">326</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">prerender</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="IntroFrame.prerender-327"><a href="#IntroFrame.prerender-327"><span class="linenos">327</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="IntroFrame.prerender-328"><a href="#IntroFrame.prerender-328"><span class="linenos">328</span></a><span class="sd">        Rendering function, see Frame class.</span>
+</span><span id="IntroFrame.prerender-329"><a href="#IntroFrame.prerender-329"><span class="linenos">329</span></a><span class="sd">        """</span>
+</span><span id="IntroFrame.prerender-330"><a href="#IntroFrame.prerender-330"><span class="linenos">330</span></a>
+</span><span id="IntroFrame.prerender-331"><a href="#IntroFrame.prerender-331"><span class="linenos">331</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">Colors</span><span class="o">.</span><span class="n">BLACK</span><span class="p">)</span>
+</span><span id="IntroFrame.prerender-332"><a href="#IntroFrame.prerender-332"><span class="linenos">332</span></a>
+</span><span id="IntroFrame.prerender-333"><a href="#IntroFrame.prerender-333"><span class="linenos">333</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="IntroFrame.prerender-334"><a href="#IntroFrame.prerender-334"><span class="linenos">334</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">headline_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">)</span>
+</span><span id="IntroFrame.prerender-335"><a href="#IntroFrame.prerender-335"><span class="linenos">335</span></a>
+</span><span id="IntroFrame.prerender-336"><a href="#IntroFrame.prerender-336"><span class="linenos">336</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="IntroFrame.prerender-337"><a href="#IntroFrame.prerender-337"><span class="linenos">337</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_pos</span><span class="p">)</span>
+</span><span id="IntroFrame.prerender-338"><a href="#IntroFrame.prerender-338"><span class="linenos">338</span></a>
+</span><span id="IntroFrame.prerender-339"><a href="#IntroFrame.prerender-339"><span class="linenos">339</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="IntroFrame.prerender-340"><a href="#IntroFrame.prerender-340"><span class="linenos">340</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">press_text_label</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1654,9 +1670,14 @@ This resets all render data.</p>
                                     <div><dt><a href="frame.html#Frame">Frames.frame.Frame</a></dt>
                                 <dd id="IntroFrame.STANDARD_FOCUS_GROUP" class="variable"><a href="frame.html#Frame.STANDARD_FOCUS_GROUP">STANDARD_FOCUS_GROUP</a></dd>
                 <dd id="IntroFrame.FOCUS_GROUPS" class="variable"><a href="frame.html#Frame.FOCUS_GROUPS">FOCUS_GROUPS</a></dd>
+                <dd id="IntroFrame.EventTypes" class="class"><a href="frame.html#Frame.EventTypes">EventTypes</a></dd>
+                <dd id="IntroFrame.FocusChangedEvent" class="class"><a href="frame.html#Frame.FocusChangedEvent">FocusChangedEvent</a></dd>
+                <dd id="IntroFrame.SubframeCreatedEvent" class="class"><a href="frame.html#Frame.SubframeCreatedEvent">SubframeCreatedEvent</a></dd>
+                <dd id="IntroFrame.SubframeDeletedEvent" class="class"><a href="frame.html#Frame.SubframeDeletedEvent">SubframeDeletedEvent</a></dd>
                 <dd id="IntroFrame.EventCallback" class="class"><a href="frame.html#Frame.EventCallback">EventCallback</a></dd>
                 <dd id="IntroFrame.frame_enum" class="variable"><a href="frame.html#Frame.frame_enum">frame_enum</a></dd>
                 <dd id="IntroFrame.data" class="variable"><a href="frame.html#Frame.data">data</a></dd>
+                <dd id="IntroFrame.surface" class="variable"><a href="frame.html#Frame.surface">surface</a></dd>
                 <dd id="IntroFrame.focus_group" class="variable"><a href="frame.html#Frame.focus_group">focus_group</a></dd>
                 <dd id="IntroFrame.parent_frame" class="variable"><a href="frame.html#Frame.parent_frame">parent_frame</a></dd>
                 <dd id="IntroFrame.max_parent_frames" class="variable"><a href="frame.html#Frame.max_parent_frames">max_parent_frames</a></dd>
@@ -1690,12 +1711,22 @@ This resets all render data.</p>
                 <dd id="IntroFrame.raise_exit_flag" class="function"><a href="frame.html#Frame.raise_exit_flag">raise_exit_flag</a></dd>
                 <dd id="IntroFrame.reset_exit_flag" class="function"><a href="frame.html#Frame.reset_exit_flag">reset_exit_flag</a></dd>
                 <dd id="IntroFrame.exit_flag_raised" class="function"><a href="frame.html#Frame.exit_flag_raised">exit_flag_raised</a></dd>
+                <dd id="IntroFrame.raise_prerender_flag" class="function"><a href="frame.html#Frame.raise_prerender_flag">raise_prerender_flag</a></dd>
+                <dd id="IntroFrame.reset_prerender_flag" class="function"><a href="frame.html#Frame.reset_prerender_flag">reset_prerender_flag</a></dd>
+                <dd id="IntroFrame.prerender_flag_raised" class="function"><a href="frame.html#Frame.prerender_flag_raised">prerender_flag_raised</a></dd>
+                <dd id="IntroFrame.render" class="function"><a href="frame.html#Frame.render">render</a></dd>
+                <dd id="IntroFrame.render_at" class="function"><a href="frame.html#Frame.render_at">render_at</a></dd>
 
             </div>
             <div><dt><a href="../event_queue_manager.html#EventQueueManager">event_queue_manager.EventQueueManager</a></dt>
-                                <dd id="IntroFrame.push_event" class="function"><a href="../event_queue_manager.html#EventQueueManager.push_event">push_event</a></dd>
+                                <dd id="IntroFrame.event_queue_active" class="variable"><a href="../event_queue_manager.html#EventQueueManager.event_queue_active">event_queue_active</a></dd>
+                <dd id="IntroFrame.max_events_queued" class="function"><a href="../event_queue_manager.html#EventQueueManager.max_events_queued">max_events_queued</a></dd>
+                <dd id="IntroFrame.set_max_events_queued" class="function"><a href="../event_queue_manager.html#EventQueueManager.set_max_events_queued">set_max_events_queued</a></dd>
+                <dd id="IntroFrame.push_event" class="function"><a href="../event_queue_manager.html#EventQueueManager.push_event">push_event</a></dd>
                 <dd id="IntroFrame.poll_events" class="function"><a href="../event_queue_manager.html#EventQueueManager.poll_events">poll_events</a></dd>
                 <dd id="IntroFrame.poll_events_with_putback" class="function"><a href="../event_queue_manager.html#EventQueueManager.poll_events_with_putback">poll_events_with_putback</a></dd>
+                <dd id="IntroFrame.deactivate_event_queue" class="function"><a href="../event_queue_manager.html#EventQueueManager.deactivate_event_queue">deactivate_event_queue</a></dd>
+                <dd id="IntroFrame.activate_event_queue" class="function"><a href="../event_queue_manager.html#EventQueueManager.activate_event_queue">activate_event_queue</a></dd>
 
             </div>
                                 </dl>

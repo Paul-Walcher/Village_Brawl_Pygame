@@ -54,7 +54,7 @@ class ExplorerInfoFrame(CardinfoFrame):
                 info_width_percentage: float = 0.5,
                 shown_side=None,
                 font: pygame.font.Font = Fonts.STANDARD_FONT,
-                alpha: int = 200, #the alpha value
+                alpha: int = 170, #the alpha value
                 hmargin: float = 0.1,
                 vmargin: float = 0.1,
                 chars_per_line: int = 50,
@@ -269,7 +269,6 @@ class ExplorerInfoFrame(CardinfoFrame):
                                                 self.page_parts,
                                                 full_image_shown=self.full_image_shown
                                                 )
-
 
             self.slider_menu.render(self.info_page_surface)
 

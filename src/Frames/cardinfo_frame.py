@@ -76,7 +76,7 @@ class CardinfoFrame(Frame):
                 info_width_percentage: float = 0.5,
                 shown_side=None,
                 font: pygame.font.Font = Fonts.STANDARD_FONT,
-                alpha: int = 200, #the alpha value
+                alpha: int = 170, #the alpha value
                 hmargin: float = 0.1,
                 vmargin: float = 0.1,
                 chars_per_line: int = 50,
@@ -243,7 +243,6 @@ class CardinfoFrame(Frame):
 
         #creating the info page surface
         self.info_page_surface = pygame.Surface((self.info_frame_dim.width, self.info_frame_dim.height), pygame.SRCALPHA)
-
 
         self.page_parts = self.cardinfo.get_info_page_parts(
                                                                 self.relative_inner_frame_dim,
