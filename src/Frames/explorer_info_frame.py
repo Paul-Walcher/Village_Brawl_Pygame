@@ -447,6 +447,8 @@ class ExplorerInfoFrame(CardinfoFrame):
 
             ret = self.current_subframe.tick()
 
+            self.raise_prerender_flag()
+
             if ret is not self.current_subframe:
                 self.push_event(Frame.SubframeDeletedEvent(deleted_subframe=self.current_subframe, n_subframes_active=0))
                 self.current_subframe = None
@@ -457,8 +459,9 @@ class ExplorerInfoFrame(CardinfoFrame):
         self.slider_menu.tick()
         self.description_textbox.tick()
 
-        if self.state == ExplorerInfoFrame.MENU_SLIDING:
+        if self.slider_menu.any_animation_playing():
             self.raise_prerender_flag()
+
 
         slider_events = self.slider_menu.poll_events()
 

@@ -342,26 +342,24 @@ class CardinfoFrame(Frame):
         Shows the full image.
         """
 
-        if event.key != KeyAlternatives.SHOW_IMAGE_KEY:
-            return Frame.EventCallback.FAILURE
+        if event.key == KeyAlternatives.SHOW_IMAGE_KEY:
 
-        if not self.full_image_shown:
-            self.raise_prerender_flag()
+            if not self.full_image_shown:
+                self.raise_prerender_flag()
 
-        self.full_image_shown = True
+            self.full_image_shown = True
 
     def keyup(self, event, data):
         """
         Stops showing the full image.
         """
 
-        if event.key != KeyAlternatives.SHOW_IMAGE_KEY:
-            return Frame.EventCallback.FAILURE
+        if event.key == KeyAlternatives.SHOW_IMAGE_KEY:
 
-        if self.full_image_shown:
-            self.raise_prerender_flag()
+            if self.full_image_shown:
+                self.raise_prerender_flag()
 
-        self.full_image_shown = False
+            self.full_image_shown = False
 
     def esc_pressed(self, event, data):
         """
