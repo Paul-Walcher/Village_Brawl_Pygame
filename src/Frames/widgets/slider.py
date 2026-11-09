@@ -1,6 +1,9 @@
 """
 Base class for sliders
 """
+from __future__ import annotations
+from typing import Type, Any, Callable, override
+
 import os
 import pygame
 import threading
@@ -33,6 +36,56 @@ class Slider(Frame):
         SELECT_ANIMATION_ENDED = R_ID()
         FLIPPING_ANIMATION_ENDED = R_ID()
         SLIDING_ANIMATION_ENDED = R_ID()
+
+    class SelectAnimationEndedEvent(Event):
+
+        def __init__(self, selected_index: int):
+
+            Event.__init__(self, etype=Slider.EventTypes.SELECT_ANIMATION_ENDED, data=None)
+
+            self.selected_index: int = selected_index
+            """
+            The index that was selected.
+            """
+
+        @override
+        def copy(self) -> Slider.SelectAnimationEndedEvent:
+            return Slider.SelectAnimationEndedEvent(self.selected_index)
+
+
+    class FlippingAnimationEndedEvent(Event):
+
+        def __init__(self, selected_index: int, all_flipped: bool):
+
+            Event.__init__(self, etype=Slider.EventTypes.FLIPPING_ANIMATION_ENDED, data=None)
+
+            self.selected_index: int = selected_index
+            """
+            The index that was selected after flipping.
+            """
+            self.all_flipped: bool = all_flipped
+            """
+            If all cards were flipped or just one.
+            """
+
+        @override
+        def copy(self) -> Slider.FlippingAnimationEndedEvent:
+            return Slider.FlippingAnimationEndedEvent(self.selected_index, self.all_flipped)
+
+    class SlidingAnimationEndedEvent(Event):
+
+        def __init__(self, selected_index: int):
+
+            Event.__init__(self, etype=Slider.EventTypes.SLIDING_ANIMATION_ENDED, data=None)
+
+            self.selected_index: int = selected_index
+            """
+            The index that is selected after sliding.
+            """
+
+        @override
+        def copy(self) -> Slider.SlidingAnimationEndedEvent:
+            return Slider.SlidingAnimationEndedEvent(self.selected_index)
 
 
     SLIDING_LEFT = R_ID()
@@ -582,7 +635,9 @@ class Slider(Frame):
 
         self.slides += 1
         self.state = Slider.NOT_SLIDING
-        self.push_event(Event(Slider.EventTypes.SLIDING_ANIMATION_ENDED, None))
+        self.push_event(
+                            Slider.SlidingAnimationEndedEvent(self.get_selected_index())
+                        )
 
         # Rebuild everything from the actual logical state.
         self.rerender_images()
@@ -749,7 +804,9 @@ class Slider(Frame):
 
         self.state = Slider.NOT_SLIDING
 
-        self.push_event(Event(Slider.EventTypes.SLIDING_ANIMATION_ENDED, None))
+        self.push_event(
+                            Slider.SlidingAnimationEndedEvent(self.get_selected_index())
+                        )
 
         # Rebuild everything from the actual logical state.
         self.rerender_images()
@@ -767,7 +824,9 @@ class Slider(Frame):
 
         if percentage >= 1.0:
             self.state = Slider.NOT_SLIDING
-            self.push_event(Event(Slider.EventTypes.SELECT_ANIMATION_ENDED, None))
+            self.push_event(
+                                Slider.SelectAnimationEndedEvent(self.get_selected_index())
+                            )
             self.rerender_images()
         else:
 
@@ -807,7 +866,9 @@ class Slider(Frame):
 
         if percentage >= 1.0:
             self.state = Slider.NOT_SLIDING
-            self.push_event(Event(Slider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
+            self.push_event(
+                                Slider.FlippingAnimationEndedEvent(self.get_selected_index(), False)
+                            )
             #changing images
             save = self.surfaces[self.surface_index]
             save2 = self.selected_surfaces[self.surface_index]
@@ -849,7 +910,9 @@ class Slider(Frame):
 
         if percentage >= 1.0:
             self.state = Slider.NOT_SLIDING
-            self.push_event(Event(Slider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
+            self.push_event(
+                                Slider.FlippingAnimationEndedEvent(self.get_selected_index(), True)
+                            )
             #changing images
             save = self.surfaces
             save2 = self.selected_surfaces

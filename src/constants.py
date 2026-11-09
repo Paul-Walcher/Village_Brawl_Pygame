@@ -90,6 +90,29 @@ STANDARD_BACKSIDES: Callable[[str], str] = lambda x: [CIMAGE("standard_backside.
 Function that returns a list of n standard image backsides.
 """
 
+EXPLORER_STARTING_ICONS_AND_LABELS: tuple[list[str], list[str]] = (
+                                                                    [
+                                                                        IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
+                                                                        IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"),
+                                                                        IIMAGE("Pack_Icon.png"), IIMAGE("Villager_Icon.png"),
+                                                                        IIMAGE("Terrain_Icon.png")
+                                                                    ],
+
+                                                                    [
+                                                                        "Cards",
+                                                                        "Supporters",
+                                                                        "Items",
+                                                                        "Blueprints",
+                                                                        "Packs",
+                                                                        "Villagers",
+                                                                        "Terrain"
+                                                                    ]
+
+                                                                    )
+"""
+For the explorer info frame slider, predetermined image_paths and labels
+"""
+
 #Icon images
 MENU_BUTTON_UNFOCUSED_IMAGE: str = os.path.join(ICON_IMAGE_PATH, "Menu_Button_Unfocused.png")
 MENU_BUTTON_FOCUSED_IMAGE: str = os.path.join(ICON_IMAGE_PATH, "Menu_Button_Focused.png")

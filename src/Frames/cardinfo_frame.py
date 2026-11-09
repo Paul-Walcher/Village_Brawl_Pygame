@@ -4,7 +4,7 @@ from typing import Type, Callable, Any, override
 import pygame
 
 import graphics
-from constants import Colors, Alpha, Fonts, Fontsizes, KeyAlternatives, point_t, R_ID, as_point
+from constants import Colors, Alpha, Fonts, Fontsizes, KeyAlternatives, point_t, R_ID, as_point, color_t
 from clock import Clock
 from event_queue_manager import Event
 from enum import Enum, auto
@@ -67,14 +67,14 @@ class CardinfoFrame(Frame):
 
     def __init__(
                 self,
+                cardinfo: Renderable_CardInfo,
+                frame_dim: pygame.Rect,
                 data: Any = None,
-                frame_dim: pygame.Rect = None,
                 parent_frame: Frame = None,
                 focus_group: str = "",
                 has_focus: bool = True,
-                cardinfo: Renderable_CardInfo,
                 info_width_percentage: float = 0.5,
-                shown_side=CardinfoFrame.RIGHT_SIDE,
+                shown_side=None,
                 font: pygame.font.Font = Fonts.STANDARD_FONT,
                 alpha: int = 200, #the alpha value
                 hmargin: float = 0.1,
@@ -116,7 +116,7 @@ class CardinfoFrame(Frame):
         """
         How much of the width if used by the info frame. The rest is transparent.
         """
-        self.shown_side: bool = shown_side
+        self.shown_side: bool = (shown_side if shown_side is not None else CardinfoFrame.RIGHT_SIDE)
         """
         On which side the info will be shown. The rest is transparent.
         """
@@ -160,7 +160,7 @@ class CardinfoFrame(Frame):
         """
         The intro delay.
         """
-        self.intro_clock: Clock = Clock()
+        self.intro_delay_clock: Clock = Clock()
         """
         Clock for enforcing intro delay.
         """
@@ -190,6 +190,21 @@ class CardinfoFrame(Frame):
         The info page surface.
         """
         self.state = CardinfoFrame.NOTHING_FOCUSED
+        """
+        The state of this frame.
+        """
+        self.textbox_outline_size_p: float = 0.05
+        """
+        Outline for the textbox
+        """
+        self.textbox_outline_size: int = None
+        """
+        The textbox outline size, relative to self.inner_frame
+        """
+        self.textbox_outline_color: color_t = Colors.WHITE
+        """
+        The textbox outline color
+        """
 
 
         self.rerender()
@@ -226,11 +241,8 @@ class CardinfoFrame(Frame):
         #recalculates inner frame dimensions
         self.recalculate_inner_frame_dims()
 
-        #since this is relative x, y changes do not matter
-        self.relative_inner_frame_dim = graphics.apply_margins(pygame.Rect(0, 0, self.info_frame_dim.width, self.info_frame_dim.height), self.hmargin, self.vmargin)
-
         #creating the info page surface
-        self.info_page_surface = pygame.Surface((self.info_frame_dim.width, self.info_frame_dim.height))
+        self.info_page_surface = pygame.Surface((self.info_frame_dim.width, self.info_frame_dim.height), pygame.SRCALPHA)
 
 
         self.page_parts = self.cardinfo.get_info_page_parts(
@@ -243,6 +255,10 @@ class CardinfoFrame(Frame):
                                                                 )
         #setting the reference
         self.description_textbox = self.page_parts.textbox
+
+        self.textbox_outline_size = int(min(self.info_frame_dim.width, self.info_frame_dim.height) * self.textbox_outline_size_p)
+        self.description_textbox.set_outline_size(0)
+        self.description_textbox.set_outline_color(self.textbox_outline_color)
 
         self.intro_delay_clock.start()
 
@@ -275,6 +291,8 @@ class CardinfoFrame(Frame):
                                             )
         #creating the inner frame dim
         self.inner_frame_dim = graphics.apply_margins(self.info_frame_dim, self.hmargin, self.vmargin)
+        #since this is relative x, y changes do not matter
+        self.relative_inner_frame_dim = graphics.position_relative(anchor_rect=self.info_frame_dim, make_relative_rect=self.inner_frame_dim)
 
     @override
     def bind_events(self):
@@ -287,8 +305,11 @@ class CardinfoFrame(Frame):
             for key in [pygame.K_LEFT, KeyAlternatives.LEFT_ALTERNATIVE]:
                 cb = self.add_pygame_key_callback(key, None,  False, self.left_pressed)
 
-            cb_kd = self.add_pygame_event_callback(pygame.KEYDOWN, None, False, self.alt_down)
-            cb_ku = self.add_pygame_event_callback(pygame.KEYUP, None, False, self.alt_up)
+            self.add_pygame_key_callback(key=pygame.K_ESCAPE, data=None, putback=False, func=self.esc_pressed)
+            self.add_pygame_key_callback(key=KeyAlternatives.BACK_KEY, data=None, putback=False, func=self.esc_pressed)
+
+            cb_kd = self.add_pygame_event_callback(pygame.KEYDOWN, None, False, self.keydown)
+            cb_ku = self.add_pygame_event_callback(pygame.KEYUP, None, False, self.keyup)
 
 
     def right_pressed(self, event, data):
@@ -301,6 +322,7 @@ class CardinfoFrame(Frame):
             self.raise_prerender_flag()
         elif self.state == CardinfoFrame.NOTHING_FOCUSED:
             self.state = CardinfoFrame.TEXTBOX_FOCUSED
+            self.description_textbox.set_outline_size(self.textbox_outline_size_p)
             self.raise_prerender_flag()
 
     def left_pressed(self, event, data):
@@ -312,9 +334,10 @@ class CardinfoFrame(Frame):
             self.raise_prerender_flag()
         elif self.state == CardinfoFrame.NOTHING_FOCUSED:
             self.state = CardinfoFrame.TEXTBOX_FOCUSED
+            self.description_textbox.set_outline_size(self.textbox_outline_size_p)
             self.raise_prerender_flag()
 
-    def alt_down(self, event, data):
+    def keydown(self, event, data):
         """
         Shows the full image.
         """
@@ -327,7 +350,7 @@ class CardinfoFrame(Frame):
 
         self.full_image_shown = True
 
-    def alt_up(self, event, data):
+    def keyup(self, event, data):
         """
         Stops showing the full image.
         """
@@ -339,6 +362,18 @@ class CardinfoFrame(Frame):
             self.raise_prerender_flag()
 
         self.full_image_shown = False
+
+    def esc_pressed(self, event, data):
+        """
+        Exits the frame, or the textbox.
+        """
+        if self.state == CardinfoFrame.TEXTBOX_FOCUSED:
+            self.description_textbox.set_outline_size(0)
+            self.state = CardinfoFrame.NOTHING_FOCUSED
+        elif self.state == CardinfoFrame.NOTHING_FOCUSED:
+            self._next_frame = self.parent_frame #might be none
+            self.raise_exit_flag()
+
 
     def at_endpos(self) -> bool:
         """
@@ -372,7 +407,6 @@ class CardinfoFrame(Frame):
         self.state = CardinfoFrame.SLIDING_IN
 
         self.raise_prerender_flag()
-        self.slide_clock.start()
 
     def slide_in(self) -> None:
         """
@@ -392,6 +426,7 @@ class CardinfoFrame(Frame):
             self.y = self.slide_startpos[1] + y_inc
 
             self.recalculate_inner_frame_dims()
+            self.raise_prerender_flag()
 
     def finalize_sliding_in(self) -> None:
         """
@@ -404,6 +439,8 @@ class CardinfoFrame(Frame):
         self.y = self.slide_endpos[1]
 
         self.recalculate_inner_frame_dims()
+
+        self.push_event(CardinfoFrame.SlidingInFinishedEvent(self, self.slide_startpos, self.slide_endpos))
 
         self.raise_prerender_flag()
 
@@ -441,6 +478,8 @@ class CardinfoFrame(Frame):
 
             self.recalculate_inner_frame_dims()
 
+            self.raise_prerender_flag()
+
     def finalize_sliding_out(self) -> None:
         """
         Ends the sliding out animation.
@@ -453,7 +492,10 @@ class CardinfoFrame(Frame):
 
         self.recalculate_inner_frame_dims()
 
+        self.push_event(CardinfoFrame.SlidingOutFinishedEvent(self, self.slide_endpos, self.slide_startpos))
+
         self.raise_prerender_flag()
+        self.intro_delay_clock.start()
 
     @override
     def tick(self):
@@ -473,5 +515,6 @@ class CardinfoFrame(Frame):
 
         if self.prerender_flag_raised():
             self.prerender()
+            self.reset_prerender_flag()
 
         return self

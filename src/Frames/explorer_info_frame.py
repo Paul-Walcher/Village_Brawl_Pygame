@@ -7,7 +7,8 @@ import threading
 
 
 from Frames.cardinfo_frame import CardinfoFrame
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, Alpha, IIMAGE, STANDARD_BACKSIDES, R_ID
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, Alpha, IIMAGE, STANDARD_BACKSIDES, R_ID,\
+                        EXPLORER_STARTING_ICONS_AND_LABELS, color_t
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock
@@ -25,106 +26,59 @@ from Frames.widgets.textbox import Textbox
 from Frames.widgets.image_slider import ImageSlider
 from Frames.widgets.text_slider import TextSlider
 from Frames.widgets.labeled_image_slider import LabeledImageSlider
+from Frames.cardinfo_frame import CardinfoFrame
+from Frames.widgets.slider import Slider
 
 from context_data import ContextData
 
-class ExplorerInfoFrame(Frame):
+class ExplorerInfoFrame(CardinfoFrame):
     """
     Frame that displays a explorers info, but not just the standard info
     but also all starting cards.
+
+    This card inherits from CardinfoFrame
     """
 
-    NO_FOCUS: int = R_ID()
-    DESCRIPTION_FOCUSED: int = R_ID()
     MENU_FOCUSED: int = R_ID()
+    MENU_SLIDING: int = R_ID()
 
     def __init__(
-                    self,
-                    explorer_enum: int,
-                    data: Any = None,
-                    frame_dim: pygame.Rect = None,
-                    parent_frame: Frame = None,
-                    focus_group: str = "",
-                    has_focus: bool = True
+                self,
+                explorer_enum: int,
+                modules: Modules,
+                frame_dim: pygame.Rect,
+                data: Any = None,
+                parent_frame: Frame = None,
+                focus_group: str = "",
+                has_focus: bool = True,
+                info_width_percentage: float = 0.5,
+                shown_side=None,
+                font: pygame.font.Font = Fonts.STANDARD_FONT,
+                alpha: int = 200, #the alpha value
+                hmargin: float = 0.1,
+                vmargin: float = 0.1,
+                chars_per_line: int = 50,
+                lines_per_page: int = 5,
+                slide_duration: float = 400,
+                start_position: point_t = None,
+                end_position: point_t = None
                 ):
 
-        super().__init__(
-                            frame_enum=FrameEnums.CHOOSE_EXPLORER_FRAME,
-                            data=data,
-                            frame_dim=frame_dim,
-                            parent_frame=parent_frame,
-                            focus_group=focus_group,
-                            has_focus=has_focus
-
-                        )
-
-        self.explorer_enum: int = explorer_enum
-        """
-        The explorer identifier of the explorer this info frame
-        displays info about.
-        """
-        self.modules: Modules = None
-        """
-        Modules reference.
-        """
-        if type(self.data) == ContextData:
-            self.modules = self.data.modules
-
-
-        self.explorer_ref: Type(Explorer_Template) = self.modules.mappings.explorer_mappings[self.explorer_enum]
-        """
-        Reference to the explorer class.
-        """
-        self.explorer_info: ExplorerInfo = self.explorer_ref.info()
-        """
-        Information about the explorer.
-        """
-        self.focused_outline_size_p: float = 0.005
-        """
-        Size of the outline displayed if the slider is focused.
-        Relative to min(self.width, self.height)
-        """
-        self.focused_outline_size: int = -1
-        """
-        Actual size of the outline.
-        """
-        self.textbox_outline_size_p: float = 0.05
-        """
-        Outline for the textbox
-        """
-
-        self.icon_imgs: list[str] = [
-                                        IIMAGE("Deck_Icon.png"), IIMAGE("Supporter_Icon.png"),
-                                        IIMAGE("Item_Icon.png"), IIMAGE("Blueprint_Icon.png"),
-                                        IIMAGE("Pack_Icon.png"), IIMAGE("Villager_Icon.png"),
-                                        IIMAGE("Terrain_Icon.png")
-                                    ]
+        #setting the frame enum
+        self.icon_imgs: list[str] = None
         """
         Paths to the icon images for self.slider_menu.
         """
-        self.image_labels: list[str] = [
-                                        "Cards",
-                                        "Supporters",
-                                        "Items",
-                                        "Blueprints",
-                                        "Packs",
-                                        "Villagers",
-                                        "Terrain"
-                                        ]
+        self.image_labels: list[str] = None
         """
         Labels for the images in self.slider_menu.
         """
+        #setting it to the values defined in constants
+        self.icon_imgs, self.image_labels = EXPLORER_STARTING_ICONS_AND_LABELS
+
         self.slider_labels: list[colored_page_t] = None
         """
         The slider labels, these are the image labels rendered as colored pages.
-        """
-        self.full_hmargin: float = 0.2
-        """
-        horizontal margin for the inner frame.
-        """
-        self.full_vmargin: float = 0.1
-        """
-        vertical margin for the inner frame
         """
         self.dividing_percentages: list[float] = [
                                                     0.75, #the info frame
@@ -138,13 +92,13 @@ class ExplorerInfoFrame(Frame):
         Distance between Info frame and slider.
         Slider Frame.
         """
-        self.inner_frame: pygame.Rect = None
+        self.standard_info_page_frame: pygame.Rect = None
         """
-        The inner frame, into which everything will be rendered.
+        Rect for rendering the standard info page.
         """
-        self.info_page_frame: pygame.Rect = None
+        self.relative_standard_info_page_frame: pygame.Rect = None
         """
-        Frame for rendering the standard info.
+        Relative rect for rendering onto the surface.
         """
         self.divider_frame: pygame.Rect = None
         """
@@ -154,98 +108,145 @@ class ExplorerInfoFrame(Frame):
         """
         Frame for the slider.
         """
+        self.relative_slider_frame: pygame.Rect = None
+        """
+        The relative slider frame for rendering the slider.
+        """
         self.slider_border_frame: pygame.Rect = None
         """
         The rect being outlined when self.slider_menu is focused.
         """
-        self.full_image_shown: bool = False
+        self.relative_slider_border_frame: pygame.Rect = None
         """
-        Whether the full image is shown or not.
-        """
-        self.state: int = ExplorerInfoFrame.NO_FOCUS
-        """
-        Current state.
-        """
-        self.info_page_parts: ExplorerInfo.InfoPagePartContainer = None
-        """
-        The info page parts for the standard cardinfo.
-        """
-        self.textbox: Textbox = None
-        """
-        Reference to the textbox belonging to the info page parts.
+        The relative border frame relative to self.info_frame_dim.
         """
         self.slider_menu: LabeledImageSlider = None
         """
         The own slider menu.
         """
-        self.intro_delay: float = 100#ms
-        """
-        The delay after rerender() has been called.
-        """
-        self.intro_delay_clock: Clock = Clock()
-        """
-        clock for the intro delay.
-        """
         self.current_subframe: Frame = None
         """
         The current subframe
         """
-        self.half_frame: pygame.Rect = None
+        self.menu_outline_size_p: float = 0.05
         """
-        The half frame, that shows the information half
+        Menu outline for the slider menu
         """
-        self.half_surface: pygame.Surface = None
+        self.menu_outline_size: int = -1
         """
-        Surface for the half surface.
+        The actual menu outline.
         """
-        #rendering
-        self.rerender()
+        self.menu_outline_color: color_t = Colors.WHITE
+        """
+        The menu outline color.
+        """
+
+        self.explorer_enum: int = explorer_enum
+        """
+        The explorer enum.
+        """
+        self.modules: Modules = modules
+        """
+        The loaded modules for getting the class reference and info.
+        """
+        self.explorer_ref: Type[Explorer_Template] = self.modules.mappings.explorer_mappings[self.explorer_enum]
+        """
+        Reference to the explorer class.
+        """
+        self.explorer_info: ExplorerInfo = self.explorer_ref.info()
+        """
+        The explorer info.
+        """
+
+        CardinfoFrame.__init__(
+                                self,
+                                cardinfo=self.explorer_info,
+                                frame_dim=frame_dim,
+                                data=data,
+                                parent_frame=parent_frame,
+                                focus_group=focus_group,
+                                has_focus=has_focus,
+                                info_width_percentage=info_width_percentage,
+                                shown_side=shown_side,
+                                font=font,
+                                alpha=alpha, #the alpha value
+                                hmargin=hmargin,
+                                vmargin=vmargin,
+                                chars_per_line=chars_per_line,
+                                lines_per_page=lines_per_page,
+                                slide_duration=slide_duration,
+                                start_position=start_position,
+                                end_position=end_position
+                                )
+
+        self.frame_enum = FrameEnums.CHOOSE_EXPLORER_FRAME
+
 
     @override
     def rerender(self):
+        """
+        Rerendering.
+        """
+        sx: int = -1 #starting x
+        sy: int = -1 #starting y
 
-        self.half_frame = pygame.Rect(self.width // 2, 0, self.width // 2, self.height)
-        self.half_surface = pygame.Surface((self.half_frame.width, self.half_frame.height), pygame.SRCALPHA)
+        if self.slide_startpos is not None:
 
-        #getting outline size
-        self.focused_outline_size = int(min(self.half_frame.width, self.half_frame.height) * self.focused_outline_size_p)
+            sx, sy = self.slide_startpos
 
-        #getting the explorer ref and info
-        self.explorer_ref = self.modules.mappings.explorer_mappings[self.explorer_enum]
-        self.explorer_info = self.explorer_ref.info()
+        else:
+
+            #we calculate the slide startpos
+            sx = (self.x-self.width if self.shown_side == CardinfoFrame.LEFT_SIDE else self.x + self.width)
+            sy = self.y
+
+            self.slide_startpos = pygame.Rect(sx, sy, self.width, self.height)
+
+        #calculating endpos
+        if self.slide_endpos is None:
+            #creating the generic end position.
+            self.slide_endpos = self.frame_dim.copy()
+
+        #setting position to the starting position
+        self.x = sx
+        self.y = sy
+
+        #recalculates inner frame dimensions
+        self.recalculate_inner_frame_dims()
+
+        #creating the info page surface
+        self.info_page_surface = pygame.Surface((self.info_frame_dim.width, self.info_frame_dim.height), pygame.SRCALPHA)
+
+        self.page_parts = self.cardinfo.get_info_page_parts(
+                                                                self.relative_standard_info_page_frame,
+                                                                font=self.font,
+                                                                hmargin=0.0,
+                                                                vmargin=0.0,
+                                                                chars_per_line=self.chars_per_line,
+                                                                lines_per_page=self.lines_per_page
+                                                                )
+        #setting the reference
+        self.description_textbox = self.page_parts.textbox
+
+        self.textbox_outline_size = int(min(self.info_frame_dim.width, self.info_frame_dim.height) * self.textbox_outline_size_p)
+        self.description_textbox.set_outline_size(0)
+        self.description_textbox.set_outline_color(self.textbox_outline_color)
 
         #text for the labeled image slider rendered as colored pages
         self.slider_labels = [
                                 graphics.str_to_colored_page(x, Colors.WHITE) for x in self.image_labels
                                 ]
 
-        #calculating inner frame
-        self.inner_frame = graphics.apply_margins(pygame.Rect(0, 0, self.half_frame.width, self.half_frame.height), self.full_hmargin, self.full_hmargin)
-        self.info_page_frame, self.divider_frame, self.slider_frame = graphics.split_rect_vertically(self.inner_frame, self.dividing_percentages)
-        self.slider_border_frame = self.slider_frame.copy()
-
-        #centering the slider frame
-        self.slider_frame = graphics.apply_margins(self.slider_frame, 0.1, 0.1)
-        self.slider_frame = graphics.get_center_with_rect_as_rect(outer_rect=self.slider_border_frame, inner_rect=self.slider_frame)
-
-        #getting the info page parts
-        self.info_page_parts = self.explorer_info.get_info_page_parts(
-                                                                        frame_dim=self.info_page_frame,
-                                                                        hmargin=0.0,
-                                                                        vmargin=0.0
-                                                                        )
-        #getting the textbox reference
-        self.textbox = self.info_page_parts.textbox
-        self.textbox.set_outline_size(0)
-
         #creating the slider
         self.slider_menu = LabeledImageSlider(
-                                                self.slider_frame,
+                                                self.relative_slider_frame,
                                                 text_pages=self.slider_labels,
                                                 images=self.icon_imgs,
                                                 text_location=LabeledImageSlider.BOTTOM,
                                                 max_slides=3
                                                 )
+
+        self.menu_outline_size: int = int(min(self.slider_border_frame.width, self.slider_border_frame.height) * self.menu_outline_size_p)
 
         #prerender
         self.prerender()
@@ -253,9 +254,71 @@ class ExplorerInfoFrame(Frame):
         self.intro_delay_clock.start()
 
     @override
+    def prerender(self):
+
+        if self.current_subframe is None:
+            """
+            Prerendering.
+            """
+
+            self.surface.fill(Colors.TRANSPARENT)
+            self.info_page_surface.fill((*Colors.BLACK, self.alpha))
+
+            self.cardinfo.render_info_page_parts(
+                                                self.info_page_surface,
+                                                self.page_parts,
+                                                full_image_shown=self.full_image_shown
+                                                )
+
+
+            self.slider_menu.render(self.info_page_surface)
+
+            if self.state in [ExplorerInfoFrame.MENU_FOCUSED, ExplorerInfoFrame.MENU_SLIDING]:
+                pygame.draw.rect(self.info_page_surface, self.menu_outline_color, self.relative_slider_border_frame, width=self.menu_outline_size)
+
+            self.surface.blit(self.info_page_surface, (self.info_frame_dim.x, self.info_frame_dim.y))
+
+        else:
+
+            self.current_subframe.render(self.surface)
+
+    @override
+    def recalculate_inner_frame_dims(self) -> None:
+        """
+        recalculates the inner frame dims
+        """
+        #getting the width
+        info_page_width: int = int(self.width * self.info_width_percentage)
+        #now creating the split and inner frame
+        self.info_frame_dim = pygame.Rect(
+                                            (self.x if self.shown_side == CardinfoFrame.LEFT_SIDE else self.width - info_page_width),
+                                            self.y,
+                                            info_page_width,
+                                            self.height
+                                            )
+        #creating the inner frame dim
+        self.inner_frame_dim = graphics.apply_margins(self.info_frame_dim, self.hmargin, self.vmargin)
+
+        self.standard_info_page_frame, self.divider_frame, self.slider_border_frame = graphics.split_rect_vertically(self.inner_frame_dim, self.dividing_percentages)
+
+        self.slider_frame = graphics.apply_margins(self.slider_border_frame, 0.1, 0.1)
+        #calculating relatives
+        #since this is relative x, y changes do not matter
+        self.relative_inner_frame_dim = graphics.position_relative(anchor_rect=self.info_frame_dim, make_relative_rect=self.inner_frame_dim)
+        #relative info page
+        self.relative_standard_info_page_frame = graphics.position_relative(anchor_rect=self.info_frame_dim, make_relative_rect=self.standard_info_page_frame)
+        #relative slider frame
+        #since this is relative x, y changes do not matter
+        self.relative_slider_frame = graphics.position_relative(anchor_rect=self.info_frame_dim, make_relative_rect=self.slider_frame)
+        #border frame
+        self.relative_slider_border_frame = graphics.position_relative(anchor_rect=self.info_frame_dim, make_relative_rect=self.slider_border_frame)
+
+
+    @override
     def bind_events(self) -> None:
 
         if self.is_focused():
+
             self.add_pygame_key_callback(pygame.K_LEFT, None, putback=False, func=self.left_pressed)
             self.add_pygame_key_callback(KeyAlternatives.LEFT_ALTERNATIVE, None, putback=False, func=self.left_pressed)
 
@@ -277,55 +340,69 @@ class ExplorerInfoFrame(Frame):
             self.add_pygame_event_callback(pygame.KEYDOWN, None, False, self.keydown)
             self.add_pygame_event_callback(pygame.KEYUP, None, False, self.keyup)
 
+    @override
     def escape_pressed(self, event: pygame.event.Event, data: Any) -> None:
-        """
-        Just raises the exit flag, returns None in self.tick().
-        """
-        self.raise_exit_flag()
 
+        if self.state == ExplorerInfoFrame.TEXTBOX_FOCUSED:
+            self.description_textbox.set_outline_size(0)
+            self.state = ExplorerInfoFrame.NOTHING_FOCUSED
+            self.raise_prerender_flag()
+        elif self.state == ExplorerInfoFrame.MENU_FOCUSED:
+            self.state = ExplorerInfoFrame.NOTHING_FOCUSED
+            self.raise_prerender_flag()
+        elif self.state == ExplorerInfoFrame.NOTHING_FOCUSED:
+            self._next_frame = self.parent_frame
+            self.raise_exit_flag()
+
+    @override
     def left_pressed(self, event: pygame.event.Event, data: Any) -> None:
 
-        if self.state == ExplorerInfoFrame.NO_FOCUS:
-            self.state = ExplorerInfoFrame.DESCRIPTION_FOCUSED
-            self.textbox.set_outline_size(self.textbox_outline_size_p)
-            self.prerender()
-        elif self.state == ExplorerInfoFrame.DESCRIPTION_FOCUSED:
-            self.textbox.prev_page()
-            self.prerender()
+        if self.state == ExplorerInfoFrame.NOTHING_FOCUSED:
+            self.state = ExplorerInfoFrame.TEXTBOX_FOCUSED
+            self.description_textbox.set_outline_size(self.textbox_outline_size_p)
+            self.raise_prerender_flag()
+        elif self.state == ExplorerInfoFrame.TEXTBOX_FOCUSED:
+            self.description_textbox.prev_page()
+            self.raise_prerender_flag()
         elif self.state == ExplorerInfoFrame.MENU_FOCUSED:
             self.slider_menu.slide_right()
+            self.state = ExplorerInfoFrame.MENU_SLIDING
 
         return Frame.EventCallback.SUCCESS
 
+    @override
     def right_pressed(self, event: pygame.event.Event, data: Any) -> None:
 
-        if self.state == ExplorerInfoFrame.NO_FOCUS:
-            self.state = ExplorerInfoFrame.DESCRIPTION_FOCUSED
-            self.textbox.set_outline_size(self.textbox_outline_size_p)
-            self.prerender()
-        elif self.state == ExplorerInfoFrame.DESCRIPTION_FOCUSED:
-            self.textbox.next_page()
-            self.prerender()
+        if self.state == ExplorerInfoFrame.NOTHING_FOCUSED:
+            self.state = ExplorerInfoFrame.TEXTBOX_FOCUSED
+            self.description_textbox.set_outline_size(self.textbox_outline_size_p)
+            self.raise_prerender_flag()
+        elif self.state == ExplorerInfoFrame.TEXTBOX_FOCUSED:
+            self.description_textbox.next_page()
+            self.raise_prerender_flag()
         elif self.state == ExplorerInfoFrame.MENU_FOCUSED:
             self.slider_menu.slide_left()
+            self.state = ExplorerInfoFrame.MENU_SLIDING
 
         return Frame.EventCallback.SUCCESS
 
+    @override
     def up_pressed(self, event: pygame.event.Event, data: Any) -> None:
 
-        if self.state == ExplorerInfoFrame.NO_FOCUS or self.state == ExplorerInfoFrame.MENU_FOCUSED:
-            self.state = ExplorerInfoFrame.DESCRIPTION_FOCUSED
-            self.textbox.set_outline_size(self.textbox_outline_size_p)
-            self.prerender()
+        if self.state == ExplorerInfoFrame.NOTHING_FOCUSED or self.state == ExplorerInfoFrame.MENU_FOCUSED:
+            self.state = ExplorerInfoFrame.TEXTBOX_FOCUSED
+            self.description_textbox.set_outline_size(self.textbox_outline_size_p)
+            self.raise_prerender_flag()
 
         return Frame.EventCallback.SUCCESS
 
+    @override
     def down_pressed(self, event: pygame.event.Event, data: Any) -> None:
 
-        if self.state == ExplorerInfoFrame.NO_FOCUS or self.state == ExplorerInfoFrame.DESCRIPTION_FOCUSED:
+        if self.state == ExplorerInfoFrame.NOTHING_FOCUSED or self.state == ExplorerInfoFrame.TEXTBOX_FOCUSED:
             self.state = ExplorerInfoFrame.MENU_FOCUSED
-            self.textbox.set_outline_size(0)
-            self.prerender()
+            self.description_textbox.set_outline_size(0)
+            self.raise_prerender_flag()
 
         return Frame.EventCallback.SUCCESS
 
@@ -336,17 +413,26 @@ class ExplorerInfoFrame(Frame):
 
         return Frame.EventCallback.SUCCESS
 
-    def keydown(self, event: pygame.event.Event, data: Any) -> None:
 
-        if event.key == KeyAlternatives.SHOW_IMAGE_KEY:
-            self.full_image_shown = True
-            self.prerender()
+    @override
+    def start_sliding_in(self) -> bool:
+        """
+        Starts sliding in, cant happen when a subframe is active.
+        """
+        if self.current_subframe is not None:
+            return False
+        else:
+            return CardinfoFrame.start_sliding_in(self)
 
-    def keyup(self, event: pygame.event.Event, data: Any) -> None:
-
-        if event.key == KeyAlternatives.SHOW_IMAGE_KEY:
-            self.full_image_shown = False
-            self.prerender()
+    @override
+    def start_sliding_out(self) -> bool:
+        """
+        Starts sliding out, cant happen when a subframe is active.
+        """
+        if self.current_subframe is not None:
+            return False
+        else:
+            return CardinfoFrame.start_sliding_out(self)
 
     @override
     def tick(self):
@@ -355,88 +441,59 @@ class ExplorerInfoFrame(Frame):
             self.manage_pygame_events()
 
         if self.exit_flag_raised():
-            #since this would be called as a subframe, no next frame will be passed.
-            return None
+            return self._next_frame
 
         if self.current_subframe is not None:
 
             ret = self.current_subframe.tick()
 
-            if ret is None:
+            if ret is not self.current_subframe:
                 self.push_event(Frame.SubframeDeletedEvent(deleted_subframe=self.current_subframe, n_subframes_active=0))
                 self.current_subframe = None
-                self.prerender()
+                self.raise_prerender_flag()
 
 
         #slider menu
         self.slider_menu.tick()
+        self.description_textbox.tick()
+
+        if self.state == ExplorerInfoFrame.MENU_SLIDING:
+            self.raise_prerender_flag()
 
         slider_events = self.slider_menu.poll_events()
+
         for event in slider_events:
 
-            if event.type == LabeledImageSlider.EventTypes.SELECT_ANIMATION_ENDED:
+            if event.type == Slider.EventTypes.SELECT_ANIMATION_ENDED:
 
-                if self.parent_frame is not None:
+                if event.selected_index == 0:
 
-                    if self.slider_menu.get_selected_index() == 0:
+                    self.current_subframe = ShowExplorerStartingCardsFrame(
+                                                                            explorer_enum=self.explorer_enum,
+                                                                            data=self.data,
+                                                                            frame_dim=self.frame_dim.copy(),
+                                                                            parent_frame=self,
+                                                                            focus_group=self.focus_group,
+                                                                            has_focus=True
+                                                                            )
+                else:
 
-                        self.current_subframe = ShowExplorerStartingCardsFrame(
-                                                                                explorer_enum=self.explorer_enum,
-                                                                                data=self.data,
-                                                                                frame_dim=self.parent_frame.frame_dim.copy(),
-                                                                                parent_frame=self,
-                                                                                focus_group=self.focus_group,
-                                                                                has_focus=True
-                                                                                )
-                    else:
-
-                        self.current_subframe = TestFrame(
-                                                        data=None,
-                                                        frame_dim=self.parent_frame.frame_dim.copy(),
-                                                        parent_frame=self,
-                                                        focus_group=self.focus_group,
-                                                        has_focus=True
-                                                    )
-
+                    self.current_subframe = TestFrame(
+                                                    data=None,
+                                                    frame_dim=self.frame_dim.copy(),
+                                                    parent_frame=self,
+                                                    focus_group=self.focus_group,
+                                                    has_focus=True
+                                                )
 
                 self.push_event(Frame.SubframeCreatedEvent(created_subframe=self.current_subframe, n_subframes_active=1))
 
-        self.prerender()
+            elif event.type == Slider.EventTypes.SLIDING_ANIMATION_ENDED:
+
+                self.state = ExplorerInfoFrame.MENU_FOCUSED
+
+        if self.prerender_flag_raised():
+            self.prerender()
+            self.reset_prerender_flag()
 
         return self
-
-    @override
-    def prerender(self):
-
-        self.surface.fill(Colors.TRANSPARENT)
-
-        if self.current_subframe is None:
-
-            background_color = (*Colors.BLACK, 210)
-            self.half_surface.fill(background_color)
-
-            tosize = None
-            tocolor = None
-
-            if self.state == self.DESCRIPTION_FOCUSED:
-                tosize = self.textbox_outline_size_p
-                tocolor = Colors.WHITE
-
-            self.explorer_info.render_info_page_parts(
-                                                        screen=self.half_surface,
-                                                        info_page_part_container=self.info_page_parts,
-                                                        background_color=background_color,
-                                                        full_image_shown=self.full_image_shown,
-                                                        textbox_outline_size=tosize,
-                                                        textbox_outline_color=tocolor
-                                                        )
-            self.slider_menu.render(self.half_surface)
-
-            if self.state == ExplorerInfoFrame.MENU_FOCUSED:
-                pygame.draw.rect(self.half_surface, (*Colors.WHITE, 255), self.slider_border_frame, width=self.focused_outline_size)
-
-            self.surface.blit(self.half_surface, (self.half_frame.x, self.half_frame.y))
-
-        else:
-
-            self.current_subframe.render(self.surface)

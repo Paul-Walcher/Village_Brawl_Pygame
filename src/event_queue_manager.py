@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Callable
+from typing import Callable, Any
 
 
 from abc import ABC, abstractmethod
@@ -10,13 +10,13 @@ class Event:
     data for the event.
     """
 
-    def __init__(self, etype, data):
+    def __init__(self, etype: int, data: Any):
 
         self.type: int = etype
         """
         Identifier for the event.
         """
-        self.data = data
+        self.data: Any = data
         """
         Data for the event.
         """
@@ -34,17 +34,61 @@ class EventQueueManager(ABC):
     Parent class for classes that manage internal events.
     """
 
-    def __init__(self):
-        self._event_queue: list[Event] = []
-        """The event queue. Contains all current events that were not polled."""
-        self.event_queue_active: bool = True
+    def __init__(self, max_events_queued: int = 25):
 
-    def push_event(self, event: Event) -> None:
+        self._event_queue: list[Event] = []
+        """
+        The event queue. Contains all current events that were not polled.
+        """
+        self.event_queue_active: bool = True
+        """
+        If the event queue is active.
+        """
+        self._max_events_queued: int = max_events_queued
+        """
+        The maximum amount of events saved in the events queue.
+        If a new event is pushed while len(self._event_queue) == self.max_events_queued,
+        the oldest event gets removed.
+        """
+
+    def max_events_queued(self) -> int:
+        """
+        Returns the number of events queued.
+        """
+        return self._max_events_queued
+
+    def set_max_events_queued(self, max_events_queued: int) -> bool:
+        """
+        Sets the number of events queued.
+
+        Returns None if the number given is invalid.
+        """
+
+        if max_events_queued <= 0:
+            #invalid input
+            return False
+        else:
+            self._max_events_queued = max_events_queued
+            return True
+
+    def push_event(self, event: Event) -> list[Event]:
         """
         Adds an event to the event queue, if the queue is active.
+
+        Returns a list of dropped events if any where dropped at all.
         """
+
+        events_dropped: list[Event] = []
+
         if self.event_queue_active:
             self._event_queue.append(event)
+
+            while (len(self._event_queue) >= self._max_events_queued):
+                dropped_event: Event = self._event_queue.pop(0)
+                events_dropped.append(dropped_event)
+
+
+        return events_dropped
 
     def poll_events(self) -> None:
         """

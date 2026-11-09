@@ -258,9 +258,10 @@ class ChooseExplorerFrame(Frame):
         """
 
 
-        iframe: pygame.Rect = pygame.Rect(*self.info_frame_starting_pos, self.width, self.height)
+        iframe: pygame.Rect = pygame.Rect(0, 0, self.width, self.height)
         self.info_frame = ExplorerInfoFrame(
                                             explorer_enum=self.explorer_enums[self.explorer_index],
+                                            modules=self.modules,
                                             data=self.data,
                                             frame_dim=iframe,
                                             parent_frame=self,
@@ -412,7 +413,7 @@ class ChooseExplorerFrame(Frame):
         if self.info_frame is not None:
             ret: Frame = self.info_frame.tick()
 
-            if ret is None:
+            if ret is not self.info_frame:
                 if self.state != ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT:
                     self.state = ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT
                     self.info_frame_clock.start()

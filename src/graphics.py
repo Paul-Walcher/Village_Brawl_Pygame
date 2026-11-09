@@ -869,3 +869,22 @@ def img_load_and_position_smoothscale(img_path: str, frame: pygame.Rect) -> tupl
     img_pos = get_center_with_surface(img, frame)
 
     return (img, img_pos)
+
+def position_relative(anchor_rect: pygame.Rect, make_relative_rect: pygame.Rect) -> pygame.Rect:
+    """
+    Returns a rect which (x, y) is relative to anchor_rect,
+    by using the relative distance of (x, y) from make_relative_rect to anchor rect.
+
+    E.g.
+
+    anchor_rect = (10, 100, 100, 100)
+    make_relative_rect = (50, 200, 100, 100)
+
+    position_relative(anchor_rect, make_relative_rect) -> (40, 100, 100, 100)
+    """
+    return pygame.Rect(
+                            make_relative_rect.x - anchor_rect.x,
+                            make_relative_rect.y - anchor_rect.y,
+                            make_relative_rect.width,
+                            make_relative_rect.height
+                        )

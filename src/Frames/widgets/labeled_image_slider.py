@@ -247,12 +247,7 @@ class LabeledImageSlider(Frame):
         tevents = self.text_slider.poll_events()
 
         for event in ievents:
-            if event.type == Slider.EventTypes.SLIDING_ANIMATION_ENDED:
-                self.push_event(Event(LabeledImageSlider.EventTypes.SLIDING_ANIMATION_ENDED, None))
-            elif event.type == Slider.EventTypes.SELECT_ANIMATION_ENDED:
-                self.push_event(Event(LabeledImageSlider.EventTypes.SELECT_ANIMATION_ENDED, None))
-            elif event.type == Slider.EventTypes.FLIPPING_ANIMATION_ENDED:
-                self.push_event(Event(LabeledImageSlider.EventTypes.FLIPPING_ANIMATION_ENDED, None))
+            self.push_event(event)
 
 
 
