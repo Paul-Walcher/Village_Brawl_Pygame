@@ -6,7 +6,7 @@ import pygame
 import threading
 
 import constants
-from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID, color_t
+from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, R_ID, color_t, point_t
 import graphics
 from clock import Clock
 from modules import Modules
@@ -18,6 +18,7 @@ from Frames.frame_enums import FrameEnums
 from Frames.explorer_info_frame import ExplorerInfoFrame
 from Frames.widgets.label import Label
 from Frames.widgets.custom_same_size_slider import CustomSameSizeSlider
+from Frames.cardinfo_frame import CardinfoFrame
 
 from context_data import ContextData
 
@@ -115,11 +116,11 @@ class ChooseExplorerFrame(Frame):
         """
         height of the info frame.
         """
-        self.info_frame_starting_pos: tuple[int, int] = (self.width, 0)
+        self.info_frame_starting_pos: point_t = (self.width, 0)
         """
         The starting location of the info frame before sliding in.
         """
-        self.info_frame_target_pos: tuple[int, int] = (0, 0)
+        self.info_frame_target_pos: point_t = (0, 0)
         """
         The target location of the info frame after the sliding process finished.
         """
@@ -154,6 +155,14 @@ class ChooseExplorerFrame(Frame):
         self.subframe_rendered: bool = False
         """
         If the subframe is rendered, we can stop rendering.
+        """
+        self.info_frame_sliding_in_flag: bool = False
+        """
+        If a slide in of the info frame is requested
+        """
+        self.info_frame_sliding_out_flag: bool = False
+        """
+        If a slide out by the info frame is requested.
         """
 
         self.rerender()
@@ -266,52 +275,16 @@ class ChooseExplorerFrame(Frame):
                                             frame_dim=iframe,
                                             parent_frame=self,
                                             focus_group=self.focus_group,
-                                            has_focus=True
+                                            has_focus=True,
+                                            start_position=self.info_frame_starting_pos,
+                                            end_position=self.info_frame_target_pos
                                             )
 
-        self.state = ChooseExplorerFrame.INFO_FRAME_SLIDING_IN
         self.push_event(Frame.SubframeCreatedEvent(created_subframe=self.info_frame, n_subframes_active=1))
 
-        self.info_frame_clock.start()
-        #now blocking inputs shortly
+        self.info_frame_sliding_in_flag = True
         self.intro_delay_clock.start()
 
-    def render_info_frame_sliding(self) -> None:
-        """
-        Handles the info frame sliding in animation.
-        """
-        if self.state == ChooseExplorerFrame.INFO_FRAME_SLIDING_IN:
-
-            percentage: float = self.info_frame_clock.elapsed() / self.info_frame_sliding_time
-
-            if percentage >= 1.0:
-                self.finalize_info_frame()
-            else:
-                sx, sy = self.info_frame_starting_pos
-                tx, ty = self.info_frame_target_pos
-
-                x: int = int(sx + (tx - sx) * percentage)
-                y: int = int(sy + (ty - sy) * percentage)
-
-                self.info_frame.x = x
-                self.info_frame.y = y
-
-        elif self.state == ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT:
-
-            percentage: float = self.info_frame_clock.elapsed() / self.info_frame_sliding_time
-
-            if percentage >= 1.0:
-                self.deinitialize_info_frame()
-            else:
-                #this time starting and end os are reversed
-                sx, sy = self.info_frame_starting_pos
-                tx, ty = self.info_frame_target_pos
-
-                x: int = int(tx + (sx - tx) * percentage)
-                y: int = int(ty + (sy - ty) * percentage)
-
-                self.info_frame.x = x
-                self.info_frame.y = y
 
     def deinitialize_info_frame(self) -> None:
         """
@@ -319,18 +292,16 @@ class ChooseExplorerFrame(Frame):
         """
 
         self.push_event(Frame.SubframeDeletedEvent(deleted_subframe=self.info_frame, n_subframes_active=0))
+        self.info_frame.raise_exit_flag()
         self.state = ChooseExplorerFrame.IDLE
         self.info_frame = None
+        self.intro_delay_clock.start()
 
     def finalize_info_frame(self) -> None:
         """
         After loading in the info frame and sliding finished,
         this method initializes the frame.
         """
-
-        x, y = self.info_frame_target_pos
-        self.info_frame.x = x
-        self.info_frame.y = y
 
         self.state = ChooseExplorerFrame.INFO_FRAME_ACTIVE
 
@@ -388,7 +359,8 @@ class ChooseExplorerFrame(Frame):
         """
 
         if self.state == ChooseExplorerFrame.INFO_FRAME_ACTIVE:
-            self.info_frame.raise_exit_flag()
+
+            self.info_frame_sliding_out_flag = True
             self.intro_delay_clock.start()
 
     @override
@@ -415,8 +387,7 @@ class ChooseExplorerFrame(Frame):
 
             if ret is not self.info_frame:
                 if self.state != ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT:
-                    self.state = ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT
-                    self.info_frame_clock.start()
+                    self.info_frame_sliding_out_flag = True
 
             #going through the events
             for event in self.info_frame.poll_events():
@@ -435,8 +406,34 @@ class ChooseExplorerFrame(Frame):
 
                         self.subframe_rendered = False
 
-        if self.state in [ChooseExplorerFrame.INFO_FRAME_SLIDING_IN, ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT]:
-            self.render_info_frame_sliding()
+                elif event.type == CardinfoFrame.EventTypes.SLIDING_IN_FINISHED:
+
+                    self.finalize_info_frame()
+
+                elif event.type == CardinfoFrame.EventTypes.SLIDING_OUT_FINISHED:
+
+                    self.deinitialize_info_frame()
+
+            if self.info_frame_sliding_in_flag:
+                #try sliding in, keep flag raised on failure
+                slide_res: bool = self.info_frame.start_sliding_in()
+
+                if slide_res: #success
+
+                    self.info_frame_sliding_in_flag = False
+                    self.state = ChooseExplorerFrame.INFO_FRAME_SLIDING_IN
+                    self.intro_delay_clock.start()
+
+            if self.info_frame_sliding_out_flag:
+                #try sliding in, keep flag raised on failure
+                slide_res: bool = self.info_frame.start_sliding_out()
+
+                if slide_res: #success
+
+                    self.info_frame_sliding_out_flag = False
+                    self.state = ChooseExplorerFrame.INFO_FRAME_SLIDING_OUT
+                    self.intro_delay_clock.start()
+
 
         if self.state != ChooseExplorerFrame.IDLE:
             self.prerender()

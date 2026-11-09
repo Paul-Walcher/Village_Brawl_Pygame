@@ -400,11 +400,14 @@ class CardinfoFrame(Frame):
 
         if self.at_endpos():
             return False
-
         #otherwise, start sliding
         self.state = CardinfoFrame.SLIDING_IN
 
         self.raise_prerender_flag()
+        self.slide_clock.start()
+        self.intro_delay_clock.start()
+
+        return True
 
     def slide_in(self) -> None:
         """
@@ -456,6 +459,9 @@ class CardinfoFrame(Frame):
 
         self.raise_prerender_flag()
         self.slide_clock.start()
+        self.intro_delay_clock.start()
+
+        return True
 
     def slide_out(self) -> None:
         """
@@ -485,7 +491,7 @@ class CardinfoFrame(Frame):
 
         self.state = CardinfoFrame.NOTHING_FOCUSED
 
-        self.x = self.slide_startpos[0]
+        self.x = self.slide_endpos[0]
         self.y = self.slide_endpos[1]
 
         self.recalculate_inner_frame_dims()

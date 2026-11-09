@@ -454,10 +454,14 @@ class ExplorerInfoFrame(CardinfoFrame):
                 self.current_subframe = None
                 self.raise_prerender_flag()
 
-
         #slider menu
         self.slider_menu.tick()
         self.description_textbox.tick()
+
+        if self.state == ExplorerInfoFrame.SLIDING_IN:
+            self.slide_in()
+        elif self.state == ExplorerInfoFrame.SLIDING_OUT:
+            self.slide_out()
 
         if self.slider_menu.any_animation_playing():
             self.raise_prerender_flag()
