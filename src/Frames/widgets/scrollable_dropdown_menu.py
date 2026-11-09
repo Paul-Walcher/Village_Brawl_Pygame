@@ -6,6 +6,7 @@ import pygame
 from collections import deque
 from copy import deepcopy
 import graphics
+from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from event_queue_manager import Event
 from constants import Colors, Fonts, R_ID, IIMAGE, color_t
 from clock import Clock

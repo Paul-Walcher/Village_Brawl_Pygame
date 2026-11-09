@@ -155,7 +155,7 @@ class ExpandableDropdownMenu(DropdownMenu):
                 selected_animation_duration: float = 400#ms
                 ):
 
-        self.expanded_dropdown_menus: dict[DropdownKey, ExpandableDropdownMenu] = {}
+        self.expanded_dropdown_menus: dict[DropDownKey, ExpandableDropdownMenu] = {}
         """
         list of immediate dropdown menus. if an option tuple has a follow up menu,
         the option tuple is the key and the follow up dropdown menu is the value

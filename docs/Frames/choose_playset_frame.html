@@ -538,10 +538,10 @@ Frames<wbr>.choose_playset_frame    </h1>
 </span><span id="L-330"><a href="#L-330"><span class="linenos">330</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ChoosePlaysetFrame</span><span class="o">.</span><span class="n">PLAYSET_OPTIONS_FOCUSED</span><span class="p">:</span>
 </span><span id="L-331"><a href="#L-331"><span class="linenos">331</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wheel_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">wheel_delay</span><span class="p">:</span>
 </span><span id="L-332"><a href="#L-332"><span class="linenos">332</span></a>
-</span><span id="L-333"><a href="#L-333"><span class="linenos">333</span></a>                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">:</span>
+</span><span id="L-333"><a href="#L-333"><span class="linenos">333</span></a>                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">:</span>
 </span><span id="L-334"><a href="#L-334"><span class="linenos">334</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_up</span><span class="p">()</span>
 </span><span id="L-335"><a href="#L-335"><span class="linenos">335</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">wheel_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span id="L-336"><a href="#L-336"><span class="linenos">336</span></a>                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+</span><span id="L-336"><a href="#L-336"><span class="linenos">336</span></a>                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
 </span><span id="L-337"><a href="#L-337"><span class="linenos">337</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_down</span><span class="p">()</span>
 </span><span id="L-338"><a href="#L-338"><span class="linenos">338</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">wheel_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </span><span id="L-339"><a href="#L-339"><span class="linenos">339</span></a>
@@ -960,10 +960,10 @@ Frames<wbr>.choose_playset_frame    </h1>
 </span><span id="ChoosePlaysetFrame-331"><a href="#ChoosePlaysetFrame-331"><span class="linenos">331</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ChoosePlaysetFrame</span><span class="o">.</span><span class="n">PLAYSET_OPTIONS_FOCUSED</span><span class="p">:</span>
 </span><span id="ChoosePlaysetFrame-332"><a href="#ChoosePlaysetFrame-332"><span class="linenos">332</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wheel_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">wheel_delay</span><span class="p">:</span>
 </span><span id="ChoosePlaysetFrame-333"><a href="#ChoosePlaysetFrame-333"><span class="linenos">333</span></a>
-</span><span id="ChoosePlaysetFrame-334"><a href="#ChoosePlaysetFrame-334"><span class="linenos">334</span></a>                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">:</span>
+</span><span id="ChoosePlaysetFrame-334"><a href="#ChoosePlaysetFrame-334"><span class="linenos">334</span></a>                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">:</span>
 </span><span id="ChoosePlaysetFrame-335"><a href="#ChoosePlaysetFrame-335"><span class="linenos">335</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_up</span><span class="p">()</span>
 </span><span id="ChoosePlaysetFrame-336"><a href="#ChoosePlaysetFrame-336"><span class="linenos">336</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">wheel_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span id="ChoosePlaysetFrame-337"><a href="#ChoosePlaysetFrame-337"><span class="linenos">337</span></a>                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+</span><span id="ChoosePlaysetFrame-337"><a href="#ChoosePlaysetFrame-337"><span class="linenos">337</span></a>                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
 </span><span id="ChoosePlaysetFrame-338"><a href="#ChoosePlaysetFrame-338"><span class="linenos">338</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_down</span><span class="p">()</span>
 </span><span id="ChoosePlaysetFrame-339"><a href="#ChoosePlaysetFrame-339"><span class="linenos">339</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">wheel_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </span><span id="ChoosePlaysetFrame-340"><a href="#ChoosePlaysetFrame-340"><span class="linenos">340</span></a>
@@ -1224,7 +1224,7 @@ Frames<wbr>.choose_playset_frame    </h1>
                             <div id="ChoosePlaysetFrame.NOTHING_FOCUSED" class="classattr">
                                 <div class="attr variable">
             <span class="name">NOTHING_FOCUSED</span><span class="annotation">: int</span>        =
-<span class="default_value">-6497186787774349626</span>
+<span class="default_value">-1920151047686714123</span>
 
         
     </div>
@@ -1236,7 +1236,7 @@ Frames<wbr>.choose_playset_frame    </h1>
                             <div id="ChoosePlaysetFrame.BACK_OPTION_FOCUSED" class="classattr">
                                 <div class="attr variable">
             <span class="name">BACK_OPTION_FOCUSED</span><span class="annotation">: int</span>        =
-<span class="default_value">686059848414279168</span>
+<span class="default_value">5898230568774795742</span>
 
         
     </div>
@@ -1248,7 +1248,7 @@ Frames<wbr>.choose_playset_frame    </h1>
                             <div id="ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED" class="classattr">
                                 <div class="attr variable">
             <span class="name">PLAYSET_OPTIONS_FOCUSED</span><span class="annotation">: int</span>        =
-<span class="default_value">8636124529802061489</span>
+<span class="default_value">44849359087377250</span>
 
         
     </div>
@@ -1947,10 +1947,10 @@ focus changes. Make event bindings dependent on self.is_focused().</p>
 </span><span id="ChoosePlaysetFrame.mouse_wheel-331"><a href="#ChoosePlaysetFrame.mouse_wheel-331"><span class="linenos">331</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ChoosePlaysetFrame</span><span class="o">.</span><span class="n">PLAYSET_OPTIONS_FOCUSED</span><span class="p">:</span>
 </span><span id="ChoosePlaysetFrame.mouse_wheel-332"><a href="#ChoosePlaysetFrame.mouse_wheel-332"><span class="linenos">332</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wheel_clock</span><span class="o">.</span><span class="n">elapsed</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">wheel_delay</span><span class="p">:</span>
 </span><span id="ChoosePlaysetFrame.mouse_wheel-333"><a href="#ChoosePlaysetFrame.mouse_wheel-333"><span class="linenos">333</span></a>
-</span><span id="ChoosePlaysetFrame.mouse_wheel-334"><a href="#ChoosePlaysetFrame.mouse_wheel-334"><span class="linenos">334</span></a>                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">:</span>
+</span><span id="ChoosePlaysetFrame.mouse_wheel-334"><a href="#ChoosePlaysetFrame.mouse_wheel-334"><span class="linenos">334</span></a>                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">:</span>
 </span><span id="ChoosePlaysetFrame.mouse_wheel-335"><a href="#ChoosePlaysetFrame.mouse_wheel-335"><span class="linenos">335</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_up</span><span class="p">()</span>
 </span><span id="ChoosePlaysetFrame.mouse_wheel-336"><a href="#ChoosePlaysetFrame.mouse_wheel-336"><span class="linenos">336</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">wheel_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span id="ChoosePlaysetFrame.mouse_wheel-337"><a href="#ChoosePlaysetFrame.mouse_wheel-337"><span class="linenos">337</span></a>                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+</span><span id="ChoosePlaysetFrame.mouse_wheel-337"><a href="#ChoosePlaysetFrame.mouse_wheel-337"><span class="linenos">337</span></a>                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">precise_y</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
 </span><span id="ChoosePlaysetFrame.mouse_wheel-338"><a href="#ChoosePlaysetFrame.mouse_wheel-338"><span class="linenos">338</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">text_slider</span><span class="o">.</span><span class="n">slide_down</span><span class="p">()</span>
 </span><span id="ChoosePlaysetFrame.mouse_wheel-339"><a href="#ChoosePlaysetFrame.mouse_wheel-339"><span class="linenos">339</span></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">wheel_clock</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </span></pre></div>

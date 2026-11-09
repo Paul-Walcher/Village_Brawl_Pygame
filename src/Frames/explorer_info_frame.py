@@ -8,7 +8,7 @@ import threading
 
 from Frames.cardinfo_frame import CardinfoFrame
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, Alpha, IIMAGE, STANDARD_BACKSIDES, R_ID,\
-                        EXPLORER_STARTING_ICONS_AND_LABELS, color_t
+                        EXPLORER_STARTING_ICONS_AND_LABELS, color_t, point_t
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock

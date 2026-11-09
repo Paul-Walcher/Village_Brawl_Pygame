@@ -40,8 +40,8 @@ class Animation(Frame):
             self.animation_ref: Animation = animation_ref
 
         @override
-        def copy(self) -> AnimationStartedEvent:
-            return AnimationStartedEvent(animation_ref=self.animation_ref)
+        def copy(self) -> Animation.AnimationStartedEvent:
+            return Animation.AnimationStartedEvent(animation_ref=self.animation_ref)
 
 
     class AnimationRestartedEvent(Event):
@@ -54,8 +54,8 @@ class Animation(Frame):
             self.animation_ref: Animation = animation_ref
 
         @override
-        def copy(self) -> AnimationRestartedEvent:
-            return AnimationRestartedEvent(animation_ref=self.animation_ref)
+        def copy(self) -> Animation.AnimationRestartedEvent:
+            return Animation.AnimationRestartedEvent(animation_ref=self.animation_ref)
 
     class AnimationEndedEvent(Event):
         """
@@ -67,8 +67,8 @@ class Animation(Frame):
             self.animation_ref: Animation = animation_ref
 
         @override
-        def copy(self) -> AnimationEndedEvent:
-            return AnimationEndedEvent(animation_ref=self.animation_ref)
+        def copy(self) -> Animation.AnimationEndedEvent:
+            return Animation.AnimationEndedEvent(animation_ref=self.animation_ref)
 
     class AnimationPausedEvent(Event):
         """
@@ -80,8 +80,8 @@ class Animation(Frame):
             self.animation_ref: Animation = animation_ref
 
         @override
-        def copy(self) -> AnimationPausedEvent:
-            return AnimationPausedEvent(animation_ref=self.animation_ref)
+        def copy(self) -> Animation.AnimationPausedEvent:
+            return Animation.AnimationPausedEvent(animation_ref=self.animation_ref)
 
     class AnimationLoopedEvent(Event):
         """
@@ -93,8 +93,8 @@ class Animation(Frame):
             self.animation_ref: Animation = animation_ref
 
         @override
-        def copy(self) -> AnimationLoopedEvent:
-            return AnimationLoopedEvent(animation_ref=self.animation_ref)
+        def copy(self) -> Animation.AnimationLoopedEvent:
+            return Animation.AnimationLoopedEvent(animation_ref=self.animation_ref)
 
     def __init__(
                     self,

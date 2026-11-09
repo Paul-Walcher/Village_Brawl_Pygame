@@ -384,9 +384,9 @@ Frames<wbr>.frame    </h1>
 </span><span id="L-80"><a href="#L-80"><span class="linenos"> 80</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">focus_lost_frame</span>
 </span><span id="L-81"><a href="#L-81"><span class="linenos"> 81</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">focus_gained_frame</span>
 </span><span id="L-82"><a href="#L-82"><span class="linenos"> 82</span></a>
-</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FocusChangedEvent</span><span class="p">:</span>
+</span><span id="L-83"><a href="#L-83"><span class="linenos"> 83</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">FocusChangedEvent</span><span class="p">:</span>
 </span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>
-</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>            <span class="k">return</span> <span class="n">FocusChangedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">)</span>
+</span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">FocusChangedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">)</span>
 </span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>
 </span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">SubframeCreatedEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
 </span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a>
@@ -396,9 +396,9 @@ Frames<wbr>.frame    </h1>
 </span><span id="L-92"><a href="#L-92"><span class="linenos"> 92</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">created_subframe</span>
 </span><span id="L-93"><a href="#L-93"><span class="linenos"> 93</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">n_subframes_active</span> <span class="c1">#number of subframes active after the subframe was created</span>
 </span><span id="L-94"><a href="#L-94"><span class="linenos"> 94</span></a>
-</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubframeCreatedEvent</span><span class="p">:</span>
+</span><span id="L-95"><a href="#L-95"><span class="linenos"> 95</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeCreatedEvent</span><span class="p">:</span>
 </span><span id="L-96"><a href="#L-96"><span class="linenos"> 96</span></a>
-</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>            <span class="k">return</span> <span class="n">SubframeCreatedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
+</span><span id="L-97"><a href="#L-97"><span class="linenos"> 97</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeCreatedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
 </span><span id="L-98"><a href="#L-98"><span class="linenos"> 98</span></a>
 </span><span id="L-99"><a href="#L-99"><span class="linenos"> 99</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">SubframeDeletedEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
 </span><span id="L-100"><a href="#L-100"><span class="linenos">100</span></a>
@@ -408,9 +408,9 @@ Frames<wbr>.frame    </h1>
 </span><span id="L-104"><a href="#L-104"><span class="linenos">104</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">deleted_subframe</span>
 </span><span id="L-105"><a href="#L-105"><span class="linenos">105</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">n_subframes_active</span> <span class="c1">#number of subframes after deletion</span>
 </span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>
-</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubframeDeletedEvent</span><span class="p">:</span>
+</span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeDeletedEvent</span><span class="p">:</span>
 </span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>
-</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>            <span class="k">return</span> <span class="n">SubframDeletedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframDeletedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
 </span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a>
 </span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a>
 </span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>
@@ -1222,9 +1222,9 @@ Frames<wbr>.frame    </h1>
 </span><span id="Frame-81"><a href="#Frame-81"><span class="linenos"> 81</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">focus_lost_frame</span>
 </span><span id="Frame-82"><a href="#Frame-82"><span class="linenos"> 82</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">focus_gained_frame</span>
 </span><span id="Frame-83"><a href="#Frame-83"><span class="linenos"> 83</span></a>
-</span><span id="Frame-84"><a href="#Frame-84"><span class="linenos"> 84</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FocusChangedEvent</span><span class="p">:</span>
+</span><span id="Frame-84"><a href="#Frame-84"><span class="linenos"> 84</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">FocusChangedEvent</span><span class="p">:</span>
 </span><span id="Frame-85"><a href="#Frame-85"><span class="linenos"> 85</span></a>
-</span><span id="Frame-86"><a href="#Frame-86"><span class="linenos"> 86</span></a>            <span class="k">return</span> <span class="n">FocusChangedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">)</span>
+</span><span id="Frame-86"><a href="#Frame-86"><span class="linenos"> 86</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">FocusChangedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">)</span>
 </span><span id="Frame-87"><a href="#Frame-87"><span class="linenos"> 87</span></a>
 </span><span id="Frame-88"><a href="#Frame-88"><span class="linenos"> 88</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">SubframeCreatedEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
 </span><span id="Frame-89"><a href="#Frame-89"><span class="linenos"> 89</span></a>
@@ -1234,9 +1234,9 @@ Frames<wbr>.frame    </h1>
 </span><span id="Frame-93"><a href="#Frame-93"><span class="linenos"> 93</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">created_subframe</span>
 </span><span id="Frame-94"><a href="#Frame-94"><span class="linenos"> 94</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">n_subframes_active</span> <span class="c1">#number of subframes active after the subframe was created</span>
 </span><span id="Frame-95"><a href="#Frame-95"><span class="linenos"> 95</span></a>
-</span><span id="Frame-96"><a href="#Frame-96"><span class="linenos"> 96</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubframeCreatedEvent</span><span class="p">:</span>
+</span><span id="Frame-96"><a href="#Frame-96"><span class="linenos"> 96</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeCreatedEvent</span><span class="p">:</span>
 </span><span id="Frame-97"><a href="#Frame-97"><span class="linenos"> 97</span></a>
-</span><span id="Frame-98"><a href="#Frame-98"><span class="linenos"> 98</span></a>            <span class="k">return</span> <span class="n">SubframeCreatedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
+</span><span id="Frame-98"><a href="#Frame-98"><span class="linenos"> 98</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeCreatedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
 </span><span id="Frame-99"><a href="#Frame-99"><span class="linenos"> 99</span></a>
 </span><span id="Frame-100"><a href="#Frame-100"><span class="linenos">100</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">SubframeDeletedEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
 </span><span id="Frame-101"><a href="#Frame-101"><span class="linenos">101</span></a>
@@ -1246,9 +1246,9 @@ Frames<wbr>.frame    </h1>
 </span><span id="Frame-105"><a href="#Frame-105"><span class="linenos">105</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">deleted_subframe</span>
 </span><span id="Frame-106"><a href="#Frame-106"><span class="linenos">106</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">n_subframes_active</span> <span class="c1">#number of subframes after deletion</span>
 </span><span id="Frame-107"><a href="#Frame-107"><span class="linenos">107</span></a>
-</span><span id="Frame-108"><a href="#Frame-108"><span class="linenos">108</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubframeDeletedEvent</span><span class="p">:</span>
+</span><span id="Frame-108"><a href="#Frame-108"><span class="linenos">108</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeDeletedEvent</span><span class="p">:</span>
 </span><span id="Frame-109"><a href="#Frame-109"><span class="linenos">109</span></a>
-</span><span id="Frame-110"><a href="#Frame-110"><span class="linenos">110</span></a>            <span class="k">return</span> <span class="n">SubframDeletedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
+</span><span id="Frame-110"><a href="#Frame-110"><span class="linenos">110</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframDeletedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
 </span><span id="Frame-111"><a href="#Frame-111"><span class="linenos">111</span></a>
 </span><span id="Frame-112"><a href="#Frame-112"><span class="linenos">112</span></a>
 </span><span id="Frame-113"><a href="#Frame-113"><span class="linenos">113</span></a>
@@ -3443,9 +3443,9 @@ Is called once per frame.</p>
 </span><span id="Frame.FocusChangedEvent-81"><a href="#Frame.FocusChangedEvent-81"><span class="linenos">81</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">focus_lost_frame</span>
 </span><span id="Frame.FocusChangedEvent-82"><a href="#Frame.FocusChangedEvent-82"><span class="linenos">82</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">focus_gained_frame</span>
 </span><span id="Frame.FocusChangedEvent-83"><a href="#Frame.FocusChangedEvent-83"><span class="linenos">83</span></a>
-</span><span id="Frame.FocusChangedEvent-84"><a href="#Frame.FocusChangedEvent-84"><span class="linenos">84</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FocusChangedEvent</span><span class="p">:</span>
+</span><span id="Frame.FocusChangedEvent-84"><a href="#Frame.FocusChangedEvent-84"><span class="linenos">84</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">FocusChangedEvent</span><span class="p">:</span>
 </span><span id="Frame.FocusChangedEvent-85"><a href="#Frame.FocusChangedEvent-85"><span class="linenos">85</span></a>
-</span><span id="Frame.FocusChangedEvent-86"><a href="#Frame.FocusChangedEvent-86"><span class="linenos">86</span></a>            <span class="k">return</span> <span class="n">FocusChangedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">)</span>
+</span><span id="Frame.FocusChangedEvent-86"><a href="#Frame.FocusChangedEvent-86"><span class="linenos">86</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">FocusChangedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -3503,15 +3503,15 @@ data for the event.</p>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">copy</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="s1">'FocusChangedEvent'</span>:</span></span>
+        <span class="name">copy</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="n"><a href="#Frame.FocusChangedEvent">Frame.FocusChangedEvent</a></span>:</span></span>
 
                 <label class="view-source-button" for="Frame.FocusChangedEvent.copy-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#Frame.FocusChangedEvent.copy"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.FocusChangedEvent.copy-84"><a href="#Frame.FocusChangedEvent.copy-84"><span class="linenos">84</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FocusChangedEvent</span><span class="p">:</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.FocusChangedEvent.copy-84"><a href="#Frame.FocusChangedEvent.copy-84"><span class="linenos">84</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">FocusChangedEvent</span><span class="p">:</span>
 </span><span id="Frame.FocusChangedEvent.copy-85"><a href="#Frame.FocusChangedEvent.copy-85"><span class="linenos">85</span></a>
-</span><span id="Frame.FocusChangedEvent.copy-86"><a href="#Frame.FocusChangedEvent.copy-86"><span class="linenos">86</span></a>            <span class="k">return</span> <span class="n">FocusChangedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">)</span>
+</span><span id="Frame.FocusChangedEvent.copy-86"><a href="#Frame.FocusChangedEvent.copy-86"><span class="linenos">86</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">FocusChangedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">focus_lost_frame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">focus_gained_frame</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -3551,9 +3551,9 @@ Self.data will be passed by reference.</p>
 </span><span id="Frame.SubframeCreatedEvent-93"><a href="#Frame.SubframeCreatedEvent-93"><span class="linenos">93</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">created_subframe</span>
 </span><span id="Frame.SubframeCreatedEvent-94"><a href="#Frame.SubframeCreatedEvent-94"><span class="linenos">94</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">n_subframes_active</span> <span class="c1">#number of subframes active after the subframe was created</span>
 </span><span id="Frame.SubframeCreatedEvent-95"><a href="#Frame.SubframeCreatedEvent-95"><span class="linenos">95</span></a>
-</span><span id="Frame.SubframeCreatedEvent-96"><a href="#Frame.SubframeCreatedEvent-96"><span class="linenos">96</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubframeCreatedEvent</span><span class="p">:</span>
+</span><span id="Frame.SubframeCreatedEvent-96"><a href="#Frame.SubframeCreatedEvent-96"><span class="linenos">96</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeCreatedEvent</span><span class="p">:</span>
 </span><span id="Frame.SubframeCreatedEvent-97"><a href="#Frame.SubframeCreatedEvent-97"><span class="linenos">97</span></a>
-</span><span id="Frame.SubframeCreatedEvent-98"><a href="#Frame.SubframeCreatedEvent-98"><span class="linenos">98</span></a>            <span class="k">return</span> <span class="n">SubframeCreatedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
+</span><span id="Frame.SubframeCreatedEvent-98"><a href="#Frame.SubframeCreatedEvent-98"><span class="linenos">98</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeCreatedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -3610,15 +3610,15 @@ data for the event.</p>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">copy</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="s1">'SubframeCreatedEvent'</span>:</span></span>
+        <span class="name">copy</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="n"><a href="#Frame.SubframeCreatedEvent">Frame.SubframeCreatedEvent</a></span>:</span></span>
 
                 <label class="view-source-button" for="Frame.SubframeCreatedEvent.copy-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#Frame.SubframeCreatedEvent.copy"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.SubframeCreatedEvent.copy-96"><a href="#Frame.SubframeCreatedEvent.copy-96"><span class="linenos">96</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubframeCreatedEvent</span><span class="p">:</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.SubframeCreatedEvent.copy-96"><a href="#Frame.SubframeCreatedEvent.copy-96"><span class="linenos">96</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeCreatedEvent</span><span class="p">:</span>
 </span><span id="Frame.SubframeCreatedEvent.copy-97"><a href="#Frame.SubframeCreatedEvent.copy-97"><span class="linenos">97</span></a>
-</span><span id="Frame.SubframeCreatedEvent.copy-98"><a href="#Frame.SubframeCreatedEvent.copy-98"><span class="linenos">98</span></a>            <span class="k">return</span> <span class="n">SubframeCreatedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
+</span><span id="Frame.SubframeCreatedEvent.copy-98"><a href="#Frame.SubframeCreatedEvent.copy-98"><span class="linenos">98</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeCreatedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">created_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -3658,9 +3658,9 @@ Self.data will be passed by reference.</p>
 </span><span id="Frame.SubframeDeletedEvent-105"><a href="#Frame.SubframeDeletedEvent-105"><span class="linenos">105</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">:</span> <span class="n">Frame</span> <span class="o">=</span> <span class="n">deleted_subframe</span>
 </span><span id="Frame.SubframeDeletedEvent-106"><a href="#Frame.SubframeDeletedEvent-106"><span class="linenos">106</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">n_subframes_active</span> <span class="c1">#number of subframes after deletion</span>
 </span><span id="Frame.SubframeDeletedEvent-107"><a href="#Frame.SubframeDeletedEvent-107"><span class="linenos">107</span></a>
-</span><span id="Frame.SubframeDeletedEvent-108"><a href="#Frame.SubframeDeletedEvent-108"><span class="linenos">108</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubframeDeletedEvent</span><span class="p">:</span>
+</span><span id="Frame.SubframeDeletedEvent-108"><a href="#Frame.SubframeDeletedEvent-108"><span class="linenos">108</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeDeletedEvent</span><span class="p">:</span>
 </span><span id="Frame.SubframeDeletedEvent-109"><a href="#Frame.SubframeDeletedEvent-109"><span class="linenos">109</span></a>
-</span><span id="Frame.SubframeDeletedEvent-110"><a href="#Frame.SubframeDeletedEvent-110"><span class="linenos">110</span></a>            <span class="k">return</span> <span class="n">SubframDeletedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
+</span><span id="Frame.SubframeDeletedEvent-110"><a href="#Frame.SubframeDeletedEvent-110"><span class="linenos">110</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframDeletedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -3717,15 +3717,15 @@ data for the event.</p>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">copy</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="s1">'SubframeDeletedEvent'</span>:</span></span>
+        <span class="name">copy</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">) -> <span class="n"><a href="#Frame.SubframeDeletedEvent">Frame.SubframeDeletedEvent</a></span>:</span></span>
 
                 <label class="view-source-button" for="Frame.SubframeDeletedEvent.copy-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#Frame.SubframeDeletedEvent.copy"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.SubframeDeletedEvent.copy-108"><a href="#Frame.SubframeDeletedEvent.copy-108"><span class="linenos">108</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubframeDeletedEvent</span><span class="p">:</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.SubframeDeletedEvent.copy-108"><a href="#Frame.SubframeDeletedEvent.copy-108"><span class="linenos">108</span></a>        <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframeDeletedEvent</span><span class="p">:</span>
 </span><span id="Frame.SubframeDeletedEvent.copy-109"><a href="#Frame.SubframeDeletedEvent.copy-109"><span class="linenos">109</span></a>
-</span><span id="Frame.SubframeDeletedEvent.copy-110"><a href="#Frame.SubframeDeletedEvent.copy-110"><span class="linenos">110</span></a>            <span class="k">return</span> <span class="n">SubframDeletedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
+</span><span id="Frame.SubframeDeletedEvent.copy-110"><a href="#Frame.SubframeDeletedEvent.copy-110"><span class="linenos">110</span></a>            <span class="k">return</span> <span class="n">Frame</span><span class="o">.</span><span class="n">SubframDeletedEvent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deleted_subframe</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subframes_active</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -3865,7 +3865,7 @@ regardless of the return value</p>
                             <div id="Frame.EventCallback.EXIT" class="classattr">
                                 <div class="attr variable">
             <span class="name">EXIT</span>        =
-<span class="default_value">-6349682646770498811</span>
+<span class="default_value">2893355469157739108</span>
 
         
     </div>
@@ -3877,7 +3877,7 @@ regardless of the return value</p>
                             <div id="Frame.EventCallback.FAILURE" class="classattr">
                                 <div class="attr variable">
             <span class="name">FAILURE</span>        =
-<span class="default_value">-1743781941125598223</span>
+<span class="default_value">150055796494645151</span>
 
         
     </div>
@@ -3889,7 +3889,7 @@ regardless of the return value</p>
                             <div id="Frame.EventCallback.SUCCESS" class="classattr">
                                 <div class="attr variable">
             <span class="name">SUCCESS</span>        =
-<span class="default_value">8518676301815977495</span>
+<span class="default_value">-4168561568872088023</span>
 
         
     </div>

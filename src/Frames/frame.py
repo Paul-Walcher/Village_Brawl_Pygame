@@ -80,9 +80,9 @@ class Frame(EventQueueManager):
             self.focus_lost_frame: Frame = focus_lost_frame
             self.focus_gained_frame: Frame = focus_gained_frame
 
-        def copy(self) -> FocusChangedEvent:
+        def copy(self) -> Frame.FocusChangedEvent:
 
-            return FocusChangedEvent(self.focus_lost_frame, self.focus_gained_frame)
+            return Frame.FocusChangedEvent(self.focus_lost_frame, self.focus_gained_frame)
 
     class SubframeCreatedEvent(Event):
 
@@ -92,9 +92,9 @@ class Frame(EventQueueManager):
             self.created_subframe: Frame = created_subframe
             self.n_subframes_active: int = n_subframes_active #number of subframes active after the subframe was created
 
-        def copy(self) -> SubframeCreatedEvent:
+        def copy(self) -> Frame.SubframeCreatedEvent:
 
-            return SubframeCreatedEvent(self.created_subframe, self.n_subframes_active)
+            return Frame.SubframeCreatedEvent(self.created_subframe, self.n_subframes_active)
 
     class SubframeDeletedEvent(Event):
 
@@ -104,9 +104,9 @@ class Frame(EventQueueManager):
             self.deleted_subframe: Frame = deleted_subframe
             self.n_subframes_active: int = n_subframes_active #number of subframes after deletion
 
-        def copy(self) -> SubframeDeletedEvent:
+        def copy(self) -> Frame.SubframeDeletedEvent:
 
-            return SubframDeletedEvent(self.deleted_subframe, self.n_subframes_active)
+            return Frame.SubframDeletedEvent(self.deleted_subframe, self.n_subframes_active)
 
 
 
