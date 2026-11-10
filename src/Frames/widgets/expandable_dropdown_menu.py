@@ -329,6 +329,8 @@ class ExpandableDropdownMenu(DropdownMenu):
         elif self.deferred_dropdown_menu is not None and self.state == ExpandableDropdownMenu.FOCUS_DEFERRED:
             self.deferred_dropdown_menu.move_right()
 
+        self.raise_prerender_flag()
+
     def move_left(self) -> None:
         """
         Moves back and relinquishes the focus if a deferred menu is present.
@@ -345,6 +347,8 @@ class ExpandableDropdownMenu(DropdownMenu):
             else:
                 #unfocus after going too far left
                 self.unselect_options()
+
+        self.raise_prerender_flag()
 
     @override
     def unselect_options(self) -> None:
@@ -364,7 +368,7 @@ class ExpandableDropdownMenu(DropdownMenu):
                                                                         )
                         )
 
-        self.prerender()
+        self.raise_prerender_flag()
 
     def select_option_expanded(self, option_trace: option_trace_t) -> None:
         """
@@ -382,7 +386,8 @@ class ExpandableDropdownMenu(DropdownMenu):
             self.deferred_dropdown_menu.select_option_expanded(option_trace[1:])
 
         self.state = state
-        self.prerender()
+
+        self.raise_prerender_flag()
 
     def get_option_trace(self) -> option_trace_t:
         """
@@ -443,15 +448,25 @@ class ExpandableDropdownMenu(DropdownMenu):
         if self.deferred_dropdown_menu is not None:
             self.deferred_dropdown_menu.prerender()
 
-
     @override
     def render(self, screen):
         """
         Renders recursively.
         """
+        screen.blit(self.surface, (self.x, self.y))
+
         if self.deferred_dropdown_menu is not None:
             self.deferred_dropdown_menu.render(screen)
-        screen.blit(self.surface, (self.x, self.y))
+
+    @override
+    def render_at(self, screen, x, y):
+        """
+        Renders recursively.
+        """
+        screen.blit(self.surface, (x, y))
+
+        if self.deferred_dropdown_menu is not None:
+            self.deferred_dropdown_menu.render_at(screen, self.width+x, y)
 
     def options_key_from_index(self, index: int) -> DropDownKey:
         """
@@ -490,10 +505,11 @@ class ExpandableDropdownMenu(DropdownMenu):
 
             self.moves_buffered = 0
 
-            self.prerender()
+            self.raise_prerender_flag()
 
         if self.state == DropdownMenu.SELECT_ANIMATION_PLAYING:
             self.render_select_animation()
+            self.raise_prerender_flag()
 
         #checking events
         if self.deferred_dropdown_menu is not None:
@@ -514,3 +530,7 @@ class ExpandableDropdownMenu(DropdownMenu):
                     event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.highlighted_options[self.selected_index]))
 
                     self.push_event(event)
+
+        if self.prerender_flag_raised():
+            self.prerender()
+            self.reset_prerender_flag()

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Callable
+from typing import Any, Callable, override
 
 import pygame
 
@@ -171,6 +171,7 @@ class Label(Frame):
 
         self.rerender()
 
+    @override
     def rerender(self) -> None:
         """
         Rerendering.
@@ -244,6 +245,16 @@ class Label(Frame):
         #prerendering
         self.prerender()
 
+    def blit_on_surface(self):
+        """
+        Blits the correct surface at the correct position.
+        """
+        if self.selected():
+            self.surface.blit(self.label_selected_surface, (0, 0))
+        else:
+            self.surface.blit(self.label_not_selected_surface, (0, 0))
+
+    @override
     def prerender(self) -> None:
         """
         Rendering without recalculating every position.
@@ -265,13 +276,16 @@ class Label(Frame):
             for surface, position in self.selected_label_page_rendered:
                 self.label_selected_surface.blit(surface, position)
 
+        self.surface.fill(Colors.TRANSPARENT)
+        self.blit_on_surface()
+
     def select(self) -> None:
         """
         Makes this labels state selected if it was not before.
         """
         if self.state == Label.NOT_SELECTED:
             self.state = Label.SELECTED
-            self.prerender()
+            self.raise_prerender_flag()
 
     def unselect(self) -> None:
         """
@@ -280,7 +294,7 @@ class Label(Frame):
         """
         if self.state == Label.SELECTED:
             self.state = Label.NOT_SELECTED
-            self.prerender()
+            self.raise_prerender_flag()
 
     def selected(self) -> bool:
         """
@@ -293,11 +307,9 @@ class Label(Frame):
         """
         Does nothing.
         """
+
+        if self.prerender_flag_raised():
+            self.prerender()
+            self.reset_prerender_flag()
+
         return self
-
-    def render(self, screen) -> None:
-
-        if self.selected():
-            screen.blit(self.label_selected_surface, (self.x, self.y))
-        else:
-            screen.blit(self.label_not_selected_surface, (self.x, self.y))

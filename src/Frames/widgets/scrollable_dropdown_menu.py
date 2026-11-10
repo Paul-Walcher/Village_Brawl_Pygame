@@ -363,7 +363,8 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                             selected_option_strings=[None]
                                                                         )
                         )
-        self.prerender()
+
+        self.raise_prerender_flag()
 
 
     @override
@@ -384,7 +385,6 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         self._scroll_index = 0
         self.dropdown_options = self.get_options_n_showed()
         #getting the arrow_frames if necessary
-
         #rerendering the dropdown, calling the dropdown menu, since we need ScrollableDropdownMenus as deferred menus.
         DropdownMenu.rerender(self)
         #adding the other dropdown menus
@@ -470,7 +470,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             self.bottom_arrow_surface = pygame.Surface((bottomframe.width, bottomframe.height), pygame.SRCALPHA)
 
             self.rerender_arrow_text()
-            self.prerender()
+            self.raise_prerender_flag()
 
     def rerender_arrow_text(self) -> None:
         """
@@ -498,6 +498,8 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                                     centered=True,
                                                                                     vertical_centered=True
                                                                                 )
+        self.raise_prerender_flag()
+
     @override
     def prerender(self):
         """
@@ -520,11 +522,32 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
     @override
     def render(self, screen):
+        """
+        Render override
+        """
+        if self.deferred_dropdown_menu is not None:
+            self.deferred_dropdown_menu.render(screen)
 
-        ExpandableDropdownMenu.render(self, screen)
+        screen.blit(self.surface, (self.x, self.y))
+
         if self.arrows_shown:
             screen.blit(self.top_arrow_surface, self.top_arrow_surface_pos)
             screen.blit(self.bottom_arrow_surface, self.bottom_arrow_surface_pos)
+
+    @override
+    def render_at(self, screen, x, y):
+        """
+        Render override
+        """
+        if self.deferred_dropdown_menu is not None:
+            self.deferred_dropdown_menu.render_at(screen, x + self.width, y)
+
+        screen.blit(self.surface, (x, y + self.top_arrow_surface.height))
+
+        if self.arrows_shown:
+            screen.blit(self.top_arrow_surface, (x, y))
+            screen.blit(self.bottom_arrow_surface, (x, y + self.top_arrow_surface.height + self.height))
+
 
     def select_option_expanded(self, option_trace: scrollable_option_trace_t) -> None:
         """
@@ -545,7 +568,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             self.deferred_dropdown_menu.select_option_expanded(option_trace[1:])
 
         self.state = state
-        self.prerender()
+        self.raise_prerender_flag()
 
     @override
     def get_option_trace(self) -> scrollable_option_trace_t:
@@ -608,8 +631,6 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         if self.deferred_dropdown_menu is not None:
             self.deferred_dropdown_menu.tick()
 
-
-
         if self.state in self.move_states:
 
             #saving the previously selected index.
@@ -648,16 +669,19 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             #resetting moves buffered
             self.moves_buffered = 0
 
-            self.prerender()
+            self.raise_prerender_flag()
 
         elif self.state == DropdownMenu.SELECT_ANIMATION_PLAYING:
             self.render_select_animation()
+            self.raise_prerender_flag()
 
         elif self.state == ScrollableDropdownMenu.SCROLLING_UP:
             self.scroll_up()
+            self.raise_prerender_flag()
 
         elif self.state == ScrollableDropdownMenu.SCROLLING_DOWN:
             self.scroll_down()
+            self.raise_prerender_flag()
 
         #checking events
         if self.deferred_dropdown_menu is not None:
@@ -681,7 +705,9 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
                     self.push_event(event)
 
-
+        if self.prerender_flag_raised():
+            self.prerender()
+            self.reset_prerender_flag()
 
 
     def initialize_scrolling_up(self) -> None:
@@ -779,7 +805,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     rta.append(rt)
                 self.rendered_highlighted_texts[i] = rta
 
-            self.prerender()
+        self.raise_prerender_flag()
 
     def finalize_scrolling_up(self) -> None:
         """
@@ -811,7 +837,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                                 )
                         )
 
-        self.prerender()
+        self.raise_prerender_flag()
 
     def initialize_scrolling_down(self) -> None:
         """
@@ -899,7 +925,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     rta.append(rt)
                 self.rendered_highlighted_texts[i] = rta
 
-            self.prerender()
+        self.raise_prerender_flag()
 
 
     def finalize_scrolling_down(self) -> None:
@@ -931,7 +957,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                                 )
                         )
 
-        self.prerender()
+        self.raise_prerender_flag()
 
     @override
     def select(self) -> None:
@@ -969,4 +995,4 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                                 selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
                                                                             )
                         )
-        self.prerender()
+        self.raise_prerender_flag()

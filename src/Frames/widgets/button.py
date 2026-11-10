@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Callable
+from typing import Any, Callable, override
 
 import pygame
 
@@ -132,6 +132,33 @@ class Button(Label):
 
         self.rerender()
 
+    @override
+    def blit_on_surface(self):
+        """
+        Override
+        """
+        if self.selected():
+            #surface offset
+            x_off, y_off = (self.width - self.label_selected_surface.get_width()) // 2, (self.height - self.label_selected_surface.get_height()) // 2
+            self.surface.blit(self.label_selected_surface, (x_off, y_off))
+        else:
+            x_off, y_off = (self.width - self.label_not_selected_surface.get_width()) // 2, (self.height - self.label_not_selected_surface.get_height()) // 2
+            self.surface.blit(self.label_not_selected_surface, (x_off, y_off))
+
+    @override
+    def prerender(self):
+        """
+        Override prerender.
+        """
+
+        if self.press_animation_playing():
+
+            self.surface.fill(Colors.TRANSPARENT)
+            self.blit_on_surface()
+
+        else:
+
+            Label.prerender(self)
 
     def press_animation_playing(self) -> bool:
         """
@@ -139,6 +166,7 @@ class Button(Label):
         """
         return (self.state == Button.PRESSED_ANIMATION_PLAYING)
 
+    @override
     def selected(self) -> bool:
         """
         Returns whether the button is selected.
@@ -165,7 +193,7 @@ class Button(Label):
         #setting state
         self.state = Button.PRESSED_ANIMATION_PLAYING
         #prerendering
-        self.prerender()
+        self.raise_prerender_flag()
         #copying the current surface
         self.button_selected_surface_copy = self.label_selected_surface.copy()
         #starting the timer
@@ -201,6 +229,7 @@ class Button(Label):
                                                                         scale=new_size_p,
                                                                         scale_function=pygame.transform.smoothscale
                                                                         )
+        self.raise_prerender_flag()
 
     def finalize_pressed_animation(self) -> None:
         """
@@ -219,9 +248,9 @@ class Button(Label):
 
         self.label_selected_surface = self.button_selected_surface_copy
         self.label_selected_surface_copy = None
-        self.prerender()
+        self.raise_prerender_flag()
 
-
+    @override
     def tick(self) -> Frame:
         """
         Renders the animation if it is playing.
@@ -234,15 +263,10 @@ class Button(Label):
 
         if self.state == Button.PRESSED_ANIMATION_PLAYING:
             self.render_pressed_animation()
+            self.raise_prerender_flag()
+
+        if self.prerender_flag_raised():
+            self.prerender()
+            self.reset_prerender_flag()
 
         return self
-
-    def render(self, screen) -> None:
-
-        if self.selected():
-            #surface offset
-            x_off, y_off = (self.width - self.label_selected_surface.get_width()) // 2, (self.height - self.label_selected_surface.get_height()) // 2
-            screen.blit(self.label_selected_surface, (self.x + x_off, self.y + y_off))
-        else:
-            x_off, y_off = (self.width - self.label_not_selected_surface.get_width()) // 2, (self.height - self.label_not_selected_surface.get_height()) // 2
-            screen.blit(self.label_not_selected_surface, (self.x + x_off, self.y + y_off))

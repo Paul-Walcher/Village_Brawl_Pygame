@@ -3,7 +3,10 @@ from typing import Type, Any, Callable, override
 
 import pygame
 
+from abc import ABC, abstractmethod
+
 from clock import Clock
+from constants import Colors
 from enum import Enum, auto
 from event_queue_manager import Event
 
@@ -42,7 +45,6 @@ class Animation(Frame):
         @override
         def copy(self) -> Animation.AnimationStartedEvent:
             return Animation.AnimationStartedEvent(animation_ref=self.animation_ref)
-
 
     class AnimationRestartedEvent(Event):
         """
@@ -99,10 +101,8 @@ class Animation(Frame):
     def __init__(
                     self,
                     frame_dim: pygame.Rect,
-                    surfaces: list[pygame.Surface], #the list of surfaces.
                     surface_blit_durations: list[float] = None, #list of durations each surface will be shown.
-                    parent_frame: Frame = None,
-                    scale_function: Callable[[pygame.Surface, tuple[int, int]], pygame.Surface] = pygame.transform.smoothscale
+                    parent_frame: Frame = None
                     ):
 
         Frame.__init__(
@@ -114,10 +114,9 @@ class Animation(Frame):
                         focus_group=None
                         )
 
-        #storing the surfaces and surface blit durations
-        self.surfaces: list[pygame.Surface] = surfaces
+        self._current_surface: pygame.Surface = None
         """
-        The given surfaces.
+        The current surface.
         """
         self.surface_blit_durations: list[float] = surface_blit_durations
         """
@@ -127,10 +126,6 @@ class Animation(Frame):
         self.surface_blit_durations_accumulated: list[float] = None
         """
         The surface blit durations accumulated, for the clock.
-        """
-        self.scale_function: Callable[[pygame.Surface, tuple[int, int]], pygame.Surface] = scale_function
-        """
-        Function to scale up the surfaces self.frame_dim.
         """
         self.surface_index: int = 0
         """
@@ -171,12 +166,32 @@ class Animation(Frame):
 
         self._check_surface_blit_durations()
 
+    @property
+    def current_surface(self):
+        return self._current_surface
+
+    @current_surface.setter
+    def current_surface(self, new_surf: pygame.Surface):
+        """
+        prerenders after setting.
+        """
+        self._current_surface = new_surf
+        self.prerender()
+
     def _check_surface_blit_durations(self) -> None:
         """
         Checks if the surface blit durations are appropriate.
         """
         if len(self.surfaces) != len(self.surface_blit_durations):
             raise RuntimeError("The surfaces have to be the same length as the surface_blit_durations!")
+
+    @abstractmethod
+    def get_surface_by_index(self, index: int) -> pygame.Surface:
+        """
+        This function should return the surface associated with the given index.
+        Indices will be in range [0, len(self.surface_blit_durations)-1].
+        """
+        pass
 
     def _initialize_animation(
                                 self,
@@ -199,20 +214,16 @@ class Animation(Frame):
             self.surface_blit_durations = new_surface_blit_durations
             self._check_surface_blit_durations()
 
+        self.surface_index %= len(self.surface_blit_durations)
+        self.shift %= len(self.surface_blit_durations)
+
         #calculating the accumulated blit durations
-        self.surface_blit_durations_accumulated = [self.surface_blit_durations[shift]]
-        for i in range(shift+1, len(self.surface_blit_durations) + shift):
+        self.surface_blit_durations_accumulated = [self.surface_blit_durations[self.surface_index]]
+        for i in range(self.surface_index+1, len(self.surface_blit_durations) + self.surface_index):
             self.surface_blit_durations_accumulated.append(self.surface_blit_durations_accumulated[(i-1) % len(self.surface_blit_durations)]\
                                                             + self.surface_blit_durations[i % len(self.surface_blit_durations)])
-        #now scaling the surfaces
-        for i in range(len(self.surfaces)):
 
-            surf: pygame.Surface = self.surfaces[i]
-
-            if (surf.get_width() != self.width or surf.get_height() != self.height):
-                surf = self.scale_function(surf, (self.width, self.height))
-                self.surfaces[i] = surf
-
+        self.current_surface = self.get_surface_by_index(self.surface_index)
         self.animation_finished = False
 
 
@@ -301,17 +312,12 @@ class Animation(Frame):
         """
         return self.surface_blit_durations.copy()
 
-    def get_surface_copies(self) -> list[pygame.Surface]:
+    def get_surfaces(self) -> list[pygame.Surface]:
         """
         Returns a list of surface copies.
         """
-        return [surf.copy() for surf in self.surfaces]
+        return [self.get_surface_by_index(i) for i in range(len(self.surface_blit_durations))]
 
-    def get_surfaces(self) -> list[pygame.Surface]:
-        """
-        Returns a reference to the surface list for this animation.
-        """
-        return self.surfaces
 
     @override
     def tick(self) -> None:
@@ -329,6 +335,7 @@ class Animation(Frame):
                 #next surface is the target
                 self.surface_index += 1
                 self.surface_index %= len(self.surfaces)
+                self.current_surface = self.get_surface_by_index(self.surface_index)
 
                 if self.surface_index == self.shift:
                     #new animation, or stopping
@@ -345,8 +352,9 @@ class Animation(Frame):
                         self.push_event(Animation.AnimationEndedEvent(self))
 
     @override
-    def render(self, screen: pygame.Surface) -> None:
+    def prerender(self) -> None:
         """
         Rendering.
         """
-        screen.blit(self.surfaces[self.surface_index], (self.x, self.y))
+        self.surface.fill(Colors.TRANSPARENT)
+        self.surface.blit(self.current_surface, (0, 0))

@@ -92,7 +92,7 @@ class DropdownMenu(Frame):
         if options is None or len(options) == 0:
             raise RuntimeError("No options provided")
 
-        super().__init__(
+        Frame.__init__(     self,
                             frame_enum=FrameEnums.DROPDOWN_MENU_WIDGET,
                             data=None,
                             frame_dim=frame_dim,
@@ -321,8 +321,9 @@ class DropdownMenu(Frame):
             cy += self.full_box_height
 
         #prerendering onto self.surface
-        self.prerender()
+        self.raise_prerender_flag()
 
+    @override
     def prerender(self) -> None:
         #filling the surface
         self.surface.fill(self.background_color)
@@ -355,6 +356,7 @@ class DropdownMenu(Frame):
         if self.state == DropdownMenu.NOTHING_SELECTED:
             self.selected_index = 0
             self.state = DropdownMenu.OPTION_SELECTED
+            self.raise_prerender_flag()
             return
 
         if self.state in self.move_states:
@@ -368,6 +370,7 @@ class DropdownMenu(Frame):
         if self.state == DropdownMenu.NOTHING_SELECTED:
             self.selected_index = 0
             self.state = DropdownMenu.OPTION_SELECTED
+            self.raise_prerender_flag()
             return
 
         if self.state in self.move_states:
@@ -396,7 +399,7 @@ class DropdownMenu(Frame):
 
         self.push_event(DropdownMenu.NewOptionHighlightedEvent(DropdownMenu.NOTHING_SELECTED_INDEX, None))
 
-        self.prerender()
+        self.raise_prerender_flag()
 
     def select_option(self, index: int) -> None:
 
@@ -407,7 +410,8 @@ class DropdownMenu(Frame):
         self.selected_index = index
         self.moves_buffered = 0
         self.state = DropdownMenu.OPTION_SELECTED
-        self.prerender()
+
+        self.raise_prerender_flag()
 
     def render_select_animation(self) -> None:
         """
@@ -484,7 +488,7 @@ class DropdownMenu(Frame):
 
 
 
-        self.prerender()
+        self.raise_prerender_flag()
 
     def finalize_select_animation(self) -> None:
         """
@@ -501,12 +505,7 @@ class DropdownMenu(Frame):
         self.rendered_highlighted_texts[self.selected_index] = self.rtext_copy
         self.state = DropdownMenu.OPTION_SELECTED
 
-        self.prerender()
-
-    @override
-    def render(self, screen: pygame.Surface) -> None:
-        #renders onto the screen
-        screen.blit(self.surface, (self.x, self.y))
+        self.raise_prerender_flag()
 
     @override
     def tick(self):
@@ -522,8 +521,13 @@ class DropdownMenu(Frame):
                                                                             graphics.colored_page_to_str(self.highlighted_options[self.selected_index])
                                                                             )
                                 )
+                self.raise_prerender_flag()
+
             self.moves_buffered = 0
-            self.prerender()
 
         if self.state == DropdownMenu.SELECT_ANIMATION_PLAYING:
             self.render_select_animation()
+
+        if self.prerender_flag_raised():
+            self.prerender()
+            self.reset_prerender_flag()
