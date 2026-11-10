@@ -16,7 +16,9 @@ from constants import (
     Fonts,
     Fontsizes,
     KeyAlternatives,
-    R_ID
+    R_ID,
+    color_t,
+    point_t
 )
 from enum import Enum, auto
 import graphics
@@ -31,11 +33,22 @@ class Slider(Frame):
 
     NO_SIZE_DECREASE = -1
 
-    class EventTypes:
+    #states
 
-        SELECT_ANIMATION_ENDED = R_ID()
-        FLIPPING_ANIMATION_ENDED = R_ID()
-        SLIDING_ANIMATION_ENDED = R_ID()
+    SLIDING_LEFT = R_ID()
+    SLIDING_RIGHT = R_ID()
+    NOT_SLIDING = R_ID()
+    SELECT_ANIMATION_PLAYING = R_ID()
+    FLIPPING_ANIMATION_PLAYING = R_ID()
+    FLIPPING_ALL_ANIMATION_PLAYING = R_ID()
+
+    MIN_SCALE = 0.001
+
+    class EventTypes(Enum):
+
+        SELECT_ANIMATION_ENDED = auto()
+        FLIPPING_ANIMATION_ENDED = auto()
+        SLIDING_ANIMATION_ENDED = auto()
 
     class SelectAnimationEndedEvent(Event):
 
@@ -87,54 +100,107 @@ class Slider(Frame):
         def copy(self) -> Slider.SlidingAnimationEndedEvent:
             return Slider.SlidingAnimationEndedEvent(self.selected_index)
 
-
-    SLIDING_LEFT = R_ID()
-    SLIDING_RIGHT = R_ID()
-    NOT_SLIDING = R_ID()
-    SELECT_ANIMATION_PLAYING = R_ID()
-    FLIPPING_ANIMATION_PLAYING = R_ID()
-    FLIPPING_ALL_ANIMATION_PLAYING = R_ID()
-
-    MIN_SCALE = 0.001
-
     def __init__(
-        self,
-        frame_dim,
-        sliding_duration=500,  # ms
-        select_animation_duration=400,#ms
-        alphas=None,
-        span=1,
-        background_color=Colors.TRANSPARENT,
-        size_decrease_scale=0.5,
-        horizontal=True,
-        start_index=0,
-        cutoff=False,
-        max_slides=2,
-        flip_duration=400,#ms
-        slide_input_delay=250#ms
-    ):
+                    self,
+                    frame_dim: pygame.Rect,
+                    sliding_duration: float = 500,  # ms
+                    select_animation_duration: float = 400,#ms
+                    alphas: list[int] = None,
+                    span:int = 1,
+                    background_color: color_t = Colors.TRANSPARENT,
+                    size_decrease_scale: float = 0.5,
+                    horizontal: bool= True,
+                    start_index: int = 0,
+                    cutoff: bool = False,
+                    max_slides: int = 2,
+                    flip_duration: float = 400,#ms
+                    slide_input_delay: float = 250#ms
+                ):
 
-        super().__init__(FrameEnums.SLIDER_WIDGET, None, frame_dim, focus_group=None)
+        Frame.__init__(
+                        self,
+                        frame_enum=FrameEnums.SLIDER_WIDGET,
+                        data=None,
+                        frame_dim=frame_dim,
+                        focus_group=None
+                        )
 
-        self.surfaces = []
-        self.selected_surfaces = []
-        self.back_surfaces = []
-        self.selected_back_surfaces = []
-        self.flip_duration = flip_duration
-        self.flipping_animation_queued = False
-        self.flipping_all_animation_queued = False
-        self.surface_index = start_index
-        self.cutoff = cutoff
-        self.max_slides = max_slides
-
-        self.sliding_duration = sliding_duration
-        self.select_animation_duration = select_animation_duration
-        self.span = span
-
-        self.alphas = alphas
-        self.select_animation_queued = False
+        self.surfaces: list[pygame.Surface] = []
+        """
+        List of the surfaces that are rendered in a non-selected state.
+        These surfaces should be provided by subclasses, using
+        self.create_surfaces.
+        """
+        self.selected_surfaces: list[pygame.Surface] = []
+        """
+        List of the surfaces that are rendered in a selected state.
+        These surfaces should be provided by subclasses, using
+        self.create_surfaces.
+        """
+        self.back_surfaces: list[pygame.Surface] = []
+        """
+        List of the surfaces that are rendered in a non-selected state,
+        after flipping the corresponding surface.
+        These surfaces should be provided by subclasses, using
+        self.create_back_surfaces.
+        """
+        self.selected_back_surfaces: list[pygame.Surface] = []
+        """
+        List of the surfaces that are rendered in a selected state,
+        after flipping the corresponding surface.
+        These surfaces should be provided by subclasses, using
+        self.create_back_surfaces.
+        """
+        self.flip_duration: float = flip_duration
+        """
+        The duration of the flip animation.
+        """
+        self.flipping_animation_queued: bool = False
+        """
+        If this is true, the flip animation will be started inside self.tick()
+        """
+        self.flipping_all_animation_queued: bool = False
+        """
+        If this is true, the flip-all animation will be started inside self.tick()
+        """
+        self.surface_index: int = start_index
+        """
+        The index thats specifies which surface has the focus when initializing
+        the slider.
+        """
+        self.cutoff: bool = cutoff
+        """
+        If this is true, the slider wont loop around when the end
+        of the surfaces is reached.
+        """
+        self.max_slides: int = max_slides
+        """
+        Specifies how many slides can be queued at once.
+        """
+        self.sliding_duration: float = sliding_duration
+        """
+        The duration of the sliding animation.
+        """
+        self.select_animation_duration: float = select_animation_duration
+        """
+        The duration of the select animation.
+        """
+        self.span: int = span
+        """
+        Defines how many images are shown at each side as previews.
+        In summary, 1 + 2 * self.span images will be shown.
+        """
+        self.alphas: list[int] = alphas
+        """
+        Alpha values that are applied to shown surfaces in the slider.
+        """
+        self.select_animation_queued: bool = False
+        """
+        If this is true, a select animation will be started in self.tick()
+        """
 
         if self.alphas is None:
+
             self.alphas = [255]
             aval = 255
 
@@ -169,33 +235,60 @@ class Slider(Frame):
                 self.scale_mults.insert(0, last_scale)
                 self.scale_mults.append(last_scale)
 
-        # Base scale factor for the currently rendered images to prevent distorted rendering
-        self.scale_factors = []
+        self.scale_factors: list[float] = []
+        """
+        Scale factors, to prevent distorted rendering of the surfaces.
+        """
+        self.background_color: color_t = background_color
+        """
+        Background color of the slider.
+        """
+        self.size_decrease_scale: float = size_decrease_scale
+        """
+        Defines the size decrease each preview surface receives.
+        """
+        self.horizontal: bool = horizontal
+        """
+        If this is false, a vertical slider will be shown
+        """
+        self.slides: int = 0
+        """
+        Stores the queued slides.
 
-        self.background_color = background_color
-        self.size_decrease_scale = size_decrease_scale
-        self.horizontal = horizontal
-
-        # -1 = left
-        # +1 = right
-        self.slides = 0
-        self.extra_surface = None
-        self.state = Slider.NOT_SLIDING
-
-        #extra variables
-
-        #surfaces that are already rendered
-        self.rendered_surfaces = []
-        #frames containing the shown surfaces
-        self.rects = []
-        #factors for the surfaces, so that they dont get distorted
-        self.scale_factors = []
-        #indices referencing self.surfaces
-        self.indices = []
-        #indices without modulo. invalid indices included
-        self.original_indices = []
-
-        self.fixed_image_positions = None
+        -1 -> left
+        +1 -> right
+        """
+        self.extra_surface: pygame.Surface = None
+        """
+        The additional surface that will be shown while the sliding
+        animation is active.
+        """
+        self.state: int = Slider.NOT_SLIDING
+        """
+        The current state of the Slider.
+        """
+        self.rendered_surfaces: list[pygame.Surface] = []
+        """
+        The actually rendered surfaces.
+        """
+        self.rects: pygame.Rect = []
+        """
+        Frames containing the shown surfaces
+        """
+        self.indices: list[int] = []
+        """
+        indices referencing self.surfaces.
+        indices[i] specifies which surface will shown at position i.
+        """
+        self.original_indices: list[int] = []
+        """
+        indices without modulo. invalid indices included
+        """
+        self.fixed_image_positions: list[tuple[int, int]] = None
+        """
+        The tuples for the calculation of the frames of the surfaces.
+        (offset, length)
+        """
 
         self.sliding_clock = Clock()
         self.select_animation_clock = Clock()
@@ -211,10 +304,16 @@ class Slider(Frame):
     # General
     # =============================================================
 
-    def get_selected_index(self):
+    def get_selected_index(self) -> int:
+        """
+        Returns the currently selected index of the surface that
+        is the focused at the center.
+
+        This takes into account the remaining amount of slides.
+        """
         return self.surface_index - self.slides
 
-    def set_background_color(self, color):
+    def set_background_color(self, color: color_t):
 
         self.background_color = color
         self.prerender()
