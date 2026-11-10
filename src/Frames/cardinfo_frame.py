@@ -4,7 +4,8 @@ from typing import Type, Callable, Any, override
 import pygame
 
 import graphics
-from constants import Colors, Alpha, Fonts, Fontsizes, KeyAlternatives, point_t, R_ID, as_point, color_t
+import calculations
+from constants import Colors, Alpha, Fonts, Fontsizes, KeyAlternatives, point_t, R_ID, as_point, color_t, Mouse
 from clock import Clock
 from event_queue_manager import Event
 from enum import Enum, auto
@@ -14,6 +15,8 @@ from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.widgets.textbox import Textbox
 from Frames.widgets.text_input import TextInput
+
+from context_data import ContextData
 
 
 class CardinfoFrame(Frame):
@@ -310,6 +313,108 @@ class CardinfoFrame(Frame):
             cb_kd = self.add_pygame_event_callback(pygame.KEYDOWN, None, False, self.keydown)
             cb_ku = self.add_pygame_event_callback(pygame.KEYUP, None, False, self.keyup)
 
+            if type(self.data) == ContextData:
+                if self.data.mouse_enabled:
+
+                    self.add_pygame_event_callback(etype=pygame.MOUSEMOTION, data=None, putback=False, func=self.mouse_motion)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEWHEEL, data=None, putback=False, func=self.mouse_wheel)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEBUTTONUP, data=None, putback=False, func=self.mouse_button_up)
+
+
+    def mouse_motion(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Focuses on the textbox if hovering.
+        """
+        if self.state in [CardinfoFrame.SLIDING_IN, CardinfoFrame.SLIDING_OUT]:
+            return
+
+        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=event.pos)
+
+        if self.state == CardinfoFrame.NOTHING_FOCUSED:
+
+            if calculations.point_collides(mpos, self.description_textbox.frame_dim):
+
+                self.state = CardinfoFrame.TEXTBOX_FOCUSED
+                self.description_textbox.set_outline_size(self.textbox_outline_size_p)
+
+        elif self.state == CardinfoFrame.TEXTBOX_FOCUSED:
+
+            if not calculations.point_collides(mpos, self.description_textbox.frame_dim):
+
+                self.state = CardinfoFrame.NOTHING_FOCUSED
+                self.description_textbox.set_outline_size(0)
+
+    def mouse_button_down(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        On mouse button down.
+        """
+
+        if self.state in [CardinfoFrame.SLIDING_IN, CardinfoFrame.SLIDING_OUT]:
+            return
+
+        left_tbox: pygame.Rect = None
+        right_tbox: pygame.Rect = None
+
+        left_tbox, right_tbox = graphics.split_rect_horizontally(rect=self.description_textbox.frame_dim, percentages=[0.5, 0.5])
+
+        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=event.pos)
+
+        if event.button == Mouse.LEFT_BUTTON:
+
+            if calculations.point_collides(mpos, left_tbox):
+
+                self.description_textbox.prev_page()
+                self.raise_prerender_flag()
+
+            elif calculations.point_collides(mpos, right_tbox):
+
+                self.description_textbox.next_page()
+                self.raise_prerender_flag()
+
+        elif event.button == Mouse.WHEEL:
+
+            self.full_image_shown = True
+            self.raise_prerender_flag()
+
+        elif event.button == Mouse.RIGHT_BUTTON:
+
+            if self._next_frame is None:
+                self._next_frame = self.parent_frame
+
+            self.raise_exit_flag()
+
+    def mouse_button_up(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Mouse button up.
+        """
+        if self.state in [CardinfoFrame.SLIDING_IN, CardinfoFrame.SLIDING_OUT]:
+            return
+
+        if event.button == Mouse.WHEEL:
+
+            self.full_image_shown = False
+            self.raise_prerender_flag()
+
+
+    def mouse_wheel(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Can turn pages from anywhere.
+        """
+        if self.state in [CardinfoFrame.SLIDING_IN, CardinfoFrame.SLIDING_OUT]:
+            return
+
+        if event.precise_y < -0.5:
+
+            self.description_textbox.next_page()
+            self.raise_prerender_flag()
+            self.intro_delay_clock.start()
+
+        elif event.precise_y > 0.5:
+
+            self.description_textbox.prev_page()
+            self.raise_prerender_flag()
+            self.intro_delay_clock.start()
 
     def right_pressed(self, event, data):
         """

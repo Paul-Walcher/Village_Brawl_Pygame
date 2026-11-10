@@ -8,9 +8,10 @@ import threading
 
 from Frames.cardinfo_frame import CardinfoFrame
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, Alpha, IIMAGE, STANDARD_BACKSIDES, R_ID,\
-                        EXPLORER_STARTING_ICONS_AND_LABELS, color_t, point_t
+                        EXPLORER_STARTING_ICONS_AND_LABELS, color_t, point_t, as_point, Mouse
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
+import calculations
 from clock import Clock
 from modules import Modules
 import constants
@@ -339,6 +340,150 @@ class ExplorerInfoFrame(CardinfoFrame):
             self.add_pygame_event_callback(pygame.KEYDOWN, None, False, self.keydown)
             self.add_pygame_event_callback(pygame.KEYUP, None, False, self.keyup)
 
+            if type(self.data) == ContextData:
+                if self.data.mouse_enabled:
+
+                    self.add_pygame_event_callback(etype=pygame.MOUSEMOTION, data=None, putback=False, func=self.mouse_motion)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEBUTTONDOWN, data=None, putback=False, func=self.mouse_button_down)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEWHEEL, data=None, putback=False, func=self.mouse_wheel)
+                    self.add_pygame_event_callback(etype=pygame.MOUSEBUTTONUP, data=None, putback=False, func=self.mouse_button_up)
+
+    @override
+    def mouse_motion(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Highlights if hovered.
+        """
+        if self.state in [ExplorerInfoFrame.SLIDING_IN, ExplorerInfoFrame.SLIDING_OUT, ExplorerInfoFrame.MENU_SLIDING]:
+            return
+
+        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=event.pos)
+
+        if self.state not in [ExplorerInfoFrame.SLIDING_IN, ExplorerInfoFrame.SLIDING_OUT, ExplorerInfoFrame.MENU_SLIDING]:
+
+            if self.state != ExplorerInfoFrame.TEXTBOX_FOCUSED and calculations.point_collides(mpos, self.description_textbox.frame_dim):
+
+                self.state = ExplorerInfoFrame.TEXTBOX_FOCUSED
+                self.description_textbox.set_outline_size(self.textbox_outline_size_p)
+
+                self.raise_prerender_flag()
+
+            elif self.state != ExplorerInfoFrame.MENU_FOCUSED and calculations.point_collides(mpos, self.relative_slider_border_frame):
+
+                if self.state == ExplorerInfoFrame.TEXTBOX_FOCUSED:
+                    self.description_textbox.set_outline_size(0)
+
+                self.state = ExplorerInfoFrame.MENU_FOCUSED
+                self.raise_prerender_flag()
+
+    @override
+    def mouse_button_down(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Interacts with the widgets.
+        """
+        if self.state in [ExplorerInfoFrame.SLIDING_IN, ExplorerInfoFrame.SLIDING_OUT, ExplorerInfoFrame.MENU_SLIDING]:
+            return
+
+        left_tbox: pygame.Rect = None
+        right_tbox: pygame.Rect = None
+
+        left_sbox: pygame.Rect = None
+        main_sbox: pygame.Rect = None
+        right_sbox: pygame.Rect = None
+
+        left_tbox, right_tbox = graphics.split_rect_horizontally(rect=self.description_textbox.frame_dim, percentages=[0.5, 0.5])
+        left_sbox, main_sbox, right_sbox = graphics.split_rect_horizontally(rect=self.relative_slider_border_frame, percentages=[0.25, 0.5, 0.25])
+
+        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=event.pos)
+
+        if event.button == Mouse.LEFT_BUTTON:
+
+            if calculations.point_collides(mpos, left_tbox):
+
+                self.description_textbox.prev_page()
+                self.raise_prerender_flag()
+
+            elif calculations.point_collides(mpos, right_tbox):
+
+                self.description_textbox.next_page()
+                self.raise_prerender_flag()
+
+            elif calculations.point_collides(mpos, left_sbox):
+
+                self.slider_menu.slide_right()
+                self.state = ExplorerInfoFrame.MENU_SLIDING
+
+            elif calculations.point_collides(mpos, right_sbox):
+
+                self.slider_menu.slide_left()
+                self.state = ExplorerInfoFrame.MENU_SLIDING
+
+            elif calculations.point_collides(mpos, main_sbox):
+
+                self.slider_selection_triggered()
+
+        elif event.button == Mouse.WHEEL:
+
+            self.full_image_shown = True
+            self.raise_prerender_flag()
+
+        elif event.button == Mouse.RIGHT_BUTTON:
+
+            if self._next_frame is None:
+                self._next_frame = self.parent_frame
+
+            self.raise_exit_flag()
+
+    @override
+    def mouse_button_up(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Button up
+        """
+        if self.state in [ExplorerInfoFrame.SLIDING_IN, ExplorerInfoFrame.SLIDING_OUT, ExplorerInfoFrame.MENU_SLIDING]:
+            return
+
+        if event.button == Mouse.WHEEL:
+
+            self.full_image_shown = False
+            self.raise_prerender_flag()
+
+    @override
+    def mouse_wheel(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        Scrolling
+        """
+
+        if self.state in [ExplorerInfoFrame.SLIDING_IN, ExplorerInfoFrame.SLIDING_OUT, ExplorerInfoFrame.MENU_SLIDING]:
+            return
+
+        mpos: int = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=pygame.mouse.get_pos())
+
+        if calculations.point_collides(mpos, self.relative_standard_info_page_frame):
+
+            if event.precise_y < -0.5:
+
+                self.description_textbox.next_page()
+                self.raise_prerender_flag()
+                self.intro_delay_clock.start()
+
+            elif event.precise_y > 0.5:
+
+                self.description_textbox.prev_page()
+                self.raise_prerender_flag()
+                self.intro_delay_clock.start()
+
+        elif calculations.point_collides(mpos, self.relative_slider_border_frame):
+
+            if event.precise_y < -0.5:
+
+                self.slider_menu.slide_right()
+                self.state = ExplorerInfoFrame.MENU_SLIDING
+
+            elif event.precise_y > 0.5:
+
+                self.slider_menu.slide_left()
+                self.state = ExplorerInfoFrame.MENU_SLIDING
+
+
     @override
     def escape_pressed(self, event: pygame.event.Event, data: Any) -> None:
 
@@ -433,6 +578,32 @@ class ExplorerInfoFrame(CardinfoFrame):
         else:
             return CardinfoFrame.start_sliding_out(self)
 
+    def slider_selection_triggered(self):
+
+        idx: int = self.slider_menu.get_selected_index()
+
+        if idx == 0:
+
+            self.current_subframe = ShowExplorerStartingCardsFrame(
+                                                                    explorer_enum=self.explorer_enum,
+                                                                    data=self.data,
+                                                                    frame_dim=self.frame_dim.copy(),
+                                                                    parent_frame=self,
+                                                                    focus_group=self.focus_group,
+                                                                    has_focus=True
+                                                                    )
+        else:
+
+            self.current_subframe = TestFrame(
+                                            data=None,
+                                            frame_dim=self.frame_dim.copy(),
+                                            parent_frame=self,
+                                            focus_group=self.focus_group,
+                                            has_focus=True
+                                        )
+
+        self.push_event(Frame.SubframeCreatedEvent(created_subframe=self.current_subframe, n_subframes_active=1))
+
     @override
     def tick(self):
 
@@ -472,27 +643,7 @@ class ExplorerInfoFrame(CardinfoFrame):
 
             if event.type == Slider.EventTypes.SELECT_ANIMATION_ENDED:
 
-                if event.selected_index == 0:
-
-                    self.current_subframe = ShowExplorerStartingCardsFrame(
-                                                                            explorer_enum=self.explorer_enum,
-                                                                            data=self.data,
-                                                                            frame_dim=self.frame_dim.copy(),
-                                                                            parent_frame=self,
-                                                                            focus_group=self.focus_group,
-                                                                            has_focus=True
-                                                                            )
-                else:
-
-                    self.current_subframe = TestFrame(
-                                                    data=None,
-                                                    frame_dim=self.frame_dim.copy(),
-                                                    parent_frame=self,
-                                                    focus_group=self.focus_group,
-                                                    has_focus=True
-                                                )
-
-                self.push_event(Frame.SubframeCreatedEvent(created_subframe=self.current_subframe, n_subframes_active=1))
+                self.slider_selection_triggered()
 
             elif event.type == Slider.EventTypes.SLIDING_ANIMATION_ENDED:
 

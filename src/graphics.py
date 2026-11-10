@@ -3,7 +3,7 @@ from typing import Callable
 
 import pygame
 import constants
-from constants import fequal, color_t, Colors
+from constants import fequal, color_t, Colors, point_t
 from collections import deque
 import re
 """
@@ -888,3 +888,10 @@ def position_relative(anchor_rect: pygame.Rect, make_relative_rect: pygame.Rect)
                             make_relative_rect.width,
                             make_relative_rect.height
                         )
+
+def position_relative_point(anchor_point: point_t, make_relative_point: point_t) -> point_t:
+    """
+    Returns the point that would be the position of make_relative_point
+    if it was relative to anchor_point.
+    """
+    return (make_relative_point[0] - anchor_point[0], make_relative_point[1] - anchor_point[1])

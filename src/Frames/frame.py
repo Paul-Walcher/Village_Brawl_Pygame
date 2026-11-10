@@ -800,6 +800,7 @@ class Frame(EventQueueManager):
         that need to be visually shown happen to this frame.
 
         """
+        pass
 
     def render(self, screen: pygame.Surface) -> None:
         """
