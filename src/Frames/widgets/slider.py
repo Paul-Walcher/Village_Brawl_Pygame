@@ -267,9 +267,10 @@ class Slider(Frame):
         """
         The current state of the Slider.
         """
-        self.rendered_surfaces: list[pygame.Surface] = []
+        self.rendered_surfaces: list[ tuple[pygame.Surface, int, int, bool] ] = []
         """
-        The actually rendered surfaces.
+        The actually rendered surfaces with rendering information.
+        (surface, x_position, y_position, rendered (yes or no))
         """
         self.rects: pygame.Rect = []
         """
@@ -289,16 +290,183 @@ class Slider(Frame):
         The tuples for the calculation of the frames of the surfaces.
         (offset, length)
         """
+        self.sliding_clock: Clock = Clock()
+        """
+        Clock for keeping track of the sliding animation.
+        """
+        self.select_animation_clock: Clock = Clock()
+        """
+        Clock for keeping track of the select animation.
+        """
+        self.flipping_animation_clock: Clock = Clock()
+        """
+        Clock for keeping track of the flipping animation.
+        """
+        self.slide_input_delay: float = slide_input_delay
+        """
+        The delay after which another slide_left/right is executed.
+        """
+        self.slide_input_delay_clock: Clock = Clock()
+        """
+        Clock for keeping track of the slide input delay.
+        """
+        self.top_surface: pygame.Surface = None
+        """
+        The surface rendered on top.
+        """
 
-        self.sliding_clock = Clock()
-        self.select_animation_clock = Clock()
-        self.flipping_animation_clock = Clock()
-
-        self.slide_input_delay_clock = Clock()
-        self.slide_input_delay = slide_input_delay
         self.slide_input_delay_clock.start()
 
         self.rerender()
+
+    # =============================================================
+    # Abstract surface creation methods
+    # =============================================================
+
+    @abstractmethod
+    def create_surfaces(self) -> None:
+        """
+        This method should create
+        self.surfaces and self.selected_surfaces.
+
+        The length of both lists has to be
+        equal to 1 + 2 * self.span
+        """
+        pass
+
+    @abstractmethod
+    def create_back_surfaces(self) -> None:
+        """
+        This method should create
+        self.back_surfaces and self.selected_back_surfaces.
+
+        The length of both lists has to be
+        equal to 1 + 2 * self.span
+        """
+        pass
+
+    # =============================================================
+    # Rendering
+    # =============================================================
+    @override
+    def rerender(self) -> None:
+        """
+        Creates surfaces, then calls self.rerender_images().
+        """
+        self.create_surfaces() #creates the surfaces for self.surfaces
+        self.create_back_surfaces()
+        self.rerender_images()
+
+    def rerender_images(self) -> None:
+        """
+        Rerenders the images, assuming all surfaces
+        have been created.
+        """
+
+        #resetting variables
+        self.rendered_surfaces = []
+        self.rects = []
+        self.scale_factors = []
+
+        #getting fixed positions
+        self.fixed_image_positions = self.get_fixed_surface_positions()
+
+        #creating surfaces
+        self.top_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+
+        #indices referencing the surfaces, wrapping around to preserve valid indices
+        self.indices =   (
+                            [(self.surface_index - i - 1) % len(self.surfaces) for i in range(self.span)]
+                            + [self.surface_index]
+                            + [(self.surface_index + i + 1) % len(self.surfaces) for i in range(self.span)]
+                            )
+
+        #indices without wrapping around
+        self.original_indices = (
+                                    [self.surface_index - i - 1 for i in range(self.span)]
+                                    + [self.surface_index]
+                                    + [self.surface_index + i + 1 for i in range(self.span)]
+                                )
+
+
+        #calculating the positions and scales
+        for i in range(1 + 2 * self.span):
+
+            pixel_pos: tuple[int, int] = self.fixed_image_positions[i]
+            rect: pygame.Rect = None
+
+            if self.horizontal:
+
+                rect = pygame.Rect(
+                                    pixel_pos[0], #x position
+                                    0,
+                                    pixel_pos[1], #width
+                                    self.height
+                                    )
+
+            else:
+
+                rect = pygame.Rect(
+                                    0,
+                                    pixel_pos[0], #y position
+                                    self.width,
+                                    pixel_pos[1] #height
+                                )
+
+            #the current surface
+            surf: pygame.Surface = None
+
+            if i == self.span:
+                surf = self.selected_surfaces[self.indices[i]]
+            else:
+                surf = self.surfaces[self.indices[i]]
+
+            # Base scale needed to fit this particular image
+            # into this particular slot.
+            base_scale = (self.get_scale_fraction(surf, rect))
+            self.scale_factors.append(base_scale)
+            # Apply the slot's visual size multiplier.
+            scale = (base_scale * self.scale_mults[i])
+            #scaling the surface aptly, whilst also getting a copy of the original surface
+            surf = graphics.scale_surface(surf, scale)
+            #setting the alpha
+            surf.set_alpha(int(self.alphas[i]))
+            #getting the surface position
+            surf_pos: point_t = (graphics.get_center_with_surface(surf, rect))
+            #if the surface should be rendered or not
+            rendered: bool = self.is_rendered(self.original_indices[i])
+
+            self.rendered_surfaces.append([
+                                            surf,
+                                            surf_pos[0], #x_pos
+                                            surf_pos[1], #y_pos
+                                            rendered
+                                        ])
+            #adding the rectangle
+            self.rects.append(rect)
+
+        self.raise_prerender_flag()
+
+    @override
+    def prerender(self) -> None:
+        """
+        Prerendering
+        """
+
+        self.surface.fill(self.background_color)
+        self.top_surface.fill(Colors.TRANSPARENT)
+
+        mid_surf = self.rendered_surfaces[self.span]
+        for (surf, x, y, rendered) in self.rendered_surfaces:
+
+            if rendered and surf is not mid_surf:
+                self.top_surface.blit(surf, (x, y))
+
+        surf, x, y, rendered = self.rendered_surfaces[self.span]
+        if rendered:
+            self.top_surface.blit(surf, (x, y))
+
+        self.surface.blit(self.top_surface, (0, 0))
 
     # =============================================================
     # General
@@ -314,14 +482,26 @@ class Slider(Frame):
         return self.surface_index - self.slides
 
     def set_background_color(self, color: color_t):
+        """
+        Sets the background_color.
+        """
 
         self.background_color = color
-        self.prerender()
+        self.raise_prerender_flag()
 
-    def get_focus_index(self):
+    def get_focus_index(self) -> int:
+        """
+        Returns the index of the current focused surface,
+        without considering self.slides.
+        """
         return self.surface_index
 
-    def slide_left(self):
+    def slide_left(self) -> None:
+        """
+        Adds -1 to self.slides (indicating a left slide),
+        if sufficient time elapsed since the last call to any slide
+        method, and sliding is not cutoff.
+        """
 
         if self.slide_input_delay_clock.elapsed() < self.slide_input_delay:
             return
@@ -334,7 +514,12 @@ class Slider(Frame):
 
         self.slide_input_delay_clock.start()
 
-    def slide_right(self):
+    def slide_right(self) -> None:
+        """
+        Adds +1 to self.slides (indicating a right slide),
+        if sufficient time elapsed since the last call to any slide
+        method, and sliding is not cutoff.
+        """
 
         if self.slide_input_delay_clock.elapsed() < self.slide_input_delay:
             return
@@ -350,14 +535,27 @@ class Slider(Frame):
     """
     Just renaming for vertical sliders
     """
-    def slide_up(self):
+
+    def slide_up(self) -> None:
+        """
+        Renamed version for a vertical slider.
+        """
         self.slide_left()
 
-    def slide_down(self):
+    def slide_down(self) -> None:
+        """
+        Renamed version for a vertical slider.
+        """
         self.slide_right()
 
 
-    def reset_slides(self):
+    def reset_slides(self) -> None:
+        """
+        Sets the slides to 0.
+        If the slider is currently sliding,
+        it adjust the slide such that when sliding finishes,
+        self.slides will be 0.
+        """
 
         if self.state == Slider.SLIDING_LEFT:
             self.slides = -1
@@ -372,24 +570,42 @@ class Slider(Frame):
     # Rendering / scaling helpers
     # =============================================================
 
-    def get_scale_fraction(self, img, rect):
+    def get_scale_fraction(self, surf: pygame.Surface, rect: pygame.Rect) -> float:
+        """
+        Returns the scale to scale a surface by the rect given.
+        Does not scale it into the exact rect dimensions, but
+        scales up as large as possible still fitting into the rect.
+        (Preserving the original aspect ration)
+        """
 
-        iw, ih = img.get_size()
+        iw, ih = surf.get_size()
 
         width_scale = rect.width / iw
         height_scale = rect.height / ih
 
         return min(width_scale, height_scale)
 
-    def get_absolute_scale(self, img, rect, slot_index):
+    def get_absolute_scale(self, surf: pygame.Surface, rect: pygame.Rect, slot_index: int) -> float:
+        """
+        Returns the absolute scale:
+
+        First the scale to scale the image up as large as possible
+        inside the rect is calculated, then the scale for shrinking the image
+        depending on the position (indicated by slot index)
+        is applied by multiplying it on.
+        """
 
         return (self.get_scale_fraction(
-                                        img,
+                                        surf,
                                         rect
                                     ) * self.scale_mults[slot_index]
                                 )
 
-    def is_rendered(self, original_index):
+    def is_rendered(self, original_index: int) -> bool:
+        """
+        Returns if a surface at the given slot should be rendered or not.
+        Is only False if this slider cuts off and the original_index is invalid.
+        """
 
         return not (self.cutoff and (
                                         original_index < 0
@@ -397,124 +613,84 @@ class Slider(Frame):
                                     )
                                 )
 
-    # =============================================================
-    # Initial rendering
-    # =============================================================
-
-    def select(self):
+    def select(self) -> bool:
+        """
+        Returns True if the select call
+        executed successfully, False otherwise.
+        """
         if not self.state == Slider.SELECT_ANIMATION_PLAYING:
             self.select_animation_queued = True
             return True
         else:
             return False
 
-    def flip_card(self):
+    def flip_card(self) -> bool:
+        """
+        Returns True if the flip card call
+        executed successfully, False otherwise.
+        """
         if not self.flipping_animation_playing():
             self.flipping_animation_queued = True
             return True
         else:
             return False
 
-    @abstractmethod
-    def create_surfaces(self):
-        pass
+    def flip_all_cards(self) -> bool:
+        """
+        Queues a flipping all cards animation.
+        Returns True on success, False on failure.
+        """
 
-    @abstractmethod
-    def create_back_surfaces(self):
-        pass
+        if not self.flipping_animation_playing():
+            self.flipping_all_animation_queued = True
+            return True
+        else:
+            return False
 
-    def rerender_images(self):
+    def sliding_animation_playing(self) -> bool:
+        """
+        Returns True if the sliding animation is currently playing, else False
+        """
+        return (self.state == Slider.SLIDING_LEFT or self.state == Slider.SLIDING_RIGHT)
 
-        self.fixed_image_positions = self.get_fixed_image_positions()
+    def select_animation_playing(self) -> bool:
+        """
+        Returns True if the select animation is currently playing,
+        else False
+        """
+        return (self.state == Slider.SELECT_ANIMATION_PLAYING)
 
-        self.top_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        self.bottom_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+    def flipping_animation_playing(self) -> bool:
+        """
+        Returns True if the flipping animation is playing, else False.
+        """
+        return (self.state == Slider.FLIPPING_ANIMATION_PLAYING or self.state == Slider.FLIPPING_ALL_ANIMATION_PLAYING)
 
-        self.rendered_surfaces = []
-        self.rects = []
-        self.scale_factors = []
-
-        #indices referencing the surfaces
-        self.indices =   ([(self.surface_index - i - 1) % len(self.surfaces) for i in range(self.span)]
-                    + [self.surface_index]
-                    + [(self.surface_index + i + 1) % len(self.surfaces) for i in range(self.span)]
-                    )
-
-        self.original_indices = ([self.surface_index - i - 1 for i in range(self.span)]
-                                + [self.surface_index]
-                                + [self.surface_index + i + 1 for i in range(self.span)])
-
-
-
-        for i in range(1 + 2 * self.span):
-
-            pixel_pos = self.fixed_image_positions[i]
-            rect = None
-
-            if self.horizontal:
-                rect = pygame.Rect(
-                                    pixel_pos[0],
-                                    0,
-                                    pixel_pos[1],
-                                    self.height
-                                    )
-
-            else:
-
-                rect = pygame.Rect(
-                                    0,
-                                    pixel_pos[0],
-                                    self.width,
-                                    pixel_pos[1]
-                                )
-
-            surf = None
-            if i == self.span:
-                surf = self.selected_surfaces[self.indices[i]]
-            else:
-                surf = self.surfaces[self.indices[i]]
-
-            # Base scale needed to fit this particular image
-            # into this particular slot.
-            base_scale = (self.get_scale_fraction(surf, rect))
-
-            self.scale_factors.append(base_scale)
-
-            # Apply the slot's visual size multiplier.
-            scale = (base_scale * self.scale_mults[i])
-
-            surf = graphics.scale_surface(surf, scale)
-
-            surf.set_alpha(int(self.alphas[i]))
-
-            surf_pos = (graphics.get_center_with_surface(surf, rect))
-
-            rendered = self.is_rendered(self.original_indices[i])
-
-            self.rendered_surfaces.append([
-                                            surf,
-                                            surf_pos[0],
-                                            surf_pos[1],
-                                            rendered
-                                        ])
-
-            self.rects.append(rect)
-
-        self.prerender()
+    def any_animation_playing(self) -> bool:
+        """
+        Returns True if any animation is currently playing, else False.
+        """
+        return (self.select_animation_playing() or self.flipping_animation_playing() or self.sliding_animation_playing())
 
     # =============================================================
     # Layout
     # =============================================================
 
-    def get_fixed_image_positions(self):
+    def get_fixed_surface_positions(self) -> list[tuple[int, int]]:
+        """
+        Calculates the surface positions
+        as a list of (startpoint, length) tuples
+        from left to right.
+        """
 
-        dpixels = (self.width if self.horizontal else self.height)
+        dpixels: int = (self.width if self.horizontal else self.height)
+        dspaces: list[tuple[int, int]] = []
 
-        dspaces = []
-
+        #only one element
         if self.span <= 0:
             dspaces.append((0, dpixels))
 
+        #no size decrease, uniform distribution
         elif self.size_decrease_scale == Slider.NO_SIZE_DECREASE:
 
             inc = dpixels // (1 + self.span * 2)
@@ -526,6 +702,7 @@ class Slider(Frame):
                 dspaces.append((lp, inc))
                 inc += lp
 
+        #distributing
         else:
 
             frontspace = int(self.size_decrease_scale * dpixels)
@@ -552,30 +729,16 @@ class Slider(Frame):
 
         return dspaces
 
-    # =============================================================
-    # Rendering
-    # =============================================================
 
-    def prerender(self):
-
-        self.bottom_surface.fill(self.background_color)
-        self.top_surface.fill(Colors.TRANSPARENT)
-
-        mid_surf = self.rendered_surfaces[self.span]
-        for (surf, x, y, rendered) in self.rendered_surfaces:
-
-            if rendered and surf is not mid_surf:
-                self.top_surface.blit(surf, (x, y))
-
-        surf, x, y, rendered = self.rendered_surfaces[self.span]
-        if rendered:
-            self.top_surface.blit(surf, (x, y))
 
     # =============================================================
     # LEFT SLIDE
     # =============================================================
 
-    def initialize_slide_left(self):
+    def initialize_slide_left(self) -> None:
+        """
+        Initializes a slide left.
+        """
 
         visible_count = (1 + 2 * self.span)
 
@@ -686,7 +849,10 @@ class Slider(Frame):
 
         self.sliding_clock.start()
 
-    def render_slide_left(self):
+    def render_slide_left(self) -> None:
+        """
+        Renders the sliding animation.
+        """
 
         progress = self.sliding_clock.elapsed() / self.sliding_duration
         progress = min(1.0, progress)
@@ -725,9 +891,13 @@ class Slider(Frame):
 
         self.rendered_surfaces = rimages
 
-        self.prerender()
+        self.raise_prerender_flag()
 
-    def finalize_slide_left(self):
+    def finalize_slide_left(self) -> None:
+        """
+        Finishes the slide and cleans up.
+        """
+
 
         # Moving left means moving to the next image.
         self.surface_index = (self.surface_index + 1) % len(self.surfaces)
@@ -744,12 +914,11 @@ class Slider(Frame):
     # =============================================================
     # RIGHT SLIDE
     # =============================================================
-    def rerender(self):
-        self.create_surfaces() #creates the surfaces for self.surfaces
-        self.create_back_surfaces()
-        self.rerender_images()
 
-    def initialize_slide_right(self):
+    def initialize_slide_right(self) -> None:
+        """
+        Initializes the slide right.
+        """
 
         visible_count = (1 + 2 * self.span)
 
@@ -854,8 +1023,10 @@ class Slider(Frame):
 
         self.sliding_clock.start()
 
-    def render_slide_right(self):
-
+    def render_slide_right(self) -> None:
+        """
+        Renders the sliding animation.
+        """
         progress = self.sliding_clock.elapsed() / self.sliding_duration
         progress = min(1.0, progress)
 
@@ -892,10 +1063,12 @@ class Slider(Frame):
 
         self.rendered_surfaces = rimages
 
-        self.prerender()
+        self.raise_prerender_flag()
 
-    def finalize_slide_right(self):
-
+    def finalize_slide_right(self) -> None:
+        """
+        Ends and cleans up the sliding animation.
+        """
         # Moving right means moving to the previous image.
         self.surface_index = (self.surface_index - 1) % len(self.surfaces)
 
@@ -913,7 +1086,10 @@ class Slider(Frame):
     # =============================================================
     # Tick
     # =============================================================
-    def render_select_animation(self):
+    def render_select_animation(self) -> None:
+        """
+        Renders the select animation.
+        """
 
         percentage = self.select_animation_clock.elapsed() / self.select_animation_duration
 
@@ -957,9 +1133,12 @@ class Slider(Frame):
             self.rendered_surfaces[self.span][0] = new_surf
             self.rendered_surfaces[self.span][1], self.rendered_surfaces[self.span][2] = npos
 
-            self.prerender()
+            self.raise_prerender_flag()
 
-    def render_flipping_animation(self):
+    def render_flipping_animation(self) -> None:
+        """
+        Renders the flipping animation.
+        """
 
         percentage = self.flipping_animation_clock.elapsed() / self.flip_duration
 
@@ -1001,9 +1180,12 @@ class Slider(Frame):
 
                 self.rendered_surfaces[self.span] = [new_surf, new_pos[0], new_pos[1], self.rendered_surfaces[self.span][3]]
 
-            self.prerender()
+            self.raise_prerender_flag()
 
-    def render_flipping_all_animation(self):
+    def render_flipping_all_animation(self) -> None:
+        """
+        Renders the flipping all animation.
+        """
 
         percentage = self.flipping_animation_clock.elapsed() / self.flip_duration
 
@@ -1049,41 +1231,13 @@ class Slider(Frame):
                 for i in range(len(self.saved_surface_copies)):
                     self.rendered_surfaces[i] = [new_imgs[i], new_pos[i][0], new_pos[i][1], self.rendered_surfaces[i][3]]
 
-            self.prerender()
+            self.raise_prerender_flag()
 
-
-
-
-
-    def flip_all_cards(self):
-
-        if not self.flipping_animation_playing():
-            self.flipping_all_animation_queued = True
-            return True
-        else:
-            return False
-
-    def sliding_animation_playing(self):
-        return (self.state == Slider.SLIDING_LEFT or self.state == Slider.SLIDING_RIGHT)
-
-    def select_animation_playing(self):
-        return self.state == Slider.SELECT_ANIMATION_PLAYING
-
-    def flipping_animation_playing(self):
-        return (self.state == Slider.FLIPPING_ANIMATION_PLAYING or self.state == Slider.FLIPPING_ALL_ANIMATION_PLAYING)
-
-    def any_animation_playing(self):
-        return (self.select_animation_playing() or self.flipping_animation_playing() or self.sliding_animation_playing())
-
-    def render(self, screen):
-
-        self.prerender()
-        screen.blit(self.bottom_surface, (self.x, self.y))
-        screen.blit(self.top_surface, (self.x, self.y))
-
-
-    def tick(self):
-
+    @override
+    def tick(self) -> Frame:
+        """
+        Slider tick method.
+        """
         if self.state == Slider.SLIDING_LEFT:
 
             if self.sliding_clock.elapsed() >= self.sliding_duration:
@@ -1149,5 +1303,12 @@ class Slider(Frame):
                 self.selected_surface_startpos = (self.rendered_surfaces[self.span][1], self.rendered_surfaces[self.span][2])
                 self.selected_surface_copy = self.rendered_surfaces[self.span][0].copy()
                 self.select_animation_clock.start()
+
+        if (self.state != Slider.NOT_SLIDING):
+            self.raise_prerender_flag()
+
+        if self.prerender_flag_raised():
+            self.prerender()
+            self.reset_prerender_flag()
 
         return self
