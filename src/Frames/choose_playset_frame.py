@@ -141,7 +141,7 @@ class ChoosePlaysetFrame(Frame):
         """
         The width of the playset options frame relative to self.width
         """
-        self.playset_options_frame_height_margin: float = 0.7
+        self.playset_options_frame_height_margin: float = 1.0
         """
         The height of the playset options frame relative to (self.height - self.headline_frame.height - self.headline_frame.y)
         """
@@ -204,6 +204,8 @@ class ChoosePlaysetFrame(Frame):
                                                                                                             int(self.playset_options_frame_height_margin * options_rect.height)
                                                                                                         )
                                                                             )
+        self.playset_options_frame = graphics.apply_margins(self.playset_options_frame, 0.4, 0.4)
+
         self.text_slider = TextSlider(
                                             frame_dim=self.playset_options_frame,
                                             text_pages=self.playset_pages,
