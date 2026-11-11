@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import Any, Callable
+from typing import Any, Callable, override
 
 import pygame
 
-from constants import Colors
+from constants import Colors, color_t
 
 from Frames.widgets.same_size_slider import SameSizeSlider
 
@@ -13,24 +13,25 @@ class CustomSameSizeSlider(SameSizeSlider):
     """
 
     def __init__(
-        self,
-        frame_dim,
-        surfaces, #list of the surfaces.
-        selected_surfaces=None, #selected surfaces
-        back_surfaces=None,#list of back surfaces
-        selected_back_surfaces=None,#selected back surfaces.
-        surface_distance_p = 0.0,
-        sliding_duration=500,  # ms
-        select_animation_duration=400,#ms
-        span=1,
-        background_color=Colors.TRANSPARENT,
-        horizontal=True,
-        start_index=0,
-        cutoff=False,
-        max_slides=2,
-        flip_duration=400,#ms
-        slide_input_delay=250#ms
-    ):
+                    self,
+                    frame_dim: pygame.Rect,
+                    surfaces: list[pygame.Surface], #list of the surfaces.
+                    selected_surfaces: list[pygame.Surface] = None, #selected surfaces
+                    back_surfaces: list[pygame.Surface] = None,#list of back surfaces
+                    selected_back_surfaces: list[pygame.Surface] = None,#selected back surfaces.
+
+                    surface_distance_p: float = 0.0,
+                    span: int = 1,
+                    background_color: color_t = Colors.TRANSPARENT,
+                    horizontal: bool = True,
+                    start_index: int = 0,
+                    cutoff: bool = False,
+                    max_slides: int = 2,
+                    sliding_duration: float = 500,  # ms
+                    select_animation_duration: float = 400,#ms
+                    flip_duration: float = 400,#ms
+                    slide_input_delay: float = 250#ms
+                ):
 
         self.internal_surfaces: list[pygame.Surface] = surfaces
         """
@@ -65,7 +66,7 @@ class CustomSameSizeSlider(SameSizeSlider):
                         slide_input_delay=slide_input_delay#ms
                         )
 
-
+    @override
     def create_surfaces(self) -> None:
         """
         Copies surfaces.
@@ -73,6 +74,7 @@ class CustomSameSizeSlider(SameSizeSlider):
         self.surfaces = [surf.copy() for surf in self.internal_surfaces]
         self.selected_surfaces = [surf.copy() for surf in self.internal_selected_surfaces]
 
+    @override
     def create_back_surfaces(self) -> None:
         """
         Already has all surfaces.

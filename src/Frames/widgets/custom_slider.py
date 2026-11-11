@@ -3,7 +3,7 @@ from typing import Any, Callable
 
 import pygame
 
-from constants import Colors
+from constants import Colors, color_t
 from Frames.widgets.slider import Slider
 
 class CustomSlider(Slider):
@@ -12,44 +12,27 @@ class CustomSlider(Slider):
     """
 
     def __init__(
-        self,
-        frame_dim,
-        surfaces, #list of the surfaces.
-        selected_surfaces=None, #selected surfaces
-        back_surfaces=None,#list of back surfaces
-        selected_back_surfaces=None,#selected back surfaces.
-        sliding_duration=500,  # ms
-        select_animation_duration=400,#ms
-        alphas=None,
-        span=1,
-        background_color=Colors.TRANSPARENT,
-        size_decrease_scale=0.5,
-        horizontal=True,
-        start_index=0,
-        cutoff=False,
-        max_slides=2,
-        flip_duration=400,#ms
-        slide_input_delay=250#ms
-    ):
+                    self,
+                    frame_dim: pygame.Rect,
 
+                    surfaces: list[pygame.Surface], #list of the surfaces.
+                    selected_surfaces: list[pygame.Surface] = None, #selected surfaces
+                    back_surfaces: list[pygame.Surface] = None,#list of back surfaces
+                    selected_back_surfaces: list[pygame.Surface] = None,#selected back surfaces.
 
-        Slider.__init__(
-                        self,
-                        frame_dim,
-                        surface_distance_p = surface_distance_p,
-                        sliding_duration=sliding_duration,  # ms
-                        select_animation_duration=select_animation_duration,#ms
-                        alphas=alphas,
-                        span=span,
-                        background_color=background_color,
-                        size_decrease_scale=size_decrease_scale,
-                        horizontal=horizontal,
-                        start_index=start_index,
-                        cutoff=cutoff,
-                        max_slides=max_slides,
-                        flip_duration=flip_duration,#ms
-                        slide_input_delay=slide_input_delay#ms
-                        )
+                    alphas: list[int] = None,
+                    span: int = 1,
+                    background_color: color_t = Colors.TRANSPARENT,
+                    size_decrease_scale: float = 0.5,
+                    horizontal: bool = True,
+                    start_index: int = 0,
+                    cutoff: bool = False,
+                    max_slides: int = 2,
+                    sliding_duration: float = 500,  # ms
+                    select_animation_duration: float = 400,#ms
+                    flip_duration: float = 400,#ms
+                    slide_input_delay: float = 250#ms
+                ):
 
         self.internal_surfaces: list[pygame.Surface] = surfaces
         """
@@ -67,6 +50,25 @@ class CustomSlider(Slider):
         """
         Selected back surfaces.
         """
+
+        Slider.__init__(
+                        self,
+                        frame_dim=frame_dim,
+                        surface_distance_p = surface_distance_p,
+                        sliding_duration=sliding_duration,  # ms
+                        select_animation_duration=select_animation_duration,#ms
+                        alphas=alphas,
+                        span=span,
+                        background_color=background_color,
+                        size_decrease_scale=size_decrease_scale,
+                        horizontal=horizontal,
+                        start_index=start_index,
+                        cutoff=cutoff,
+                        max_slides=max_slides,
+                        flip_duration=flip_duration,#ms
+                        slide_input_delay=slide_input_delay#ms
+                        )
+
 
     def create_surfaces(self) -> None:
         """

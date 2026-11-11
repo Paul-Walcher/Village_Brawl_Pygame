@@ -310,7 +310,7 @@ Frames<wbr>.frame    </h1>
 </span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 </span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">event_queue_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventQueueManager</span><span class="p">,</span> <span class="n">Event</span>
 </span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">clock</span><span class="w"> </span><span class="kn">import</span> <span class="n">Clock</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">R_ID</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">R_ID</span><span class="p">,</span> <span class="n">id_t</span>
 </span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">Frames.frame_enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrameEnums</span>
 </span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="sd">"""</span>
 </span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="sd">Type definitions.</span>
@@ -369,11 +369,11 @@ Frames<wbr>.frame    </h1>
 </span><span id="L-65"><a href="#L-65"><span class="linenos"> 65</span></a><span class="sd">    in this group (key).</span>
 </span><span id="L-66"><a href="#L-66"><span class="linenos"> 66</span></a><span class="sd">    """</span>
 </span><span id="L-67"><a href="#L-67"><span class="linenos"> 67</span></a>
-</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">EventTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos"> 68</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">EventTypes</span><span class="p">:</span>
 </span><span id="L-69"><a href="#L-69"><span class="linenos"> 69</span></a>        <span class="c1">#types of the standard frame events</span>
-</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>        <span class="n">FOCUS_CHANGED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>        <span class="n">SUBFRAME_CREATED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>        <span class="n">SUBFRAME_DELETED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos"> 70</span></a>        <span class="n">FOCUS_CHANGED</span><span class="p">:</span> <span class="n">id_t</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos"> 71</span></a>        <span class="n">SUBFRAME_CREATED</span><span class="p">:</span> <span class="n">id_t</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
+</span><span id="L-72"><a href="#L-72"><span class="linenos"> 72</span></a>        <span class="n">SUBFRAME_DELETED</span><span class="p">:</span> <span class="n">id_t</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
 </span><span id="L-73"><a href="#L-73"><span class="linenos"> 73</span></a>
 </span><span id="L-74"><a href="#L-74"><span class="linenos"> 74</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">FocusChangedEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
 </span><span id="L-75"><a href="#L-75"><span class="linenos"> 75</span></a>
@@ -1104,19 +1104,20 @@ Frames<wbr>.frame    </h1>
 </span><span id="L-800"><a href="#L-800"><span class="linenos">800</span></a><span class="sd">        that need to be visually shown happen to this frame.</span>
 </span><span id="L-801"><a href="#L-801"><span class="linenos">801</span></a>
 </span><span id="L-802"><a href="#L-802"><span class="linenos">802</span></a><span class="sd">        """</span>
-</span><span id="L-803"><a href="#L-803"><span class="linenos">803</span></a>
-</span><span id="L-804"><a href="#L-804"><span class="linenos">804</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-805"><a href="#L-805"><span class="linenos">805</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-806"><a href="#L-806"><span class="linenos">806</span></a><span class="sd">        Renders this frame onto the given surface.</span>
-</span><span id="L-807"><a href="#L-807"><span class="linenos">807</span></a><span class="sd">        Is called once per frame.</span>
-</span><span id="L-808"><a href="#L-808"><span class="linenos">808</span></a><span class="sd">        """</span>
-</span><span id="L-809"><a href="#L-809"><span class="linenos">809</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
-</span><span id="L-810"><a href="#L-810"><span class="linenos">810</span></a>
-</span><span id="L-811"><a href="#L-811"><span class="linenos">811</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-812"><a href="#L-812"><span class="linenos">812</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="L-813"><a href="#L-813"><span class="linenos">813</span></a><span class="sd">        Renders this frame at the given coordinates</span>
-</span><span id="L-814"><a href="#L-814"><span class="linenos">814</span></a><span class="sd">        """</span>
-</span><span id="L-815"><a href="#L-815"><span class="linenos">815</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+</span><span id="L-803"><a href="#L-803"><span class="linenos">803</span></a>        <span class="k">pass</span>
+</span><span id="L-804"><a href="#L-804"><span class="linenos">804</span></a>
+</span><span id="L-805"><a href="#L-805"><span class="linenos">805</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-806"><a href="#L-806"><span class="linenos">806</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-807"><a href="#L-807"><span class="linenos">807</span></a><span class="sd">        Renders this frame onto the given surface.</span>
+</span><span id="L-808"><a href="#L-808"><span class="linenos">808</span></a><span class="sd">        Is called once per frame.</span>
+</span><span id="L-809"><a href="#L-809"><span class="linenos">809</span></a><span class="sd">        """</span>
+</span><span id="L-810"><a href="#L-810"><span class="linenos">810</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+</span><span id="L-811"><a href="#L-811"><span class="linenos">811</span></a>
+</span><span id="L-812"><a href="#L-812"><span class="linenos">812</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-813"><a href="#L-813"><span class="linenos">813</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="L-814"><a href="#L-814"><span class="linenos">814</span></a><span class="sd">        Renders this frame at the given coordinates</span>
+</span><span id="L-815"><a href="#L-815"><span class="linenos">815</span></a><span class="sd">        """</span>
+</span><span id="L-816"><a href="#L-816"><span class="linenos">816</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -1207,11 +1208,11 @@ Frames<wbr>.frame    </h1>
 </span><span id="Frame-66"><a href="#Frame-66"><span class="linenos"> 66</span></a><span class="sd">    in this group (key).</span>
 </span><span id="Frame-67"><a href="#Frame-67"><span class="linenos"> 67</span></a><span class="sd">    """</span>
 </span><span id="Frame-68"><a href="#Frame-68"><span class="linenos"> 68</span></a>
-</span><span id="Frame-69"><a href="#Frame-69"><span class="linenos"> 69</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">EventTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+</span><span id="Frame-69"><a href="#Frame-69"><span class="linenos"> 69</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">EventTypes</span><span class="p">:</span>
 </span><span id="Frame-70"><a href="#Frame-70"><span class="linenos"> 70</span></a>        <span class="c1">#types of the standard frame events</span>
-</span><span id="Frame-71"><a href="#Frame-71"><span class="linenos"> 71</span></a>        <span class="n">FOCUS_CHANGED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="Frame-72"><a href="#Frame-72"><span class="linenos"> 72</span></a>        <span class="n">SUBFRAME_CREATED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="Frame-73"><a href="#Frame-73"><span class="linenos"> 73</span></a>        <span class="n">SUBFRAME_DELETED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="Frame-71"><a href="#Frame-71"><span class="linenos"> 71</span></a>        <span class="n">FOCUS_CHANGED</span><span class="p">:</span> <span class="n">id_t</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
+</span><span id="Frame-72"><a href="#Frame-72"><span class="linenos"> 72</span></a>        <span class="n">SUBFRAME_CREATED</span><span class="p">:</span> <span class="n">id_t</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
+</span><span id="Frame-73"><a href="#Frame-73"><span class="linenos"> 73</span></a>        <span class="n">SUBFRAME_DELETED</span><span class="p">:</span> <span class="n">id_t</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
 </span><span id="Frame-74"><a href="#Frame-74"><span class="linenos"> 74</span></a>
 </span><span id="Frame-75"><a href="#Frame-75"><span class="linenos"> 75</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">FocusChangedEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
 </span><span id="Frame-76"><a href="#Frame-76"><span class="linenos"> 76</span></a>
@@ -1942,19 +1943,20 @@ Frames<wbr>.frame    </h1>
 </span><span id="Frame-801"><a href="#Frame-801"><span class="linenos">801</span></a><span class="sd">        that need to be visually shown happen to this frame.</span>
 </span><span id="Frame-802"><a href="#Frame-802"><span class="linenos">802</span></a>
 </span><span id="Frame-803"><a href="#Frame-803"><span class="linenos">803</span></a><span class="sd">        """</span>
-</span><span id="Frame-804"><a href="#Frame-804"><span class="linenos">804</span></a>
-</span><span id="Frame-805"><a href="#Frame-805"><span class="linenos">805</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Frame-806"><a href="#Frame-806"><span class="linenos">806</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="Frame-807"><a href="#Frame-807"><span class="linenos">807</span></a><span class="sd">        Renders this frame onto the given surface.</span>
-</span><span id="Frame-808"><a href="#Frame-808"><span class="linenos">808</span></a><span class="sd">        Is called once per frame.</span>
-</span><span id="Frame-809"><a href="#Frame-809"><span class="linenos">809</span></a><span class="sd">        """</span>
-</span><span id="Frame-810"><a href="#Frame-810"><span class="linenos">810</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
-</span><span id="Frame-811"><a href="#Frame-811"><span class="linenos">811</span></a>
-</span><span id="Frame-812"><a href="#Frame-812"><span class="linenos">812</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Frame-813"><a href="#Frame-813"><span class="linenos">813</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="Frame-814"><a href="#Frame-814"><span class="linenos">814</span></a><span class="sd">        Renders this frame at the given coordinates</span>
-</span><span id="Frame-815"><a href="#Frame-815"><span class="linenos">815</span></a><span class="sd">        """</span>
-</span><span id="Frame-816"><a href="#Frame-816"><span class="linenos">816</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+</span><span id="Frame-804"><a href="#Frame-804"><span class="linenos">804</span></a>        <span class="k">pass</span>
+</span><span id="Frame-805"><a href="#Frame-805"><span class="linenos">805</span></a>
+</span><span id="Frame-806"><a href="#Frame-806"><span class="linenos">806</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Frame-807"><a href="#Frame-807"><span class="linenos">807</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Frame-808"><a href="#Frame-808"><span class="linenos">808</span></a><span class="sd">        Renders this frame onto the given surface.</span>
+</span><span id="Frame-809"><a href="#Frame-809"><span class="linenos">809</span></a><span class="sd">        Is called once per frame.</span>
+</span><span id="Frame-810"><a href="#Frame-810"><span class="linenos">810</span></a><span class="sd">        """</span>
+</span><span id="Frame-811"><a href="#Frame-811"><span class="linenos">811</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+</span><span id="Frame-812"><a href="#Frame-812"><span class="linenos">812</span></a>
+</span><span id="Frame-813"><a href="#Frame-813"><span class="linenos">813</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Frame-814"><a href="#Frame-814"><span class="linenos">814</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Frame-815"><a href="#Frame-815"><span class="linenos">815</span></a><span class="sd">        Renders this frame at the given coordinates</span>
+</span><span id="Frame-816"><a href="#Frame-816"><span class="linenos">816</span></a><span class="sd">        """</span>
+</span><span id="Frame-817"><a href="#Frame-817"><span class="linenos">817</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -3289,6 +3291,7 @@ basis of what will be visually shown is changed.</p>
 </span><span id="Frame.prerender-801"><a href="#Frame.prerender-801"><span class="linenos">801</span></a><span class="sd">        that need to be visually shown happen to this frame.</span>
 </span><span id="Frame.prerender-802"><a href="#Frame.prerender-802"><span class="linenos">802</span></a>
 </span><span id="Frame.prerender-803"><a href="#Frame.prerender-803"><span class="linenos">803</span></a><span class="sd">        """</span>
+</span><span id="Frame.prerender-804"><a href="#Frame.prerender-804"><span class="linenos">804</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 
@@ -3309,12 +3312,12 @@ that need to be visually shown happen to this frame.</p>
 
     </div>
     <a class="headerlink" href="#Frame.render"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.render-805"><a href="#Frame.render-805"><span class="linenos">805</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Frame.render-806"><a href="#Frame.render-806"><span class="linenos">806</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="Frame.render-807"><a href="#Frame.render-807"><span class="linenos">807</span></a><span class="sd">        Renders this frame onto the given surface.</span>
-</span><span id="Frame.render-808"><a href="#Frame.render-808"><span class="linenos">808</span></a><span class="sd">        Is called once per frame.</span>
-</span><span id="Frame.render-809"><a href="#Frame.render-809"><span class="linenos">809</span></a><span class="sd">        """</span>
-</span><span id="Frame.render-810"><a href="#Frame.render-810"><span class="linenos">810</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.render-806"><a href="#Frame.render-806"><span class="linenos">806</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Frame.render-807"><a href="#Frame.render-807"><span class="linenos">807</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Frame.render-808"><a href="#Frame.render-808"><span class="linenos">808</span></a><span class="sd">        Renders this frame onto the given surface.</span>
+</span><span id="Frame.render-809"><a href="#Frame.render-809"><span class="linenos">809</span></a><span class="sd">        Is called once per frame.</span>
+</span><span id="Frame.render-810"><a href="#Frame.render-810"><span class="linenos">810</span></a><span class="sd">        """</span>
+</span><span id="Frame.render-811"><a href="#Frame.render-811"><span class="linenos">811</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -3335,11 +3338,11 @@ Is called once per frame.</p>
 
     </div>
     <a class="headerlink" href="#Frame.render_at"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.render_at-812"><a href="#Frame.render_at-812"><span class="linenos">812</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Frame.render_at-813"><a href="#Frame.render_at-813"><span class="linenos">813</span></a><span class="w">        </span><span class="sd">"""</span>
-</span><span id="Frame.render_at-814"><a href="#Frame.render_at-814"><span class="linenos">814</span></a><span class="sd">        Renders this frame at the given coordinates</span>
-</span><span id="Frame.render_at-815"><a href="#Frame.render_at-815"><span class="linenos">815</span></a><span class="sd">        """</span>
-</span><span id="Frame.render_at-816"><a href="#Frame.render_at-816"><span class="linenos">816</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.render_at-813"><a href="#Frame.render_at-813"><span class="linenos">813</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">render_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Frame.render_at-814"><a href="#Frame.render_at-814"><span class="linenos">814</span></a><span class="w">        </span><span class="sd">"""</span>
+</span><span id="Frame.render_at-815"><a href="#Frame.render_at-815"><span class="linenos">815</span></a><span class="sd">        Renders this frame at the given coordinates</span>
+</span><span id="Frame.render_at-816"><a href="#Frame.render_at-816"><span class="linenos">816</span></a><span class="sd">        """</span>
+</span><span id="Frame.render_at-817"><a href="#Frame.render_at-817"><span class="linenos">817</span></a>        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -3370,17 +3373,17 @@ Is called once per frame.</p>
 <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">Frame.EventTypes</span><wbr>(<span class="base">enum.Enum</span>):
+    <span class="name">Frame.EventTypes</span>:
 
                 <label class="view-source-button" for="Frame.EventTypes-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#Frame.EventTypes"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.EventTypes-69"><a href="#Frame.EventTypes-69"><span class="linenos">69</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">EventTypes</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Frame.EventTypes-69"><a href="#Frame.EventTypes-69"><span class="linenos">69</span></a>    <span class="k">class</span><span class="w"> </span><span class="nc">EventTypes</span><span class="p">:</span>
 </span><span id="Frame.EventTypes-70"><a href="#Frame.EventTypes-70"><span class="linenos">70</span></a>        <span class="c1">#types of the standard frame events</span>
-</span><span id="Frame.EventTypes-71"><a href="#Frame.EventTypes-71"><span class="linenos">71</span></a>        <span class="n">FOCUS_CHANGED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="Frame.EventTypes-72"><a href="#Frame.EventTypes-72"><span class="linenos">72</span></a>        <span class="n">SUBFRAME_CREATED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
-</span><span id="Frame.EventTypes-73"><a href="#Frame.EventTypes-73"><span class="linenos">73</span></a>        <span class="n">SUBFRAME_DELETED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+</span><span id="Frame.EventTypes-71"><a href="#Frame.EventTypes-71"><span class="linenos">71</span></a>        <span class="n">FOCUS_CHANGED</span><span class="p">:</span> <span class="n">id_t</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
+</span><span id="Frame.EventTypes-72"><a href="#Frame.EventTypes-72"><span class="linenos">72</span></a>        <span class="n">SUBFRAME_CREATED</span><span class="p">:</span> <span class="n">id_t</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
+</span><span id="Frame.EventTypes-73"><a href="#Frame.EventTypes-73"><span class="linenos">73</span></a>        <span class="n">SUBFRAME_DELETED</span><span class="p">:</span> <span class="n">id_t</span> <span class="o">=</span> <span class="n">R_ID</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -3388,8 +3391,8 @@ Is called once per frame.</p>
 
                             <div id="Frame.EventTypes.FOCUS_CHANGED" class="classattr">
                                 <div class="attr variable">
-            <span class="name">FOCUS_CHANGED</span>        =
-<span class="default_value">&lt;EventTypes.FOCUS_CHANGED: 1&gt;</span>
+            <span class="name">FOCUS_CHANGED</span><span class="annotation">: <a href="../constants.html#id_t">constants.id_t</a></span>        =
+<span class="default_value">-1152297951296915262</span>
 
         
     </div>
@@ -3400,8 +3403,8 @@ Is called once per frame.</p>
                             </div>
                             <div id="Frame.EventTypes.SUBFRAME_CREATED" class="classattr">
                                 <div class="attr variable">
-            <span class="name">SUBFRAME_CREATED</span>        =
-<span class="default_value">&lt;EventTypes.SUBFRAME_CREATED: 2&gt;</span>
+            <span class="name">SUBFRAME_CREATED</span><span class="annotation">: <a href="../constants.html#id_t">constants.id_t</a></span>        =
+<span class="default_value">-9026569102921028146</span>
 
         
     </div>
@@ -3412,8 +3415,8 @@ Is called once per frame.</p>
                             </div>
                             <div id="Frame.EventTypes.SUBFRAME_DELETED" class="classattr">
                                 <div class="attr variable">
-            <span class="name">SUBFRAME_DELETED</span>        =
-<span class="default_value">&lt;EventTypes.SUBFRAME_DELETED: 3&gt;</span>
+            <span class="name">SUBFRAME_DELETED</span><span class="annotation">: <a href="../constants.html#id_t">constants.id_t</a></span>        =
+<span class="default_value">5988504204183766936</span>
 
         
     </div>
@@ -3865,7 +3868,7 @@ regardless of the return value</p>
                             <div id="Frame.EventCallback.EXIT" class="classattr">
                                 <div class="attr variable">
             <span class="name">EXIT</span>        =
-<span class="default_value">2893355469157739108</span>
+<span class="default_value">-1206270001609192847</span>
 
         
     </div>
@@ -3877,7 +3880,7 @@ regardless of the return value</p>
                             <div id="Frame.EventCallback.FAILURE" class="classattr">
                                 <div class="attr variable">
             <span class="name">FAILURE</span>        =
-<span class="default_value">150055796494645151</span>
+<span class="default_value">485079097640384909</span>
 
         
     </div>
@@ -3889,7 +3892,7 @@ regardless of the return value</p>
                             <div id="Frame.EventCallback.SUCCESS" class="classattr">
                                 <div class="attr variable">
             <span class="name">SUCCESS</span>        =
-<span class="default_value">-4168561568872088023</span>
+<span class="default_value">-311284612154123318</span>
 
         
     </div>

@@ -4,7 +4,10 @@ from typing import Any, Callable, override
 import pygame
 
 import graphics
-from constants import Colors
+from constants import (
+                        Colors,
+                        color_t
+                        )
 from event_queue_manager import Event
 
 from Frames.widgets.slider import Slider
@@ -14,20 +17,21 @@ class SameSizeSlider(Slider):
     Creates a slider with same sized surfaces.
     """
     def __init__(
-        self,
-        frame_dim,
-        surface_distance_p: float = 0.0,
-        sliding_duration=500,  # ms
-        select_animation_duration=400,#ms
-        span=1,
-        background_color=Colors.TRANSPARENT,
-        horizontal=True,
-        start_index=0,
-        cutoff=False,
-        max_slides=2,
-        flip_duration=400,#ms
-        slide_input_delay=250#ms
-        ):
+                    self,
+                    frame_dim: pygame.Rect,
+                    surface_distance_p: float = 0.0,
+                    span: int = 1,
+                    background_color: color_t = Colors.TRANSPARENT,
+                    horizontal: bool = True,
+                    start_index: int = 0,
+                    cutoff: bool = False,
+                    max_slides: int = 2,
+
+                    sliding_duration: float = 500,  # ms
+                    select_animation_duration: float = 400,#ms
+                    flip_duration: float = 400,#ms
+                    slide_input_delay: float = 250#ms
+                ):
 
         self.surface_distance_p: float = surface_distance_p
         """
@@ -197,8 +201,10 @@ class SameSizeSlider(Slider):
         self.sliding_clock.start()
 
     @override
-    def render_slide_left(self):
-
+    def render_slide_left(self) -> None:
+        """
+        Renders slide left.
+        """
         progress = self.sliding_clock.elapsed() / self.sliding_duration
         progress = min(1.0, progress)
 
@@ -227,6 +233,9 @@ class SameSizeSlider(Slider):
 
     @override
     def finalize_slide_left(self) -> None:
+        """
+        Finalizes slide left.
+        """
 
         # Moving left means moving to the next image.
         self.surface_index = (self.surface_index + 1) % len(self.surfaces)
@@ -241,7 +250,7 @@ class SameSizeSlider(Slider):
     @override
     def initialize_slide_right(self) -> None:
         """
-        Overwrites slide right.
+        Overwrites initialize slide right.
         """
         #enter new image from the left
 
@@ -283,7 +292,10 @@ class SameSizeSlider(Slider):
         self.sliding_clock.start()
 
     @override
-    def render_slide_right(self):
+    def render_slide_right(self) -> None:
+        """
+        Rendering slide right.
+        """
 
         progress = self.sliding_clock.elapsed() / self.sliding_duration
         progress = min(1.0, progress)
@@ -313,7 +325,9 @@ class SameSizeSlider(Slider):
 
     @override
     def finalize_slide_right(self) -> None:
-
+        """
+        Finalizes slide right.
+        """
         # Moving left means moving to the next image.
         self.surface_index = (self.surface_index - 1) % len(self.surfaces)
 

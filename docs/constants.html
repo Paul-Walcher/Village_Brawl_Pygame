@@ -102,6 +102,9 @@
                     <a class="function" href="#R_ID">R_ID</a>
             </li>
             <li>
+                    <a class="variable" href="#id_t">id_t</a>
+            </li>
+            <li>
                     <a class="class" href="#Mouse">Mouse</a>
                             <ul class="memberlist">
                         <li>
@@ -452,112 +455,117 @@ constants    </h1>
 </span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>
 </span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>    <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 </span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>
-</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>
-</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a><span class="sd">"""</span>
-</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a><span class="sd">Mouse constants</span>
-</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="sd">"""</span>
-</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Mouse</span><span class="p">:</span>
+</span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a><span class="c1">#creating an ID type</span>
+</span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a><span class="nb">type</span> <span class="n">id_t</span> <span class="o">=</span> <span class="nb">int</span>
+</span><span id="L-139"><a href="#L-139"><span class="linenos">139</span></a><span class="sd">"""</span>
+</span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="sd">This type represents an ID created by R_ID().</span>
+</span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a><span class="sd">"""</span>
 </span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>
-</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>    <span class="n">LEFT_BUTTON</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>    <span class="n">WHEEL</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
-</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>    <span class="n">RIGHT_BUTTON</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
-</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>
-</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Alpha</span><span class="p">:</span>
-</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a><span class="sd">    Stores standardized alpha values.</span>
-</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a><span class="sd">    """</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a><span class="sd">"""</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a><span class="sd">Mouse constants</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a><span class="sd">"""</span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Mouse</span><span class="p">:</span>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>    <span class="n">LEFT_BUTTON</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a>    <span class="n">WHEEL</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a>    <span class="n">RIGHT_BUTTON</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
 </span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>
-</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>    <span class="n">ZERO</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>
-</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>    <span class="n">LEVEL_1</span> <span class="o">=</span> <span class="mi">30</span>
-</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>    <span class="n">LEVEL_2</span> <span class="o">=</span> <span class="mi">60</span>
-</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>    <span class="n">LEVEL_3</span> <span class="o">=</span> <span class="mi">100</span>
-</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>
-</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>    <span class="n">HALF_FULL</span> <span class="o">=</span> <span class="mi">127</span>
-</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>
-</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>    <span class="n">LEVEL_4</span> <span class="o">=</span> <span class="mi">160</span>
-</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>    <span class="n">LEVEL_5</span> <span class="o">=</span> <span class="mi">200</span>
-</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>    <span class="n">LEVEL_6</span> <span class="o">=</span> <span class="mi">230</span>
-</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a>
-</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>    <span class="n">FULL</span> <span class="o">=</span> <span class="mi">255</span>
-</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a>
-</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Colors</span><span class="p">:</span>
-</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a><span class="sd">    Stored Colors.</span>
-</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a><span class="sd">    """</span>
+</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Alpha</span><span class="p">:</span>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a><span class="sd">    Stores standardized alpha values.</span>
+</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a><span class="sd">    """</span>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>
+</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>    <span class="n">ZERO</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>
+</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>    <span class="n">LEVEL_1</span> <span class="o">=</span> <span class="mi">30</span>
+</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>    <span class="n">LEVEL_2</span> <span class="o">=</span> <span class="mi">60</span>
+</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>    <span class="n">LEVEL_3</span> <span class="o">=</span> <span class="mi">100</span>
+</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>
+</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a>    <span class="n">HALF_FULL</span> <span class="o">=</span> <span class="mi">127</span>
+</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>
+</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a>    <span class="n">LEVEL_4</span> <span class="o">=</span> <span class="mi">160</span>
+</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a>    <span class="n">LEVEL_5</span> <span class="o">=</span> <span class="mi">200</span>
+</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>    <span class="n">LEVEL_6</span> <span class="o">=</span> <span class="mi">230</span>
+</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>
+</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a>    <span class="n">FULL</span> <span class="o">=</span> <span class="mi">255</span>
 </span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>
-</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a>    <span class="n">T</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Colors</span><span class="p">:</span>
 </span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a><span class="sd">    Gives a color an alpha dimension.</span>
+</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a><span class="sd">    Stored Colors.</span>
 </span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a><span class="sd">    """</span>
 </span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a>
-</span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a>    <span class="n">TRANSPARENT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a>
-</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a>    <span class="n">BLACK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a>    <span class="n">WHITE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a>    <span class="n">RED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a>    <span class="n">GREEN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a>    <span class="n">BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="L-183"><a href="#L-183"><span class="linenos">183</span></a>    <span class="n">BRIGHT_BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="L-184"><a href="#L-184"><span class="linenos">184</span></a>    <span class="n">YELLOW</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="L-185"><a href="#L-185"><span class="linenos">185</span></a>    <span class="n">CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="L-186"><a href="#L-186"><span class="linenos">186</span></a>    <span class="n">DARK_CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">114</span><span class="p">,</span> <span class="mi">114</span><span class="p">)</span>
-</span><span id="L-187"><a href="#L-187"><span class="linenos">187</span></a>    <span class="n">ULTRA_DARK_CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">38</span><span class="p">)</span>
-</span><span id="L-188"><a href="#L-188"><span class="linenos">188</span></a>    <span class="n">LIGHT_ORANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">144</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="L-189"><a href="#L-189"><span class="linenos">189</span></a>    <span class="n">GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>
-</span><span id="L-190"><a href="#L-190"><span class="linenos">190</span></a>    <span class="n">DARK_GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">109</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> <span class="mi">109</span><span class="p">)</span>
-</span><span id="L-191"><a href="#L-191"><span class="linenos">191</span></a>    <span class="n">DARK_SLATE_GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">47</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">79</span><span class="p">)</span>
-</span><span id="L-192"><a href="#L-192"><span class="linenos">192</span></a>    <span class="n">MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="L-193"><a href="#L-193"><span class="linenos">193</span></a>    <span class="n">DARK_MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">139</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">139</span><span class="p">)</span>
-</span><span id="L-194"><a href="#L-194"><span class="linenos">194</span></a>    <span class="n">LILAC</span> <span class="o">=</span> <span class="p">(</span><span class="mi">253</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">245</span><span class="p">)</span>
-</span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a>    <span class="n">ORANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a>
-</span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a>    <span class="n">STANDARD_TEXT_COLOR</span> <span class="o">=</span> <span class="n">WHITE</span>
-</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a>    <span class="n">MAX_PER_DECK_COLOR</span> <span class="o">=</span> <span class="n">YELLOW</span>
-</span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a>    <span class="n">KEEP_DURATION_COLOR</span> <span class="o">=</span> <span class="n">BLUE</span>
-</span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a>
+</span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a>    <span class="n">T</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a><span class="sd">    Gives a color an alpha dimension.</span>
+</span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a><span class="sd">    """</span>
+</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a>
+</span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a>    <span class="n">TRANSPARENT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a>
+</span><span id="L-183"><a href="#L-183"><span class="linenos">183</span></a>    <span class="n">BLACK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="L-184"><a href="#L-184"><span class="linenos">184</span></a>    <span class="n">WHITE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="L-185"><a href="#L-185"><span class="linenos">185</span></a>    <span class="n">RED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="L-186"><a href="#L-186"><span class="linenos">186</span></a>    <span class="n">GREEN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="L-187"><a href="#L-187"><span class="linenos">187</span></a>    <span class="n">BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="L-188"><a href="#L-188"><span class="linenos">188</span></a>    <span class="n">BRIGHT_BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="L-189"><a href="#L-189"><span class="linenos">189</span></a>    <span class="n">YELLOW</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="L-190"><a href="#L-190"><span class="linenos">190</span></a>    <span class="n">CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="L-191"><a href="#L-191"><span class="linenos">191</span></a>    <span class="n">DARK_CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">114</span><span class="p">,</span> <span class="mi">114</span><span class="p">)</span>
+</span><span id="L-192"><a href="#L-192"><span class="linenos">192</span></a>    <span class="n">ULTRA_DARK_CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">38</span><span class="p">)</span>
+</span><span id="L-193"><a href="#L-193"><span class="linenos">193</span></a>    <span class="n">LIGHT_ORANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">144</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="L-194"><a href="#L-194"><span class="linenos">194</span></a>    <span class="n">GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>
+</span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a>    <span class="n">DARK_GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">109</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> <span class="mi">109</span><span class="p">)</span>
+</span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a>    <span class="n">DARK_SLATE_GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">47</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">79</span><span class="p">)</span>
+</span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a>    <span class="n">MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a>    <span class="n">DARK_MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">139</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">139</span><span class="p">)</span>
+</span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a>    <span class="n">LILAC</span> <span class="o">=</span> <span class="p">(</span><span class="mi">253</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">245</span><span class="p">)</span>
+</span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a>    <span class="n">ORANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 </span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a>
-</span><span id="L-202"><a href="#L-202"><span class="linenos">202</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fonts</span><span class="p">:</span>
-</span><span id="L-203"><a href="#L-203"><span class="linenos">203</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="L-204"><a href="#L-204"><span class="linenos">204</span></a><span class="sd">    saved fonts.</span>
-</span><span id="L-205"><a href="#L-205"><span class="linenos">205</span></a><span class="sd">    """</span>
+</span><span id="L-202"><a href="#L-202"><span class="linenos">202</span></a>    <span class="n">STANDARD_TEXT_COLOR</span> <span class="o">=</span> <span class="n">WHITE</span>
+</span><span id="L-203"><a href="#L-203"><span class="linenos">203</span></a>    <span class="n">MAX_PER_DECK_COLOR</span> <span class="o">=</span> <span class="n">YELLOW</span>
+</span><span id="L-204"><a href="#L-204"><span class="linenos">204</span></a>    <span class="n">KEEP_DURATION_COLOR</span> <span class="o">=</span> <span class="n">BLUE</span>
+</span><span id="L-205"><a href="#L-205"><span class="linenos">205</span></a>
 </span><span id="L-206"><a href="#L-206"><span class="linenos">206</span></a>
-</span><span id="L-207"><a href="#L-207"><span class="linenos">207</span></a>    <span class="n">MINECRAFT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FONT_PATH</span><span class="p">,</span> <span class="s2">"Minecraft.ttf"</span><span class="p">)</span>
-</span><span id="L-208"><a href="#L-208"><span class="linenos">208</span></a>
-</span><span id="L-209"><a href="#L-209"><span class="linenos">209</span></a>    <span class="n">STANDARD_FONT</span> <span class="o">=</span> <span class="n">MINECRAFT</span>
-</span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a>
-</span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fontsizes</span><span class="p">:</span>
-</span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a>
-</span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a><span class="sd">    Standardized fontsizes.</span>
-</span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a><span class="sd">    """</span>
-</span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a>
-</span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
-</span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a>
-</span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a>    <span class="n">TINY</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a>    <span class="n">SMALL</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
-</span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a>    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-</span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a>    <span class="n">BIG</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
-</span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a>    <span class="n">HUGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
-</span><span id="L-224"><a href="#L-224"><span class="linenos">224</span></a>
-</span><span id="L-225"><a href="#L-225"><span class="linenos">225</span></a>    <span class="n">SMALL_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">140</span><span class="p">)</span>
-</span><span id="L-226"><a href="#L-226"><span class="linenos">226</span></a>    <span class="n">BIG_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
-</span><span id="L-227"><a href="#L-227"><span class="linenos">227</span></a>
-</span><span id="L-228"><a href="#L-228"><span class="linenos">228</span></a><span class="k">class</span><span class="w"> </span><span class="nc">KeyAlternatives</span><span class="p">:</span>
+</span><span id="L-207"><a href="#L-207"><span class="linenos">207</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fonts</span><span class="p">:</span>
+</span><span id="L-208"><a href="#L-208"><span class="linenos">208</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-209"><a href="#L-209"><span class="linenos">209</span></a><span class="sd">    saved fonts.</span>
+</span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a><span class="sd">    """</span>
+</span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a>
+</span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a>    <span class="n">MINECRAFT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FONT_PATH</span><span class="p">,</span> <span class="s2">"Minecraft.ttf"</span><span class="p">)</span>
+</span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a>
+</span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a>    <span class="n">STANDARD_FONT</span> <span class="o">=</span> <span class="n">MINECRAFT</span>
+</span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a>
+</span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fontsizes</span><span class="p">:</span>
+</span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a>
+</span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a><span class="sd">    Standardized fontsizes.</span>
+</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a><span class="sd">    """</span>
+</span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a>
+</span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
+</span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a>
+</span><span id="L-224"><a href="#L-224"><span class="linenos">224</span></a>    <span class="n">TINY</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span id="L-225"><a href="#L-225"><span class="linenos">225</span></a>    <span class="n">SMALL</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</span><span id="L-226"><a href="#L-226"><span class="linenos">226</span></a>    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+</span><span id="L-227"><a href="#L-227"><span class="linenos">227</span></a>    <span class="n">BIG</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+</span><span id="L-228"><a href="#L-228"><span class="linenos">228</span></a>    <span class="n">HUGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
 </span><span id="L-229"><a href="#L-229"><span class="linenos">229</span></a>
-</span><span id="L-230"><a href="#L-230"><span class="linenos">230</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="L-231"><a href="#L-231"><span class="linenos">231</span></a><span class="sd">    Bindable Keys used as alternatives.</span>
-</span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a><span class="sd">    """</span>
-</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a>
-</span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a>    <span class="n">ENTER_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_o</span>
-</span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a>    <span class="n">BACK_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_k</span>
-</span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a>
-</span><span id="L-237"><a href="#L-237"><span class="linenos">237</span></a>    <span class="n">UP_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span>
-</span><span id="L-238"><a href="#L-238"><span class="linenos">238</span></a>    <span class="n">DOWN_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span>
-</span><span id="L-239"><a href="#L-239"><span class="linenos">239</span></a>    <span class="n">LEFT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span>
-</span><span id="L-240"><a href="#L-240"><span class="linenos">240</span></a>    <span class="n">RIGHT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span>
+</span><span id="L-230"><a href="#L-230"><span class="linenos">230</span></a>    <span class="n">SMALL_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">140</span><span class="p">)</span>
+</span><span id="L-231"><a href="#L-231"><span class="linenos">231</span></a>    <span class="n">BIG_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+</span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a>
+</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a><span class="k">class</span><span class="w"> </span><span class="nc">KeyAlternatives</span><span class="p">:</span>
+</span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a>
+</span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a><span class="sd">    Bindable Keys used as alternatives.</span>
+</span><span id="L-237"><a href="#L-237"><span class="linenos">237</span></a><span class="sd">    """</span>
+</span><span id="L-238"><a href="#L-238"><span class="linenos">238</span></a>
+</span><span id="L-239"><a href="#L-239"><span class="linenos">239</span></a>    <span class="n">ENTER_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_o</span>
+</span><span id="L-240"><a href="#L-240"><span class="linenos">240</span></a>    <span class="n">BACK_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_k</span>
 </span><span id="L-241"><a href="#L-241"><span class="linenos">241</span></a>
-</span><span id="L-242"><a href="#L-242"><span class="linenos">242</span></a>    <span class="n">SHOW_IMAGE_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_LALT</span>
+</span><span id="L-242"><a href="#L-242"><span class="linenos">242</span></a>    <span class="n">UP_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span>
+</span><span id="L-243"><a href="#L-243"><span class="linenos">243</span></a>    <span class="n">DOWN_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span>
+</span><span id="L-244"><a href="#L-244"><span class="linenos">244</span></a>    <span class="n">LEFT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span>
+</span><span id="L-245"><a href="#L-245"><span class="linenos">245</span></a>    <span class="n">RIGHT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span>
+</span><span id="L-246"><a href="#L-246"><span class="linenos">246</span></a>
+</span><span id="L-247"><a href="#L-247"><span class="linenos">247</span></a>    <span class="n">SHOW_IMAGE_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_LALT</span>
 </span></pre></div>
 
 
@@ -887,7 +895,7 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
                 <section id="HASH_VALUE">
                     <div class="attr variable">
             <span class="name">HASH_VALUE</span><span class="annotation">: int</span>        =
-<span class="default_value">81</span>
+<span class="default_value">89</span>
 
         
     </div>
@@ -927,6 +935,20 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
 
                 </section>
+                <section id="id_t">
+                    <div class="attr variable">
+            <span class="def">type</span> <span class="name">id_t</span>        =
+<span class="default_value">int</span>
+
+        
+    </div>
+    <a class="headerlink" href="#id_t"></a>
+    
+            <div class="docstring"><p>This type represents an ID created by R_ID().</p>
+</div>
+
+
+                </section>
                 <section id="Mouse">
                             <input id="Mouse-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr class">
@@ -938,11 +960,11 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#Mouse"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Mouse-142"><a href="#Mouse-142"><span class="linenos">142</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Mouse</span><span class="p">:</span>
-</span><span id="Mouse-143"><a href="#Mouse-143"><span class="linenos">143</span></a>
-</span><span id="Mouse-144"><a href="#Mouse-144"><span class="linenos">144</span></a>    <span class="n">LEFT_BUTTON</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span id="Mouse-145"><a href="#Mouse-145"><span class="linenos">145</span></a>    <span class="n">WHEEL</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
-</span><span id="Mouse-146"><a href="#Mouse-146"><span class="linenos">146</span></a>    <span class="n">RIGHT_BUTTON</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Mouse-147"><a href="#Mouse-147"><span class="linenos">147</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Mouse</span><span class="p">:</span>
+</span><span id="Mouse-148"><a href="#Mouse-148"><span class="linenos">148</span></a>
+</span><span id="Mouse-149"><a href="#Mouse-149"><span class="linenos">149</span></a>    <span class="n">LEFT_BUTTON</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="Mouse-150"><a href="#Mouse-150"><span class="linenos">150</span></a>    <span class="n">WHEEL</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span id="Mouse-151"><a href="#Mouse-151"><span class="linenos">151</span></a>    <span class="n">RIGHT_BUTTON</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
 </span></pre></div>
 
 
@@ -996,24 +1018,24 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#Alpha"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Alpha-148"><a href="#Alpha-148"><span class="linenos">148</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Alpha</span><span class="p">:</span>
-</span><span id="Alpha-149"><a href="#Alpha-149"><span class="linenos">149</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="Alpha-150"><a href="#Alpha-150"><span class="linenos">150</span></a><span class="sd">    Stores standardized alpha values.</span>
-</span><span id="Alpha-151"><a href="#Alpha-151"><span class="linenos">151</span></a><span class="sd">    """</span>
-</span><span id="Alpha-152"><a href="#Alpha-152"><span class="linenos">152</span></a>
-</span><span id="Alpha-153"><a href="#Alpha-153"><span class="linenos">153</span></a>    <span class="n">ZERO</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="Alpha-154"><a href="#Alpha-154"><span class="linenos">154</span></a>
-</span><span id="Alpha-155"><a href="#Alpha-155"><span class="linenos">155</span></a>    <span class="n">LEVEL_1</span> <span class="o">=</span> <span class="mi">30</span>
-</span><span id="Alpha-156"><a href="#Alpha-156"><span class="linenos">156</span></a>    <span class="n">LEVEL_2</span> <span class="o">=</span> <span class="mi">60</span>
-</span><span id="Alpha-157"><a href="#Alpha-157"><span class="linenos">157</span></a>    <span class="n">LEVEL_3</span> <span class="o">=</span> <span class="mi">100</span>
-</span><span id="Alpha-158"><a href="#Alpha-158"><span class="linenos">158</span></a>
-</span><span id="Alpha-159"><a href="#Alpha-159"><span class="linenos">159</span></a>    <span class="n">HALF_FULL</span> <span class="o">=</span> <span class="mi">127</span>
-</span><span id="Alpha-160"><a href="#Alpha-160"><span class="linenos">160</span></a>
-</span><span id="Alpha-161"><a href="#Alpha-161"><span class="linenos">161</span></a>    <span class="n">LEVEL_4</span> <span class="o">=</span> <span class="mi">160</span>
-</span><span id="Alpha-162"><a href="#Alpha-162"><span class="linenos">162</span></a>    <span class="n">LEVEL_5</span> <span class="o">=</span> <span class="mi">200</span>
-</span><span id="Alpha-163"><a href="#Alpha-163"><span class="linenos">163</span></a>    <span class="n">LEVEL_6</span> <span class="o">=</span> <span class="mi">230</span>
-</span><span id="Alpha-164"><a href="#Alpha-164"><span class="linenos">164</span></a>
-</span><span id="Alpha-165"><a href="#Alpha-165"><span class="linenos">165</span></a>    <span class="n">FULL</span> <span class="o">=</span> <span class="mi">255</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Alpha-153"><a href="#Alpha-153"><span class="linenos">153</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Alpha</span><span class="p">:</span>
+</span><span id="Alpha-154"><a href="#Alpha-154"><span class="linenos">154</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="Alpha-155"><a href="#Alpha-155"><span class="linenos">155</span></a><span class="sd">    Stores standardized alpha values.</span>
+</span><span id="Alpha-156"><a href="#Alpha-156"><span class="linenos">156</span></a><span class="sd">    """</span>
+</span><span id="Alpha-157"><a href="#Alpha-157"><span class="linenos">157</span></a>
+</span><span id="Alpha-158"><a href="#Alpha-158"><span class="linenos">158</span></a>    <span class="n">ZERO</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Alpha-159"><a href="#Alpha-159"><span class="linenos">159</span></a>
+</span><span id="Alpha-160"><a href="#Alpha-160"><span class="linenos">160</span></a>    <span class="n">LEVEL_1</span> <span class="o">=</span> <span class="mi">30</span>
+</span><span id="Alpha-161"><a href="#Alpha-161"><span class="linenos">161</span></a>    <span class="n">LEVEL_2</span> <span class="o">=</span> <span class="mi">60</span>
+</span><span id="Alpha-162"><a href="#Alpha-162"><span class="linenos">162</span></a>    <span class="n">LEVEL_3</span> <span class="o">=</span> <span class="mi">100</span>
+</span><span id="Alpha-163"><a href="#Alpha-163"><span class="linenos">163</span></a>
+</span><span id="Alpha-164"><a href="#Alpha-164"><span class="linenos">164</span></a>    <span class="n">HALF_FULL</span> <span class="o">=</span> <span class="mi">127</span>
+</span><span id="Alpha-165"><a href="#Alpha-165"><span class="linenos">165</span></a>
+</span><span id="Alpha-166"><a href="#Alpha-166"><span class="linenos">166</span></a>    <span class="n">LEVEL_4</span> <span class="o">=</span> <span class="mi">160</span>
+</span><span id="Alpha-167"><a href="#Alpha-167"><span class="linenos">167</span></a>    <span class="n">LEVEL_5</span> <span class="o">=</span> <span class="mi">200</span>
+</span><span id="Alpha-168"><a href="#Alpha-168"><span class="linenos">168</span></a>    <span class="n">LEVEL_6</span> <span class="o">=</span> <span class="mi">230</span>
+</span><span id="Alpha-169"><a href="#Alpha-169"><span class="linenos">169</span></a>
+</span><span id="Alpha-170"><a href="#Alpha-170"><span class="linenos">170</span></a>    <span class="n">FULL</span> <span class="o">=</span> <span class="mi">255</span>
 </span></pre></div>
 
 
@@ -1141,40 +1163,40 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#Colors"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Colors-167"><a href="#Colors-167"><span class="linenos">167</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Colors</span><span class="p">:</span>
-</span><span id="Colors-168"><a href="#Colors-168"><span class="linenos">168</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="Colors-169"><a href="#Colors-169"><span class="linenos">169</span></a><span class="sd">    Stored Colors.</span>
-</span><span id="Colors-170"><a href="#Colors-170"><span class="linenos">170</span></a><span class="sd">    """</span>
-</span><span id="Colors-171"><a href="#Colors-171"><span class="linenos">171</span></a>
-</span><span id="Colors-172"><a href="#Colors-172"><span class="linenos">172</span></a>    <span class="n">T</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Colors-172"><a href="#Colors-172"><span class="linenos">172</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Colors</span><span class="p">:</span>
 </span><span id="Colors-173"><a href="#Colors-173"><span class="linenos">173</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="Colors-174"><a href="#Colors-174"><span class="linenos">174</span></a><span class="sd">    Gives a color an alpha dimension.</span>
+</span><span id="Colors-174"><a href="#Colors-174"><span class="linenos">174</span></a><span class="sd">    Stored Colors.</span>
 </span><span id="Colors-175"><a href="#Colors-175"><span class="linenos">175</span></a><span class="sd">    """</span>
 </span><span id="Colors-176"><a href="#Colors-176"><span class="linenos">176</span></a>
-</span><span id="Colors-177"><a href="#Colors-177"><span class="linenos">177</span></a>    <span class="n">TRANSPARENT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="Colors-178"><a href="#Colors-178"><span class="linenos">178</span></a>
-</span><span id="Colors-179"><a href="#Colors-179"><span class="linenos">179</span></a>    <span class="n">BLACK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="Colors-180"><a href="#Colors-180"><span class="linenos">180</span></a>    <span class="n">WHITE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="Colors-181"><a href="#Colors-181"><span class="linenos">181</span></a>    <span class="n">RED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="Colors-182"><a href="#Colors-182"><span class="linenos">182</span></a>    <span class="n">GREEN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="Colors-183"><a href="#Colors-183"><span class="linenos">183</span></a>    <span class="n">BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="Colors-184"><a href="#Colors-184"><span class="linenos">184</span></a>    <span class="n">BRIGHT_BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="Colors-185"><a href="#Colors-185"><span class="linenos">185</span></a>    <span class="n">YELLOW</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="Colors-186"><a href="#Colors-186"><span class="linenos">186</span></a>    <span class="n">CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="Colors-187"><a href="#Colors-187"><span class="linenos">187</span></a>    <span class="n">DARK_CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">114</span><span class="p">,</span> <span class="mi">114</span><span class="p">)</span>
-</span><span id="Colors-188"><a href="#Colors-188"><span class="linenos">188</span></a>    <span class="n">ULTRA_DARK_CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">38</span><span class="p">)</span>
-</span><span id="Colors-189"><a href="#Colors-189"><span class="linenos">189</span></a>    <span class="n">LIGHT_ORANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">144</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="Colors-190"><a href="#Colors-190"><span class="linenos">190</span></a>    <span class="n">GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>
-</span><span id="Colors-191"><a href="#Colors-191"><span class="linenos">191</span></a>    <span class="n">DARK_GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">109</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> <span class="mi">109</span><span class="p">)</span>
-</span><span id="Colors-192"><a href="#Colors-192"><span class="linenos">192</span></a>    <span class="n">DARK_SLATE_GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">47</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">79</span><span class="p">)</span>
-</span><span id="Colors-193"><a href="#Colors-193"><span class="linenos">193</span></a>    <span class="n">MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span><span id="Colors-194"><a href="#Colors-194"><span class="linenos">194</span></a>    <span class="n">DARK_MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">139</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">139</span><span class="p">)</span>
-</span><span id="Colors-195"><a href="#Colors-195"><span class="linenos">195</span></a>    <span class="n">LILAC</span> <span class="o">=</span> <span class="p">(</span><span class="mi">253</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">245</span><span class="p">)</span>
-</span><span id="Colors-196"><a href="#Colors-196"><span class="linenos">196</span></a>    <span class="n">ORANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span id="Colors-197"><a href="#Colors-197"><span class="linenos">197</span></a>
-</span><span id="Colors-198"><a href="#Colors-198"><span class="linenos">198</span></a>    <span class="n">STANDARD_TEXT_COLOR</span> <span class="o">=</span> <span class="n">WHITE</span>
-</span><span id="Colors-199"><a href="#Colors-199"><span class="linenos">199</span></a>    <span class="n">MAX_PER_DECK_COLOR</span> <span class="o">=</span> <span class="n">YELLOW</span>
-</span><span id="Colors-200"><a href="#Colors-200"><span class="linenos">200</span></a>    <span class="n">KEEP_DURATION_COLOR</span> <span class="o">=</span> <span class="n">BLUE</span>
+</span><span id="Colors-177"><a href="#Colors-177"><span class="linenos">177</span></a>    <span class="n">T</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="Colors-178"><a href="#Colors-178"><span class="linenos">178</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="Colors-179"><a href="#Colors-179"><span class="linenos">179</span></a><span class="sd">    Gives a color an alpha dimension.</span>
+</span><span id="Colors-180"><a href="#Colors-180"><span class="linenos">180</span></a><span class="sd">    """</span>
+</span><span id="Colors-181"><a href="#Colors-181"><span class="linenos">181</span></a>
+</span><span id="Colors-182"><a href="#Colors-182"><span class="linenos">182</span></a>    <span class="n">TRANSPARENT</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="Colors-183"><a href="#Colors-183"><span class="linenos">183</span></a>
+</span><span id="Colors-184"><a href="#Colors-184"><span class="linenos">184</span></a>    <span class="n">BLACK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="Colors-185"><a href="#Colors-185"><span class="linenos">185</span></a>    <span class="n">WHITE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="Colors-186"><a href="#Colors-186"><span class="linenos">186</span></a>    <span class="n">RED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="Colors-187"><a href="#Colors-187"><span class="linenos">187</span></a>    <span class="n">GREEN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="Colors-188"><a href="#Colors-188"><span class="linenos">188</span></a>    <span class="n">BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="Colors-189"><a href="#Colors-189"><span class="linenos">189</span></a>    <span class="n">BRIGHT_BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="Colors-190"><a href="#Colors-190"><span class="linenos">190</span></a>    <span class="n">YELLOW</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="Colors-191"><a href="#Colors-191"><span class="linenos">191</span></a>    <span class="n">CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="Colors-192"><a href="#Colors-192"><span class="linenos">192</span></a>    <span class="n">DARK_CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">114</span><span class="p">,</span> <span class="mi">114</span><span class="p">)</span>
+</span><span id="Colors-193"><a href="#Colors-193"><span class="linenos">193</span></a>    <span class="n">ULTRA_DARK_CYAN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">38</span><span class="p">)</span>
+</span><span id="Colors-194"><a href="#Colors-194"><span class="linenos">194</span></a>    <span class="n">LIGHT_ORANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">144</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="Colors-195"><a href="#Colors-195"><span class="linenos">195</span></a>    <span class="n">GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span>
+</span><span id="Colors-196"><a href="#Colors-196"><span class="linenos">196</span></a>    <span class="n">DARK_GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">109</span><span class="p">,</span> <span class="mi">109</span><span class="p">,</span> <span class="mi">109</span><span class="p">)</span>
+</span><span id="Colors-197"><a href="#Colors-197"><span class="linenos">197</span></a>    <span class="n">DARK_SLATE_GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">47</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">79</span><span class="p">)</span>
+</span><span id="Colors-198"><a href="#Colors-198"><span class="linenos">198</span></a>    <span class="n">MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+</span><span id="Colors-199"><a href="#Colors-199"><span class="linenos">199</span></a>    <span class="n">DARK_MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">139</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">139</span><span class="p">)</span>
+</span><span id="Colors-200"><a href="#Colors-200"><span class="linenos">200</span></a>    <span class="n">LILAC</span> <span class="o">=</span> <span class="p">(</span><span class="mi">253</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">245</span><span class="p">)</span>
+</span><span id="Colors-201"><a href="#Colors-201"><span class="linenos">201</span></a>    <span class="n">ORANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="Colors-202"><a href="#Colors-202"><span class="linenos">202</span></a>
+</span><span id="Colors-203"><a href="#Colors-203"><span class="linenos">203</span></a>    <span class="n">STANDARD_TEXT_COLOR</span> <span class="o">=</span> <span class="n">WHITE</span>
+</span><span id="Colors-204"><a href="#Colors-204"><span class="linenos">204</span></a>    <span class="n">MAX_PER_DECK_COLOR</span> <span class="o">=</span> <span class="n">YELLOW</span>
+</span><span id="Colors-205"><a href="#Colors-205"><span class="linenos">205</span></a>    <span class="n">KEEP_DURATION_COLOR</span> <span class="o">=</span> <span class="n">BLUE</span>
 </span></pre></div>
 
 
@@ -1193,7 +1215,7 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#Colors.T"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Colors.T-172"><a href="#Colors.T-172"><span class="linenos">172</span></a>    <span class="n">T</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Colors.T-177"><a href="#Colors.T-177"><span class="linenos">177</span></a>    <span class="n">T</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1478,14 +1500,14 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#Fonts"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fonts-203"><a href="#Fonts-203"><span class="linenos">203</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fonts</span><span class="p">:</span>
-</span><span id="Fonts-204"><a href="#Fonts-204"><span class="linenos">204</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="Fonts-205"><a href="#Fonts-205"><span class="linenos">205</span></a><span class="sd">    saved fonts.</span>
-</span><span id="Fonts-206"><a href="#Fonts-206"><span class="linenos">206</span></a><span class="sd">    """</span>
-</span><span id="Fonts-207"><a href="#Fonts-207"><span class="linenos">207</span></a>
-</span><span id="Fonts-208"><a href="#Fonts-208"><span class="linenos">208</span></a>    <span class="n">MINECRAFT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FONT_PATH</span><span class="p">,</span> <span class="s2">"Minecraft.ttf"</span><span class="p">)</span>
-</span><span id="Fonts-209"><a href="#Fonts-209"><span class="linenos">209</span></a>
-</span><span id="Fonts-210"><a href="#Fonts-210"><span class="linenos">210</span></a>    <span class="n">STANDARD_FONT</span> <span class="o">=</span> <span class="n">MINECRAFT</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fonts-208"><a href="#Fonts-208"><span class="linenos">208</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fonts</span><span class="p">:</span>
+</span><span id="Fonts-209"><a href="#Fonts-209"><span class="linenos">209</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="Fonts-210"><a href="#Fonts-210"><span class="linenos">210</span></a><span class="sd">    saved fonts.</span>
+</span><span id="Fonts-211"><a href="#Fonts-211"><span class="linenos">211</span></a><span class="sd">    """</span>
+</span><span id="Fonts-212"><a href="#Fonts-212"><span class="linenos">212</span></a>
+</span><span id="Fonts-213"><a href="#Fonts-213"><span class="linenos">213</span></a>    <span class="n">MINECRAFT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FONT_PATH</span><span class="p">,</span> <span class="s2">"Minecraft.ttf"</span><span class="p">)</span>
+</span><span id="Fonts-214"><a href="#Fonts-214"><span class="linenos">214</span></a>
+</span><span id="Fonts-215"><a href="#Fonts-215"><span class="linenos">215</span></a>    <span class="n">STANDARD_FONT</span> <span class="o">=</span> <span class="n">MINECRAFT</span>
 </span></pre></div>
 
 
@@ -1529,22 +1551,22 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#Fontsizes"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fontsizes-212"><a href="#Fontsizes-212"><span class="linenos">212</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fontsizes</span><span class="p">:</span>
-</span><span id="Fontsizes-213"><a href="#Fontsizes-213"><span class="linenos">213</span></a>
-</span><span id="Fontsizes-214"><a href="#Fontsizes-214"><span class="linenos">214</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="Fontsizes-215"><a href="#Fontsizes-215"><span class="linenos">215</span></a><span class="sd">    Standardized fontsizes.</span>
-</span><span id="Fontsizes-216"><a href="#Fontsizes-216"><span class="linenos">216</span></a><span class="sd">    """</span>
-</span><span id="Fontsizes-217"><a href="#Fontsizes-217"><span class="linenos">217</span></a>
-</span><span id="Fontsizes-218"><a href="#Fontsizes-218"><span class="linenos">218</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
-</span><span id="Fontsizes-219"><a href="#Fontsizes-219"><span class="linenos">219</span></a>
-</span><span id="Fontsizes-220"><a href="#Fontsizes-220"><span class="linenos">220</span></a>    <span class="n">TINY</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span><span id="Fontsizes-221"><a href="#Fontsizes-221"><span class="linenos">221</span></a>    <span class="n">SMALL</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
-</span><span id="Fontsizes-222"><a href="#Fontsizes-222"><span class="linenos">222</span></a>    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-</span><span id="Fontsizes-223"><a href="#Fontsizes-223"><span class="linenos">223</span></a>    <span class="n">BIG</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
-</span><span id="Fontsizes-224"><a href="#Fontsizes-224"><span class="linenos">224</span></a>    <span class="n">HUGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
-</span><span id="Fontsizes-225"><a href="#Fontsizes-225"><span class="linenos">225</span></a>
-</span><span id="Fontsizes-226"><a href="#Fontsizes-226"><span class="linenos">226</span></a>    <span class="n">SMALL_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">140</span><span class="p">)</span>
-</span><span id="Fontsizes-227"><a href="#Fontsizes-227"><span class="linenos">227</span></a>    <span class="n">BIG_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fontsizes-217"><a href="#Fontsizes-217"><span class="linenos">217</span></a><span class="k">class</span><span class="w"> </span><span class="nc">Fontsizes</span><span class="p">:</span>
+</span><span id="Fontsizes-218"><a href="#Fontsizes-218"><span class="linenos">218</span></a>
+</span><span id="Fontsizes-219"><a href="#Fontsizes-219"><span class="linenos">219</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="Fontsizes-220"><a href="#Fontsizes-220"><span class="linenos">220</span></a><span class="sd">    Standardized fontsizes.</span>
+</span><span id="Fontsizes-221"><a href="#Fontsizes-221"><span class="linenos">221</span></a><span class="sd">    """</span>
+</span><span id="Fontsizes-222"><a href="#Fontsizes-222"><span class="linenos">222</span></a>
+</span><span id="Fontsizes-223"><a href="#Fontsizes-223"><span class="linenos">223</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
+</span><span id="Fontsizes-224"><a href="#Fontsizes-224"><span class="linenos">224</span></a>
+</span><span id="Fontsizes-225"><a href="#Fontsizes-225"><span class="linenos">225</span></a>    <span class="n">TINY</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span id="Fontsizes-226"><a href="#Fontsizes-226"><span class="linenos">226</span></a>    <span class="n">SMALL</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</span><span id="Fontsizes-227"><a href="#Fontsizes-227"><span class="linenos">227</span></a>    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+</span><span id="Fontsizes-228"><a href="#Fontsizes-228"><span class="linenos">228</span></a>    <span class="n">BIG</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+</span><span id="Fontsizes-229"><a href="#Fontsizes-229"><span class="linenos">229</span></a>    <span class="n">HUGE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
+</span><span id="Fontsizes-230"><a href="#Fontsizes-230"><span class="linenos">230</span></a>
+</span><span id="Fontsizes-231"><a href="#Fontsizes-231"><span class="linenos">231</span></a>    <span class="n">SMALL_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">140</span><span class="p">)</span>
+</span><span id="Fontsizes-232"><a href="#Fontsizes-232"><span class="linenos">232</span></a>    <span class="n">BIG_HEADLINE</span> <span class="o">=</span> <span class="n">fscale</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1563,7 +1585,7 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#Fontsizes.fscale"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fontsizes.fscale-218"><a href="#Fontsizes.fscale-218"><span class="linenos">218</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fontsizes.fscale-223"><a href="#Fontsizes.fscale-223"><span class="linenos">223</span></a>    <span class="n">fscale</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">HEIGHT</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1080</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -1666,21 +1688,21 @@ where x.png is stored in ICON_IMAGE_PATH.</p>
 
     </div>
     <a class="headerlink" href="#KeyAlternatives"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="KeyAlternatives-229"><a href="#KeyAlternatives-229"><span class="linenos">229</span></a><span class="k">class</span><span class="w"> </span><span class="nc">KeyAlternatives</span><span class="p">:</span>
-</span><span id="KeyAlternatives-230"><a href="#KeyAlternatives-230"><span class="linenos">230</span></a>
-</span><span id="KeyAlternatives-231"><a href="#KeyAlternatives-231"><span class="linenos">231</span></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="KeyAlternatives-232"><a href="#KeyAlternatives-232"><span class="linenos">232</span></a><span class="sd">    Bindable Keys used as alternatives.</span>
-</span><span id="KeyAlternatives-233"><a href="#KeyAlternatives-233"><span class="linenos">233</span></a><span class="sd">    """</span>
-</span><span id="KeyAlternatives-234"><a href="#KeyAlternatives-234"><span class="linenos">234</span></a>
-</span><span id="KeyAlternatives-235"><a href="#KeyAlternatives-235"><span class="linenos">235</span></a>    <span class="n">ENTER_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_o</span>
-</span><span id="KeyAlternatives-236"><a href="#KeyAlternatives-236"><span class="linenos">236</span></a>    <span class="n">BACK_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_k</span>
-</span><span id="KeyAlternatives-237"><a href="#KeyAlternatives-237"><span class="linenos">237</span></a>
-</span><span id="KeyAlternatives-238"><a href="#KeyAlternatives-238"><span class="linenos">238</span></a>    <span class="n">UP_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span>
-</span><span id="KeyAlternatives-239"><a href="#KeyAlternatives-239"><span class="linenos">239</span></a>    <span class="n">DOWN_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span>
-</span><span id="KeyAlternatives-240"><a href="#KeyAlternatives-240"><span class="linenos">240</span></a>    <span class="n">LEFT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span>
-</span><span id="KeyAlternatives-241"><a href="#KeyAlternatives-241"><span class="linenos">241</span></a>    <span class="n">RIGHT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="KeyAlternatives-234"><a href="#KeyAlternatives-234"><span class="linenos">234</span></a><span class="k">class</span><span class="w"> </span><span class="nc">KeyAlternatives</span><span class="p">:</span>
+</span><span id="KeyAlternatives-235"><a href="#KeyAlternatives-235"><span class="linenos">235</span></a>
+</span><span id="KeyAlternatives-236"><a href="#KeyAlternatives-236"><span class="linenos">236</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="KeyAlternatives-237"><a href="#KeyAlternatives-237"><span class="linenos">237</span></a><span class="sd">    Bindable Keys used as alternatives.</span>
+</span><span id="KeyAlternatives-238"><a href="#KeyAlternatives-238"><span class="linenos">238</span></a><span class="sd">    """</span>
+</span><span id="KeyAlternatives-239"><a href="#KeyAlternatives-239"><span class="linenos">239</span></a>
+</span><span id="KeyAlternatives-240"><a href="#KeyAlternatives-240"><span class="linenos">240</span></a>    <span class="n">ENTER_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_o</span>
+</span><span id="KeyAlternatives-241"><a href="#KeyAlternatives-241"><span class="linenos">241</span></a>    <span class="n">BACK_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_k</span>
 </span><span id="KeyAlternatives-242"><a href="#KeyAlternatives-242"><span class="linenos">242</span></a>
-</span><span id="KeyAlternatives-243"><a href="#KeyAlternatives-243"><span class="linenos">243</span></a>    <span class="n">SHOW_IMAGE_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_LALT</span>
+</span><span id="KeyAlternatives-243"><a href="#KeyAlternatives-243"><span class="linenos">243</span></a>    <span class="n">UP_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span>
+</span><span id="KeyAlternatives-244"><a href="#KeyAlternatives-244"><span class="linenos">244</span></a>    <span class="n">DOWN_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span>
+</span><span id="KeyAlternatives-245"><a href="#KeyAlternatives-245"><span class="linenos">245</span></a>    <span class="n">LEFT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span>
+</span><span id="KeyAlternatives-246"><a href="#KeyAlternatives-246"><span class="linenos">246</span></a>    <span class="n">RIGHT_ALTERNATIVE</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span>
+</span><span id="KeyAlternatives-247"><a href="#KeyAlternatives-247"><span class="linenos">247</span></a>
+</span><span id="KeyAlternatives-248"><a href="#KeyAlternatives-248"><span class="linenos">248</span></a>    <span class="n">SHOW_IMAGE_KEY</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_LALT</span>
 </span></pre></div>
 
 

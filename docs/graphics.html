@@ -161,6 +161,9 @@
             <li>
                     <a class="function" href="#position_relative">position_relative</a>
             </li>
+            <li>
+                    <a class="function" href="#position_relative_point">position_relative_point</a>
+            </li>
     </ul>
 
 
@@ -187,7 +190,7 @@ graphics    </h1>
 </span><span id="L-3"><a href="#L-3"><span class="linenos">  3</span></a>
 </span><span id="L-4"><a href="#L-4"><span class="linenos">  4</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
 </span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">constants</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">fequal</span><span class="p">,</span> <span class="n">color_t</span><span class="p">,</span> <span class="n">Colors</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">fequal</span><span class="p">,</span> <span class="n">color_t</span><span class="p">,</span> <span class="n">Colors</span><span class="p">,</span> <span class="n">point_t</span>
 </span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a><span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
 </span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 </span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="sd">"""</span>
@@ -1072,6 +1075,13 @@ graphics    </h1>
 </span><span id="L-888"><a href="#L-888"><span class="linenos">888</span></a>                            <span class="n">make_relative_rect</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
 </span><span id="L-889"><a href="#L-889"><span class="linenos">889</span></a>                            <span class="n">make_relative_rect</span><span class="o">.</span><span class="n">height</span>
 </span><span id="L-890"><a href="#L-890"><span class="linenos">890</span></a>                        <span class="p">)</span>
+</span><span id="L-891"><a href="#L-891"><span class="linenos">891</span></a>
+</span><span id="L-892"><a href="#L-892"><span class="linenos">892</span></a><span class="k">def</span><span class="w"> </span><span class="nf">position_relative_point</span><span class="p">(</span><span class="n">anchor_point</span><span class="p">:</span> <span class="n">point_t</span><span class="p">,</span> <span class="n">make_relative_point</span><span class="p">:</span> <span class="n">point_t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">point_t</span><span class="p">:</span>
+</span><span id="L-893"><a href="#L-893"><span class="linenos">893</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="L-894"><a href="#L-894"><span class="linenos">894</span></a><span class="sd">    Returns the point that would be the position of make_relative_point</span>
+</span><span id="L-895"><a href="#L-895"><span class="linenos">895</span></a><span class="sd">    if it was relative to anchor_point.</span>
+</span><span id="L-896"><a href="#L-896"><span class="linenos">896</span></a><span class="sd">    """</span>
+</span><span id="L-897"><a href="#L-897"><span class="linenos">897</span></a>    <span class="k">return</span> <span class="p">(</span><span class="n">make_relative_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">anchor_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">make_relative_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">anchor_point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </span></pre></div>
 
 
@@ -2644,6 +2654,32 @@ by using the relative distance of (x, y) from make_relative_rect to anchor rect.
 make_relative_rect = (50, 200, 100, 100)</p>
 
 <p>position_relative(anchor_rect, make_relative_rect) -> (40, 100, 100, 100)</p>
+</div>
+
+
+                </section>
+                <section id="position_relative_point">
+                            <input id="position_relative_point-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">position_relative_point</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">anchor_point</span><span class="p">:</span> <span class="n">point_t</span>, </span><span class="param"><span class="n">make_relative_point</span><span class="p">:</span> <span class="n">point_t</span></span><span class="return-annotation">) -> <span class="n">point_t</span>:</span></span>
+
+                <label class="view-source-button" for="position_relative_point-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#position_relative_point"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="position_relative_point-893"><a href="#position_relative_point-893"><span class="linenos">893</span></a><span class="k">def</span><span class="w"> </span><span class="nf">position_relative_point</span><span class="p">(</span><span class="n">anchor_point</span><span class="p">:</span> <span class="n">point_t</span><span class="p">,</span> <span class="n">make_relative_point</span><span class="p">:</span> <span class="n">point_t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">point_t</span><span class="p">:</span>
+</span><span id="position_relative_point-894"><a href="#position_relative_point-894"><span class="linenos">894</span></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="position_relative_point-895"><a href="#position_relative_point-895"><span class="linenos">895</span></a><span class="sd">    Returns the point that would be the position of make_relative_point</span>
+</span><span id="position_relative_point-896"><a href="#position_relative_point-896"><span class="linenos">896</span></a><span class="sd">    if it was relative to anchor_point.</span>
+</span><span id="position_relative_point-897"><a href="#position_relative_point-897"><span class="linenos">897</span></a><span class="sd">    """</span>
+</span><span id="position_relative_point-898"><a href="#position_relative_point-898"><span class="linenos">898</span></a>    <span class="k">return</span> <span class="p">(</span><span class="n">make_relative_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">anchor_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">make_relative_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">anchor_point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Returns the point that would be the position of make_relative_point
+if it was relative to anchor_point.</p>
 </div>
 
 
