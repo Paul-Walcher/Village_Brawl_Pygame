@@ -9,7 +9,7 @@ from Frames.frame_enums import FrameEnums
 import graphics
 from graphics import text_t, colored_text_t, page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 
-from constants import color_t, R_ID, Fonts, Colors
+from constants import color_t, R_ID, Fonts, Colors, id_t
 from event_queue_manager import Event
 from clock import Clock
 
@@ -21,8 +21,8 @@ class Label(Frame):
     """
 
     #states
-    NOT_SELECTED: int = R_ID()
-    SELECTED: int = R_ID()
+    NOT_SELECTED: id_t = R_ID()
+    SELECTED: id_t = R_ID()
 
     def __init__(
                 self,
@@ -160,7 +160,7 @@ class Label(Frame):
         """
         The surface for when the label is selected
         """
-        self.state: int = Label.NOT_SELECTED
+        self.state: id_t = Label.NOT_SELECTED
         """
         The state of the label.
         """

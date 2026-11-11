@@ -7,7 +7,7 @@ import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 
 from event_queue_manager import Event
-from constants import Colors, Fonts, R_ID, color_t
+from constants import Colors, Fonts, R_ID, color_t, id_t
 from clock import Clock
 from enum import Enum, auto
 
@@ -27,17 +27,17 @@ class DropdownMenu(Frame):
     NOTHING_SELECTED_INDEX: int = -1 #index when nothing is selected
 
     #Nothing selected means nothing will be highlighted
-    NOTHING_SELECTED = R_ID()
+    NOTHING_SELECTED: id_t = R_ID()
     #option selected means the currently selected option will be highlighted
-    OPTION_SELECTED = R_ID()
+    OPTION_SELECTED: id_t = R_ID()
     #Means the selection animation is playing, and the selection progress is going on
-    SELECT_ANIMATION_PLAYING = R_ID()
+    SELECT_ANIMATION_PLAYING: id_t = R_ID()
 
-    class EventTypes(Enum):
+    class EventTypes:
 
-        SELECT_ANIMATION_ENDED = auto() #indicates the selection animation is over,
+        SELECT_ANIMATION_ENDED: id_t = R_ID() #indicates the selection animation is over,
                                         #and the selection process finished
-        NEW_OPTION_HIGHLIGHTED = auto()
+        NEW_OPTION_HIGHLIGHTED: id_t = R_ID()
 
 
     class SelectAnimationEndedEvent(Event):
@@ -213,7 +213,7 @@ class DropdownMenu(Frame):
                                     highlighted_text_dim -> the frame after the highlighted text margins have been applied.
                                     )
         """
-        self.state: int = (DropdownMenu.NOTHING_SELECTED if self.selected_index == DropdownMenu.NOTHING_SELECTED_INDEX else DropdownMenu.OPTION_SELECTED)
+        self.state: id_t = (DropdownMenu.NOTHING_SELECTED if self.selected_index == DropdownMenu.NOTHING_SELECTED_INDEX else DropdownMenu.OPTION_SELECTED)
         """
         the state of the dropdown menu
         """

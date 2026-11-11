@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 from event_queue_manager import EventQueueManager, Event
 from clock import Clock
-from constants import R_ID
+from constants import R_ID, id_t
 from Frames.frame_enums import FrameEnums
 """
 Type definitions.
@@ -65,11 +65,11 @@ class Frame(EventQueueManager):
     in this group (key).
     """
 
-    class EventTypes(Enum):
+    class EventTypes:
         #types of the standard frame events
-        FOCUS_CHANGED = auto()
-        SUBFRAME_CREATED = auto()
-        SUBFRAME_DELETED = auto()
+        FOCUS_CHANGED: id_t = R_ID()
+        SUBFRAME_CREATED: id_t = R_ID()
+        SUBFRAME_DELETED: id_t = R_ID()
 
     class FocusChangedEvent(Event):
 

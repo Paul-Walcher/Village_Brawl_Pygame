@@ -18,7 +18,8 @@ from constants import (
     KeyAlternatives,
     R_ID,
     color_t,
-    point_t
+    point_t,
+    id_t
 )
 from enum import Enum, auto
 import graphics
@@ -34,21 +35,20 @@ class Slider(Frame):
     NO_SIZE_DECREASE = -1
 
     #states
-
-    SLIDING_LEFT = R_ID()
-    SLIDING_RIGHT = R_ID()
-    NOT_SLIDING = R_ID()
-    SELECT_ANIMATION_PLAYING = R_ID()
-    FLIPPING_ANIMATION_PLAYING = R_ID()
-    FLIPPING_ALL_ANIMATION_PLAYING = R_ID()
+    SLIDING_LEFT: id_t = R_ID()
+    SLIDING_RIGHT: id_t = R_ID()
+    NOT_SLIDING: id_t = R_ID()
+    SELECT_ANIMATION_PLAYING: id_t = R_ID()
+    FLIPPING_ANIMATION_PLAYING: id_t = R_ID()
+    FLIPPING_ALL_ANIMATION_PLAYING: id_t = R_ID()
 
     MIN_SCALE = 0.001
 
-    class EventTypes(Enum):
+    class EventTypes:
 
-        SELECT_ANIMATION_ENDED = auto()
-        FLIPPING_ANIMATION_ENDED = auto()
-        SLIDING_ANIMATION_ENDED = auto()
+        SELECT_ANIMATION_ENDED: id_t = R_ID()
+        FLIPPING_ANIMATION_ENDED: id_t = R_ID()
+        SLIDING_ANIMATION_ENDED: id_t = R_ID()
 
     class SelectAnimationEndedEvent(Event):
 
@@ -263,7 +263,7 @@ class Slider(Frame):
         The additional surface that will be shown while the sliding
         animation is active.
         """
-        self.state: int = Slider.NOT_SLIDING
+        self.state: id_t = Slider.NOT_SLIDING
         """
         The current state of the Slider.
         """

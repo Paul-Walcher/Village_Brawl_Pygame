@@ -6,7 +6,7 @@ import pygame
 from abc import ABC, abstractmethod
 
 from clock import Clock
-from constants import Colors
+from constants import Colors, R_ID, id_t
 from enum import Enum, auto
 from event_queue_manager import Event
 
@@ -23,15 +23,15 @@ class Animation(Frame):
     LOOP_INFINITE: int = -1 #variable for infinite looping
     DEFAULT_BLIT_DURATION: float = 500#ms, default blit duration
 
-    class EventTypes(Enum):
+    class EventTypes:
         """
         The events of the animation.
         """
-        ANIMATION_STARTED = auto()
-        ANIMATION_RESTARTED = auto()
-        ANIMATION_ENDED = auto()
-        ANIMATION_PAUSED = auto()
-        ANIMATION_LOOPED = auto()
+        ANIMATION_STARTED: id_t = R_ID()
+        ANIMATION_RESTARTED: id_t = R_ID()
+        ANIMATION_ENDED: id_t = R_ID()
+        ANIMATION_PAUSED: id_t = R_ID()
+        ANIMATION_LOOPED: id_t = R_ID()
 
     class AnimationStartedEvent(Event):
         """

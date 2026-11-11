@@ -134,6 +134,11 @@ def R_ID() -> int:
 
     return hash(str(x))
 
+#creating an ID type
+type id_t = int
+"""
+This type represents an ID created by R_ID().
+"""
 
 """
 Mouse constants

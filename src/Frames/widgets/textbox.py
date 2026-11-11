@@ -38,13 +38,14 @@ class Textbox(Frame):
                     startpage_index: int = 0, #the starting page.
                 ):
 
-        super().__init__(
+        Frame.__init__(
+                            self,
                             frame_enum=FrameEnums.TEXTBOX_WIDGET,
                             data=None,
                             frame_dim=frame_dim,
                             focus_group=None,
                             has_focus=False
-                            )
+                        )
 
         self.surface: pygame.Surface = None
         """

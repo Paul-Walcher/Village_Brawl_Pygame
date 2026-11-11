@@ -8,7 +8,7 @@ import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 
 from event_queue_manager import Event
-from constants import Colors, Fonts, R_ID, color_t
+from constants import Colors, Fonts, R_ID, color_t, id_t
 from clock import Clock
 from enum import Enum, auto
 
@@ -33,8 +33,8 @@ class ExpandableDropdownMenu(DropdownMenu):
     after one option is highlighted.
     """
 
-    DEFERRED_MENU_SHOWN = R_ID() #means the deferred menu is shown, but not selected
-    FOCUS_DEFERRED = R_ID() #means the the deferred menu is fully active.
+    DEFERRED_MENU_SHOWN: id_t = R_ID() #means the deferred menu is shown, but not selected
+    FOCUS_DEFERRED: id_t = R_ID() #means the the deferred menu is fully active.
 
     class SelectAnimationEndedEvent(Event):
 

@@ -10,7 +10,7 @@ from Frames.frame_enums import FrameEnums
 import graphics
 from graphics import text_t, colored_text_t, page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 
-from constants import color_t, R_ID, Fonts, Colors
+from constants import color_t, R_ID, Fonts, Colors, id_t
 from event_queue_manager import Event
 from clock import Clock
 
@@ -21,7 +21,8 @@ class Button(Label):
     Used doing button pressed and calling functions.
     """
 
-    PRESSED_ANIMATION_PLAYING = R_ID()
+    #states
+    PRESSED_ANIMATION_PLAYING: id_t = R_ID()
 
     class ButtonPressFinishedEvent(Event):
         def __init__(self, callback_result: Any):
@@ -35,7 +36,8 @@ class Button(Label):
             return copy_event
 
     class EventTypes:
-        BUTTON_PRESS_FINISHED: int = R_ID()
+        
+        BUTTON_PRESS_FINISHED: id_t = R_ID()
 
     def __init__(
                 self,

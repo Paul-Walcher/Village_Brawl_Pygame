@@ -11,7 +11,9 @@ from constants import (
     Fonts,
     Fontsizes,
     KeyAlternatives,
-    R_ID, color_t
+    R_ID,
+    color_t,
+    id_t
 )
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
@@ -37,8 +39,8 @@ class TextInput(Frame):
 
     class EventTypes:
         #events
-        TEXT_ENTERED: int = R_ID()
-        UNFOCUSED: int = R_ID()
+        TEXT_ENTERED: id_t = R_ID()
+        UNFOCUSED: id_t = R_ID()
 
 
     #events

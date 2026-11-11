@@ -8,7 +8,7 @@ from copy import deepcopy
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from event_queue_manager import Event
-from constants import Colors, Fonts, R_ID, IIMAGE, color_t
+from constants import Colors, Fonts, R_ID, IIMAGE, color_t, id_t
 from clock import Clock
 
 from Frames.frame import Frame
@@ -24,8 +24,8 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
     """
 
     #New States
-    SCROLLING_UP = R_ID()
-    SCROLLING_DOWN = R_ID()
+    SCROLLING_UP: id_t = R_ID()
+    SCROLLING_DOWN: id_t = R_ID()
 
 
     N_OPTIONS_SHOWN_KEY: str = "n_options_shown"
