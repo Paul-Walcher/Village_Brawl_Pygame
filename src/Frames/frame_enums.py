@@ -30,6 +30,7 @@ class FrameEnums(Enum):
     TEXTINPUT_WIDGET = auto()
     RENDERABLE_CARDLIST_VIEWER_WIDGET = auto()
     SLIDER_WIDGET = auto()
+    MULTI_SLIDER_WIDGET = auto()
     LABELED_IMAGE_SLIDER_WIDGET = auto()
     IMAGESLIDER_WIDGET = auto()
     DROPDOWN_MENU_WIDGET = auto()
