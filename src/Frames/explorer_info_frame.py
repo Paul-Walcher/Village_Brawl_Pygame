@@ -580,7 +580,11 @@ class ExplorerInfoFrame(CardinfoFrame):
 
     def slider_selection_triggered(self):
 
-        idx: int = self.slider_menu.get_selected_index()
+
+        idx: int = self.slider_menu.get_selected_index()[0]
+
+        #takes any index of the Labeled image slider, since both should
+        #always be in sync
 
         if idx == 0:
 

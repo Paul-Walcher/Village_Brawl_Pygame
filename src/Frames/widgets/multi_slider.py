@@ -6,6 +6,7 @@ import pygame
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from constants import(
+                        Colors,
                         color_t,
                         point_t,
                         R_ID,
@@ -15,7 +16,7 @@ from constants import(
 import calculations
 from calculations import Weightlist
 from event_queue_manager import Event
-from collections import Sequence
+from collections.abc import Sequence
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -28,13 +29,12 @@ class MultiSlider(Slider):
     Takes n sliders to manage them.
     """
 
+    #additional state
+    SLIDING: id_t = R_ID()
+
     #==========================================
     # EVENTS
     #==========================================
-
-    class EventTypes(Slider.EventTypes):
-
-        SLIDING: id_t = R_ID()
 
     class SelectAnimationEndedEvent(Event):
 
@@ -143,6 +143,7 @@ class MultiSlider(Slider):
             return MultiSlider.SlidingAnimationEndedEvent(
                                                             sliders_active=self.sliders_active.copy(),
                                                             sliders_active_indices=self.sliders_active_indices.copy(),
+                                                            slide_directions=self.slide_directions.copy(),
                                                             selected_indices=self.selected_indices.copy()
                                                             )
 
@@ -178,7 +179,10 @@ class MultiSlider(Slider):
         self.slider_percentages: list[float] = slider_percentages
         """
         self.slider_percentages[i] defines self.width (if self.horizontal else self.height)
-        of the self.sliders[i] relative to self.width (if self.horizontal else self.height)
+        of the self.sliders[i] relative to self.width (if self.horizontal else self.height).
+
+        The slider percentage length should be len(self.sliders) + (len(self.sliders)-1),
+        a divider after each percentage.
         """
         self._awaiting_list: list[bool] = None
         """
@@ -222,7 +226,7 @@ class MultiSlider(Slider):
         """
         Performs validity checks.
         """
-        if len(self.sliders) != len(self.slider_percentages):
+        if len(self.slider_percentages) != len(self.sliders) * 2 - 1:
             raise RuntimeError("Slider Percentages list and Slider list have to be of equal length.")
 
         if not fequal(sum(self.slider_percentages), 1.0):
@@ -267,13 +271,15 @@ class MultiSlider(Slider):
         slider_frame_dims: list[pygame.Rect] = None
 
         if self.horizontal:
-            slider_frame_dims = graphics.split_rect_horizontally(rect=relative_dimension, percentages=self.slider_percentages)
-        else:
             slider_frame_dims = graphics.split_rect_vertically(rect=relative_dimension, percentages=self.slider_percentages)
+        else:
+            slider_frame_dims = graphics.split_rect_horizontally(rect=relative_dimension, percentages=self.slider_percentages)
+
+        #slider frame dims contains the dividing frames
 
         #assigning frame_dims, triggering rerendering
         for i in range(len(self.sliders)):
-            self.sliders[i].frame_dim = slider_frame_dims[i]
+            self.sliders[i].frame_dim = slider_frame_dims[i*2] #skip dividing frames
 
         self.raise_prerender_flag()
 
@@ -387,7 +393,7 @@ class MultiSlider(Slider):
                                                                         sliders_flipped_all=flip_all_saved.copy(),
                                                                         selected_indices=[] #will be calculated just before pushing
                                                                         )
-            self._assembled_events.push(assembled_event)
+            self._assembled_events.push_event(assembled_event)
 
             self.flipping_animation_queued = True
 
@@ -444,6 +450,115 @@ class MultiSlider(Slider):
             self.slides += 1
 
             return True
+
+    @override
+    def get_selected_index(self) -> list[int]:
+        """
+        Returns a list of selected indices, where
+        list[i] == self.sliders[i].get_selected_index()
+        """
+        return [slider.get_selected_index() for slider in self.sliders]
+
+    @override
+    def get_focus_index(self) -> list[int]:
+        """
+        Returns a list of selected indices, where
+        list[i] == self.sliders[i].get_focus_index()
+        """
+        return [slider.get_focus_index() for slider in self.sliders]
+
+    @override
+    def set_background_color(self, color: color_t) -> None:
+        """
+        Sets the background uniformly
+        """
+        self.background_color = color
+
+        for slider in self.sliders:
+            slider.set_background_color(self.background_color)
+
+        self.raise_prerender_flag()
+
+    @override
+    def is_rendered(self) -> bool:
+        """
+        No surfaces, returns False.
+        """
+        return False
+
+    @override
+    def initialize_slide_left(self) -> None:
+        """
+        Does nothing.
+        """
+        pass
+
+    @override
+    def render_slide_left(self) -> None:
+        """
+        Does nothing.
+        """
+        pass
+
+    @override
+    def finalize_slide_left(self) -> None:
+        """
+        Does nothing.
+        """
+        pass
+
+    @override
+    def initialize_slide_right(self) -> None:
+        """
+        Does nothing.
+        """
+        pass
+
+    @override
+    def render_slide_right(self) -> None:
+        """
+        Does nothing.
+        """
+        pass
+
+    @override
+    def finalize_slide_right(self) -> None:
+        """
+        Does nothing.
+        """
+        pass
+
+    @override
+    def render_select_animation(self) -> None:
+        """
+        Does nothing.
+        """
+        pass
+
+    @override
+    def render_flipping_animation(self) -> None:
+        """
+        Does nothing.
+        """
+        pass
+
+    @override
+    def render_flipping_all_animation(self) -> None:
+        """
+        Does nothing.
+        """
+        pass
+
+    #==========================================
+    # STATE FUNCTIONS
+    #==========================================
+
+    @override
+    def sliding_animation_playing(self) -> bool:
+        """
+        Returns true if any sliding animation is playing
+        """
+        return (self.state == MultiSlider.SLIDING)
 
 
     #==========================================
@@ -523,7 +638,7 @@ class MultiSlider(Slider):
             if self._awaiting_finished():
                 #select animation ended
                 event_ref: MultiSlider.SelectAnimationEndedEvent = self._assembled_events[0]
-                event_ref.selected_indices = [slider.get_selected_index() for slider in self.sliders]
+                event_ref.selected_indices = self.get_selected_index()
 
                 self.push_event(event_ref)
                 self._assembled_events.pop(0)
@@ -535,7 +650,7 @@ class MultiSlider(Slider):
             if self._awaiting_finished():
                 #flipping animation ended
                 event_ref: MultiSlider.FlippingAnimationEndedEvent = self._assembled_events[0]
-                event_ref.selected_indices = [slider.get_selected_index() for slider in self.sliders]
+                event_ref.selected_indices = self.get_selected_index()
 
                 self.push_event(event_ref)
                 self._assembled_events.pop(0)
@@ -547,7 +662,7 @@ class MultiSlider(Slider):
             if self._awaiting_finished():
                 #flipping animation ended
                 event_ref: MultiSlider.SlidingAnimationEndedEvent = self._assembled_events[0]
-                event_ref.selected_indices = [slider.get_selected_index() for slider in self.sliders]
+                event_ref.selected_indices = self.get_selected_index()
 
                 self.push_event(event_ref)
                 self._assembled_events.pop(0)
@@ -573,8 +688,7 @@ class MultiSlider(Slider):
                     #register the animation ended
                     self._awaiting_list[i] = True
 
-
-        if (self.state != Slider.NOT_SLIDING):
+        if (self.state != MultiSlider.NOT_SLIDING):
             self.raise_prerender_flag()
 
         if self.prerender_flag_raised():

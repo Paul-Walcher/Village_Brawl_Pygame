@@ -197,6 +197,7 @@ class ExpandableDropdownMenu(DropdownMenu):
         self.dropdown_keys: list[DropDownKey] = [key for key in options.keys() if type(key) == DropDownKey]
         option_pages: list[colored_page_t] = [key.option_page for key in self.dropdown_keys]
         highlighed_option_pages: list[colored_page_t] = [key.highlighted_option_page for key in self.dropdown_keys]
+
         #calling the superconstructor
         DropdownMenu.__init__(
                                 self,
