@@ -16,7 +16,8 @@ from Frames.frame_enums import FrameEnums
 from Frames.widgets.dropdown_menu import DropdownMenu
 from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu, DropDownKey, expandable_dropdown_options_t, option_trace_t
 
-type scrollable_option_trace_t = list[tuple[tuple[colored_page_t, colored_page_t], int, int]]
+type scrollable_option_trace_element_t = tuple[DropDownKey, int, int]
+type scrollable_option_trace_t = list[scrollable_option_trace_element_t]
 
 class ScrollableDropdownMenu(ExpandableDropdownMenu):
     """

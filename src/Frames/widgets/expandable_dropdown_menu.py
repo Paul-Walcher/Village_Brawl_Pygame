@@ -25,7 +25,8 @@ class DropDownKey:
         self.highlighted_option_page: colored_page_t = highlighted_option_page
 
 type expandable_dropdown_options_t = dict[DropDownKey, dict]
-type option_trace_t = list[tuple[DropDownKey, int]]
+type option_trace_element_t = tuple[DropDownKey, int]
+type option_trace_t = list[option_trace_element_t]
 
 class ExpandableDropdownMenu(DropdownMenu):
     """
