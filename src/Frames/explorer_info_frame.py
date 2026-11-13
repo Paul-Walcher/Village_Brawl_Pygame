@@ -419,7 +419,7 @@ class ExplorerInfoFrame(CardinfoFrame):
 
             elif calculations.point_collides(mpos, main_sbox):
 
-                self.slider_selection_triggered()
+                self.slider_menu.select()
 
         elif event.button == Mouse.WHEEL:
 

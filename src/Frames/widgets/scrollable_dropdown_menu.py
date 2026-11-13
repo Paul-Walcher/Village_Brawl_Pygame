@@ -16,6 +16,8 @@ from Frames.frame_enums import FrameEnums
 from Frames.widgets.dropdown_menu import DropdownMenu
 from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu, DropDownKey, expandable_dropdown_options_t, option_trace_t
 
+type scrollable_tuple_options_t = dict[str | tuple[str, ...], scrollable_tuple_options_t | int | None]
+type scrollable_dropdown_options_t = dict[DropDownKey | str, scrollable_dropdown_options_t | int | None]
 type scrollable_option_trace_element_t = tuple[DropDownKey, int, int]
 type scrollable_option_trace_t = list[scrollable_option_trace_element_t]
 
@@ -76,7 +78,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     #   (("line1", "line2"), options_shown): {OPTIONS FOR THE NEXT DROPDOWN MENU} //or if there is no Menu its just None
                     #   and one extra key_value pair: "options_shown": n, which
                     #}
-                    options: expandable_dropdown_options_t,
+                    options: scrollable_dropdown_options_t,
 
                     arrow_frame_margin: float = 0.2, #amount of height used to show the arrows
                     arrow_to_text_margin: float = 0.7, #amount of occupied space by the arrow, the rest is reserved for the text.
@@ -209,7 +211,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         if ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY in options:
             self.n_options_shown = options[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY]
         else:
-            self.n_options_shown = len(options) #showing all if the n_options shown is not defined
+            self.n_options_shown = len(options) #showing all if the n_options_scroll shown is not defined
 
         if self.n_options_shown <= 0:
             raise RuntimeError("N options shown must be > 0")
@@ -323,8 +325,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             self._scroll_index = val
             self.rerender_arrow_text()
 
-    @override
-    def n_options(self) -> int:
+    def n_options_scroll(self) -> int:
         """
         returns the number of options currently shown
         """
@@ -549,7 +550,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             screen.blit(self.top_arrow_surface, (x, y))
             screen.blit(self.bottom_arrow_surface, (x, y + self.top_arrow_surface.height + self.height))
 
-
+    @override
     def select_option_expanded(self, option_trace: scrollable_option_trace_t) -> None:
         """
         Focuses the option indicated by the option trace.
@@ -644,8 +645,8 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                 self.state = ScrollableDropdownMenu.SCROLLING_UP
                 self.initialize_scrolling_up()
             #if we hit the bottom, and scrolling is possible, try scrolling down
-            elif self.selected_index >= self.n_options():
-                self.selected_index = self.n_options() - 1
+            elif self.selected_index >= self.n_options_scroll():
+                self.selected_index = self.n_options_scroll() - 1
                 self.state = ScrollableDropdownMenu.SCROLLING_DOWN
                 self.initialize_scrolling_down()
 
@@ -785,7 +786,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
             scroll_px = int(percentage * self.full_box_height)
 
-            for i in range(self.n_options()):
+            for i in range(self.n_options_scroll()):
 
                 cpbox, cptmb, cphtmb = self.boxframes_copy[i]
                 box, tmb, htmb = self.boxframes[i]
@@ -889,7 +890,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         self.rendered_texts_copy = [[(tr.copy(), pos) for tr, pos in rtext] for rtext in self.rendered_texts]
         self.rendered_highlighted_texts_copy = [[(tr.copy(), pos) for tr, pos in rtext] for rtext in self.rendered_highlighted_texts]
 
-        self.selected_index = self.n_options() - 2 #setting the selected index
+        self.selected_index = self.n_options_scroll() - 2 #setting the selected index
 
         self.scrolling_animation_clock.start()
 
@@ -905,7 +906,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
             scroll_px = int(percentage * self.full_box_height)
 
-            for i in range(self.n_options()):
+            for i in range(self.n_options_scroll()):
 
                 cpbox, cptmb, cphtmb = self.boxframes_copy[i]
                 box, tmb, htmb = self.boxframes[i]
@@ -948,7 +949,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
         self.state = DropdownMenu.OPTION_SELECTED
         #we need to set the selected index after changing the state
-        self.selected_index = self.n_options() - 1
+        self.selected_index = self.n_options_scroll() - 1
 
         self.push_event(
                             ScrollableDropdownMenu.NewOptionHighlightedEvent(

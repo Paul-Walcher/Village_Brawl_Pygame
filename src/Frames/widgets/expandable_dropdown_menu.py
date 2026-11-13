@@ -24,7 +24,8 @@ class DropDownKey:
         self.option_page: colored_page_t = option_page
         self.highlighted_option_page: colored_page_t = highlighted_option_page
 
-type expandable_dropdown_options_t = dict[DropDownKey, dict]
+type expandable_tuple_options_t = dict[tuple[str, ...], expandable_tuple_options_t | None]
+type expandable_dropdown_options_t = dict[DropDownKey, expandable_dropdown_options_t | None]
 type option_trace_element_t = tuple[DropDownKey, int]
 type option_trace_t = list[option_trace_element_t]
 
@@ -66,7 +67,7 @@ class ExpandableDropdownMenu(DropdownMenu):
 
     @staticmethod
     def page_keys_to_dropdownkey(
-                                    options_dict: dict[tuple[str], dict],
+                                    options_dict: expandable_tuple_options_t,
                                     text_color: color_t,
                                     highlighted_text_color: color_t
 
