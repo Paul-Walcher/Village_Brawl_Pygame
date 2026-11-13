@@ -43,31 +43,59 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
     class SelectAnimationEndedEvent(Event):
 
-        def __init__(self, scroll_indices: list[int], indices: list[int], selected_option_strings: list[str]):
+        def __init__(
+                        self,
+                        option_keys: list[DropDownKey],
+                        scroll_indices: list[int],
+                        indices: list[int],
+                        selected_option_strings: list[str]
+                        ):
 
             Event.__init__(self, etype=DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED, data=None)
 
+            self.option_keys: list[DropDownKey] = option_keys
             self.scroll_indices: list[int] = scroll_indices
             self.indices: list[int] = indices
             self.selected_option_strings: list[str] = selected_option_strings
+            self.selected_option_tuples: list[tuple[str]] = self.recalculate_option_tuples()
+
+        def recalculate_option_tuples(self) -> list[tuple[str]]:
+            """
+            Calculates self.selected_option_tuples, then returns it.
+            """
+            return [tuple(strings.split("\n")) for strings in self.selected_option_strings if strings is not None]
 
         @override
         def copy(self) -> ScrollableDropdownMenu.SelectAnimationEndedEvent:
-            return ScrollableDropdownMenu.SelectAnimationEndedEvent(self.scroll_indices, self.indices, self.selected_option_strings)
+            return ScrollableDropdownMenu.SelectAnimationEndedEvent(self.option_keys, self.scroll_indices, self.indices, self.selected_option_strings)
 
     class NewOptionHighlightedEvent(Event):
 
-        def __init__(self, scroll_indices: int, indices: list[int], selected_option_strings: list[str]):
+        def __init__(
+                        self,
+                        option_keys: list[DropDownKey],
+                        scroll_indices: list[int],
+                        indices: list[int],
+                        selected_option_strings: list[str]
+                        ):
 
             Event.__init__(self, etype=DropdownMenu.EventTypes.NEW_OPTION_HIGHLIGHTED, data=None)
 
+            self.option_keys: list[DropDownKey] = option_keys
             self.scroll_indices: list[int] = scroll_indices
             self.indices: list[int] = indices
             self.selected_option_strings: list[str] = selected_option_strings
+            self.selected_option_tuples: list[tuple[str]] = self.recalculate_option_tuples()
+
+        def recalculate_option_tuples(self) -> list[tuple[str]]:
+            """
+            Calculates self.selected_option_tuples, then returns it.
+            """
+            return [tuple(strings.split("\n")) for strings in self.selected_option_strings if strings is not None]
 
         @override
         def copy(self) -> ScrollableDropdownMenu.NewOptionHighlightedEvent:
-            return ScrollableDropdownMenu.NewOptionHighlightedEvent(self.scroll_indices, self.indices, self.selected_option_strings)
+            return ScrollableDropdownMenu.NewOptionHighlightedEvent(self.option_keys, self.scroll_indices, self.indices, self.selected_option_strings)
 
     def __init__(
                     self,
@@ -360,6 +388,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
         self.push_event(
                         ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                            option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                             scroll_indices=[self.scroll_index],
                                                                             indices=[ExpandableDropdownMenu.NOTHING_SELECTED_INDEX],
                                                                             selected_option_strings=[None]
@@ -562,6 +591,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         coption, state, sindex = option_trace[0]
         self.scroll_index = sindex
         self.dropdown_options = self.get_options_n_showed()
+
         self.selected_index = self.dropdown_options.index(coption)
 
         if type(self.full_options_dict[coption]) == dict:
@@ -599,6 +629,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
             self.push_event(
                                 ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                    option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                     scroll_indices=[self.scroll_index],
                                                                                     indices=[0],
                                                                                     selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.scroll_index])]
@@ -616,6 +647,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
             self.push_event(
                                 ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                    option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                     scroll_indices=[self.scroll_index],
                                                                                     indices=[0],
                                                                                     selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.scroll_index])]
@@ -663,6 +695,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                 if self.moves_buffered != 0:
                     self.push_event(
                                         ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                            option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                             scroll_indices=[self.scroll_index],
                                                                                             indices=[self.selected_index],
                                                                                             selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
@@ -692,18 +725,24 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                 if event.type == DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED:
                     #if we got a selection finished event, append the own current option, then add it to the event queue
                     #modifying the event
+                    event.option_keys.insert(0, self.dropdown_keys[self.selected_index + self.scroll_index])
                     event.scroll_indices.insert(0, self.scroll_index)
                     event.indices.insert(0, self.selected_index)
                     event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index]))
+
+                    event.selected_option_tuples = event.recalculate_option_tuples()
 
                     self.push_event(event)
 
                 elif event.type == DropdownMenu.EventTypes.NEW_OPTION_HIGHLIGHTED:
 
                     #modifying the event
+                    event.option_keys.insert(0, self.dropdown_keys[self.selected_index + self.scroll_index])
                     event.scroll_indices.insert(0, self.scroll_index)
                     event.indices.insert(0, self.selected_index)
                     event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index]))
+
+                    event.selected_option_tuples = event.recalculate_option_tuples()
 
                     self.push_event(event)
 
@@ -833,6 +872,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
         self.push_event(
                             ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                 scroll_indices=[self.scroll_index],
                                                                                 indices=[self.selected_index],
                                                                                 selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
@@ -953,6 +993,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
         self.push_event(
                             ScrollableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                 scroll_indices=[self.scroll_index],
                                                                                 indices=[self.selected_index],
                                                                                 selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
@@ -992,6 +1033,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
         self.push_event(
                             ScrollableDropdownMenu.SelectAnimationEndedEvent(
+                                                                                option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                 scroll_indices=[self.scroll_index],
                                                                                 indices=[self.selected_index],
                                                                                 selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]

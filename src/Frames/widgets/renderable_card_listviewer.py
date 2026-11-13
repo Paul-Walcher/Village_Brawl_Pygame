@@ -386,7 +386,7 @@ class RenderableCardListviewer(Frame):
 
             #polling textinput events
             for event in self.text_input.poll_events():
-                if event.type == TextInput.EventTypes.ENTER_PRESSED:
+                if event.type == TextInput.EventTypes.TEXT_ENTERED:
                     self._exit_type = RenderableCardListviewer.FocusedTextInputFrame.TEXT_ENTERED
                     self.raise_exit_flag()
 
@@ -1994,8 +1994,8 @@ class RenderableCardListviewer(Frame):
             #selection was done
             if self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
                 #getting the selected instance
-                full_trace = event.data
-                selection = RenderableCardListviewer.MENU_OPTIONS.get_option_from_traceback(event.data)
+                full_trace: list[tuple[str]] = event.selected_option_tuples
+                selection: tuple[str] = full_trace[-1]
 
                 if selection == RenderableCardListviewer.MENU_OPTIONS.RANDOMIZED_SORTING:
                     self.sorting_function = RenderableCardListviewer.SortingFunctions.randomized
@@ -2034,7 +2034,7 @@ class RenderableCardListviewer(Frame):
                         self.recalculate_main_list_positions()
 
                 #group selection
-                elif full_trace[:-1] == [RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTION_KEY]:
+                elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTION_KEY:
 
                     self.shown_group = selection[0]
                     self.reload_current_group()

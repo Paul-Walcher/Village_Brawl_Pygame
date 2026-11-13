@@ -24,6 +24,44 @@ class DropDownKey:
         self.option_page: colored_page_t = option_page
         self.highlighted_option_page: colored_page_t = highlighted_option_page
 
+    def __eq__(self, other: DropdownKey) -> bool:
+        """
+        Comparator.
+        """
+        if type(other) != DropDownKey:
+            return False
+
+        if (self.option_page == other.option_page) and (self.highlighted_option_page == other.highlighted_option_page):
+            return True
+        else:
+            return False
+
+    def __hash__(self) -> int:
+        """
+        Hash function.
+        """
+        #hashes using the colors and strings of the pages
+        option_page_str: str = graphics.colored_page_to_str(self.option_page)
+        highlighted_option_page_str: str = graphics.colored_page_to_str(self.highlighted_option_page)
+
+        option_page_color_string: str = ""
+        highlighted_option_page_color_string: str = ""
+
+        for line in self.option_page:
+            for (text, color) in line:
+                for i in range(len(color)):
+                    option_page_color_string += str(color[i])
+
+        for line in self.highlighted_option_page:
+            for (text, color) in line:
+                for i in range(len(color)):
+                    highlighted_option_page_color_string += str(color[i])
+
+        full_str: str = option_page_str + option_page_color_string + highlighted_option_page_str + highlighted_option_page_color_string
+
+        return hash(full_str)
+
+
 type expandable_tuple_options_t = dict[tuple[str, ...], expandable_tuple_options_t | None]
 type expandable_dropdown_options_t = dict[DropDownKey, expandable_dropdown_options_t | None]
 type option_trace_element_t = tuple[DropDownKey, int]
@@ -40,29 +78,55 @@ class ExpandableDropdownMenu(DropdownMenu):
 
     class SelectAnimationEndedEvent(Event):
 
-        def __init__(self, indices: list[int], selected_option_strings: list[str]):
+        def __init__(
+                        self,
+                        option_keys: list[DropDownKey],
+                        indices: list[int],
+                        selected_option_strings: list[str]
+                        ):
 
             Event.__init__(self, etype=DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED, data=None)
 
+            self.option_keys: list[DropDownKey] = option_keys
             self.indices: list[int] = indices
             self.selected_option_strings: list[str] = selected_option_strings
+            self.selected_option_tuples: list[tuple[str]] = self.recalculate_option_tuples()
+
+        def recalculate_option_tuples(self) -> list[tuple[str]]:
+            """
+            Calculates self.selected_option_tuples, then returns it.
+            """
+            return [tuple(strings.split("\n")) for strings in self.selected_option_strings if strings is not None]
 
         @override
         def copy(self) -> ExpandableDropdownMenu.SelectAnimationEndedEvent:
-            return ExpandableDropdownMenu.SelectAnimationEndedEvent(self.indices, self.selected_option_strings)
+            return ExpandableDropdownMenu.SelectAnimationEndedEvent(self.option_keys, self.indices, self.selected_option_strings)
 
     class NewOptionHighlightedEvent(Event):
 
-        def __init__(self, indices: list[int], selected_option_strings: list[str]):
+        def __init__(
+                        self,
+                        option_keys: list[DropDownKey],
+                        indices: list[int],
+                        selected_option_strings: list[str]
+                        ):
 
             Event.__init__(self, etype=DropdownMenu.EventTypes.NEW_OPTION_HIGHLIGHTED, data=None)
 
+            self.option_keys: list[DropDownKey] = option_keys
             self.indices: list[int] = indices
             self.selected_option_strings: list[str] = selected_option_strings
+            self.selected_option_tuples: list[tuple[str]] = self.recalculate_option_tuples()
+
+        def recalculate_option_tuples(self) -> list[tuple[str]]:
+            """
+            Calculates self.selected_option_tuples, then returns it.
+            """
+            return [tuple(strings.split("\n")) for strings in self.selected_option_strings if strings is not None]
 
         @override
         def copy(self) -> ExpandableDropdownMenu.NewOptionHighlightedEvent:
-            return ExpandableDropdownMenu.NewOptionHighlightedEvent(self.indices, self.selected_option_strings)
+            return ExpandableDropdownMenu.NewOptionHighlightedEvent(self.option_keys, self.indices, self.selected_option_strings)
 
 
     @staticmethod
@@ -366,6 +430,7 @@ class ExpandableDropdownMenu(DropdownMenu):
 
         self.push_event(
                         ExpandableDropdownMenu.NewOptionHighlightedEvent(
+                                                                            option_keys=[self.dropdown_keys[self.selected_index]],
                                                                             indices=[ExpandableDropdownMenu.NOTHING_SELECTED_INDEX],
                                                                             selected_option_strings=[None]
                                                                         )
@@ -433,6 +498,7 @@ class ExpandableDropdownMenu(DropdownMenu):
 
         self.push_event(
                             ExpandableDropdownMenu.SelectAnimationEndedEvent(
+                                                                                option_keys=[self.dropdown_keys[self.selected_index]],
                                                                                 indices=[self.selected_index],
                                                                                 selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index])]
                                                                             )
@@ -501,6 +567,7 @@ class ExpandableDropdownMenu(DropdownMenu):
 
                 self.push_event(
                                     ExpandableDropdownMenu.NewOptionHighlightedEvent(
+                                                                                        option_keys=[self.dropdown_keys[self.selected_index]],
                                                                                         indices=[self.selected_index],
                                                                                         selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index])]
                                                                                         )
@@ -521,16 +588,22 @@ class ExpandableDropdownMenu(DropdownMenu):
                 if event.type == DropdownMenu.EventTypes.SELECT_ANIMATION_ENDED:
                     #if we got a selection finished event, append the own current option, then add it to the event queue
                     #modifying the event
+                    event.option_keys.insert(0, self.dropdown_keys[self.selected_index])
                     event.indices.insert(0, self.selected_index)
                     event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.highlighted_options[self.selected_index]))
+
+                    event.selected_option_tuples = event.recalculate_option_tuples()
 
                     self.push_event(event)
 
                 elif event.type == DropdownMenu.EventTypes.NEW_OPTION_HIGHLIGHTED:
 
                     #modifying the event
+                    event.option_keys.insert(0, self.dropdown_keys[self.selected_index])
                     event.indices.insert(0, self.selected_index)
                     event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.highlighted_options[self.selected_index]))
+
+                    event.selected_option_tuples = event.recalculate_option_tuples()
 
                     self.push_event(event)
 

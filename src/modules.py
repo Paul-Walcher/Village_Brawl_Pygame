@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import Any, Callable, Type, override
+
 """
 Loads the modules
 """
@@ -10,7 +13,7 @@ class Modules:
     """
 
     @staticmethod
-    def load_playset(playset_name):
+    def load_playset(playset_name: str) -> Modules:
 
         #loading the modules
         playset = f"{PLAYSETS_FOLDER}.{playset_name}"

@@ -107,6 +107,32 @@ class TextInput(Frame):
                 tab_out_key_combination: list[int] = None
                 ):
 
+        self.intro_delay: float = intro_delay
+        """
+        Delay when this frame becomes focused, as not to swallow key pressed events.
+        """
+        self.intro_delay_clock: Clock = Clock()
+        """
+        Clock for the intro delay.
+        """
+        self.cursor_flickering: bool = cursor_flickering
+        """
+        If the cursor should flicker when the textinput is focused.
+        """
+        self.cursor_flickering_frequency: float = cursor_flickering_frequency
+        """
+        The time until the state of the cursor makes one round of (shown, unshown) and reverts
+        back to shown. Both states last self.cursor_flickering_frequency // 2.
+        """
+        self.cursor_flickering_clock: Clock = Clock()
+        """
+        Clock for cursor flickering.
+        """
+        self._cursor_shown: bool = cursor_shown
+        """
+        If the cursor is shown or not.
+        """
+
         Frame.__init__(
                         self,
                         frame_enum=FrameEnums.TEXTINPUT_WIDGET,
@@ -117,10 +143,7 @@ class TextInput(Frame):
                         has_focus=has_focus
                         )
 
-        self.surface: pygame.Surface = None
-        """
-        The own surface, onto which everything is rendered.
-        """
+
         self.textfield_hmargin: float = textfield_hmargin
         """
         The horizontal margin for the textrect.
@@ -215,10 +238,6 @@ class TextInput(Frame):
         """
         The cursor render pos.
         """
-        self._cursor_shown: bool = cursor_shown
-        """
-        If the cursor is shown or not.
-        """
         self.n_chars_shown: int = n_chars_shown
         """
         The number of characters after which the text starts being offset.
@@ -259,30 +278,9 @@ class TextInput(Frame):
         """
         Clock for backspace delay.
         """
-        self.intro_delay: float = intro_delay
-        """
-        Delay when this frame becomes focused, as not to swallow key pressed events.
-        """
-        self.intro_delay_clock: Clock = Clock()
-        """
-        Clock for the intro delay.
-        """
         self.input_active: bool = True
         """
         If the input is active or not.
-        """
-        self.cursor_flickering: bool = cursor_flickering
-        """
-        If the cursor should flicker when the textinput is focused.
-        """
-        self.cursor_flickering_frequency: float = cursor_flickering_frequency
-        """
-        The time until the state of the cursor makes one round of (shown, unshown) and reverts
-        back to shown. Both states last self.cursor_flickering_frequency // 2.
-        """
-        self.cursor_flickering_clock: Clock = Clock()
-        """
-        Clock for cursor flickering.
         """
         self.tab_out_key_combination: list[int] = ([pygame.K_LCTRL, KeyAlternatives.BACK_KEY] if tab_out_key_combination is None else tab_out_key_combination)
         """
@@ -304,7 +302,7 @@ class TextInput(Frame):
         """
         pygame.key.start_text_input()
         self.reset_keys_pressed()
-        self.prerender()
+        self.raise_prerender_flag()
         self.intro_delay_clock.start()
         self._cursor_shown = True
         if self.cursor_flickering:
@@ -316,7 +314,7 @@ class TextInput(Frame):
         """
         self._cursor_shown = True
         pygame.key.stop_text_input()
-        self.prerender()
+        self.raise_prerender_flag()
 
 
     def rerender(self) -> None:
@@ -356,7 +354,7 @@ class TextInput(Frame):
         self.cursor_width = max(int(self.textfield_frame_dim.width * self.cursor_width_p), 1)
         self.cursor_height = max(int(self.textfield_frame_dim.height * self.cursor_height_p), 1)
 
-        self.prerender()
+        self.raise_prerender_flag()
 
         self.reset_exit_flag()
         self.intro_delay_clock.start()
@@ -536,14 +534,14 @@ class TextInput(Frame):
 
                     self.text = self.text[:self.cursor_offset+self.cursor_pos-1] + self.text[self.cursor_offset+self.cursor_pos:]
                     self.cursor_pos -= 1
-                    self.prerender()
+                    self.raise_prerender_flag()
                     self.backspace_delay_clock.start()
 
                 else:
 
                     self.cursor_offset -= 1
                     self.cursor_offset = max(self.cursor_offset, 0)
-                    self.prerender()
+                    self.raise_prerender_flag()
                     self.backspace_delay_clock.start()
 
         #checking for flickering
@@ -551,8 +549,12 @@ class TextInput(Frame):
             if self.cursor_flickering_clock.elapsed() > self.cursor_flickering_frequency:
 
                 self._cursor_shown = not self._cursor_shown
-                self.prerender()
+                self.raise_prerender_flag()
                 self.cursor_flickering_clock.start()
+
+        if self.prerender_flag_raised():
+            self.prerender()
+            self.reset_prerender_flag()
 
         return self
 
@@ -569,7 +571,7 @@ class TextInput(Frame):
         self.text = text
         self.cursor_pos = 0
         self.cursor_offset = 0
-        self.prerender()
+        self.raise_prerender_flag()
 
     def activate_input(self) -> None:
         """
@@ -588,14 +590,14 @@ class TextInput(Frame):
         Makes the outline visible.
         """
         self.outline_shown = True
-        self.prerender()
+        self.raise_prerender_flag()
 
     def hide_outline(self) -> None:
         """
         Hides the outline.
         """
         self.outline_shown = False
-        self.prerender()
+        self.raise_prerender_flag()
 
     def move_cursor_left(self, n: int = 1) -> None:
         """
@@ -608,7 +610,7 @@ class TextInput(Frame):
             else:
                 self.cursor_pos -= 1
 
-        self.prerender()
+        self.raise_prerender_flag()
 
     def move_cursor_right(self, n: int = 1) -> None:
         """
@@ -622,18 +624,18 @@ class TextInput(Frame):
             elif self.cursor_pos < len(self.text):
                 self.cursor_pos += 1
 
-        self.prerender()
+        self.raise_prerender_flag()
 
     def show_cursor(self) -> None:
         """
         Makes the cursor shown.
         """
         self.cursor_shown = True
-        self.prerender()
+        self.raise_prerender_flag()
 
     def hide_cursor(self) -> None:
         """
         Hides the cursor.
         """
         self.cursor_shown = False
-        self.prerender()
+        self.raise_prerender_flag()
