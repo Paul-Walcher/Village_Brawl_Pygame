@@ -266,6 +266,7 @@ class RenderableCardListviewer(Frame):
         def __init__(
                     self,
                     frame_dim: pygame.Rect,
+                    parent_frame: Frame,
                     focus_group: str = "",
                     has_focus: bool = True
                     ):
@@ -276,6 +277,7 @@ class RenderableCardListviewer(Frame):
                             frame_enum=FrameEnums.UNDEFINED,
                             data=None,
                             frame_dim=frame_dim,
+                            parent_frame=parent_frame,
                             focus_group=focus_group,
                             has_focus=has_focus
                             )
@@ -382,8 +384,7 @@ class RenderableCardListviewer(Frame):
             if self.intro_delay_clock.elapsed() > self.intro_delay:
                 self.manage_pygame_events()
 
-            self.text_input.tick()
-
+            ret: Frame = self.text_input.tick()
             #polling textinput events
             for event in self.text_input.poll_events():
                 if event.type == TextInput.EventTypes.TEXT_ENTERED:
@@ -393,7 +394,7 @@ class RenderableCardListviewer(Frame):
             if self.exit_flag_raised():
                 return None
 
-            if is_focused():
+            if self.is_focused():
                 #checking for any movement key
                 if self.key_pressed(pygame.K_LEFT) or self.key_pressed(KeyAlternatives.LEFT_ALTERNATIVE)\
                     or self.key_pressed(pygame.K_RIGHT) or self.key_pressed(KeyAlternatives.RIGHT_ALTERNATIVE)\
@@ -1582,7 +1583,9 @@ class RenderableCardListviewer(Frame):
                 self.info_text_surface.blit(surf, pos)
             self.surface.blit(self.info_text_surface, (self.info_text_frame.x, self.info_text_frame.y))
 
-        if self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
+        if  self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE or\
+            (self.state == RenderableCardListviewer.ENTER_PRESSED and self.prev_state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE):
+
             self.dropdown_menu.render(self.surface)
 
         if self.state == RenderableCardListviewer.FULL_IMAGE_SHOWN:
@@ -1845,7 +1848,6 @@ class RenderableCardListviewer(Frame):
 
         self.create_deckname_text()
         self.create_decksize_text()
-        self.create_dropdown_menu()
         self.recalculate_main_list_positions()
 
         self.raise_prerender_flag()
@@ -2042,8 +2044,6 @@ class RenderableCardListviewer(Frame):
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.CREATE_GROUP_OPTION_KEY:
                     self.initialize_deck_creation_frame()
 
-                self.reload_dropdown_menu_with_progress()
-
 
 
     def create_dropdown_menu(self) -> None:
@@ -2158,53 +2158,6 @@ class RenderableCardListviewer(Frame):
                 else:
                     if self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED and self.n_cards_shown > 0:
                         self.card_pressed_animation()
-            elif self.state == RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE:
-                ret = self.focused_text_input_subframe.tick()
-
-                if ret is None:
-
-                    #setting the groupname
-                    if self.focused_text_input_subframe.exit_with_enter():
-
-                        text = self.focused_text_input_subframe.get_input_text()
-
-                        if not text or text in list(self.groups.keys()):
-                            tcolor = (RenderableCardListviewer.INFO_TEXT_ERROR_COLOR if self.info_text_error_color is None else self.info_text_error_color)
-
-                            self.print_info_text(
-                                                    [[(RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_INFO_TEXT, tcolor)]],
-                                                    tcolor,
-                                                    RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_FADING_DURATION
-                                                )
-
-                            self.focused_text_input_subframe.reset_exit_flag()
-                            self.focused_text_input_subframe.reset_exit_type()
-
-                        else:
-
-                            data_cp = deepcopy(self.groups[self.shown_group])
-                            del self.groups[self.shown_group]
-                            self.shown_group = self.focused_text_input_subframe.get_input_text()
-                            self.groups[self.shown_group] = data_cp
-                            self.focused_text_input_subframe = None
-                            self.focus()
-                            self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
-                            self.create_deckname_text()
-                            self.create_dropdown_menu()
-
-                    elif self.focused_text_input_subframe.exit_with_escape():
-                        self.focused_text_input_subframe = None
-                        self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
-
-                    self.key_clock.start()
-
-            elif self.state == RenderableCardListviewer.DECK_CREATION_FRAME_ACTIVE:
-                ret = self.focused_text_input_subframe.tick()
-
-                if ret is None:
-                    self.finalize_deck_creation_frame()
-
-                self.key_clock.start()
 
             else:
                 #accept inputs
@@ -2249,6 +2202,58 @@ class RenderableCardListviewer(Frame):
                     if self.key_pressed(pygame.K_BACKSPACE) or self.key_pressed(KeyAlternatives.BACK_KEY):
                         self.back_pressed()
                         self.key_clock.start()
+        """
+        SUBFRAMES ACTIVE
+        """
+        if self.state == RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE:
+            ret = self.focused_text_input_subframe.tick()
+
+            if ret is None:
+
+                #setting the groupname
+                if self.focused_text_input_subframe.exit_with_enter():
+
+                    text = self.focused_text_input_subframe.get_input_text()
+
+                    if not text or text in list(self.groups.keys()):
+                        tcolor = (RenderableCardListviewer.INFO_TEXT_ERROR_COLOR if self.info_text_error_color is None else self.info_text_error_color)
+
+                        self.print_info_text(
+                                                [[(RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_INFO_TEXT, tcolor)]],
+                                                tcolor,
+                                                RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_FADING_DURATION
+                                            )
+
+                        self.focused_text_input_subframe.reset_exit_flag()
+                        self.focused_text_input_subframe.reset_exit_type()
+
+                    else:
+
+                        data_cp = deepcopy(self.groups[self.shown_group])
+                        del self.groups[self.shown_group]
+                        self.shown_group = self.focused_text_input_subframe.get_input_text()
+                        self.groups[self.shown_group] = data_cp
+                        self.focused_text_input_subframe = None
+                        self.focus()
+                        self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
+                        self.create_deckname_text()
+                        self.create_dropdown_menu()
+
+                elif self.focused_text_input_subframe.exit_with_escape():
+                    self.focused_text_input_subframe = None
+                    self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
+
+                self.focus()
+
+                self.key_clock.start()
+
+        elif self.state == RenderableCardListviewer.DECK_CREATION_FRAME_ACTIVE:
+            ret = self.focused_text_input_subframe.tick()
+
+            if ret is None:
+                self.finalize_deck_creation_frame()
+
+            self.key_clock.start()
 
         self.raise_prerender_flag()
 
@@ -2601,6 +2606,9 @@ class RenderableCardListviewer(Frame):
 
     def prerender_full_image(self):
 
+        if self.n_cards_shown == 0:
+            return
+
         self.full_image_surface.fill((*self.full_image_background_color, self.full_image_background_alpha))
         #rendering the image
         main_list_card_idx = self.main_list_cards_dict[self.selected_card_index][0]
@@ -2613,15 +2621,27 @@ class RenderableCardListviewer(Frame):
 
     def initialize_deck_renaming_frame(self):
 
-        self.focused_text_input_subframe = RenderableCardListviewer.FocusedTextInputFrame(self.frame_dim, self.focus_group)
+        self.focused_text_input_subframe = RenderableCardListviewer.FocusedTextInputFrame(
+                                                                                            frame_dim=self.frame_dim,
+                                                                                            focus_group=self.focus_group,
+                                                                                            parent_frame=self
+                                                                                        )
         self.focused_text_input_subframe.set_input_text(self.shown_group)
         self.state = RenderableCardListviewer.DECK_RENAMING_FRAME_ACTIVE
 
+        self.clear_pygame_events()
+
     def initialize_deck_creation_frame(self):
 
-        self.focused_text_input_subframe = RenderableCardListviewer.FocusedTextInputFrame(self.frame_dim, self.focus_group)
+        self.focused_text_input_subframe = RenderableCardListviewer.FocusedTextInputFrame(
+                                                                                            frame_dim=self.frame_dim,
+                                                                                            focus_group=self.focus_group,
+                                                                                            parent_frame=self
+                                                                                        )
         self.focused_text_input_subframe.set_input_text("")
         self.state = RenderableCardListviewer.DECK_CREATION_FRAME_ACTIVE
+
+        self.clear_pygame_events()
 
     def finalize_deck_creation_frame(self):
 
@@ -2661,8 +2681,10 @@ class RenderableCardListviewer(Frame):
 
                 self.shown_group = text
                 self.reload_current_group()
+                self.reload_dropdown_menu_with_progress()
 
                 self.state = RenderableCardListviewer.NOTHING_FOCUSED
+                self.focus()
 
     def card_pressed_animation(self):
 

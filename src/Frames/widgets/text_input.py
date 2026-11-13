@@ -449,7 +449,7 @@ class TextInput(Frame):
             self.add_pygame_key_callback(key=pygame.K_RIGHT, data=None, putback=False, func=self.on_right_pressed)
             self.add_pygame_key_callback(key=pygame.K_ESCAPE, data=None, putback=False, func=self.on_escape_pressed)
             self.add_pygame_key_callback(key=pygame.K_RETURN, data=None, putback=False, func=self.on_enter_pressed)
-            self.add_pygame_event_callback(etype=pygame.KEYDOWN, data=None, putback=True, func=self.on_keypress)
+            self.add_pygame_event_callback(etype=pygame.KEYDOWN, data=None, putback=False, func=self.on_keypress)
 
 
     def on_textinput(self, event: pygame.event.Event, data=None) -> None:
@@ -513,9 +513,6 @@ class TextInput(Frame):
         """
         if all([self.key_pressed(key) for key in self.tab_out_key_combination]):
             self.on_escape_pressed(event, data)
-            return Frame.EventCallback.SUCCESS
-
-        return Frame.EventCallback.FAILURE
 
     def tick(self) -> None:
         """
