@@ -238,8 +238,10 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
         if ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY in options:
             self.n_options_shown = options[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY]
+            if self.n_options_shown > len(options)-1:
+                self.n_options_shown = len(options) - 1
         else:
-            self.n_options_shown = len(options) #showing all if the n_options_scroll shown is not defined
+            self.n_options_shown = len(options)#showing all if the n_options_scroll shown is not defined
 
         if self.n_options_shown <= 0:
             raise RuntimeError("N options shown must be > 0")
@@ -415,6 +417,9 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         #resetting the scroll indeex
         self._scroll_index = 0
         self.dropdown_options = self.get_options_n_showed()
+        #setting the options to only the visible ones
+        self.options = [key.option_page for key in self.dropdown_options]
+        self.highlighted_options = [key.highlighted_option_page for key in self.dropdown_options]
         #getting the arrow_frames if necessary
         #rerendering the dropdown, calling the dropdown menu, since we need ScrollableDropdownMenus as deferred menus.
         DropdownMenu.rerender(self)
@@ -591,6 +596,8 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         coption, state, sindex = option_trace[0]
         self.scroll_index = sindex
         self.dropdown_options = self.get_options_n_showed()
+        self.options = [key.option_page for key in self.dropdown_options]
+        self.highlighted_options = [key.highlighted_option_page for key in self.dropdown_options]
 
         self.selected_index = self.dropdown_options.index(coption)
 
@@ -632,7 +639,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                                     option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                     scroll_indices=[self.scroll_index],
                                                                                     indices=[0],
-                                                                                    selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.scroll_index])]
+                                                                                    selected_option_strings=[graphics.colored_page_to_str(self.dropdown_options[self.selected_index].highlighted_option_page)]
                                                                                     )
                             )
 
@@ -650,7 +657,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                                     option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                     scroll_indices=[self.scroll_index],
                                                                                     indices=[0],
-                                                                                    selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.scroll_index])]
+                                                                                    selected_option_strings=[graphics.colored_page_to_str(self.dropdown_options[self.selected_index].highlighted_option_page)]
                                                                                     )
                             )
 
@@ -698,7 +705,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                                             option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                             scroll_indices=[self.scroll_index],
                                                                                             indices=[self.selected_index],
-                                                                                            selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
+                                                                                            selected_option_strings=[graphics.colored_page_to_str(self.dropdown_options[self.selected_index].highlighted_option_page)]
                                                                                             )
                                     )
             #resetting moves buffered
@@ -728,7 +735,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     event.option_keys.insert(0, self.dropdown_keys[self.selected_index + self.scroll_index])
                     event.scroll_indices.insert(0, self.scroll_index)
                     event.indices.insert(0, self.selected_index)
-                    event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index]))
+                    event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.dropdown_options[self.selected_index].highlighted_option_page))
 
                     event.selected_option_tuples = event.recalculate_option_tuples()
 
@@ -740,7 +747,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     event.option_keys.insert(0, self.dropdown_keys[self.selected_index + self.scroll_index])
                     event.scroll_indices.insert(0, self.scroll_index)
                     event.indices.insert(0, self.selected_index)
-                    event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index]))
+                    event.selected_option_strings.insert(0, graphics.colored_page_to_str(self.dropdown_options[self.selected_index].highlighted_option_page))
 
                     event.selected_option_tuples = event.recalculate_option_tuples()
 
@@ -784,6 +791,9 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         dropdownkey = self.dropdown_keys[self.scroll_index-1]
         page = dropdownkey.option_page
         hpage = dropdownkey.highlighted_option_page
+
+        self.options.append(page)
+        self.highlighted_options.append(hpage)
 
         rtext = graphics.render_page_from_chars_color(
                                                         font=self.font,
@@ -867,6 +877,9 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         self.scroll_index -= 1
         self.dropdown_options = self.get_options_n_showed()
 
+        self.options = [key.option_page for key in self.dropdown_options]
+        self.highlighted_options = [key.highlighted_option_page for key in self.dropdown_options]
+
         self.selected_index = 0
         self.state = DropdownMenu.OPTION_SELECTED
 
@@ -875,7 +888,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                                 option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                 scroll_indices=[self.scroll_index],
                                                                                 indices=[self.selected_index],
-                                                                                selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
+                                                                                selected_option_strings=[graphics.colored_page_to_str(self.dropdown_options[self.selected_index].highlighted_option_page)]
                                                                                 )
                         )
 
@@ -907,6 +920,9 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         dropdownkey = self.dropdown_keys[self.scroll_index+self.n_options_shown]
         page = dropdownkey.option_page
         hpage = dropdownkey.highlighted_option_page
+
+        self.options.append(page)
+        self.highlighted_options.append(hpage)
 
         rtext = graphics.render_page_from_chars_color(
                                                         font=self.font,
@@ -987,6 +1003,9 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         self.scroll_index += 1
         self.dropdown_options = self.get_options_n_showed()
 
+        self.options = [key.option_page for key in self.dropdown_options]
+        self.highlighted_options = [key.highlighted_option_page for key in self.dropdown_options]
+
         self.state = DropdownMenu.OPTION_SELECTED
         #we need to set the selected index after changing the state
         self.selected_index = self.n_options_scroll() - 1
@@ -996,7 +1015,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                                 option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                 scroll_indices=[self.scroll_index],
                                                                                 indices=[self.selected_index],
-                                                                                selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
+                                                                                selected_option_strings=[graphics.colored_page_to_str(self.dropdown_options[self.selected_index].highlighted_option_page)]
                                                                                 )
                         )
 
@@ -1013,7 +1032,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         elif self.state == ExpandableDropdownMenu.OPTION_SELECTED:
 
             self.pre_select_highlighted_page = self.highlighted_options[self.selected_index]
-            self.highlighted_options[self.selected_index] = self.highlighted_options[self.selected_index+self.scroll_index]
+            self.highlighted_options[self.selected_index] = self.dropdown_keys[self.selected_index+self.scroll_index].highlighted_option_page
             #selects the current selected option
             self.state = ExpandableDropdownMenu.SELECT_ANIMATION_PLAYING
             self.rtext_copy = self.rendered_highlighted_texts[self.selected_index]
@@ -1036,7 +1055,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                                                 option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
                                                                                 scroll_indices=[self.scroll_index],
                                                                                 indices=[self.selected_index],
-                                                                                selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index+self.scroll_index])]
+                                                                                selected_option_strings=[graphics.colored_page_to_str(self.dropdown_options[self.selected_index].highlighted_option_page)]
                                                                             )
                         )
         self.raise_prerender_flag()
