@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import Type, Any, Callable, override
+from bisect import bisect_left, bisect_right
+from collections import OrderedDict
 
 import pygame
 
@@ -80,6 +82,11 @@ class RenderableCardListviewer(Frame):
 
     #full cardlist name key
     FULL_CARDLIST_NAME: str = "Full Cardlist"
+
+    # Limits keep browsing through a large collection from retaining every
+    # scaled surface indefinitely.
+    CARD_IMAGE_CACHE_LIMIT: int = 256
+    SHADOW_CACHE_LIMIT: int = 64
 
     #==================================
     # INFO TEXT VARIABLES
@@ -1081,20 +1088,32 @@ class RenderableCardListviewer(Frame):
         """
         Temporary copy of the yscroll, used for animations.
         """
-        self.card_render_cache: dict[str, tuple[ pygame.Surface, point_t, pygame.Rect ]]  = {}
+        self.card_render_cache: OrderedDict[tuple[str, int, int], tuple[pygame.Surface, point_t]] = OrderedDict()
         """
-        A cache for saving the rendered cards.
-        Structured as:
-                        image_path: (image_surface, image_pos, image_rect)
-
-        The image_pos is relative to image_rect, and image_rect
-        is only (0, 0, card_width, card_height)
+        Cache of card images after smooth scaling.
+        Key: (image_path, base_width, base_height).
+        Cached positions are relative to the image's target rectangle.
+        Animated size changes are applied to the cached surface, not cached
+        as separate image variants.
         """
-        self.text_render_cache: dict[Any, tuple[rendered_surface_position_tuples_t, pygame.Rect]] = {}
+        self.text_render_cache: dict[tuple[int, int, int], rendered_surface_position_tuples_t] = {}
         """
-        A cache for saving rendered texts.
-        The keys might be different, depending
-        on the current view state.
+        Cache of rendered amount labels.
+        Key: (amount, base_text_width, base_text_height).
+        """
+        self.shadow_render_cache: OrderedDict[tuple[tuple[int, int], tuple[int, int, int, int]], pygame.Surface] = OrderedDict()
+        """
+        Cache of card shadow surfaces.
+        Key: (surface_size, RGBA_color).
+        """
+        self._base_text_render_size: tuple[int, int] = (0, 0)
+        """
+        Standard (unanimated) dimensions used to render amount labels.
+        """
+        self._last_render_signature: tuple[Any, ...] | None = None
+        """
+        Visual state from the last prerender. Used to avoid rerendering
+        an unchanged widget on every tick.
         """
         self.main_list_cards_dict: dict[int, tuple[int, pygame.Rect, pygame.Rect, int]] = {}
         """
@@ -1114,6 +1133,10 @@ class RenderableCardListviewer(Frame):
         y_position: [(self.main_list_cards_index, card_id, image rect, text rect), ...]
 
         image and text rect are relative to self.frame_dim.
+        """
+        self.main_list_row_positions: tuple[int, ...] = ()
+        """
+        Sorted row y-positions, allowing visible rows to be located with bisect.
         """
         self.rendered_rows: list[ tuple[ int, int, int, pygame.Rect, pygame.Rect ] ] = []
         """
@@ -1629,9 +1652,10 @@ class RenderableCardListviewer(Frame):
         The method to recalculate
         the rectangles and positions of the card previews.
         """
-        #clearing caches#
-        self.card_render_cache = {}
-        self.text_render_cache = {}
+        # Keep cached resources when only the group/order changes. They depend
+        # on the render dimensions, not on the card's screen position.
+        previous_image_size = (self.cardimage_width, self.cardimage_height)
+        previous_text_size = self._base_text_render_size
 
         #getting the separator width
         self.main_list_hseparator_width = int(self.inner_main_list_frame.width * self.main_list_separator_h_percentage)
@@ -1665,6 +1689,23 @@ class RenderableCardListviewer(Frame):
             self.cardimage_width = self.main_list_cwidth
             self.cardimage_height = self.main_list_cheight
 
+        # Text surfaces are rendered into the standard text rectangle. During
+        # the pressed-card animation, the cached result is scaled to the
+        # animated rectangle instead of being rerendered at every size.
+        base_text_rect = graphics.apply_margins(
+            pygame.Rect(0, 0, self.subtext_width, self.subtext_height),
+            self.cardtext_hmargin,
+            self.cardtext_vmargin
+        )
+        self._base_text_render_size = base_text_rect.size
+
+        current_image_size = (self.cardimage_width, self.cardimage_height)
+        if previous_image_size != current_image_size:
+            self.card_render_cache.clear()
+            self.shadow_render_cache.clear()
+
+        if previous_text_size != self._base_text_render_size:
+            self.text_render_cache.clear()
 
         cx = self.inner_main_list_frame.x + (self.inner_main_list_frame.width // 2 - self.main_list_cwidth // 2 if self.cards_per_line == 1 else 0)
         cy = self.inner_main_list_frame.y + (self.inner_main_list_frame.height // 2 - self.main_list_cheight // 2 if self.cards_per_column == 1 else 0)
@@ -1736,6 +1777,9 @@ class RenderableCardListviewer(Frame):
                 main_list_cards_index += 1
 
         self.n_cards_shown = card_id_index
+        # Dict insertion order follows the ascending row positions generated
+        # above, so this tuple is sorted and can be searched with bisect.
+        self.main_list_row_positions = tuple(self.main_list_cards_rects)
 
     """
     Renders the cardlist
@@ -1743,59 +1787,128 @@ class RenderableCardListviewer(Frame):
 
     def render_list_with_yscroll(self) -> None:
         """
-        Renders the card previews,
-        iterates over each row and only
-        renders it if it is visible.
-        Takes precached variables whenever possible.
+        Renders only visible card rows and reuses cached image, text, and
+        shadow surfaces wherever possible.
         """
-
         self.rendered_rows = []
 
-        for cy in self.main_list_cards_rects:
+        row_positions = self.main_list_row_positions
+        if not row_positions:
+            return
 
-            if cy + self.main_list_cheight + self.main_list_yscroll < self.inner_main_list_frame.y or\
-                cy + self.main_list_yscroll > self.inner_main_list_frame.y + self.inner_main_list_frame.height:
-                continue
+        # Find the first and last rows intersecting the visible list area.
+        # This avoids scanning every row when the card list is very large.
+        visible_top = (
+            self.inner_main_list_frame.y
+            - self.main_list_yscroll
+            - self.main_list_cheight
+        )
+        visible_bottom = (
+            self.inner_main_list_frame.bottom
+            - self.main_list_yscroll
+        )
+        first_row = bisect_left(row_positions, visible_top)
+        after_last_row = bisect_right(row_positions, visible_bottom)
 
+        base_image_width = self.cardimage_width
+        base_image_height = self.cardimage_height
 
+        for cy in row_positions[first_row:after_last_row]:
             for id_index, main_list_cards_idx, img_rect, text_rect in self.main_list_cards_rects[cy]:
-
-
                 self.rendered_rows.append((cy, id_index, main_list_cards_idx, img_rect, text_rect))
                 cinfo = self.main_list_cards[main_list_cards_idx][0].info()
 
-                img_rerender_needed = True
-                img, img_pos = None, None
-                if cinfo.card_image_path in self.card_render_cache:
-                    img, img_pos, cached_img_rect = self.card_render_cache[cinfo.card_image_path]
-                    if cached_img_rect == img_rect:
-                        img_rerender_needed = False
+                # Cache the image at its normal layout size. Card-press
+                # animation changes the rectangle every tick, so cache the
+                # stable base surface and scale that surface for the animation.
+                image_key = (
+                    cinfo.card_image_path,
+                    base_image_width,
+                    base_image_height
+                )
+                cached_image = self.card_render_cache.get(image_key)
+                if cached_image is None:
+                    cached_image = graphics.img_load_and_position_smoothscale(
+                        cinfo.card_image_path,
+                        pygame.Rect(0, 0, base_image_width, base_image_height)
+                    )
+                    self.card_render_cache[image_key] = cached_image
+                    if len(self.card_render_cache) > self.CARD_IMAGE_CACHE_LIMIT:
+                        self.card_render_cache.popitem(last=False)
+                else:
+                    self.card_render_cache.move_to_end(image_key)
 
-                if img_rerender_needed:
-                    img, img_pos = graphics.img_load_and_position_smoothscale(cinfo.card_image_path, pygame.Rect(0, 0, img_rect.width, img_rect.height))
-                    self.card_render_cache[cinfo.card_image_path] = (img, img_pos, img_rect.copy())
+                img, base_img_pos = cached_image
+                img_pos = base_img_pos
 
-                img_render_pos = (img_rect.x + img_pos[0], img_rect.y + img_pos[1] + self.main_list_yscroll)
+                if (
+                    img_rect.width != base_image_width
+                    or img_rect.height != base_image_height
+                ) and base_image_width > 0 and base_image_height > 0:
+                    scale_x = img_rect.width / base_image_width
+                    scale_y = img_rect.height / base_image_height
+                    scaled_size = (
+                        max(1, int(round(img.get_width() * scale_x))),
+                        max(1, int(round(img.get_height() * scale_y)))
+                    )
+                    img = pygame.transform.smoothscale(img, scaled_size)
+                    img_pos = (
+                        int(round(base_img_pos[0] * scale_x)),
+                        int(round(base_img_pos[1] * scale_y))
+                    )
 
-                shadow_rect = None
+                img_render_pos = (
+                    img_rect.x + img_pos[0],
+                    img_rect.y + img_pos[1] + self.main_list_yscroll
+                )
 
+                if (
+                    self.selected_card_index == id_index
+                    and self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED
+                ):
+                    # Scale the selected card slightly. Use integer dimensions
+                    # because pygame.transform.scale expects integer sizes.
+                    img_x_inc = max(1, int(round(img.get_width() * 0.1)))
+                    img_y_inc = max(1, int(round(img.get_height() * 0.1)))
+                    img = pygame.transform.scale(
+                        img,
+                        (img.get_width() + img_x_inc, img.get_height() + img_y_inc)
+                    )
+                    img_render_pos = (
+                        img_render_pos[0] - img_x_inc // 2,
+                        img_render_pos[1] - img_y_inc // 2
+                    )
 
-                if self.selected_card_index == id_index and self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
-
-                    #scaling up selected card
-                    img_x_inc, img_y_inc = img.get_width() * 0.1, img.get_height() * 0.1
-                    img = pygame.transform.scale(img, (img.get_width() + img_x_inc, img.get_height() + img_y_inc))
-                    img_render_pos = (img_render_pos[0]  - img_x_inc // 2, img_render_pos[1] - img_y_inc // 2)
-
-                shadow_rect = pygame.Rect(img_render_pos[0], img_render_pos[1], img.get_width(), img.get_height())
+                shadow_rect = pygame.Rect(
+                    img_render_pos[0],
+                    img_render_pos[1],
+                    img.get_width(),
+                    img.get_height()
+                )
                 shadow_rect.x += int(self.cardshadow_hoffset_p * shadow_rect.width)
                 shadow_rect.y += int(self.cardshadow_voffset_p * shadow_rect.height)
 
-                shadow_color = ((*Colors.BLACK, self.cardshadow_alpha) if (id_index != self.selected_card_index or self.state != RenderableCardListviewer.MAIN_LIST_FOCUSED)\
-                                else (*Colors.YELLOW, self.selected_cardshadow_alpha))
+                shadow_color = (
+                    (*Colors.BLACK, self.cardshadow_alpha)
+                    if (
+                        id_index != self.selected_card_index
+                        or self.state != RenderableCardListviewer.MAIN_LIST_FOCUSED
+                    )
+                    else (*Colors.YELLOW, self.selected_cardshadow_alpha)
+                )
 
-                shadow_surf = pygame.Surface((shadow_rect.width, shadow_rect.height), pygame.SRCALPHA)
-                shadow_surf.fill(shadow_color)
+                # Shadow surfaces are identical for cards with equal size and
+                # color; reuse them instead of allocating one every frame.
+                shadow_key = (shadow_rect.size, shadow_color)
+                shadow_surf = self.shadow_render_cache.get(shadow_key)
+                if shadow_surf is None:
+                    shadow_surf = pygame.Surface(shadow_rect.size, pygame.SRCALPHA)
+                    shadow_surf.fill(shadow_color)
+                    self.shadow_render_cache[shadow_key] = shadow_surf
+                    if len(self.shadow_render_cache) > self.SHADOW_CACHE_LIMIT:
+                        self.shadow_render_cache.popitem(last=False)
+                else:
+                    self.shadow_render_cache.move_to_end(shadow_key)
 
                 self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
                 self.surface.blit(img, img_render_pos)
@@ -1803,25 +1916,53 @@ class RenderableCardListviewer(Frame):
                 amount = self.main_list_cards[main_list_cards_idx][1]
 
                 if self.main_list_view_state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
+                    base_text_width, base_text_height = self._base_text_render_size
+                    text_key = (amount, base_text_width, base_text_height)
+                    trend = self.text_render_cache.get(text_key)
 
-                    trend = None
+                    if trend is None:
+                        trend = graphics.render_page_from_chars(
+                            self.font,
+                            [f"x{amount}"],
+                            pygame.Rect(0, 0, base_text_width, base_text_height),
+                            self.card_text_description_color,
+                            centered=True,
+                            vertical_centered=True
+                        )
+                        self.text_render_cache[text_key] = trend
 
-                    txt_rerender_needed = True
-                    if amount in self.text_render_cache:
-                        trend, cached_txt_rect = self.text_render_cache[amount]
-                        if cached_txt_rect == text_rect:
-                            txt_rerender_needed = False
-                    if txt_rerender_needed:
-                        trend = graphics.render_page_from_chars(self.font, [f"x{amount}"], pygame.Rect(0, 0, text_rect.width, text_rect.height),
-                                                                self.card_text_description_color, centered=True, vertical_centered=True
-                                                                )
-                        self.text_render_cache[amount] = (trend, text_rect.copy())
+                    # The text rectangle also changes during the pressed-card
+                    # animation. Scale the cached text layout instead of
+                    # rendering the same string again at every animation step.
+                    if base_text_width > 0 and base_text_height > 0:
+                        text_scale_x = text_rect.width / base_text_width
+                        text_scale_y = text_rect.height / base_text_height
+                    else:
+                        text_scale_x = 1.0
+                        text_scale_y = 1.0
 
                     for surf, pos in trend:
-                        self.surface.blit(surf, (pos[0] + text_rect.x, pos[1] + text_rect.y + self.main_list_yscroll))
+                        if text_scale_x != 1.0 or text_scale_y != 1.0:
+                            scaled_text_size = (
+                                max(1, int(round(surf.get_width() * text_scale_x))),
+                                max(1, int(round(surf.get_height() * text_scale_y)))
+                            )
+                            rendered_text = pygame.transform.scale(surf, scaled_text_size)
+                            rendered_text_pos = (
+                                int(round(pos[0] * text_scale_x)),
+                                int(round(pos[1] * text_scale_y))
+                            )
+                        else:
+                            rendered_text = surf
+                            rendered_text_pos = pos
 
-        #finally sort the l
-        self.rendered_rows.sort(key=lambda cy: cy[0])
+                        self.surface.blit(
+                            rendered_text,
+                            (
+                                rendered_text_pos[0] + text_rect.x,
+                                rendered_text_pos[1] + text_rect.y + self.main_list_yscroll
+                            )
+                        )
 
     def render_full_image(self, cinfo: Renderable_CardInfo) -> None:
         """
@@ -2087,6 +2228,42 @@ class RenderableCardListviewer(Frame):
     # TICK FUNCTIONS AND ANIMATION HANDLING
     #==================================
 
+    def _get_render_signature(self) -> tuple[Any, ...]:
+        """Return the state values that can change the rendered widget."""
+        return (
+            self.state,
+            self.prev_state,
+            self.selected_card_index,
+            self.main_list_yscroll,
+            self.shown_group,
+            self.main_list_view_state,
+            self.is_focused(),
+            self.info_text_active(),
+            self.focused_text_input_subframe is not None
+        )
+
+    def _needs_continuous_prerender(self) -> bool:
+        """Return True while a visual animation or timed effect is running."""
+        animated_states = (
+            RenderableCardListviewer.MOVING_ONE_ROW_UP,
+            RenderableCardListviewer.MOVING_ONE_ROW_DOWN,
+            RenderableCardListviewer.MOVING_ALL_ROWS_UP,
+            RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION,
+            RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION,
+            RenderableCardListviewer.CARD_SNAPBACK_ANIMATION
+        )
+
+        return (
+            self.state in animated_states
+            or (
+                self.state == RenderableCardListviewer.ENTER_PRESSED
+                and self.prev_state == RenderableCardListviewer.MAIN_LIST_FOCUSED
+            )
+            or self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE
+            or self.info_text_active()
+            or self.focused_text_input_subframe is not None
+        )
+
     @override
     def tick(self) -> None:
         """
@@ -2255,7 +2432,15 @@ class RenderableCardListviewer(Frame):
 
             self.key_clock.start()
 
-        self.raise_prerender_flag()
+        # Only redraw when visible state changed, an explicit invalidation was
+        # raised elsewhere, or a continuously animated element needs a new frame.
+        render_signature = self._get_render_signature()
+        if (
+            render_signature != self._last_render_signature
+            or self._needs_continuous_prerender()
+        ):
+            self.raise_prerender_flag()
+        self._last_render_signature = render_signature
 
         #prerendering
         if self.prerender_flag_raised():
