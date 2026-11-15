@@ -3047,7 +3047,6 @@ class RenderableCardListviewer(Frame):
         else:
 
             self.main_list_cards[main_list_cards_index] = (cardclass, current_amount + amount)
-            return True
 
         #we need prerendering
         if self.main_list_view_state in [RenderableCardListviewer.SHOW_WITH_AMOUNT]:
@@ -3057,6 +3056,7 @@ class RenderableCardListviewer(Frame):
             #recalculating the rects, but saving yscroll
             self.recalculate_main_list_positions_with_saved_view()
 
+        return True
 
     def decrease_selected_card_amount(self, amount: int) -> bool:
         """
@@ -3085,7 +3085,6 @@ class RenderableCardListviewer(Frame):
         else:
 
             self.main_list_cards[main_list_cards_index] = (cardclass, current_amount - amount)
-            return True
 
         #the selected index needs to mov
 
@@ -3097,6 +3096,8 @@ class RenderableCardListviewer(Frame):
             self.selected_card_index -= 1
             #recalculating the rects, but saving yscroll
             self.recalculate_main_list_positions_with_saved_view()
+
+        return True
 
     def get_selected_card_with_amount(self) -> tuple[ Type[Renderable_CardInfo], int ]:
         """
