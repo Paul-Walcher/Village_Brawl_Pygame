@@ -8,6 +8,7 @@ import pygame
 import random
 from constants import (
     fequal,
+    INFINITE,
     PLAYSETS_FOLDER,
     Colors,
     Fonts,
@@ -31,6 +32,8 @@ from modules import Modules
 from event_queue_manager import Event
 from copy import deepcopy
 from templates.renderable_cardinfo import Renderable_CardInfo
+
+from cardgroup import Cardgroup, group_t, group_dict_t, cardlist_t
 
 #widgets
 from Frames.frame import Frame
@@ -59,26 +62,12 @@ from Frames.widgets.scrollable_dropdown_menu import (
 
 
 #types
-type cardlist_element_t = tuple[ Type[Renderable_CardInfo], int ] # (class reference, amount)
-type cardlist_t = list[cardlist_element_t]
-type dict_cardlist_t = dict[ Type[Renderable_CardInfo], int ] # (class reference: amount)
+type listviewer_cardlist_element_t = tuple[ Type[Renderable_CardInfo], int ] # (class reference, amount)
+type listviewer_cardlist_t = list[listviewer_cardlist_element_t]
 
-type cardlist_sorting_function_t = Callable[ [cardlist_t], cardlist_t ]
-
-#group types
-type group_t = dict[str, Any] #group type
-type group_dict_t = dict[str, group_t] #name: group
+type cardlist_sorting_function_t = Callable[ [listviewer_cardlist_t], listviewer_cardlist_t ]
 
 class RenderableCardListviewer(Frame):
-
-    #==================================
-    # GROUP KEYS
-    #==================================
-
-    IS_COPYLIST_KEY: str = "is_copylist"
-    MUTABLE_KEY: str = "mutable"
-    RENAMABLE_KEY: str = "renamable" #if the group is renamable or not
-    CARDLIST_KEY: str = "cardlist"
 
     #full cardlist name key
     FULL_CARDLIST_NAME: str = "Full Cardlist"
@@ -87,6 +76,9 @@ class RenderableCardListviewer(Frame):
     # scaled surface indefinitely.
     CARD_IMAGE_CACHE_LIMIT: int = 256
     SHADOW_CACHE_LIMIT: int = 64
+
+    #subframe focus group
+    SUBFRAME_FOCUS_GROUP: str = "RenderableCardListviewer_Subframe_Focus_Group"
 
     #==================================
     # INFO TEXT VARIABLES
@@ -149,6 +141,13 @@ class RenderableCardListviewer(Frame):
     SHOW_EACH_CARD: id_t = R_ID()
 
     #==================================
+    # MAIN LIST ACTION STATES
+    #==================================
+
+    OBSERVER_STATE: id_t = R_ID() #state where no main list action can be done by pressing enter
+    SELECTION_STATE: id_t = R_ID() #state in which cards can be selected
+
+    #==================================
     # MENU OPTIONS
     #==================================
 
@@ -203,7 +202,7 @@ class RenderableCardListviewer(Frame):
         """
 
         @staticmethod
-        def no_order(cardlist: cardlist_t) -> cardlist_t:
+        def no_order(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
             """
             Returns the cardlist in the same order as
             it was before.
@@ -211,7 +210,7 @@ class RenderableCardListviewer(Frame):
             return cardlist
 
         @staticmethod
-        def randomized(cardlist: cardlist_t) -> cardlist_t:
+        def randomized(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
             """
             Returns the cardlist after a random shuffle.
             """
@@ -220,7 +219,7 @@ class RenderableCardListviewer(Frame):
             return cardlist_copy
 
         @staticmethod
-        def name_descending(cardlist: cardlist_t) -> cardlist_t:
+        def name_descending(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
             """
             Sorts by name descending.
             """
@@ -229,7 +228,7 @@ class RenderableCardListviewer(Frame):
             return clist
 
         @staticmethod
-        def name_ascending(cardlist: cardlist_t) -> cardlist_t:
+        def name_ascending(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
             """
             Sorts by name ascending.
             """
@@ -239,7 +238,7 @@ class RenderableCardListviewer(Frame):
             return clist
 
         @staticmethod
-        def amount_descending(cardlist: cardlist_t) -> cardlist_t:
+        def amount_descending(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
             """
             Sorts by amount descending.
             """
@@ -248,7 +247,7 @@ class RenderableCardListviewer(Frame):
             return clist
 
         @staticmethod
-        def amount_ascending(cardlist: cardlist_t) -> cardlist_t:
+        def amount_ascending(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
             """
             Sorts by amount ascending.
             """
@@ -329,7 +328,7 @@ class RenderableCardListviewer(Frame):
             """
             Rerendering.
             """
-            self.text_input_frame = pygame.Rect(0, 0, self.width//2, self.height//20)
+            self.text_input_frame = pygame.Rect(0, 0, self.width//2, self.height//10)
             xc, yc = graphics.get_center_with_rect(self.frame_dim, self.text_input_frame)
             #setting the centered position
             self.text_input_frame.x = xc
@@ -437,7 +436,7 @@ class RenderableCardListviewer(Frame):
     def __init__(
                     self,
                     frame_dim: pygame.Rect,  #frame dimension, into which it is rendered into
-                    full_cardlist: dict_cardlist_t, #a dictionary of {RenderableCard(Class): amount}
+                    full_cardlist: cardlist_t, #a dictionary of {RenderableCard(Class): amount}
                     groups: group_dict_t,  #must include at least one group. is {name: {"cardlist": {renderable_card: amount}, "mutable": (False/True), "is_copylist": (False/True)}}
                     special_info_frames: dict[ Type[Renderable_CardInfo], dict[ tuple[str], Type[Frame] ] ] = None,
                     #a dictionary like: {cardclass: (list_of_groups_this_info_frame_will_be_used, instantiated frame)}
@@ -449,8 +448,6 @@ class RenderableCardListviewer(Frame):
                     shown_group: str = None, #the name of the first shown group, must be the name of a group or None
 
                     font: pygame.font.Font = Fonts.STANDARD_FONT,
-                    max_group_number: int = 25,
-                    #maximum number of groups allowed, gets enforced on loading in and when trying to create a neww group
 
                     #card dimensions
                     cards_per_line: int = 8,
@@ -560,14 +557,18 @@ class RenderableCardListviewer(Frame):
         #==================================
 
         #deepcopying, to avoid altering the references
-        self.full_cardlist: dict_cardlist_t = full_cardlist.copy()
+        self.full_cardlist: cardlist_t = Cardgroup.copy_cardlist(cardlist=full_cardlist)
         """
         The full cardlist. In the form of: Class Type Reference: amount.
         Should contain all cards available.
         """
-        self.groups: group_dict_t = deepcopy(groups)
+        self.groups: dict[str, group_t] = Cardgroup.get_groups_from_group_dict(groups)
         """
         A deepcopy of the given groups.
+        """
+        self.max_group_number: int = Cardgroup.max_group_number(group_dict=groups)
+        """
+        The maximum number of groups.
         """
         self.special_info_frames: dict[ Type[Renderable_CardInfo], dict[ tuple[str], Type[Frame] ] ] = (special_info_frames if special_info_frames is not None else {})
         """
@@ -584,10 +585,6 @@ class RenderableCardListviewer(Frame):
         self.group_name_color: color_t = group_name_color
         """
         Color the name of the group will be shown in.
-        """
-        self.max_group_number: int = max_group_number
-        """
-        The maximum number of groups allowed.
         """
         self.sorting_function: cardlist_sorting_function_t = (sorting_function if sorting_function is not None else RenderableCardListviewer.SortingFunctions.name_descending)
         """
@@ -1081,6 +1078,10 @@ class RenderableCardListviewer(Frame):
         """
         The previous state, saved.
         """
+        self.main_list_action_state: id_t = RenderableCardListviewer.SELECTION_STATE
+        """
+        The main list action state. Starts out as selection state.
+        """
         self.main_list_yscroll: int = 0
         """
         Saves the amount scrolled on the current main list.
@@ -1147,7 +1148,7 @@ class RenderableCardListviewer(Frame):
 
         image and text rect are relative to self.frame_dim.
         """
-        self.main_list_cards: cardlist_t = []
+        self.main_list_cards: listviewer_cardlist_t = []
         """
         The list of the currently loaded cards of the group, loaded as [(cardclass, amount)],
         """
@@ -1273,13 +1274,14 @@ class RenderableCardListviewer(Frame):
         # FINAL ADJUSTMENTS
         #==================================
 
+        full_cardlist_group: cardlist_t = Cardgroup.create_group(
+                                                                    cardlist=self.full_cardlist,
+                                                                    is_copylist=True,
+                                                                    is_mutable=False,
+                                                                    is_renamable=False
+                                                                    )
         #adding the full cardlist to the group
-        self.groups[RenderableCardListviewer.FULL_CARDLIST_NAME] = {
-                                                                    RenderableCardListviewer.CARDLIST_KEY: self.full_cardlist,
-                                                                    RenderableCardListviewer.MUTABLE_KEY: False,
-                                                                    RenderableCardListviewer.IS_COPYLIST_KEY: True,
-                                                                    RenderableCardListviewer.RENAMABLE_KEY: False #not renamable
-                                                                    }
+        self.groups[RenderableCardListviewer.FULL_CARDLIST_NAME] = full_cardlist_group
 
         #setting the shown group
         self.shown_group = (shown_group if shown_group is not None else list(self.groups.keys())[0])
@@ -1316,7 +1318,7 @@ class RenderableCardListviewer(Frame):
         """
         if len(self.groups) == 0:
             raise RuntimeError("You need at least one group")
-        if len(self.groups) > self.max_group_number:
+        if len(self.groups) - 1 > self.max_group_number: #-1 for full_cardlist
             raise RuntimeError("Too many groups. Adjust your max_group_size")
         if self.cards_per_line <= 0 or self.cards_per_column <= 0:
             raise RuntimeError("cards_per_line and cards_per_column have to be greater than 0")
@@ -1328,13 +1330,13 @@ class RenderableCardListviewer(Frame):
         for (groupname, group) in self.groups.items():
 
             #checking if it is copylist
-            is_copylist: bool = group[RenderableCardListviewer.IS_COPYLIST_KEY]
+            is_copylist: bool = Cardgroup.is_copylist(group=group)
             if is_copylist:
                 #skip copylists
                 continue
 
             #otherwise, check amounts
-            cardlist: dict_cardlist_t = group[RenderableCardListviewer.CARDLIST_KEY]
+            cardlist: cardlist_t = Cardgroup.cardlist(group=group)
             for (cardclass, amount) in cardlist.items():
 
                 if amount > self.full_cardlist[cardclass]: #a group has more of this card than allowed: error
@@ -1535,6 +1537,7 @@ class RenderableCardListviewer(Frame):
         #getting the inner main list
         self.inner_main_list_frame = graphics.apply_margins(self.main_list_frame, self.main_list_hmargin, self.main_list_vmargin)
 
+        self.create_dropdown_menu()
         #now getting the card positions
         self.recalculate_main_list_positions()
 
@@ -1667,7 +1670,7 @@ class RenderableCardListviewer(Frame):
         self.main_list_cheight = (self.inner_main_list_frame.height - self.main_list_vseparator_height) // self.cards_per_column
 
         if not keep_current_state:
-            gcards = self.groups[self.shown_group][RenderableCardListviewer.CARDLIST_KEY]
+            gcards = Cardgroup.cardlist(group=self.groups[self.shown_group])
             gcards = [(key, value) for key, value in gcards.items()]
             self.main_list_cards = self.sorting_function(gcards)
 
@@ -1786,8 +1789,6 @@ class RenderableCardListviewer(Frame):
         self.create_deckname_text()
         #rendering the decksize
         self.create_decksize_text()
-        #creating the cardmenu
-        self.create_dropdown_menu()
 
         #checking the selected index
         if self.selected_card_index < 0 or self.selected_card_index >= self.n_cards_shown:
@@ -2034,15 +2035,18 @@ class RenderableCardListviewer(Frame):
         """
         Returns the number of cards in the currently shown group.
         """
-        return sum(self.groups[self.shown_group][RenderableCardListviewer.CARDLIST_KEY].values())
+        return sum(Cardgroup.cardlist(self.groups[self.shown_group]).values())
 
     def add_group(
                     self,
                     groupname: str,
-                    cardlist: dict_cardlist_t = None,
-                    mutable: bool = True,
+                    cardlist: cardlist_t = None,
+                    is_mutable: bool = True,
                     is_copylist: bool = False,
-                    renamable: bool = True
+                    is_renamable: bool = True,
+
+                    max_cards_selected: int = INFINITE,
+                    max_size: int = INFINITE
 
                     ) -> bool:
         """
@@ -2056,12 +2060,16 @@ class RenderableCardListviewer(Frame):
         if cardlist is None:
             cardlist = {}
 
-        self.groups[groupname] = {
-                                    RenderableCardListviewer.CARDLIST_KEY: cardlist,
-                                    RenderableCardListviewer.MUTABLE_KEY: mutable,
-                                    RenderableCardListviewer.IS_COPYLIST_KEY: is_copylist,
-                                    RenderableCardListviewer.RENAMABLE_KEY: renamable
-                                    }
+        group: group_t = Cardgroup.create_group(
+                                                    cardlist=cardlist,
+                                                    is_copylist=is_copylist,
+                                                    is_mutable=is_mutable,
+                                                    is_renamable=is_renamable,
+                                                    max_cards_selected=max_cards_selected,
+                                                    max_size=max_size
+                                                )
+
+        self.groups[groupname] = group
 
         return True
 
@@ -2620,7 +2628,7 @@ class RenderableCardListviewer(Frame):
 
         #checking for deck renaming
         if self.state == RenderableCardListviewer.MENU_DECKNAME_FOCUSED:
-            if self.groups[self.shown_group][RenderableCardListviewer.RENAMABLE_KEY]:
+            if Cardgroup.is_renamable(self.groups[self.shown_group]):
                 self.state = RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION
                 self.initialize_deckname_selected_animation()
             else:
@@ -2845,7 +2853,7 @@ class RenderableCardListviewer(Frame):
 
         self.focused_text_input_subframe = RenderableCardListviewer.FocusedTextInputFrame(
                                                                                             frame_dim=self.frame_dim,
-                                                                                            focus_group=self.focus_group,
+                                                                                            focus_group=RenderableCardListviewer.SUBFRAME_FOCUS_GROUP,
                                                                                             parent_frame=self
                                                                                         )
         self.focused_text_input_subframe.set_input_text(self.shown_group)
@@ -2857,7 +2865,7 @@ class RenderableCardListviewer(Frame):
 
         self.focused_text_input_subframe = RenderableCardListviewer.FocusedTextInputFrame(
                                                                                             frame_dim=self.frame_dim,
-                                                                                            focus_group=self.focus_group,
+                                                                                            focus_group=RenderableCardListviewer.SUBFRAME_FOCUS_GROUP,
                                                                                             parent_frame=self
                                                                                         )
         self.focused_text_input_subframe.set_input_text("")
@@ -2896,9 +2904,9 @@ class RenderableCardListviewer(Frame):
                 self.add_group(
                                     text,
                                     cardlist={},
-                                    mutable=True,
+                                    is_mutable=True,
                                     is_copylist=False,
-                                    renamable=True
+                                    is_renamable=True
                                 )
 
                 self.shown_group = text
@@ -2976,7 +2984,7 @@ class RenderableCardListviewer(Frame):
                                     self,
                                     is_copylist: bool = None, #None means no change
                                     is_mutable: bool = None,  #None means no change
-                                    is_renamable: bool = None #None means no change
+                                    is_renamable: bool = None, #None means no change
                                 ) -> None:
         """
         Saves the current group state into self.groups.
@@ -2985,27 +2993,17 @@ class RenderableCardListviewer(Frame):
         """
 
         group_dict: group_t = self.groups[self.shown_group]
-
-        is_copylist = (is_copylist if is_copylist is not None else group_dict[RenderableCardListviewer.IS_COPYLIST_KEY])
-        is_mutable = (is_mutable if is_mutable is not None else group_dict[RenderableCardListviewer.MUTABLE_KEY])
-        is_renamable = (is_renamable if is_renamable is not None else group_dict[RenderableCardListviewer.RENAMABLE_KEY])
-
         #creating the cardlist
-        cardlist_dict: dict_cardlist_t = {}
+        cardlist_dict: cardlist_t = {}
         #filling the cardlist
         for (cardclass, amount) in self.main_list_cards:
             cardlist_dict[cardclass] = amount
 
-        #filling the dict
-        new_group_dict: group_t = {}
-
-        new_group_dict[RenderableCardListviewer.CARDLIST_KEY] = cardlist_dict
-        new_group_dict[RenderableCardListviewer.IS_COPYLIST_KEY] = is_copylist
-        new_group_dict[RenderableCardListviewer.MUTABLE_KEY] = is_mutable
-        new_group_dict[RenderableCardListviewer.RENAMABLE_KEY] = is_renamable
+        new_group: group_t = Cardgroup.copy_group(self.groups[self.shown_group])
+        Cardgroup.cardlist(group=new_group, cardlist=cardlist_dict)
 
         #saving to the current groups
-        self.groups[self.shown_group] = new_group_dict
+        self.groups[self.shown_group] = new_group
 
         #we do not need to change anything else, since all changes would have
         #been registered in the current variables.
@@ -3026,8 +3024,15 @@ class RenderableCardListviewer(Frame):
 
         group_ref: group_t = self.groups[self.shown_group]
 
-        if  group_ref[RenderableCardListviewer.IS_COPYLIST_KEY]\
-            or not group_ref[RenderableCardListviewer.MUTABLE_KEY]:
+        #checking not to increase over the max size
+        groupsize: int = Cardgroup.groupsize(group=group_ref)
+        max_size: int = Cardgroup.max_size(group=group_ref)
+
+        if (groupsize + amount > max_size):
+            return False
+
+        if  Cardgroup.is_copylist(group=group_ref)\
+            or not Cardgroup.is_mutable(group=group_ref):
 
             return False
 
@@ -3039,7 +3044,7 @@ class RenderableCardListviewer(Frame):
 
         cardclass, current_amount = self.main_list_cards[main_list_cards_index]
 
-        max_amount = self.groups[RenderableCardListviewer.FULL_CARDLIST_NAME][cardclasse]
+        max_amount = self.groups[RenderableCardListviewer.FULL_CARDLIST_NAME][cardclass]
 
         if (current_amount + amount > max_amount):
             #not possible
@@ -3075,8 +3080,8 @@ class RenderableCardListviewer(Frame):
 
         group_ref: group_t = self.groups[self.shown_group]
 
-        if  (group_ref[RenderableCardListviewer.IS_COPYLIST_KEY] and amount > 1)\
-            or not group_ref[RenderableCardListviewer.MUTABLE_KEY]:
+        if  (Cardgroup.is_copylist(group=group_ref) and amount > 1)\
+            or not Cardgroup.is_mutable(group=group_ref):
 
             return False
 

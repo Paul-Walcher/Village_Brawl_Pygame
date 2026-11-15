@@ -33,7 +33,7 @@ class Basic_Explorer(Explorer_Template):
         einfo = ExplorerInfo()
         einfo.name = ["Basic Explorer"]
         einfo.name_color = Colors.LIGHT_ORANGE
-        einfo.explorer_enum = enums.ExplorerEnums.BASIC_EXPLORER
+        einfo.card_enum = enums.ExplorerEnums.BASIC_EXPLORER
         einfo.description = "Basic Explorer. Has no special abilities."
         einfo.description_color = [(einfo.description, Colors.STANDARD_TEXT_COLOR)]
 

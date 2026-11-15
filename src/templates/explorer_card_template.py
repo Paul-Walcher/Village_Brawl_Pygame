@@ -20,26 +20,32 @@ class CardTag:
 
 class ExplorerCardInfo(Renderable_CardInfo):
 
-    def __init__(self,
-                name: str = "",
-                name_color: tuple = (255, 255, 255),
-                card_enum = None,
-                description: str = "",
-                description_color: str = None,
-                tags: list = None,
-                standard_selling_reward = None,
-                card_image_path: str = "",
-                standard_image_path: str = "",
-                max_per_deck: int = 4,
-                playable_locations = None,
-                activation_phases: list = None,
-                keep_duration=0
-                ):
+    def __init__(   self,
+                    card_enum: int = -1,
+                    name: str = "",
+                    name_color: tuple = (255, 255, 255),
+                    description: str = "",
+                    description_color: str = None,
+                    tags: list = None,
+                    standard_selling_reward = None,
+                    card_image_path: str = "",
+                    standard_image_path: str = "",
+                    max_per_deck: int = 4,
+                    playable_locations = None,
+                    activation_phases: list = None,
+                    keep_duration=0
+                    ):
 
 
-        super().__init__(name, name_color, description, description_color, card_image_path, standard_image_path)
-
-        self.card_enum = None
+        Renderable_CardInfo.__init__(   self,
+                                        card_enum,
+                                        name,
+                                        name_color,
+                                        description,
+                                        description_color,
+                                        card_image_path,
+                                        standard_image_path
+                                        )
 
         self.tags = (tags if tags is not None else [])
         self.max_per_deck = max_per_deck
@@ -119,10 +125,10 @@ class Explorer_Card_Template(PlaysetEntity):
 
     def __init__(self, modules, cinfo=None, frame_enum=FrameEnums.UNDEFINED, data=None, frame_dim=constants.FULLSCREEN, parent_frame=None):
 
-        super().__init__(frame_enum, data, frame_dim, parent_frame)
+        PlaysetEntity.__init__(self, frame_enum, data, frame_dim, parent_frame)
 
         self.info = (cinfo if cinfo is not None else Explorer_Card_Template.info())
 
 
     def tick(self, phaseinfo, location):
-        super().tick(phaseinfo)
+        PlaysetEntity.tick(self, phaseinfo)

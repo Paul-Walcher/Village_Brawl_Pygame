@@ -1,18 +1,19 @@
 import os
 import pygame
 
-from Frames.frame import Frame
-from Frames.frame_enums import FrameEnums
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, WIDTH, HEIGHT
 import graphics
 from clock import Clock
 
+import constants
+from cardgroup import Cardgroup, group_t, group_dict_t, cardlist_t
+from context_data import ContextData
+
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
+from Frames.cardinfo_frame import CardinfoFrame
 from Frames.widgets.text_input import TextInput
 from Frames.widgets.renderable_card_listviewer import RenderableCardListviewer
-import constants
-
-from Frames.cardinfo_frame import CardinfoFrame
-from context_data import ContextData
 
 class ShowExplorerStartingCardsFrame(Frame):
 
@@ -54,56 +55,89 @@ class ShowExplorerStartingCardsFrame(Frame):
         self.card = self.modules.mappings.explorer_cards_mappings[self.modules.enums.ExplorerCardEnums.SMALL_REST]
         self.cardinfo = self.card.info()
 
+        #getting the groups
+        group_dict: group_dict_t = Cardgroup.group_dict()
+
+        #getting the cardlists
+        full_cardlist: cardlist_t = {
+                                        self.card: 100,
+                                        self.modules.explorer_cards_module.Example_Card_1: 500,
+                                        self.modules.explorer_cards_module.Example_Card_2: 200,
+                                        self.modules.explorer_cards_module.Example_Card_4: 500,
+                                        self.modules.explorer_cards_module.Example_Card_3: 300,
+                                        self.modules.explorer_cards_module.Example_Card_5: 500,
+                                        self.modules.explorer_cards_module.Example_Card_6: 100,
+                                        self.modules.explorer_cards_module.Example_Card_7: 700
+
+                                    }
+
+        cardlist_1: cardlist_t =  {
+                                        self.card: 10,
+                                        self.modules.explorer_cards_module.Example_Card_1: 5,
+                                        self.modules.explorer_cards_module.Example_Card_2: 2,
+                                        self.modules.explorer_cards_module.Example_Card_3: 3,
+                                        self.modules.explorer_cards_module.Example_Card_4: 5,
+                                        self.modules.explorer_cards_module.Example_Card_5: 5,
+                                        self.modules.explorer_cards_module.Example_Card_6: 1,
+                                        self.modules.explorer_cards_module.Example_Card_7: 7
+
+                                    }
+
+        cardlist_2: cardlist_t = {
+                                    self.card: 5,
+                                    self.modules.explorer_cards_module.Example_Card_1: 0,
+                                    self.modules.explorer_cards_module.Example_Card_2: 2,
+                                    self.modules.explorer_cards_module.Example_Card_3: 0,
+                                    self.modules.explorer_cards_module.Example_Card_4: 5,
+                                    self.modules.explorer_cards_module.Example_Card_5: 5,
+                                    self.modules.explorer_cards_module.Example_Card_6: 0,
+                                    self.modules.explorer_cards_module.Example_Card_7: 5
+
+                                }
+
+        cardlist_3: cardlist_t = {
+                                    self.card: 5,
+                                    self.modules.explorer_cards_module.Example_Card_1: 0,
+                                    self.modules.explorer_cards_module.Example_Card_2: 2,
+                                    self.modules.explorer_cards_module.Example_Card_3: 0,
+                                    self.modules.explorer_cards_module.Example_Card_4: 5,
+                                    self.modules.explorer_cards_module.Example_Card_5: 5,
+                                    self.modules.explorer_cards_module.Example_Card_6: 0,
+                                    self.modules.explorer_cards_module.Example_Card_7: 5
+
+                                }
+
+
+        group_1: group_t = Cardgroup.create_group(
+                                                    cardlist=cardlist_1,
+                                                    is_copylist=False,
+                                                    is_mutable=True,
+                                                    is_renamable=True
+                                                    )
+        group_2: group_t = Cardgroup.create_group(
+                                                    cardlist=cardlist_2,
+                                                    is_copylist=False,
+                                                    is_mutable=True,
+                                                    is_renamable=False
+                                                    )
+        group_3: group_t = Cardgroup.create_group(
+                                                    cardlist=cardlist_3,
+                                                    is_copylist=False,
+                                                    is_mutable=True,
+                                                    is_renamable=True
+                                                    )
+
+        #adding all groups
+        Cardgroup.add_group(group_dict, name="Deck 1", group=group_1)
+        Cardgroup.add_group(group_dict, name="EEE", group=group_2)
+        Cardgroup.add_group(group_dict, name="Deck ABC", group=group_3)
+
         self.cardlistviewer = RenderableCardListviewer(
                                                         self.frame_dim.copy(),
-                                                        {self.card: 100,
-                                                        self.modules.explorer_cards_module.Example_Card_1: 500,
-                                                        self.modules.explorer_cards_module.Example_Card_2: 200,
-                                                        self.modules.explorer_cards_module.Example_Card_4: 500,
-                                                        self.modules.explorer_cards_module.Example_Card_3: 300,
-                                                        self.modules.explorer_cards_module.Example_Card_5: 500,
-                                                        self.modules.explorer_cards_module.Example_Card_6: 100,
-                                                        self.modules.explorer_cards_module.Example_Card_7: 700
 
-                                                        },
-                                                        {"Deck": {
-                                                        "cardlist": {
-                                                                        self.card: 10,
-                                                                        self.modules.explorer_cards_module.Example_Card_1: 5,
-                                                                        self.modules.explorer_cards_module.Example_Card_2: 2,
-                                                                        self.modules.explorer_cards_module.Example_Card_3: 3,
-                                                                        self.modules.explorer_cards_module.Example_Card_4: 5,
-                                                                        self.modules.explorer_cards_module.Example_Card_5: 5,
-                                                                        self.modules.explorer_cards_module.Example_Card_6: 1,
-                                                                        self.modules.explorer_cards_module.Example_Card_7: 7
-
-                                                        },
-
-                                                        "mutable": True,
-                                                        "is_copylist": False,
-                                                        "renamable": False
-                                                        },
-
-                                                        "Deck 2": {
-                                                        "cardlist": {
-                                                                        self.card: 5,
-                                                                        self.modules.explorer_cards_module.Example_Card_1: 0,
-                                                                        self.modules.explorer_cards_module.Example_Card_2: 2,
-                                                                        self.modules.explorer_cards_module.Example_Card_3: 0,
-                                                                        self.modules.explorer_cards_module.Example_Card_4: 5,
-                                                                        self.modules.explorer_cards_module.Example_Card_5: 5,
-                                                                        self.modules.explorer_cards_module.Example_Card_6: 0,
-                                                                        self.modules.explorer_cards_module.Example_Card_7: 5
-
-                                                        },
-
-                                                        "mutable": True,
-                                                        "is_copylist": False,
-                                                        "renamable": True
-                                                        }
-                                                        },
-
-                                                        shown_group="Deck",
+                                                        full_cardlist=full_cardlist,
+                                                        groups=group_dict,
+                                                        shown_group="Deck 1",
                                                         parent_frame=self,
                                                         focus_group=self.focus_group,
                                                         has_focus=self.is_focused()

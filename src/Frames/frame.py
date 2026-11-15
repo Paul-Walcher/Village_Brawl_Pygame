@@ -254,13 +254,6 @@ class Frame(EventQueueManager):
         """
         The center of this frame.
         """
-        self.__key_scancodes: dict[int, bool] = {}
-        """
-        Saves which keys are currently pressed.
-        self.__key_scancodes[key] == True if the key is currently pressed.
-        To check whether a key is pressed or not, use Frame.key_pressed(key),
-        since not all scancodes might be contained as keys in __key_scancodes.
-        """
         self._next_frame: Frame = None
         """
         The next frame returned by tick() after
@@ -511,15 +504,14 @@ class Frame(EventQueueManager):
         """
         pass
 
-    def key_pressed(self, scancode: int) -> bool:
+    def key_pressed(self, key: int) -> bool:
         """
-        Returns if the key belonging to the scancode is currently pressed.
-        If the key is disabled, this is always False.
+        Returns if the key is pressed
         """
-        if scancode not in self.__key_scancodes or self.pygame_key_is_disabled(scancode):
+        if self.pygame_key_is_disabled(key) or not self.is_focused():
             return False
-        else:
-            return self.__key_scancodes[scancode]
+
+        return pygame.key.get_pressed()[key]
 
     def reset_keys_pressed(self) -> None:
         """
@@ -550,20 +542,6 @@ class Frame(EventQueueManager):
         for event in pygame.event.get():
             processed = True
             matched_any = False
-
-            if event.type == pygame.KEYDOWN:
-
-                if event.key not in self.__key_scancodes:
-                    self.__key_scancodes[event.key] = True
-
-                self.__key_scancodes[event.key] = True
-
-            if event.type == pygame.KEYUP:
-
-                if event.key not in self.__key_scancodes:
-                    self.__key_scancodes[event.key] = False
-
-                self.__key_scancodes[event.key] = False
 
             for ecallback in self.__event_callbacks:
 

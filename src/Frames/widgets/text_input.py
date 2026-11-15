@@ -101,7 +101,7 @@ class TextInput(Frame):
                 max_textlength: int = 50,
                 intro_delay: float = 100,#ms
                 input_delay: float = 10,#ms
-                backspace_delay: float = 100,#ma
+                backspace_delay: float = 25,#ma
                 cursor_flickering: bool = True, #if the cursor flickers when the textinput is focused
                 cursor_flickering_frequency: float = 400,#ms
                 tab_out_key_combination: list[int] = None
@@ -450,6 +450,7 @@ class TextInput(Frame):
             self.add_pygame_key_callback(key=pygame.K_ESCAPE, data=None, putback=False, func=self.on_escape_pressed)
             self.add_pygame_key_callback(key=pygame.K_RETURN, data=None, putback=False, func=self.on_enter_pressed)
             self.add_pygame_event_callback(etype=pygame.KEYDOWN, data=None, putback=False, func=self.on_keypress)
+            #self.add_pygame_event_callback(etype=pygame.KEYUP, data=None, putback=False, func=self.on_keyup)
 
 
     def on_textinput(self, event: pygame.event.Event, data=None) -> None:
@@ -514,6 +515,9 @@ class TextInput(Frame):
         if all([self.key_pressed(key) for key in self.tab_out_key_combination]):
             self.on_escape_pressed(event, data)
 
+    def on_keyup(self, event, data):
+        print(event.key == pygame.K_BACKSPACE)
+
     def tick(self) -> None:
         """
         Tick function.
@@ -525,29 +529,32 @@ class TextInput(Frame):
         if self.exit_flag_raised():
             return None
 
-        if self.key_pressed(pygame.K_BACKSPACE) and self.backspace_delay_clock.elapsed() > self.backspace_delay:
-            if self.input_active:
-                if self.cursor_pos > 0:
+        if self.is_focused():
 
-                    self.text = self.text[:self.cursor_offset+self.cursor_pos-1] + self.text[self.cursor_offset+self.cursor_pos:]
-                    self.cursor_pos -= 1
+            if self.key_pressed(pygame.K_BACKSPACE) and self.backspace_delay_clock.elapsed() > self.backspace_delay:
+
+                if self.input_active:
+                    if self.cursor_pos > 0:
+
+                        self.text = self.text[:self.cursor_offset+self.cursor_pos-1] + self.text[self.cursor_offset+self.cursor_pos:]
+                        self.cursor_pos -= 1
+                        self.raise_prerender_flag()
+                        self.backspace_delay_clock.start()
+
+                    else:
+
+                        self.cursor_offset -= 1
+                        self.cursor_offset = max(self.cursor_offset, 0)
+                        self.raise_prerender_flag()
+                        self.backspace_delay_clock.start()
+
+            #checking for flickering
+            if self.cursor_flickering:
+                if self.cursor_flickering_clock.elapsed() > self.cursor_flickering_frequency:
+
+                    self._cursor_shown = not self._cursor_shown
                     self.raise_prerender_flag()
-                    self.backspace_delay_clock.start()
-
-                else:
-
-                    self.cursor_offset -= 1
-                    self.cursor_offset = max(self.cursor_offset, 0)
-                    self.raise_prerender_flag()
-                    self.backspace_delay_clock.start()
-
-        #checking for flickering
-        if self.cursor_flickering and self.is_focused():
-            if self.cursor_flickering_clock.elapsed() > self.cursor_flickering_frequency:
-
-                self._cursor_shown = not self._cursor_shown
-                self.raise_prerender_flag()
-                self.cursor_flickering_clock.start()
+                    self.cursor_flickering_clock.start()
 
         if self.prerender_flag_raised():
             self.prerender()

@@ -11,6 +11,8 @@ from constants import Colors, KeyAlternatives
 from clock import Clock
 import time
 
+from cardgroup import Cardgroup, group_t, group_dict_t, cardlist_t
+
 class TestFrame(EmptyFrame):
 
     def __init__(

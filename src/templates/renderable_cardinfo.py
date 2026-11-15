@@ -86,6 +86,8 @@ class Renderable_CardInfo:
 
 
     def __init__(self,
+
+                card_enum: int = -1, #reference to the card this cardinfo portrays
                 name: page_t = "",
                 name_color: color_t = Colors.BLACK,
                 description: str = "",
@@ -96,6 +98,10 @@ class Renderable_CardInfo:
                 description_lines_per_page: int = 5
                 ):
 
+        self.card_enum: int = card_enum
+        """
+        Reference to the card this cardinfo portrays.
+        """
         self.name: page_t = name
         """
         Name of the card.
