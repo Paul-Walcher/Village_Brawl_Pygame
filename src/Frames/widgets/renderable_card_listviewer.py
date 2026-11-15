@@ -1068,6 +1068,7 @@ class RenderableCardListviewer(Frame):
         self.selected_card_index: int = 0
         """
         The index of the currently selected card.
+        Used to index the card information in self.main_list_cards_dict
         """
         self._state: id_t = RenderableCardListviewer.NOTHING_FOCUSED
         """
@@ -1096,10 +1097,10 @@ class RenderableCardListviewer(Frame):
         Animated size changes are applied to the cached surface, not cached
         as separate image variants.
         """
-        self.text_render_cache: dict[tuple[int, int, int], rendered_surface_position_tuples_t] = {}
+        self.text_render_cache: dict[tuple[str, int, int], rendered_surface_position_tuples_t] = {}
         """
         Cache of rendered amount labels.
-        Key: (amount, base_text_width, base_text_height).
+        Key: (text, base_text_width, base_text_height).
         """
         self.shadow_render_cache: OrderedDict[tuple[tuple[int, int], tuple[int, int, int, int]], pygame.Surface] = OrderedDict()
         """
@@ -1534,12 +1535,6 @@ class RenderableCardListviewer(Frame):
         #getting the inner main list
         self.inner_main_list_frame = graphics.apply_margins(self.main_list_frame, self.main_list_hmargin, self.main_list_vmargin)
 
-        #rendering the name
-        self.create_deckname_text()
-        #rendering the decksize
-        self.create_decksize_text()
-        #creating the cardmenu
-        self.create_dropdown_menu()
         #now getting the card positions
         self.recalculate_main_list_positions()
 
@@ -1710,6 +1705,7 @@ class RenderableCardListviewer(Frame):
         cx = self.inner_main_list_frame.x + (self.inner_main_list_frame.width // 2 - self.main_list_cwidth // 2 if self.cards_per_line == 1 else 0)
         cy = self.inner_main_list_frame.y + (self.inner_main_list_frame.height // 2 - self.main_list_cheight // 2 if self.cards_per_column == 1 else 0)
 
+        self.selected_card_index = 0
         self.main_list_yscroll = 0
 
         main_list_cards_index = 0
@@ -1781,9 +1777,30 @@ class RenderableCardListviewer(Frame):
         # above, so this tuple is sorted and can be searched with bisect.
         self.main_list_row_positions = tuple(self.main_list_cards_rects)
 
+        #rendering the name
+        self.create_deckname_text()
+        #rendering the decksize
+        self.create_decksize_text()
+        #creating the cardmenu
+        self.create_dropdown_menu()
+
     """
     Renders the cardlist
     """
+
+    def recalculate_main_list_positions_with_saved_view(self) -> None:
+        """
+        Recalculates the main list positions with
+        the yscroll and selected index solved.
+        """
+        yscroll_save: int = self.main_list_yscroll
+        selected_card_index_save: int = self.selected_card_index
+
+        self.recalculate_main_list_positions()
+
+        self.main_list_yscroll = yscroll_save
+        self.selected_card_index = selected_card_index_save
+
 
     def render_list_with_yscroll(self) -> None:
         """
@@ -1913,17 +1930,24 @@ class RenderableCardListviewer(Frame):
                 self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
                 self.surface.blit(img, img_render_pos)
 
-                amount = self.main_list_cards[main_list_cards_idx][1]
+                card_subtext: str = self.get_card_subtext(
+                                                            y_position=cy,
+                                                            id_index=id_index,
+                                                            main_list_index=main_list_cards_idx,
+                                                            img_rect=img_rect,
+                                                            text_rect=text_rect
+                                                            )
 
-                if self.main_list_view_state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
+                if card_subtext is not None:
+
                     base_text_width, base_text_height = self._base_text_render_size
-                    text_key = (amount, base_text_width, base_text_height)
+                    text_key = (card_subtext, base_text_width, base_text_height)
                     trend = self.text_render_cache.get(text_key)
 
                     if trend is None:
                         trend = graphics.render_page_from_chars(
                             self.font,
-                            [f"x{amount}"],
+                            [card_subtext],
                             pygame.Rect(0, 0, base_text_width, base_text_height),
                             self.card_text_description_color,
                             centered=True,
@@ -1975,6 +1999,27 @@ class RenderableCardListviewer(Frame):
 
         self.full_image_surface.fill((*Colors.BLACK, 200))
         self.full_image_surface.blit(cimage, cpos)
+
+
+    def get_card_subtext(
+                            self,
+                            y_position: int,
+                            id_index: int,
+                            main_list_index: int,
+                            img_rect: pygame.Rect,
+                            text_rect: pygame.Rect
+                        ) -> str:
+        """
+        Returns the appropriate subtext for the
+        current main list viewstate.
+        Returning None means no subtext is rendered.
+        """
+        if self.main_list_view_state == RenderableCardListviewer.SHOW_EACH_CARD:
+            return None
+        elif self.main_list_view_state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
+            #returns the amount
+            amount: int = self.main_list_cards[main_list_index][1]
+            return f"x{amount}"
 
     #==================================
     # GROUP ACTIONS
@@ -2926,3 +2971,149 @@ class RenderableCardListviewer(Frame):
             self.long_enter_pressed()
         else:
             self.enter_pressed()
+
+
+
+
+
+    #==================================
+    # EXTERNAL USER ACTIONS
+    #==================================
+
+    def save_current_group_state(
+                                    self,
+                                    is_copylist: bool = None, #None means no change
+                                    is_mutable: bool = None,  #None means no change
+                                    is_renamable: bool = None #None means no change
+                                ) -> None:
+        """
+        Saves the current group state into self.groups.
+        Be aware that self.groups is only a deepcopy of the given
+        groups in __init__.
+        """
+
+        group_dict: group_t = self.groups[self.shown_group]
+
+        is_copylist = (is_copylist if is_copylist is not None else group_dict[RenderableCardListviewer.IS_COPYLIST_KEY])
+        is_mutable = (is_mutable if is_mutable is not None else group_dict[RenderableCardListviewer.MUTABLE_KEY])
+        is_renamable = (is_renamable if is_renamable is not None else group_dict[RenderableCardListviewer.RENAMABLE_KEY])
+
+        #creating the cardlist
+        cardlist_dict: dict_cardlist_t = {}
+        #filling the cardlist
+        for (cardclass, amount) in self.main_list_cards:
+            cardlist_dict[cardclass] = amount
+
+        #filling the dict
+        new_group_dict: group_t = {}
+
+        new_group_dict[RenderableCardListviewer.CARDLIST_KEY] = cardlist_dict
+        new_group_dict[RenderableCardListviewer.IS_COPYLIST_KEY] = is_copylist
+        new_group_dict[RenderableCardListviewer.MUTABLE_KEY] = is_mutable
+        new_group_dict[RenderableCardListviewer.RENAMABLE_KEY] = is_renamable
+
+        #saving to the current groups
+        self.groups[self.shown_group] = new_group_dict
+
+        #we do not need to change anything else, since all changes would have
+        #been registered in the current variables.
+
+    def increase_selected_card_amount(self, amount: int) -> bool:
+        """
+        Increases the selected card amount by amount.
+        Returns True if possible (if the amount stays equal or below
+        the cardamount listed for the cardclass in the full cardlist)
+        """
+
+        if amount < 0:
+            return False
+
+        if self.main_list_view_state in [RenderableCardListviewer.SHOW_EACH_CARD] and amount > 1:
+            #only one decrease possible
+            return False
+
+        main_list_cards_index,\
+        img_rect,\
+        text_rect,\
+        cy                          = self.main_list_cards_dict[self.selected_card_index]
+
+        cardclass, current_amount = self.main_list_cards[main_list_cards_index]
+
+        max_amount = self.groups[RenderableCardListviewer.FULL_CARDLIST_NAME][cardclasse]
+
+        if (current_amount + amount > max_amount):
+            #not possible
+            return False
+        else:
+
+            self.main_list_cards[main_list_cards_index] = (cardclass, current_amount + amount)
+            return True
+
+        #we need prerendering
+        if self.main_list_view_state in [RenderableCardListviewer.SHOW_WITH_AMOUNT]:
+            self.raise_prerender_flag()
+            self.create_decksize_text()
+        elif self.main_list_view_state in [RenderableCardListviewer.SHOW_EACH_CARD]:
+            #recalculating the rects, but saving yscroll
+            self.recalculate_main_list_positions_with_saved_view()
+
+
+    def decrease_selected_card_amount(self, amount: int) -> bool:
+        """
+        Decreases the selected card amount by amount.
+        Returns True if possible (if the amount stays above or equal to 0)
+        else False.
+        """
+
+        if amount < 0:
+            return False
+
+        if self.main_list_view_state in [RenderableCardListviewer.SHOW_EACH_CARD] and amount > 1:
+            #only one decrease possible
+            return False
+
+        main_list_cards_index,\
+        img_rect,\
+        text_rect,\
+        cy                          = self.main_list_cards_dict[self.selected_card_index]
+
+        cardclass, current_amount = self.main_list_cards[main_list_cards_index]
+
+        if (current_amount - amount < 0):
+            #not possible
+            return False
+        else:
+
+            self.main_list_cards[main_list_cards_index] = (cardclass, current_amount - amount)
+            return True
+
+        #the selected index needs to mov
+
+        #we need prerendering
+        if self.main_list_view_state in [RenderableCardListviewer.SHOW_WITH_AMOUNT]:
+            self.raise_prerender_flag()
+            self.create_decksize_text()
+        elif self.main_list_view_state in [RenderableCardListviewer.SHOW_EACH_CARD]:
+            self.selected_card_index -= 1
+            #recalculating the rects, but saving yscroll
+            self.recalculate_main_list_positions_with_saved_view()
+
+    def get_selected_card_with_amount(self) -> tuple[ Type[Renderable_CardInfo], int ]:
+        """
+        Returns the currently selected cardclass with amount.
+        """
+
+        main_list_cards_index,\
+        img_rect,\
+        text_rect,\
+        cy                          = self.main_list_cards_dict[self.selected_card_index]
+
+        if self.main_list_view_state in [RenderableCardListviewer.SHOW_WITH_AMOUNT]:
+            return self.main_list_cards[main_list_cards_index]
+        elif self.main_list_view_state in [RenderableCardListviewer.SHOW_EACH_CARD]:
+            cclass: Type[Renderable_CardInfo] = None
+            amount: int = -1
+
+            cclass, amount = self.main_list_cards[main_list_cards_index]
+
+            return (cclass, 1)
