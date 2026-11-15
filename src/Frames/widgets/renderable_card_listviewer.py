@@ -1641,11 +1641,15 @@ class RenderableCardListviewer(Frame):
                                                                                         vertical_centered=True
                                                                                     )
 
-    def recalculate_main_list_positions(self) -> None:
+    def recalculate_main_list_positions(self, keep_current_state: bool = False) -> None:
 
         """
         The method to recalculate
         the rectangles and positions of the card previews.
+
+        if keep_current_state == True,
+        the cards wont be reloaded, the yscroll will stay the same,
+        and the selected index will only change if it is invalid.
         """
         # Keep cached resources when only the group/order changes. They depend
         # on the render dimensions, not on the card's screen position.
@@ -1662,9 +1666,13 @@ class RenderableCardListviewer(Frame):
         self.main_list_cwidth = (self.inner_main_list_frame.width - self.main_list_hseparator_width) // self.cards_per_line
         self.main_list_cheight = (self.inner_main_list_frame.height - self.main_list_vseparator_height) // self.cards_per_column
 
-        gcards = self.groups[self.shown_group][RenderableCardListviewer.CARDLIST_KEY]
-        gcards = [(key, value) for key, value in gcards.items()]
-        self.main_list_cards = self.sorting_function(gcards)
+        if not keep_current_state:
+            gcards = self.groups[self.shown_group][RenderableCardListviewer.CARDLIST_KEY]
+            gcards = [(key, value) for key, value in gcards.items()]
+            self.main_list_cards = self.sorting_function(gcards)
+
+            self.selected_card_index = 0
+            self.main_list_yscroll = 0
 
         #rendering all cards, and adding their position
         self.subtext_width = 0
@@ -1704,9 +1712,6 @@ class RenderableCardListviewer(Frame):
 
         cx = self.inner_main_list_frame.x + (self.inner_main_list_frame.width // 2 - self.main_list_cwidth // 2 if self.cards_per_line == 1 else 0)
         cy = self.inner_main_list_frame.y + (self.inner_main_list_frame.height // 2 - self.main_list_cheight // 2 if self.cards_per_column == 1 else 0)
-
-        self.selected_card_index = 0
-        self.main_list_yscroll = 0
 
         main_list_cards_index = 0
         count = 0
@@ -1784,22 +1789,9 @@ class RenderableCardListviewer(Frame):
         #creating the cardmenu
         self.create_dropdown_menu()
 
-    """
-    Renders the cardlist
-    """
-
-    def recalculate_main_list_positions_with_saved_view(self) -> None:
-        """
-        Recalculates the main list positions with
-        the yscroll and selected index solved.
-        """
-        yscroll_save: int = self.main_list_yscroll
-        selected_card_index_save: int = self.selected_card_index
-
-        self.recalculate_main_list_positions()
-
-        self.main_list_yscroll = yscroll_save
-        self.selected_card_index = selected_card_index_save
+        #checking the selected index
+        if self.selected_card_index < 0 or self.selected_card_index >= self.n_cards_shown:
+            self.selected_card_index = 0
 
 
     def render_list_with_yscroll(self) -> None:
@@ -3025,13 +3017,21 @@ class RenderableCardListviewer(Frame):
         the cardamount listed for the cardclass in the full cardlist)
         """
 
-        if amount < 0:
+        if amount < 0 or self.n_cards_shown == 0:
             return False
 
         if self.main_list_view_state in [RenderableCardListviewer.SHOW_EACH_CARD] and amount > 1:
             #only one decrease possible
             return False
 
+        group_ref: group_t = self.groups[self.shown_group]
+
+        if  group_ref[RenderableCardListviewer.IS_COPYLIST_KEY]\
+            or not group_ref[RenderableCardListviewer.MUTABLE_KEY]:
+
+            return False
+
+        #checking if the current list is mutable or a copylists
         main_list_cards_index,\
         img_rect,\
         text_rect,\
@@ -3054,7 +3054,8 @@ class RenderableCardListviewer(Frame):
             self.create_decksize_text()
         elif self.main_list_view_state in [RenderableCardListviewer.SHOW_EACH_CARD]:
             #recalculating the rects, but saving yscroll
-            self.recalculate_main_list_positions_with_saved_view()
+            self.recalculate_main_list_positions(keep_current_state=True)
+            self.raise_prerender_flag()
 
         return True
 
@@ -3065,11 +3066,18 @@ class RenderableCardListviewer(Frame):
         else False.
         """
 
-        if amount < 0:
+        if amount < 0 or self.n_cards_shown == 0:
             return False
 
         if self.main_list_view_state in [RenderableCardListviewer.SHOW_EACH_CARD] and amount > 1:
             #only one decrease possible
+            return False
+
+        group_ref: group_t = self.groups[self.shown_group]
+
+        if  (group_ref[RenderableCardListviewer.IS_COPYLIST_KEY] and amount > 1)\
+            or not group_ref[RenderableCardListviewer.MUTABLE_KEY]:
+
             return False
 
         main_list_cards_index,\
@@ -3083,8 +3091,13 @@ class RenderableCardListviewer(Frame):
             #not possible
             return False
         else:
-
-            self.main_list_cards[main_list_cards_index] = (cardclass, current_amount - amount)
+            if (current_amount - amount) == 0:
+                #remove the entry
+                self.main_list_cards.pop(main_list_cards_index)
+                if self.main_list_view_state in [RenderableCardListviewer.SHOW_WITH_AMOUNT]:
+                    self.selected_card_index -= 1
+            else:
+                self.main_list_cards[main_list_cards_index] = (cardclass, current_amount - amount)
 
         #the selected index needs to mov
 
@@ -3095,7 +3108,7 @@ class RenderableCardListviewer(Frame):
         elif self.main_list_view_state in [RenderableCardListviewer.SHOW_EACH_CARD]:
             self.selected_card_index -= 1
             #recalculating the rects, but saving yscroll
-            self.recalculate_main_list_positions_with_saved_view()
+            self.recalculate_main_list_positions(keep_current_state=True)
 
         return True
 
@@ -3103,6 +3116,9 @@ class RenderableCardListviewer(Frame):
         """
         Returns the currently selected cardclass with amount.
         """
+
+        if self.n_cards_shown == 0:
+            return None
 
         main_list_cards_index,\
         img_rect,\
