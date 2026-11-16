@@ -22,13 +22,17 @@ import constants
 from constants import (
                         fequal,
                         Colors,
+                        Fonts,
+                        KeyAlternatives,
                         color_t,
+                        point_t,
                         id_t,
                         R_ID,
                         FULLSCREEN
                         )
 
 from clock import Clock
+from event_queue_manager import Event
 
 class Popup(Frame):
     """
@@ -112,7 +116,50 @@ class Popup(Frame):
             The color of the outline.
             """
 
+    #events
+    class EventTypes:
 
+        NEW_OPTION_FOCUSED: id_t = R_ID() #when the option that is focused changes
+        OPTION_SELECTED: id_t = R_ID() #when a option was finally entered.
+
+    class NewOptionFocusedEvent(Event):
+
+        def __init__(self, option_index: int):
+
+            Event.__init__(self, etype=Popup.EventTypes.NEW_OPTION_FOCUSED, data=None)
+
+            self.option_index: int = option_index
+            """
+            The index of the selected option.
+            Options are indexed from left to right in the given option list.
+            """
+
+        @override
+        def copy(self) -> Popup.NewOptionFocusedEvent:
+            return Popup.NewOptionFocusedEvent(option_index=self.option_index)
+
+    class OptionSelectedEvent(Event):
+
+        def __init__(self, option_index: int):
+
+            Event.__init__(self, etype=Popup.EventTypes.OPTION_SELECTED, data=None)
+
+            self.option_index: int = option_index
+            """
+            The index of the selected option.
+            Options are indexed from left to right in the given option list.
+            """
+
+        @override
+        def copy(self) -> Popup.OptionSelectedEvent:
+            return Popup.OptionSelectedEvent(option_index=self.option_index)
+
+    #===========================
+    # STATES
+    #===========================
+
+    ACTIVE: id_t = R_ID()
+    SELECT_ANIMATION_PLAYING: id_t = R_ID()
 
     def __init__(
                     self,
@@ -123,11 +170,14 @@ class Popup(Frame):
                     focus_group: str = "",
                     has_focus: bool = True,
 
+                    font: pygame.font.Font = Fonts.STANDARD_FONT,
+
                     #popup vaiables
                     text: colored_page_t = None, #the text shown
                     background_color: color_t = Colors.BLACK, #background color for the whole widget
 
                     options: list[Popup.Option] = None, #the options
+                    focused_option_index: int = 0, #the index of the focused option at the start
 
                     hmargin: float = 0.1, #the horizontal margin
                     vmargin: float = 0.05, #the vertical margin
@@ -144,8 +194,10 @@ class Popup(Frame):
 
                     #outline
                     outline_size_p: float = 0.05, #The size of the outline relative to min(self.width, self.height)
-                    outline_color: color_t = Colors.WHITE
+                    outline_color: color_t = Colors.WHITE,
 
+                    select_animation_duration: float = 400,#ms
+                    selected_animation_size_decrease_percentage: float = 0.5
                     ):
 
         Frame.__init__(
@@ -159,6 +211,10 @@ class Popup(Frame):
 
         #now saving all variables
 
+        self.font: pygame.font.Font = font
+        """
+        Font for the text and the options.
+        """
         self.text: colored_page_t = text
         """
         The text shown as the info text.
@@ -210,23 +266,41 @@ class Popup(Frame):
         """
         Color of the dividing line.
         """
+        self.dividing_line_rect: pygame.Rect = None
+        """
+        The dividing line rectangle.
+        Relative to self.frame_dim.
+        """
         #outline
         self.outline_size_p: float = outline_size_p
         """
         The size of the outline relative to min(self.width, self.height)
         """
+        self.outline_size: int = None
+        """
+        The actual outline size.
+        """
         self.outline_color: color_t = outline_color
         """
         The color of the outline.
         """
-
-        self.intro_delay: float = 100#ms"
+        self.select_animation_duration: float = select_animation_duration
         """
-        Intro delay.
+        Duration of the select animation.
         """
-        self.intro_delay_clock: Clock = Clock()
+        self.selected_animation_size_decrease_percentage: float = selected_animation_size_decrease_percentage
         """
-        The intro delay clock
+        The maximum size decrease percentage.
+        0.5 -> size decreases by half at halftime.
+        """
+        self.select_animation_clock: Clock = Clock()
+        """
+        The select animation clock.
+        """
+        self.highlighted_option_page_copy: rendered_surface_position_tuples_t = None
+        """
+        The copy of the currently highlighted option page
+        for animation purposes.
         """
 
         #the rendered objects
@@ -259,10 +333,43 @@ class Popup(Frame):
         """
         Rects for all options.
         """
-
+        self.options_frame_dim_margins: list[pygame.Rect] = None
+        """
+        The option frames after applying the standard margins.
+        """
+        self.highlighted_options_frame_dim_margins: list[pygame.Rect] = None
+        """
+        The option frames after applying the highlighted margins.
+        """
         self.rendered_text: rendered_surface_position_tuples_t = None
         """
         The rendered text, relative to self.frame_dim.
+        """
+        self.rendered_options: list[rendered_surface_position_tuples_t] = None
+        """
+        The rendered options.
+        """
+        self.rendered_highlighted_options: list[rendered_surface_position_tuples_t] = None
+        """
+        The rendered highlighted options.
+        """
+
+        #inner variables
+        self.intro_delay: float = 100#ms"
+        """
+        Intro delay.
+        """
+        self.intro_delay_clock: Clock = Clock()
+        """
+        The intro delay clock
+        """
+        self._option_index: int = focused_option_index
+        """
+        The index of the selected option.
+        """
+        self.state: id_t = Popup.ACTIVE
+        """
+        Current State.
         """
 
         #cleanup
@@ -271,14 +378,43 @@ class Popup(Frame):
 
         self.rerender()
 
+    @property
+    def option_index(self) -> int:
+        return self._option_index
+
+    @option_index.setter
+    def option_index(self, new_index: int) -> None:
+        """
+        Sets the new index, whilst also pushing
+        a new option selected event if the new index is
+        different to the current one.
+        """
+        if new_index != self._option_index:
+
+            self._option_index = new_index
+            self._push_new_option_focused_event()
+
     @override
     def rerender(self) -> None:
         """
         @override rerender
         """
 
+        frame_dim_no_outline: pygame.Rect = self.frame_dim.copy()
+        #outline
+        if not fequal(self.outline_size_p, 0):
+            self.outline_size = int(min(self.width, self.height) * self.outline_size_p)
+            #applying the outline
+            frame_dim_no_outline = pygame.Rect(
+                                                    self.x + self.outline_size,
+                                                    self.y + self.outline_size,
+                                                    self.width - 2*self.outline_size,
+                                                    self.height - 2*self.outline_size
+                                                )
+        else:
+            self.outline_size = None
         #creating the frame dims
-        self.inner_frame_dim = graphics.apply_margins(self.inner_frame_dim, self.hmargin, self.vmargin)
+        self.inner_frame_dim = graphics.apply_margins(frame_dim_no_outline, self.hmargin, self.vmargin)
         #relative
         self.relative_inner_frame_dim = graphics.position_relative(anchor_rect=self.frame_dim, make_relative_rect=self.inner_frame_dim)
         #getting the dividing percentages
@@ -324,7 +460,87 @@ class Popup(Frame):
                 cx += option_w
                 cx += bracket_w
 
+            self.rendered_options = []
+            self.rendered_highlighted_options = []
+            self.options_frame_dim_margins = []
+            self.highlighted_options_frame_dim_margins = []
+
+            for i in range(len(self.options)):
+
+                opt: Popup.Option = self.options[i]
+
+                opt_frame: pygame.Rect = graphics.apply_margins(
+                                                                    self.all_options_frame_dims[i],
+                                                                    opt.option_hmargin,
+                                                                    opt.option_vmargin
+                                                                )
+
+                highlighted_opt_frame: pygame.Rect = graphics.apply_margins(
+                                                                                self.all_options_frame_dims[i],
+                                                                                opt.highlighted_option_hmargin,
+                                                                                opt.highlighted_option_vmargin
+                                                                            )
+
+                self.options_frame_dim_margins.append(opt_frame)
+                self.highlighted_options_frame_dim_margins.append(highlighted_opt_frame)
+
+                self.rendered_options.append(
+                                                graphics.render_page_from_chars_color(
+                                                                                        font=self.font,
+                                                                                        page=opt.option_text,
+                                                                                        frame=opt_frame,
+                                                                                        centered=True,
+                                                                                        vertical_centered=True,
+                                                                                        line_margin_as_percentage=0.05
+                                                                                        )
+                                            )
+
+                self.rendered_highlighted_options.append(
+                                                            graphics.render_page_from_chars_color(
+                                                                                                    font=self.font,
+                                                                                                    page=opt.highlighted_option_text,
+                                                                                                    frame=highlighted_opt_frame,
+                                                                                                    centered=True,
+                                                                                                    vertical_centered=True,
+                                                                                                    line_margin_as_percentage=0.05
+                                                                                                    )
+                                                        )
+
+        else:
+            self.rendered_options = None
+            self.rendered_highlighted_options = None
+            self.options_frame_dim_margins = None
+            self.highlighted_options_frame_dim_margins = None
+
         #creating the rendered text
+
+        if self.text is not None:
+            self.rendered_text = graphics.render_page_from_chars_color(
+                                                                        font=self.font,
+                                                                        page=self.text,
+                                                                        frame=self.text_frame_dim,
+                                                                        centered=True,
+                                                                        vertical_centered=True,
+                                                                        line_margin_as_percentage=0.05
+                                                                        )
+        else:
+
+            self.rendered_text = None
+
+        #getting the dividing line rectangle
+
+        dividing_line_width: int = int(divide_frame_dim.width * self.dividing_line_width_p)
+        dividing_line_height: int = int(divide_frame_dim.height * self.dividing_line_height_p)
+
+        divide_x: int = self.divide_frame_dim.x + (self.divide_frame_dim.width - dividing_line_width) // 2
+        divide_y: int = self.divide_frame_dim.y + (self.divide_frame_dim.height - dividing_line_height) // 2
+
+        self.dividing_line_rect = pygame.Rect(
+                                                divide_x,
+                                                divide_y,
+                                                dividing_line_width,
+                                                dividing_line_height
+                                                )
 
         self.raise_prerender_flag()
         self.intro_delay_clock.start()
@@ -334,4 +550,240 @@ class Popup(Frame):
         """
         @override prerender
         """
-        pass
+
+        self.surface.fill(self.background_color)
+
+        #filling the options
+        if self.options is not None and len(self.options) > 0:
+
+            for i in range(len(self.options)):
+
+                opt: Popup.Option = self.options[i]
+
+                opt_frame: pygame.Rect = self.options_frame_dim_margins[i]
+                highlighted_opt_frame: pygame.Rect = self.highlighted_options_frame_dim_margins[i]
+
+                r_opt_text = self.rendered_options[i]
+                r_highlighted_option_text = self.rendered_highlighted_options[i]
+
+                if i == self.option_index:
+                    #highlighted
+                    self.surface.fill(opt.highlighted_background_color, rect=highlighted_opt_frame)
+                    graphics.render_rendered_surface_position_tuples(screen=self.surface, rspt=r_highlighted_option_text)
+
+                else:
+                    #not highlighted
+                    self.surface.fill(opt.background_color, rect=opt_frame)
+                    graphics.render_rendered_surface_position_tuples(screen=self.surface, rspt=r_option_text)
+
+        #drawing the text
+        if self.text is not None:
+            graphics.render_rendered_surface_position_tuples(screen=self.surface, rspt=self.rendered_text)
+
+        #drawing the dividing line
+        if self.dividing_line_shown:
+            pygame.draw.rect(self.dividing_line_color, self.dividing_line_rect)
+
+        #outline
+        if not fequal(self.outline_size_p, 0):
+            #drawing the outline
+            pygame.draw.rect(self.outline_color, self.frame_dim, width=self.outline_size)
+
+    @override
+    def on_focus_lost(self, gained_focus_frame: Frame) -> None:
+        """
+        Sets the option index to -1, so no option will be highlighted.
+        """
+        self.option_index = -1
+
+    @override
+    def on_focus_gained(self, lost_focus_frame: Frame) -> None:
+        """
+        Sets the option index to 0 upon reentry.
+        """
+        self.option_index = 0
+
+    def _push_new_option_focused_event(self) -> None:
+        """
+        Pushes a new option focused event into the event queue,
+        taking into account all internal variables.
+        """
+        self.push_event(
+                        Popup.NewOptionFocusedEvent(
+                                                    option_index=self.option_index
+                                                    )
+                        )
+
+    def _push_option_selected_event(self) -> None:
+        """
+        Pushes a option selected event into the event queue,
+        taking into account all internal variables.
+        """
+        self.push_event(
+                        Popup.OptionSelectedEvent(
+                                                    option_index=self.option_index
+                                                    )
+                        )
+
+    #===========================
+    # EVENT BINDING
+    #===========================
+
+    @override
+    def bind_events(self) -> None:
+        """
+        @override bind_events
+        """
+
+        if self.is_focused():
+
+            #adding key bindings
+            self.add_pygame_key_callback(key=pygame.K_LEFT, data=None, putback=False, func=self.left_pressed)
+            self.add_pygame_key_callback(key=KeyAlternatives.LEFT_ALTERNATIVE, data=None, putback=False, func=self.left_pressed)
+
+            self.add_pygame_key_callback(key=pygame.K_RIGHT, data=None, putback=False, func=self.right_pressed)
+            self.add_pygame_key_callback(key=KeyAlternatives.RIGHT_ALTERNATIVE, data=None, putback=False, func=self.right_pressed)
+
+            self.add_pygame_key_callback(key=pygame.K_RETURN, data=None, putback=False, func=self.enter_pressed)
+            self.add_pygame_key_callback(key=KeyAlternatives.ENTER_ALTERNATIVE, data=None, putback=False, func=self.enter_pressed)
+
+    def left_pressed(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        If left is pressed, the selected option changes
+        """
+
+        if self.options is not None and len(self.options) > 0 and self.option_index > -1:
+
+            new_idx = self.option_index
+            new_idx -= 1
+            new_idx %= len(self.options)
+            self.option_index = new_idx
+
+            self.raise_prerender_flag()
+
+    def right_pressed(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        If left is pressed, the selected option changes
+        """
+
+        if self.options is not None and len(self.options) > 0 and self.option_index > -1:
+
+            new_idx = self.option_index
+            new_idx += 1
+            new_idx %= len(self.options)
+            self.option_index = new_idx
+
+            self.raise_prerender_flag()
+
+    def enter_pressed(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        If enter is pressed and the option index is valid,
+        the selection animation starts.
+        """
+
+        if  self.options is not None and len(self.options) > 0\
+            and self.option_index > -1 and self.option_index < len(self.options):
+
+            self.initialize_selection_animation()
+
+    #======================
+    # SELECTION ANIMATION
+    #======================
+
+    def initialize_selection_animation(self) -> None:
+        """
+        Initializes the selection animation.
+        """
+
+        self.highlighted_option_page_copy = graphics.copy_rendered_surface_position_tuples(
+                                                                                            self.rendered_highlighted_options[self.option_index]
+                                                                                            )
+        self.state = Popup.SELECT_ANIMATION_PLAYING
+        self.select_animation_clock.start()
+
+    def render_select_animation(self) -> None:
+        """
+        Renders the select animation.
+        """
+
+        percentage: float = self.select_animation_clock.elapsed() / self.select_animation_duration
+
+        if percentage >= 1.0:
+
+            self.finalize_select_animation()
+            return
+
+        if percentage <= 0.5:
+
+            #shrink the frame, then render the text
+            P: float = 2 * percentage
+            margin: float = P * self.selected_animation_size_decrease_percentage
+
+            shrunken_frame: pygame.Rect = graphics.apply_margins(
+                                                                    self.options_frame_dim_margins[self.option_index],
+                                                                    margin,
+                                                                    margin
+                                                                    )
+            new_rendered_page: rendered_surface_position_tuples_t = graphics.render_page_from_chars_color(
+                                                                                                    font=self.font,
+                                                                                                    page=self.options[self.option_index].highlighted_option_text,
+                                                                                                    frame=shrunken_frame,
+                                                                                                    centered=True,
+                                                                                                    highlighted=True,
+                                                                                                    line_margin_as_percentage=0.05
+                                                                                                    )
+            #replacing the highlighted rendered option
+            self.rendered_highlighted_options[self.option_index] = new_rendered_page
+
+        else:
+
+            #shrink the frame, then render the text
+            P: float = 2 * (1.0 - percentage)
+            margin: float = (1.0 - P) * self.selected_animation_size_decrease_percentage
+
+            shrunken_frame: pygame.Rect = graphics.apply_margins(
+                                                                    self.options_frame_dim_margins[self.option_index],
+                                                                    margin,
+                                                                    margin
+                                                                    )
+            new_rendered_page: rendered_surface_position_tuples_t = graphics.render_page_from_chars_color(
+                                                                                                    font=self.font,
+                                                                                                    page=self.options[self.option_index].highlighted_option_text,
+                                                                                                    frame=shrunken_frame,
+                                                                                                    centered=True,
+                                                                                                    highlighted=True,
+                                                                                                    line_margin_as_percentage=0.05
+                                                                                                    )
+            #replacing the highlighted rendered option
+            self.rendered_highlighted_options[self.option_index] = new_rendered_page
+
+    def finalize_select_animation(self) -> None:
+        """
+        Finalizes the select animation.
+        """
+
+        self.rendered_highlighted_options[self.option_index] = self.highlighted_option_page_copy
+        self.highlighted_option_page_copy = None
+
+        self.state = Popup.ACTIVE
+
+        self._push_option_selected_event()
+
+    @override
+    def tick(self) -> None:
+        """
+        @override tick
+        """
+
+        if self.intro_delay_clock.elapsed() > self.intro_delay:
+            self.manage_pygame_events()
+
+        if self.exit_flag_raised():
+            return self._next_frame
+
+        if self.state == Popup.SELECT_ANIMATION_PLAYING:
+            self.render_select_animation()
+
+        if self.prerender_flag_raised():
+            self.prerender()
+            self.reset_prerender_flag()
