@@ -25,6 +25,7 @@ class FrameEnums(Enum):
     INTERACTION_FRAME = auto()
 
     #WIDGETS
+    POPUP_WIDGET = auto()
     TEXTBOX_WIDGET = auto()
     TEXTSLIDER_WIDGET = auto()
     TEXTINPUT_WIDGET = auto()

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Callable
+from typing import Any, Callable, override
 
 import os
 import pygame
@@ -40,6 +40,7 @@ class TextInput(Frame):
     class EventTypes:
         #events
         TEXT_ENTERED: id_t = R_ID()
+        TEXT_CHANGED: id_t = R_ID()
         UNFOCUSED: id_t = R_ID()
 
 
@@ -59,11 +60,12 @@ class TextInput(Frame):
             The text inside the textinput when enter was pressed.
             """
 
+        @override
         def copy(self) -> TextInput.TextEnteredEvent:
             """
             Returns a copy of the event.
             """
-            copy_event: TextInput.TextEnteredEvent = TextInput.TextEnteredEvent(self.input_text, self.data)
+            copy_event: TextInput.TextEnteredEvent = TextInput.TextEnteredEvent(self.input_text)
             return copy_event
 
     class UnfocusedEvent(Event):
@@ -71,11 +73,38 @@ class TextInput(Frame):
         Event that signals this frame unfocused itself.
         """
 
-        def __init__(self, data: Any = None):
+        def __init__(self):
 
-            Event.__init__(self, etype=TextInput.EventTypes.UNFOCUSED, data=data)
+            Event.__init__(self, etype=TextInput.EventTypes.UNFOCUSED, data=None)
 
         #uses parent class copy function
+
+    class TextChangedEvent(Event):
+        """
+        Event that signals the text has been changed.
+        """
+        def __init__(self, prev_text: str, new_text: str):
+
+            Event.__init__(self, etype=TextInput.EventTypes.TEXT_CHANGED, data=None)
+
+            self.prev_text: str = prev_text
+            """
+            The text before the text in this TextInput changed.
+            """
+            self.new_text: str = new_text
+            """
+            The new text after the change.
+            """
+
+        @override
+        def copy(self) -> TextInput.TextChangedEvent:
+            """
+            Copy function.
+            """
+            return TextInput.TextChangedEvent(
+                                                prev_text=self.prev_text,
+                                                new_text=self.new_text
+                                                )
 
 
     def __init__(self,
@@ -83,8 +112,8 @@ class TextInput(Frame):
                 parent_frame: Frame = None,
                 focus_group: str = "",
                 has_focus: bool = False,
-                textfield_hmargin: float = 0.1,
-                textfield_vmargin: float = 0.2,
+                textfield_hmargin: float = 0.2,
+                textfield_vmargin: float = 0.1,
                 font: pygame.font.Font = Fonts.STANDARD_FONT,
                 text_color: color_t = Colors.BLACK,
                 background_color: color_t = Colors.WHITE,
@@ -101,7 +130,7 @@ class TextInput(Frame):
                 max_textlength: int = 50,
                 intro_delay: float = 100,#ms
                 input_delay: float = 10,#ms
-                backspace_delay: float = 25,#ma
+                backspace_delay: float = 100,#ms
                 cursor_flickering: bool = True, #if the cursor flickers when the textinput is focused
                 cursor_flickering_frequency: float = 400,#ms
                 tab_out_key_combination: list[int] = None
@@ -286,6 +315,10 @@ class TextInput(Frame):
         """
         If all of the keys in the list are pressed at once, the textinput will act as if escape was pressed.
         """
+        self.full_character_width: int = -1
+        """
+        The width if all characters are rendered completely.
+        """
         self.rerender()
 
     @property
@@ -326,33 +359,39 @@ class TextInput(Frame):
         self.cursor_pos = 0
         self.cursor_offset = 0
         self.input_active = True
-        #creating the surface
-        self.surface = pygame.Surface((self.width, self.height))
         #the size of the outline
         self.outline_size = int(min(self.width * self.outline_size_p, self.height * self.outline_size_p))
 
         trect: pygame.Rect = self.frame_dim.copy()
         if self.outline_shown:
-            trect = pygame.Rect(self.outline_size, self.outline_size, self.width - self.outline_size, self.height - self.outline_size)
+            trect = graphics.apply_margins(trect, self.outline_size, self.outline_size)
 
         self.textfield_frame_dim = graphics.apply_margins(trect, self.textfield_hmargin, self.textfield_vmargin)
-        self.relative_textfield_frame_dim = pygame.Rect(
-                                                        self.textfield_frame_dim.x-self.x,
-                                                        self.textfield_frame_dim.y-self.y,
-                                                        self.textfield_frame_dim.width,
-                                                        self.textfield_frame_dim.height
-                                                        )
+        self.textfield_frame_dim = graphics.get_center_with_rect_as_rect(outer_rect=self.frame_dim, inner_rect=self.textfield_frame_dim)
 
-        self.fontsize = graphics.get_fontsize(
-                                                font=self.font,
-                                                lines=graphics.str_to_page(TextInput.SIZE_REFERENCE_CHARACTER * self.n_chars_shown),
-                                                frame=self.textfield_frame_dim
-                                                )
+        self.relative_textfield_frame_dim = graphics.position_relative(anchor_rect=self.frame_dim, make_relative_rect=self.textfield_frame_dim)
 
         #calculating the cursor dimensions
         self.cursor_margin = max(int(self.textfield_frame_dim.width * self.cursor_margin_p), 1)
         self.cursor_width = max(int(self.textfield_frame_dim.width * self.cursor_width_p), 1)
         self.cursor_height = max(int(self.textfield_frame_dim.height * self.cursor_height_p), 1)
+
+        relative_tframe_copy: pygame.Rect = self.relative_textfield_frame_dim.copy()
+        relative_tframe_copy.width -= self.cursor_width
+
+        self.fontsize = graphics.get_fontsize(
+                                                font=self.font,
+                                                lines=graphics.str_to_page(
+                                                                            TextInput.SIZE_REFERENCE_CHARACTER * self.n_chars_shown
+                                                                            ),
+                                                frame=relative_tframe_copy
+                                                )
+
+        self.full_character_width = graphics.render_text(
+                                                            font=self.font,
+                                                            fontsize=self.fontsize,
+                                                            text=(TextInput.SIZE_REFERENCE_CHARACTER * self.n_chars_shown)
+                                                        ).get_width() + self.cursor_width
 
         self.raise_prerender_flag()
 
@@ -369,12 +408,13 @@ class TextInput(Frame):
         front_text: str = self.get_front_text()
         back_text: str = self.get_back_text()
 
-        cx: int = self.relative_textfield_frame_dim.x
+        cx: int = self.relative_textfield_frame_dim.x + (self.relative_textfield_frame_dim.width - self.full_character_width) // 2
         cy: int = self.relative_textfield_frame_dim.y
 
         if front_text:
             self.rendered_front_text = graphics.render_text(font=self.font, fontsize=self.fontsize, text=front_text, color=self.text_color)
-            self.front_text_pos = (cx, cy + (self.relative_textfield_frame_dim.height - self.rendered_front_text.get_height()) // 2) #centered pos
+            self.front_text_pos =  (cx,
+                                    cy + (self.relative_textfield_frame_dim.height - self.rendered_front_text.get_height()) // 2) #centered pos
             cx += self.rendered_front_text.get_width()
             self.cursor_render_pos = (cx + self.cursor_margin, cy + (self.relative_textfield_frame_dim.height - self.cursor_height) // 2)
             cx += self.get_cursor_widths()
@@ -411,12 +451,6 @@ class TextInput(Frame):
         if self.outline_shown:
             pygame.draw.rect(self.surface, self.outline_color, self.frame_dim, width=self.outline_size)
 
-    def render(self, screen: pygame.Surface) -> None:
-        """
-        Blitting the surface.
-        """
-        screen.blit(self.surface, (self.x, self.y))
-
     def get_front_text(self) -> str:
         """
         Getting the text before the cursor to render.
@@ -450,7 +484,6 @@ class TextInput(Frame):
             self.add_pygame_key_callback(key=pygame.K_ESCAPE, data=None, putback=False, func=self.on_escape_pressed)
             self.add_pygame_key_callback(key=pygame.K_RETURN, data=None, putback=False, func=self.on_enter_pressed)
             self.add_pygame_event_callback(etype=pygame.KEYDOWN, data=None, putback=False, func=self.on_keypress)
-            #self.add_pygame_event_callback(etype=pygame.KEYUP, data=None, putback=False, func=self.on_keyup)
 
 
     def on_textinput(self, event: pygame.event.Event, data=None) -> None:
@@ -464,9 +497,19 @@ class TextInput(Frame):
                 addlen = self.max_textlength - len(self.text)
                 tadd = tadd[:addlen]
 
+                prev_text: str = self.text
+                #saving previous text for textchangedevent
+
                 self.text = self.text[:self.cursor_offset+self.cursor_pos] + tadd + self.text[self.cursor_offset+self.cursor_pos:]
 
                 self.move_cursor_right(len(tadd))
+
+                self.push_event(
+                                    TextInput.TextChangedEvent(
+                                                                    prev_text=prev_text,
+                                                                    new_text=self.text
+                                                                )
+                                )
 
                 self.input_delay_clock.start()
 
@@ -515,9 +558,6 @@ class TextInput(Frame):
         if all([self.key_pressed(key) for key in self.tab_out_key_combination]):
             self.on_escape_pressed(event, data)
 
-    def on_keyup(self, event, data):
-        print(event.key == pygame.K_BACKSPACE)
-
     def tick(self) -> None:
         """
         Tick function.
@@ -536,14 +576,25 @@ class TextInput(Frame):
                 if self.input_active:
                     if self.cursor_pos > 0:
 
+                        prev_text: str = self.text
+
                         self.text = self.text[:self.cursor_offset+self.cursor_pos-1] + self.text[self.cursor_offset+self.cursor_pos:]
                         self.cursor_pos -= 1
                         self.raise_prerender_flag()
                         self.backspace_delay_clock.start()
 
+                        self.push_event(
+                                            TextInput.TextChangedEvent(
+                                                                            prev_text=prev_text,
+                                                                            new_text=self.text
+                                                                        )
+                                        )
+
                     else:
 
                         self.cursor_offset -= 1
+                        if self.cursor_offset >= 0:
+                            self.cursor_pos += 1
                         self.cursor_offset = max(self.cursor_offset, 0)
                         self.raise_prerender_flag()
                         self.backspace_delay_clock.start()
@@ -572,9 +623,19 @@ class TextInput(Frame):
         """
         Sets the text.
         """
+        prev_text: str = self.text
         self.text = text
         self.cursor_pos = 0
         self.cursor_offset = 0
+
+        if self.text != prev_text:
+            self.push_event(
+                                TextInput.TextChangedEvent(
+                                                                prev_text=prev_text,
+                                                                new_text=self.text
+                                                            )
+                            )
+
         self.raise_prerender_flag()
 
     def activate_input(self) -> None:

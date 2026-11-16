@@ -1,0 +1,6 @@
+Goals:
+
+1. Center Text in TextInput widget.
+2. Delete group feature.
+3. Implement Dropdown menu support and key shortcuts to get to those states.
+4. Implement Events in RenderableCardListviewer widget.

@@ -113,8 +113,17 @@ def colored_page_to_str(colored_page: colored_page_t) -> str:
     new_page: page_t = colored_page_to_page(colored_page)
     return page_to_str(new_page)
 
+def copy_page(page: page_t) -> page_t:
+    """
+    Returns a copy of the given page.
+    """
+    return page.copy()
 
-
+def copy_colored_page(colored_page: colored_page_t) -> colored_page_t:
+    """
+    Returns a copy of the colored page.
+    """
+    return [line.copy() for line in colored_page]
 
 
 class _NewPage:

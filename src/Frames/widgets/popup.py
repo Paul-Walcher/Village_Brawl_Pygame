@@ -1,0 +1,337 @@
+"""
+Notification Widget.
+"""
+from __future__ import annotations
+from typing import Any, Callable, Type, override
+
+import pygame
+
+from Frames.frame import Frame
+from Frames.frame_enums import FrameEnums
+
+import graphics
+from graphics import (
+                        page_t,
+                        colored_page_t,
+                        surface_with_position_t,
+                        rendered_surface_position_tuples_t,
+                        EMPTY_COLORED_PAGE
+                        )
+
+import constants
+from constants import (
+                        fequal,
+                        Colors,
+                        color_t,
+                        id_t,
+                        R_ID,
+                        FULLSCREEN
+                        )
+
+from clock import Clock
+
+class Popup(Frame):
+    """
+    This class provides a popup widget.
+    There can be a notification, or
+    there can be option to choose from.
+    """
+
+    class Option:
+        """
+        Option class, contains
+        all variables necessary for the options.
+        """
+        def __init__(
+                        self,
+                        option_text: colored_page_t = None,
+                        highlighted_option_text: colored_page_t = None,
+
+                        background_color: color_t = Colors.BLACK,
+                        highlighted_background_color: color_t = Colors.CYAN,
+
+                        option_hmargin: float = 0.1,
+                        option_vmargin: float = 0.05,
+
+                        highlighted_option_hmargin: float = 0.05,
+                        highlighted_option_vmargin: float = 0.025,
+
+                        outline_size_p: float = 0.05,
+                        outline_color: color_t = Colors.WHITE
+
+                    ):
+
+            option_text: colored_page_t = option_text
+            """
+            The option text.
+            """
+
+            if option_text is None:
+                option_text = EMPTY_COLORED_PAGE()
+
+            highlighted_option_text: colored_page_t = highlighted_option_text
+            """
+            The highlighted option text
+            """
+
+            if highlighted_option_text is None:
+                highlighted_option_text = graphics.copy_colored_page(option_text)
+
+            self.background_color: color_t = background_color
+            """
+            The background color for the unhighlighted state.
+            """
+            self.highlighted_background_color: color_t = highlighted_background_color
+            """
+            The background for the highlighted state.
+            """
+
+            self.option_hmargin: float = option_hmargin
+            """
+            Horizontal margin of the unselected state.
+            """
+            self.option_vmargin: float = option_vmargin
+            """
+            Vertical margin of the unselected state.
+            """
+            self.highlighted_option_hmargin: float = highlighted_option_hmargin
+            """
+            Horizontal margin of the highlighted state.
+            """
+            self.highlighted_option_vmargin: float = highlighted_option_vmargin
+            """
+            Vertical margin of the highlighted state.
+            """
+
+            self.outline_size_p: float = outline_size_p
+            """
+            The outline size relative to min(width, height) of this option.
+            """
+            self.outline_color: color_t = outline_color
+            """
+            The color of the outline.
+            """
+
+
+
+    def __init__(
+                    self,
+                    frame_dim: pygame.Rect,
+
+                    data: Any = None,
+                    parent_frame: Frame = None,
+                    focus_group: str = "",
+                    has_focus: bool = True,
+
+                    #popup vaiables
+                    text: colored_page_t = None, #the text shown
+                    background_color: color_t = Colors.BLACK, #background color for the whole widget
+
+                    options: list[Popup.Option] = None, #the options
+
+                    hmargin: float = 0.1, #the horizontal margin
+                    vmargin: float = 0.05, #the vertical margin
+
+                    text_to_options_height_p: float = 0.7, #the percentage of height the text gets vs the options.
+                    options_free_space_p: float = 0.2, #the percentage of free space divided between the options
+
+                    #if a dividing line is shown
+                    dividing_space_p: float = 0.75, #percentage of self.height used to divide the options from the text
+                    dividing_line_shown: bool = False,
+                    dividing_line_width_p: float = 0.8, #width of the dividing line relative to self.width
+                    dividing_line_height_p: float = 0.5, #height of the dividing line relative to dividing_space_p
+                    dividing_line_color: color_t = Colors.GRAY,
+
+                    #outline
+                    outline_size_p: float = 0.05, #The size of the outline relative to min(self.width, self.height)
+                    outline_color: color_t = Colors.WHITE
+
+                    ):
+
+        Frame.__init__(
+                        frame_enum=FrameEnums.POPUP_WIDGET,
+                        frame_dim=frame_dim,
+                        data=data,
+                        parent_frame=parent_frame,
+                        focus_group=focus_group,
+                        has_focus=has_focus
+                        )
+
+        #now saving all variables
+
+        self.text: colored_page_t = text
+        """
+        The text shown as the info text.
+        """
+        self.background_color: color_t = background_color
+        """
+        The background color of the popup.
+        """
+        self.options: list[Popup.Option] = options
+        """
+        The list of options.
+        Can be empty or None.
+        """
+        self.hmargin: float = hmargin
+        """
+        Overall horizontal margin.
+        """
+        self.vmargin: float = vmargin
+        """
+        Overall vertical margin.
+        """
+
+        self.text_to_options_height_p: float = self.text_to_options_height_p
+        """
+        The percentage of height the text gets vs the options.
+        """
+        self.options_free_space_p: float = 0.2
+        """
+        The percentage of free space divided between the options
+        """
+
+        self.dividing_space_p: float = dividing_space_p
+        """
+        Percentage of self.height used to divide the options from the text
+        """
+        self.dividing_line_shown: bool = dividing_line_shown
+        """
+        If the line dividing the text from the options is shown.
+        """
+        self.dividing_line_width_p: float = dividing_line_width_p
+        """
+        Width of the dividing line relative to self.width
+        """
+        self.dividing_line_height_p: float = dividing_line_height_p
+        """
+        Height of the dividing line relative to dividing_space_p
+        """
+        self.dividing_line_color: color_t = dividing_line_color
+        """
+        Color of the dividing line.
+        """
+        #outline
+        self.outline_size_p: float = outline_size_p
+        """
+        The size of the outline relative to min(self.width, self.height)
+        """
+        self.outline_color: color_t = outline_color
+        """
+        The color of the outline.
+        """
+
+        self.intro_delay: float = 100#ms"
+        """
+        Intro delay.
+        """
+        self.intro_delay_clock: Clock = Clock()
+        """
+        The intro delay clock
+        """
+
+        #the rendered objects
+
+        self.inner_frame_dim: pygame.Rect = None
+        """
+        The frame dim after applying the margins.
+        """
+        self.relative_inner_frame_dim: pygame.Rect = None
+        """
+        The relative inner frame dim for rendering.
+        """
+        self.text_frame_dim: pygame.Rect = None
+        """
+        The frame_dim for the popup text.
+        """
+        self.divide_frame_dim: pygame.Rect = None
+        """
+        The frame dim for dividing the text from the options.
+        """
+        self.option_frame_dim: pygame.Rect = None
+        """
+        The frame dim for the options.
+        """
+        self.options_free_space: float = None
+        """
+        The actual amount of space dividing the options.
+        """
+        self.all_options_frame_dims: list[pygame.Rect] = None
+        """
+        Rects for all options.
+        """
+
+        self.rendered_text: rendered_surface_position_tuples_t = None
+        """
+        The rendered text, relative to self.frame_dim.
+        """
+
+        #cleanup
+        if self.options is not None and len(self.options) == 0:
+            self.options = None
+
+        self.rerender()
+
+    @override
+    def rerender(self) -> None:
+        """
+        @override rerender
+        """
+
+        #creating the frame dims
+        self.inner_frame_dim = graphics.apply_margins(self.inner_frame_dim, self.hmargin, self.vmargin)
+        #relative
+        self.relative_inner_frame_dim = graphics.position_relative(anchor_rect=self.frame_dim, make_relative_rect=self.inner_frame_dim)
+        #getting the dividing percentages
+        percentages: list[float] = [
+                                        self.text_to_options_height_p,
+                                        self.dividing_space_p,
+                                        (1.0 - (self.text_to_options_height_p + self.dividing_space_p))
+                                    ]
+
+        self.text_frame_dim,\
+        self.divide_frame_dim,\
+        self.option_frame_dim = graphics.split_rect_vertically(self.relative_inner_frame_dim, percentages)
+
+        self.options_free_space = int(self.option_frame_dim.width * self.options_free_space_p)
+
+        #now, we get the option frames by distributing this free space among the options
+        if self.options is not None or len(self.options) > 0:
+
+            #distribute into 1 + (len(self.options) - 1) brackets, then split one
+            #bracket in half for the distance from the edges
+            bracket_w: int = self.options_free_space // len(self.options)
+
+            #now, we create the frame dims for the options
+            option_space: float = self.option_frame_dim.width - self.options_free_space
+            #getting the width for each option
+            option_w: int = option_space // len(self.options)
+
+            cx: int = bracket_w // 2
+
+            self.all_options_frame_dims = []
+            for i in range(len(self.options)):
+
+                self.all_options_frame_dims.append(
+                                                        pygame.Rect(
+                                                                        cx,
+                                                                        self.option_frame_dim.y,
+                                                                        option_w,
+                                                                        self.option_frame_dim.height
+
+                                                                    )
+                                                    )
+
+                cx += option_w
+                cx += bracket_w
+
+        #creating the rendered text
+
+        self.raise_prerender_flag()
+        self.intro_delay_clock.start()
+
+    @override
+    def prerender(self) -> None:
+        """
+        @override prerender
+        """
+        pass

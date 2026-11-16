@@ -69,6 +69,18 @@ type cardlist_sorting_function_t = Callable[ [listviewer_cardlist_t], listviewer
 
 class RenderableCardListviewer(Frame):
 
+    class FeatureState:
+        """
+        This class provides the variables for the features,
+        defining what is possible and what not.
+        """
+        def __init__(self):
+
+            #all state variables
+            self.group_selection_enabled: bool = True
+            self.group_creation_enabled: bool = True
+            self.group_deletion_enabled: bool = True
+
     #full cardlist name key
     FULL_CARDLIST_NAME: str = "Full Cardlist"
 
@@ -91,11 +103,18 @@ class RenderableCardListviewer(Frame):
 
     #Fading durations for the info text
     RENAMING_NOT_POSSIBLE_FADING_DURATION: float = 5000#ms
-    RENAMING_NOT_POSSIBLE_INFO_TEXT: str = "Renaming for this group is disabled"
+    RENAMING_NOT_POSSIBLE_INFO_PAGE: colored_page_t = graphics.str_to_colored_page("Renaming for this group is disabled", INFO_TEXT_WARNING_COLOR)
 
     #deckname exists error
-    DECKNAME_ALREADY_EXISTS_ERROR_FADING_DURATION: float = 5000#ms
-    DECKNAME_ALREADY_EXISTS_ERROR_INFO_TEXT: str = "The chosen Deck name already exists"
+    DECKNAME_ALREADY_EXISTS_FADING_DURATION: float = 5000#ms
+    DECKNAME_ALREADY_EXISTS_INFO_PAGE: colored_page_t = graphics.str_to_colored_page("The chosen Group name already exists", INFO_TEXT_ERROR_COLOR)
+
+    #max number of groups reached
+    MAX_GROUP_NUMBER_REACHED_FADING_DURATION: float = 5000#ms
+    MAX_GROUP_NUMBER_REACHED_INFO_PAGE: colored_page_t = [
+                                                            [("Maximum number of groups reached.", INFO_TEXT_ERROR_COLOR)],
+                                                            [("Group creation failed", INFO_TEXT_ERROR_COLOR)]
+                                                            ]
 
     #==================================
     # STATES
@@ -144,8 +163,9 @@ class RenderableCardListviewer(Frame):
     # MAIN LIST ACTION STATES
     #==================================
 
-    OBSERVER_STATE: id_t = R_ID() #state where no main list action can be done by pressing enter
-    SELECTION_STATE: id_t = R_ID() #state in which cards can be selected
+    class MainListState:
+        OBSERVER_STATE: id_t = R_ID() #state where no main list action can be done by pressing enter
+        SELECTION_STATE: id_t = R_ID() #state in which cards can be selected
 
     #==================================
     # MENU OPTIONS
@@ -189,7 +209,10 @@ class RenderableCardListviewer(Frame):
         SELECT_GROUP_OPTION_KEY: tuple[str] = ("Select Deck",)
         SELECT_GROUP_OPTIONS_SHOWN_AMOUNT: int = 5
         #group creation
-        CREATE_GROUP_OPTION_KEY: tuple[str] =("Create Deck",)
+        CREATE_GROUP_OPTION_KEY: tuple[str] = ("Create Deck",)
+        #group deletion
+        DELETE_GROUP_OPTION_KEY: tuple[str] = ("Delete Deck",)
+        DELETE_GROUP_OPTIONS_SHOWN_AMOUNT: int = 5
 
     #==================================
     # SORTING FUNCTIONS
@@ -393,6 +416,10 @@ class RenderableCardListviewer(Frame):
             ret: Frame = self.text_input.tick()
             #polling textinput events
             for event in self.text_input.poll_events():
+
+                #propagating events
+                self.push_event(event)
+
                 if event.type == TextInput.EventTypes.TEXT_ENTERED:
                     self._exit_type = RenderableCardListviewer.FocusedTextInputFrame.TEXT_ENTERED
                     self.raise_exit_flag()
@@ -525,9 +552,8 @@ class RenderableCardListviewer(Frame):
                     info_text_warning_color: color_t = None,
                     info_text_error_color: color_t = None,
 
-                    #group menu stuff
-                    group_selection_enabled: bool = True,
-                    group_creation_enabled: bool = True,
+                    #group features
+                    group_feature_state: RenderableCardListviewer.FeatureState = None,
 
                     #enter states
                     time_until_long_enter_pressed: float = 500,#ms, how long until the long enter state is reached
@@ -1078,7 +1104,7 @@ class RenderableCardListviewer(Frame):
         """
         The previous state, saved.
         """
-        self.main_list_action_state: id_t = RenderableCardListviewer.SELECTION_STATE
+        self.main_list_action_state: id_t = RenderableCardListviewer.MainListState.SELECTION_STATE
         """
         The main list action state. Starts out as selection state.
         """
@@ -1166,18 +1192,19 @@ class RenderableCardListviewer(Frame):
         If fastscroll is enabled self.fastscroll_duration will be used instead
         of self.rowscroll_duration.
         """
-        self.group_creation_enabled: bool = group_creation_enabled
+        self.group_feature_state: RenderableCardListviewer.FeatureState = group_feature_state
         """
-        Determines whether this frame's group creation feature is enabled.
-        """
-        self.group_selection_enabled = group_selection_enabled
-        """
-        Determines whether this frame's group selection feature is enabled.
+        The group feature state. Defines what can and cannot be done using this widget.
+        E.g. Group creation, Group Deletion, ...
         """
         self.card_pressed_size_change_percentage: float = card_pressed_size_change_percentage
         """
         The percentage of size change of the card for its pressed animation.
         """
+
+        #creating a general feature state if no one was given
+        if self.group_feature_state is None:
+            self.group_feature_state = RenderableCardListviewer.FeatureState()
 
         #==================================
         # TIME CONTROL
@@ -1254,7 +1281,6 @@ class RenderableCardListviewer(Frame):
         """
         The duration of the snapback duration of a card.
         """
-
         self.cards_dict_before_enter: tuple[int, pygame.Rect, pygame.Rect, int] = None
         """
         Saving the entry of the selected card in self.main_list_cards_dict,
@@ -2054,8 +2080,16 @@ class RenderableCardListviewer(Frame):
         Returns True on success, False on failure.
         """
 
-        if not groupname or groupname in list(self.groups.keys()):
+        if  not groupname or groupname in list(self.groups.keys()):
             return False
+
+        if len(self.groups) - 1 >= self.max_group_number:
+            #create info
+            self.print_info_text(
+                                    text_page=RenderableCardListviewer.MAX_GROUP_NUMBER_REACHED_INFO_PAGE,
+                                    text_color=RenderableCardListviewer.INFO_TEXT_ERROR_COLOR,
+                                    fade_duration=RenderableCardListviewer.MAX_GROUP_NUMBER_REACHED_FADING_DURATION
+                                )
 
         if cardlist is None:
             cardlist = {}
@@ -2134,16 +2168,24 @@ class RenderableCardListviewer(Frame):
                     ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.SHOWN_AMOUNT
                 }
 
-        if self.group_selection_enabled:
+        groups_dict = {(G,): None for G in self.groups.keys() if G != ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY}
+        #dropdown dict with all current groups shown
 
-            selection_groups_dict = {(G,): None for G in self.groups.keys() if G != ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY}
+        if self.group_feature_state.group_selection_enabled:
+
+            selection_groups_dict = groups_dict.copy()
             selection_groups_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTIONS_SHOWN_AMOUNT
-
             mdict[RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTION_KEY] = selection_groups_dict
 
-        if self.group_creation_enabled:
+        if self.group_feature_state.group_creation_enabled:
 
             mdict[RenderableCardListviewer.MENU_OPTIONS.CREATE_GROUP_OPTION_KEY] = None
+
+        if self.group_feature_state.group_deletion_enabled:
+
+            deletion_group_dict = groups_dict.copy()
+            deletion_group_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.DELETE_GROUP_OPTIONS_SHOWN_AMOUNT
+            mdict[RenderableCardListviewer.MENU_OPTIONS.DELETE_GROUP_OPTION_KEY] = deletion_group_dict
 
         #sorting types
         sorting_options_dict = {
@@ -2209,7 +2251,6 @@ class RenderableCardListviewer(Frame):
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_ascending
                         self.main_list_cards = self.sorting_function(self.main_list_cards)
                         self.recalculate_main_list_positions()
-
                 #display types
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.SHOW_EACH_CARD_DISPLAY_TYPE:
                     if self.main_list_view_state != RenderableCardListviewer.SHOW_EACH_CARD:
@@ -2226,6 +2267,11 @@ class RenderableCardListviewer(Frame):
 
                     self.shown_group = selection[0]
                     self.reload_current_group()
+
+                elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.DELETE_GROUP_OPTION_KEY:
+
+                    #initializes group deletion
+                    self.initialize_group_deletion()
 
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.CREATE_GROUP_OPTION_KEY:
                     self.initialize_deck_creation_frame()
@@ -2438,12 +2484,11 @@ class RenderableCardListviewer(Frame):
                     text = self.focused_text_input_subframe.get_input_text()
 
                     if not text or text in list(self.groups.keys()):
-                        tcolor = (RenderableCardListviewer.INFO_TEXT_ERROR_COLOR if self.info_text_error_color is None else self.info_text_error_color)
 
                         self.print_info_text(
-                                                [[(RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_INFO_TEXT, tcolor)]],
-                                                tcolor,
-                                                RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_FADING_DURATION
+                                                text_page=RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_INFO_PAGE,
+                                                text_color=RenderableCardListviewer.INFO_TEXT_ERROR_COLOR,
+                                                fade_duration=RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_FADING_DURATION
                                             )
 
                         self.focused_text_input_subframe.reset_exit_flag()
@@ -2632,13 +2677,11 @@ class RenderableCardListviewer(Frame):
                 self.state = RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION
                 self.initialize_deckname_selected_animation()
             else:
-                tcolor = (RenderableCardListviewer.INFO_TEXT_WARNING_COLOR if self.info_text_warning_color is None else self.info_text_warning_color)
-
 
                 self.print_info_text(
-                                        [[(RenderableCardListviewer.RENAMING_NOT_POSSIBLE_INFO_TEXT, tcolor)]],
-                                        tcolor,
-                                        RenderableCardListviewer.RENAMING_NOT_POSSIBLE_FADING_DURATION
+                                        text_page=RenderableCardListviewer.RENAMING_NOT_POSSIBLE_INFO_PAGE,
+                                        text_color=RenderableCardListviewer.INFO_TEXT_WARNING_COLOR,
+                                        fade_duration=RenderableCardListviewer.RENAMING_NOT_POSSIBLE_FADING_DURATION
                                     )
 
         elif self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED:
@@ -2886,12 +2929,10 @@ class RenderableCardListviewer(Frame):
             if not text\
                 or text in list(self.groups.keys()):
 
-                tcolor = (RenderableCardListviewer.INFO_TEXT_ERROR_COLOR if self.info_text_error_color is None else self.info_text_error_color)
-
                 self.print_info_text(
-                                        [[(RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_INFO_TEXT, tcolor)]],
-                                        tcolor,
-                                        RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_ERROR_FADING_DURATION
+                                        text_page=RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_INFO_PAGE,
+                                        text_color=RenderableCardListviewer.INFO_TEXT_ERROR_COLOR,
+                                        fade_duration=RenderableCardListviewer.DECKNAME_ALREADY_EXISTS_FADING_DURATION
                                     )
 
                 self.focused_text_input_subframe.reset_exit_flag()
