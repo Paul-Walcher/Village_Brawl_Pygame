@@ -8,10 +8,11 @@ import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 
 from event_queue_manager import Event
-from constants import Colors, Fonts, R_ID, color_t, id_t
+from constants import Colors, Fonts, R_ID, color_t, id_t, point_t
 from clock import Clock
 from enum import Enum, auto
 from collections.abc import Sequence
+import calculations
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -385,6 +386,34 @@ class ExpandableDropdownMenu(DropdownMenu):
                 )
             )
 
+    #getting the index of the option box the mouse is hovering over
+    def get_indices_from_mouse_pos(self, mpos: point_t) -> list[int]:
+        """
+        Returns a list of the indices tracing
+        the deferred dropdown menus of the option the mouse is currently hovering over,
+        or None if no option is selected.
+        """
+
+        prev_indices: list[int] = None
+
+        if self.deferred_dropdown_menu is not None:
+
+            prev_indices = self.deferred_dropdown_menu.get_indices_from_mouse_pos(mpos)
+
+        if prev_indices is not None:
+            prev_indices.insert(0, self.selected_index)
+            return prev_indices
+
+        #checking the boxframes
+        for i in range(len(self.boxframes)):
+
+            bframe, oframe, hoframe = self.boxframes[i]
+
+            if calculations.point_collides(point=mpos, rect=bframe):
+                return [i]
+
+        return None
+
     def is_deferred(self) -> bool:
         """
         returns if this dropdown menu is deferred
@@ -567,6 +596,32 @@ class ExpandableDropdownMenu(DropdownMenu):
                                                                                 selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index])]
                                                                             )
                         )
+
+        self.raise_prerender_flag()
+
+    def select_options_deferred(self, indices: Sequence[int]) -> None:
+        """
+        Selects the options based on the indices.
+        """
+
+        if len(indices) == 0:
+            return
+
+        idx = indices[0]
+
+        if idx < 0 or idx >= self.n_options():
+            return
+
+        self.selected_index = idx
+        dkey: DropDownKey = self.dropdown_keys[idx]
+
+        self.state = ExpandableDropdownMenu.OPTION_SELECTED
+
+        if dkey in self.expanded_dropdown_menus:
+
+            self.deferred_dropdown_menu = self.expanded_dropdown_menus[dkey]
+            self.state = ExpandableDropdownMenu.FOCUS_DEFERRED
+            self.deferred_dropdown_menu.select_options_deferred(indices[1:])
 
         self.raise_prerender_flag()
 

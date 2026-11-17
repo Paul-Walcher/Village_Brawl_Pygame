@@ -7,9 +7,10 @@ import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 
 from event_queue_manager import Event
-from constants import Colors, Fonts, R_ID, color_t, id_t
+from constants import Colors, Fonts, R_ID, color_t, id_t, point_t
 from clock import Clock
 from enum import Enum, auto
+import calculations
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -271,6 +272,24 @@ class DropdownMenu(Frame):
         Returns the number of options available.
         """
         return len(self.options)
+
+    #getting the index of the option box the mouse is hovering over
+    def get_index_from_mouse_pos(self, mpos: point_t) -> int:
+        """
+        Returns the index of the option the mouse is currently hovering over,
+        or None if no option is selected.
+        """
+
+        #checking the boxframes
+        for i in range(len(self.boxframes)):
+
+            bframe, oframe, hoframe = self.boxframes[i]
+
+            if calculations.point_collides(point=mpos, rect=bframe):
+                return i
+
+        return None
+
 
     @override
     def rerender(self) -> None:

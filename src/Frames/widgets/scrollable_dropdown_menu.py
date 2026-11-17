@@ -8,9 +8,10 @@ from copy import deepcopy
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from event_queue_manager import Event
-from constants import Colors, Fonts, R_ID, IIMAGE, color_t, id_t
+from constants import Colors, Fonts, R_ID, IIMAGE, color_t, id_t, point_t
 from clock import Clock
 from collections.abc import Sequence
+import calculations
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -345,6 +346,28 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
         return max_depth, max_length
 
+    #property override
+    @ExpandableDropdownMenu.selected_index.setter
+    @override
+    def selected_index(self, new_idx: int) -> None:
+        """
+        Fires a new option highlighted event.
+        """
+
+        if self._selected_index != new_idx:
+
+            self._selected_index = new_idx
+
+            self.push_event(
+                ScrollableDropdownMenu.NewOptionHighlightedEvent(
+
+                    option_keys=[self.dropdown_keys[self.selected_index]],
+                    scroll_indices=[self.scroll_index],
+                    indices=[self.selected_index],
+                    selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index])]
+                )
+            )
+
     @property
     def scroll_index(self):
         return self._scroll_index
@@ -355,6 +378,35 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         if self._scroll_index != val:
             self._scroll_index = val
             self.rerender_arrow_text()
+
+    #getting the index of the option box the mouse is hovering over
+    @override
+    def get_indices_from_mouse_pos(self, mpos: point_t) -> list[int]:
+        """
+        Returns a list of the indices tracing
+        the deferred dropdown menus of the option the mouse is currently hovering over,
+        or None if no option is selected.
+        """
+
+        prev_indices: list[int] = None
+
+        if self.deferred_dropdown_menu is not None:
+
+            prev_indices = self.deferred_dropdown_menu.get_indices_from_mouse_pos(mpos)
+
+        if prev_indices is not None:
+            prev_indices.insert(0, self.selected_index + self.scroll_index)
+            return prev_indices
+
+        #checking the boxframes
+        for i in range(len(self.boxframes)):
+
+            bframe, oframe, hoframe = self.boxframes[i]
+
+            if calculations.point_collides(point=mpos, rect=bframe):
+                return [i + self.scroll_index]
+
+        return None
 
     def n_options_scroll(self) -> int:
         """
@@ -629,6 +681,46 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             return trace
 
     @override
+    def select_options_deferred(self, indices: Sequence[int]) -> None:
+        """
+        Seletcs the options based on the indices.
+        """
+
+        if len(indices) == 0:
+            return
+
+        idx = indices[0]
+
+        if idx < 0 or idx >= self.n_options():
+            return
+
+        #getting correct scroll
+        if idx < self.scroll_index:
+            self.scroll_index = idx
+            self.selected_index = 0
+        elif idx >= (self.scroll_index + self.n_options_shown):
+            self.scroll_index = idx - self.n_options_shown
+            self.selected_index = self.n_all_options() - 1
+
+        else:
+
+            self.selected_index = idx
+
+        self.dropdown_options = self.get_options_n_showed()
+
+        self.state = ScrollableDropdownMenu.OPTION_SELECTED
+
+        dkey: DropDownKey = self.dropdown_keys[idx]
+
+        if dkey in self.expanded_dropdown_menus:
+
+            self.deferred_dropdown_menu = self.expanded_dropdown_menus[dkey]
+            self.state = ScrollableDropdownMenu.FOCUS_DEFERRED
+            self.deferred_dropdown_menu.select_options_deferred(indices[1:])
+
+        self.raise_prerender_flag()
+
+    @override
     def select_by_keys(self, keys: Sequence[DropDownKey]) -> None:
         """
         Makes the selection by the keys.
@@ -661,7 +753,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
                 self.selected_index = 0
 
-            elif option_index > (self.scroll_index + self.n_options_shown):
+            elif option_index >= (self.scroll_index + self.n_options_shown):
 
                 self.scroll_index = option_index - self.n_options_shown
                 self.dropdown_options = self.get_options_n_showed()
@@ -702,45 +794,6 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     self.selected_index = (option_index - self.scroll_index)
 
         self.raise_prerender_flag()
-
-
-
-    @override
-    def move_up(self) -> None:
-        """
-        For pushing events.
-        """
-        if self.state == DropdownMenu.NOTHING_SELECTED:
-
-            self.push_event(
-                                ScrollableDropdownMenu.NewOptionHighlightedEvent(
-                                                                                    option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
-                                                                                    scroll_indices=[self.scroll_index],
-                                                                                    indices=[0],
-                                                                                    selected_option_strings=[graphics.colored_page_to_str(self.dropdown_options[self.selected_index].highlighted_option_page)]
-                                                                                    )
-                            )
-
-        ExpandableDropdownMenu.move_up(self)
-
-    @override
-    def move_down(self) -> None:
-        """
-        For pushing events.
-        """
-        if self.state == DropdownMenu.NOTHING_SELECTED:
-
-            self.push_event(
-                                ScrollableDropdownMenu.NewOptionHighlightedEvent(
-                                                                                    option_keys=[self.dropdown_keys[self.selected_index + self.scroll_index]],
-                                                                                    scroll_indices=[self.scroll_index],
-                                                                                    indices=[0],
-                                                                                    selected_option_strings=[graphics.colored_page_to_str(self.dropdown_options[self.selected_index].highlighted_option_page)]
-                                                                                    )
-                            )
-
-        ExpandableDropdownMenu.move_down(self)
-
 
 
     @override
