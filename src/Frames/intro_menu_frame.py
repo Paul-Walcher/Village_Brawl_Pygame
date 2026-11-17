@@ -9,6 +9,7 @@ from graphics import rendered_surface_position_tuples_t
 from clock import Clock
 from calculations import point_collides, rect_collides
 import time
+import camera
 
 from context_data import ContextData
 
@@ -309,13 +310,15 @@ class IntroMenuFrame(Frame):
         #getting the selected button
         selected_button: Button = None
 
+        mpos: tuple[int, int] = camera.global_camera.get_mouse_position()
+
         if self.state == IntroMenuFrame.BACK_OPTION_FOCUSED:
             selected_button = self.back_button
         elif self.state == IntroMenuFrame.MAIN_OPTIONS_FOCUSED:
             selected_button = self.option_buttons[self.text_options_index]
 
         #checking for collisions
-        if point_collides(event.pos, self.back_button.frame_dim):
+        if point_collides(mpos, self.back_button.frame_dim):
             if self.state != IntroMenuFrame.BACK_OPTION_FOCUSED:
                 #deselecting the selected button
                 if selected_button is not None:
@@ -330,7 +333,7 @@ class IntroMenuFrame(Frame):
 
             button: Button = self.option_buttons[i]
 
-            if point_collides(event.pos, button.frame_dim):
+            if point_collides(mpos, button.frame_dim):
                 if selected_button is not button: #only when the button is not selected.
                     if selected_button is not None:
                         selected_button.unselect()
@@ -348,9 +351,12 @@ class IntroMenuFrame(Frame):
         """
         Getting the button to press
         """
+
+        mpos: tuple[int, int] = camera.global_camera.get_mouse_position()
+
         if event.button == Mouse.LEFT_BUTTON:
             if self.state == IntroMenuFrame.BACK_OPTION_FOCUSED:
-                if point_collides(event.pos, self.back_button.frame_dim):
+                if point_collides(mpos, self.back_button.frame_dim):
                     #back was pressed
                     self.back_button.press()
 
@@ -359,7 +365,7 @@ class IntroMenuFrame(Frame):
 
                     button: Button = self.option_buttons[i]
 
-                    if point_collides(event.pos, button.frame_dim):
+                    if point_collides(mpos, button.frame_dim):
                         #pressing the button
                         self.text_options_index = i
                         button.press()
