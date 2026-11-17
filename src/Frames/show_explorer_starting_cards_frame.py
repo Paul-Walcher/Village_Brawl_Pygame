@@ -143,8 +143,8 @@ class ShowExplorerStartingCardsFrame(Frame):
                                                         has_focus=self.is_focused()
                                                         )
 
-    def bind_events(self):
-        self.clear_event_callbacks()
+    def prerender(self):
+        self.cardlistviewer.render(self.surface)
 
     def tick(self):
 
@@ -159,9 +159,6 @@ class ShowExplorerStartingCardsFrame(Frame):
             if self.key_pressed(pygame.K_ESCAPE):
                 self.raise_exit_flag()
 
+        self.prerender()
+
         return self
-
-    def render(self, screen):
-
-        screen.fill(Colors.BLACK)
-        self.cardlistviewer.render(screen)

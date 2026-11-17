@@ -174,7 +174,7 @@ class ExpandableDropdownMenu(DropdownMenu):
 
                                     prev_tuple: tuple[str] = None #the previous tuple, if its a recursive call
 
-                                    ) -> tuple[expandable_dropdown_options_t, dict[ tuple[ tuple[str] ] ], DropDownKey]:
+                                    ) -> tuple[expandable_dropdown_options_t, dict[ tuple[ tuple[str] ] , DropDownKey]]:
         """
         Given a dictionary with keys like:
 
@@ -217,7 +217,8 @@ class ExpandableDropdownMenu(DropdownMenu):
                 option_page: colored_page_t = graphics.page_to_colored_page(list(key), text_color)
                 highlighted_option_page: colored_page_t = graphics.page_to_colored_page(list(key), highlighted_text_color)
 
-                new_value: Any = value
+                new_options: expandable_dropdown_options_t = None
+                new_mappings: dict[ tuple[ tuple[str] ] , DropDownKey] = None
 
                 #mapping dict
                 tuple_key: tuple[tuple[str]] = (key,)
@@ -225,17 +226,18 @@ class ExpandableDropdownMenu(DropdownMenu):
                     tuple_key = (*prev_tuple, key)
 
                 if type(value) == dict:
-                    new_value = ExpandableDropdownMenu.page_keys_to_dropdownkey(
-                                                                                    options_dict=value,
-                                                                                    text_color=text_color,
-                                                                                    highlighted_text_color=highlighted_text_color,
+                    new_options, new_mappings = ExpandableDropdownMenu.page_keys_to_dropdownkey(
+                                                                                                options_dict=value,
+                                                                                                text_color=text_color,
+                                                                                                highlighted_text_color=highlighted_text_color,
 
-                                                                                    prev_tuple=tuple_key
-                                                                                    )
+                                                                                                prev_tuple=tuple_key
+                                                                                                )
+                    mapping_dict.update(new_mappings)
 
                 new_key = DropDownKey(option_page=option_page, highlighted_option_page=highlighted_option_page)
 
-                back_dict[new_key] = new_value
+                back_dict[new_key] = new_options
                 mapping_dict[tuple_key] = new_key
 
             else:
