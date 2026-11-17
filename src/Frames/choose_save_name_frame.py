@@ -9,6 +9,7 @@ import graphics
 from graphics import text_t, colored_text_t, page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 import calculations
 from clock import Clock
+import camera
 
 from context_data import ContextData
 
@@ -350,7 +351,9 @@ class ChooseSaveNameFrame(Frame):
         Selects and highlights when the mouse is moved.
         """
 
-        if calculations.point_collides(event.pos, self.back_button.frame_dim):
+        mpos: tuple[int, int] = camera.global_camera.get_mouse_position()
+
+        if calculations.point_collides(mpos, self.back_button.frame_dim):
 
             if self.state != ChooseSaveNameFrame.TEXTINPUT_FOCUSED:
                 if self.state == ChooseSaveNameFrame.ENTER_OPTION_FOCUSED:
@@ -362,7 +365,7 @@ class ChooseSaveNameFrame(Frame):
         else:
             self.back_button.unselect()
 
-        if calculations.point_collides(event.pos, self.enter_button.frame_dim):
+        if calculations.point_collides(mpos, self.enter_button.frame_dim):
 
             if self.state != ChooseSaveNameFrame.TEXTINPUT_FOCUSED:
                 if self.state == ChooseSaveNameFrame.BACK_OPTION_FOCUSED:
@@ -378,9 +381,11 @@ class ChooseSaveNameFrame(Frame):
         Press event.
         """
 
+        mpos: tuple[int, int] = camera.global_camera.get_mouse_position()
+
         if event.button == Mouse.LEFT_BUTTON:
 
-            if calculations.point_collides(event.pos, self.back_button.frame_dim):
+            if calculations.point_collides(mpos, self.back_button.frame_dim):
                 if self.state == ChooseSaveNameFrame.TEXTINPUT_FOCUSED:
                     self.text_input.unfocus()
 
@@ -388,7 +393,7 @@ class ChooseSaveNameFrame(Frame):
                 self.back_button.select()
                 self.back_button.press()
 
-            elif calculations.point_collides(event.pos, self.enter_button.frame_dim):
+            elif calculations.point_collides(mpos, self.enter_button.frame_dim):
                 if self.state == ChooseSaveNameFrame.TEXTINPUT_FOCUSED:
                     self.text_input.unfocus()
 
@@ -396,7 +401,7 @@ class ChooseSaveNameFrame(Frame):
                 self.enter_button.select()
                 self.enter_button.press()
 
-            elif calculations.point_collides(event.pos, self.text_input.frame_dim):
+            elif calculations.point_collides(mpos, self.text_input.frame_dim):
 
                 if self.state == ChooseSaveNameFrame.BACK_OPTION_FOCUSED:
                     self.back_button.unselect()

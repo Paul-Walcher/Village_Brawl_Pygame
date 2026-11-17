@@ -10,6 +10,7 @@ from clock import Clock
 from event_queue_manager import Event
 from enum import Enum, auto
 from templates.renderable_cardinfo import Renderable_CardInfo
+import camera
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -329,7 +330,9 @@ class CardinfoFrame(Frame):
         if self.state in [CardinfoFrame.SLIDING_IN, CardinfoFrame.SLIDING_OUT]:
             return
 
-        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=event.pos)
+        campos: tuple[int, int] = camera.global_camera.get_mouse_position()
+
+        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=campos)
 
         if self.state == CardinfoFrame.NOTHING_FOCUSED:
 
@@ -358,7 +361,8 @@ class CardinfoFrame(Frame):
 
         left_tbox, right_tbox = graphics.split_rect_horizontally(rect=self.description_textbox.frame_dim, percentages=[0.5, 0.5])
 
-        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=event.pos)
+        campos: tuple[int, int] = camera.global_camera.get_mouse_position()
+        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=campos)
 
         if event.button == Mouse.LEFT_BUTTON:
 

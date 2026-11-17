@@ -20,10 +20,6 @@ class Gamehandler:
         """
         The screen everything will be rendered onto. Is set to fullscreen.
         """
-        self.render_surface: pygame.Surface = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
-        """
-        The surface used before the final rendering step.
-        """
         self.width, self.height = self.screen.get_size()
         """
         Size of the screen.
@@ -66,29 +62,10 @@ class Gamehandler:
 
                 self.current_frame = frame_back
 
-            #self.current_frame.clear_pygame_events()
-
-            #keys
-            keys = pygame.key.get_pressed()
-
-            if keys[pygame.K_k]:
-                camera.global_camera.move_camera(x_offset=-1.0, y_offset=None)
-
-            if keys[pygame.K_l]:
-                camera.global_camera.move_camera(x_offset=1.0, y_offset=None)
-
-            if keys[pygame.K_o]:
-                camera.global_camera.zoom_in(value=0.05)
-
-            if keys[pygame.K_p]:
-                camera.global_camera.zoom_out(value=0.05)
-
             self.screen.fill((0, 0, 0))
-            self.render_surface.fill((0, 0, 0))
-            self.current_frame.render(self.render_surface)
             camera.global_camera.render_surface(
                                             screen=self.screen,
-                                            surface=self.render_surface
+                                            surface=self.current_frame.surface
                                         )
 
             pygame.display.flip()

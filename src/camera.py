@@ -152,9 +152,9 @@ class Camera:
         self._x_offset = 0.0
         self._y_offset = 0.0
 
-        self._current_zoom = 0.0
+        self._current_zoom = 1.0
 
-    def set_position(self, x_offset: float = None, y_offset: float = None) -> None:
+    def move_to(self, x_offset: float = None, y_offset: float = None) -> None:
         """
         Sets the camera offsets directly to the values.
         If any value is None, this value will stay the same.
@@ -256,19 +256,6 @@ class Camera:
         """
         Applies all changes, and renders the surface onto the screen.
         """
-
-        #checking sizes
-        own_size: tuple[int, int] = (self.frame_dim.width, self.frame_dim.height)
-
-        if own_size != surface.get_size():
-            """
-            The surface must be the same size as this cameras managed area.
-            """
-            raise RuntimeError(
-                                f"Size difference: "\
-                                f"Managed Camera area: {str(own_size)}"\
-                                f"Surface size: {str(surface.get_size())}"
-                                )
 
         x: int = None
         y: int = None

@@ -15,6 +15,7 @@ import calculations
 from clock import Clock
 from modules import Modules
 import constants
+import camera
 
 from templates.explorer_template import Explorer_Template, ExplorerInfo
 
@@ -356,7 +357,8 @@ class ExplorerInfoFrame(CardinfoFrame):
         if self.state in [ExplorerInfoFrame.SLIDING_IN, ExplorerInfoFrame.SLIDING_OUT, ExplorerInfoFrame.MENU_SLIDING]:
             return
 
-        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=event.pos)
+        campos: tuple[int, int] = camera.global_camera.get_mouse_position()
+        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=campos)
 
         if self.state not in [ExplorerInfoFrame.SLIDING_IN, ExplorerInfoFrame.SLIDING_OUT, ExplorerInfoFrame.MENU_SLIDING]:
 
@@ -393,7 +395,8 @@ class ExplorerInfoFrame(CardinfoFrame):
         left_tbox, right_tbox = graphics.split_rect_horizontally(rect=self.description_textbox.frame_dim, percentages=[0.5, 0.5])
         left_sbox, main_sbox, right_sbox = graphics.split_rect_horizontally(rect=self.relative_slider_border_frame, percentages=[0.25, 0.5, 0.25])
 
-        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=event.pos)
+        campos: tuple[int, int] = camera.global_camera.get_mouse_position()
+        mpos: point_t = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=campos)
 
         if event.button == Mouse.LEFT_BUTTON:
 
@@ -455,7 +458,8 @@ class ExplorerInfoFrame(CardinfoFrame):
         if self.state in [ExplorerInfoFrame.SLIDING_IN, ExplorerInfoFrame.SLIDING_OUT, ExplorerInfoFrame.MENU_SLIDING]:
             return
 
-        mpos: int = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=pygame.mouse.get_pos())
+        campos: tuple[int, int] = camera.global_camera.get_mouse_position()
+        mpos: int = graphics.position_relative_point(anchor_point=as_point(self.inner_frame_dim), make_relative_point=campos)
 
         if calculations.point_collides(mpos, self.relative_standard_info_page_frame):
 

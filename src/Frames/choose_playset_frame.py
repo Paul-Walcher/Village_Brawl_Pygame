@@ -12,6 +12,8 @@ from Frames.choose_save_name_frame import ChooseSaveNameFrame
 from context_data import ContextData
 from calculations import point_collides, rect_collides
 
+import camera
+
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.widgets.text_slider import TextSlider
@@ -292,8 +294,10 @@ class ChoosePlaysetFrame(Frame):
         Mouse motion events.
         """
 
+        mpos: tuple[int, int] = camera.global_camera.get_mouse_position()
+
         #checking for collisions
-        if point_collides(event.pos, self.back_button.frame_dim):
+        if point_collides(mpos, self.back_button.frame_dim):
             if self.state != ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
                 self.state = ChoosePlaysetFrame.BACK_OPTION_FOCUSED
                 self.back_button.select()
@@ -303,7 +307,7 @@ class ChoosePlaysetFrame(Frame):
                 self.state = ChoosePlaysetFrame.NOTHING_FOCUSED
 
         #checking for collision with the option box
-        if point_collides(event.pos, self.text_slider.frame_dim):
+        if point_collides(mpos, self.text_slider.frame_dim):
             if self.state != ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
                 self.state = ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED
         else:
@@ -315,13 +319,16 @@ class ChoosePlaysetFrame(Frame):
         """
         Mouse button press.
         """
+
+        mpos: tuple[int, int] = camera.global_camera.get_mouse_position()
+
         if event.button == Mouse.LEFT_BUTTON:
 
-            if point_collides(event.pos, self.back_button.frame_dim):
+            if point_collides(mpos, self.back_button.frame_dim):
                 if self.state == ChoosePlaysetFrame.BACK_OPTION_FOCUSED:
                     self.back_button.press()
 
-            if point_collides(event.pos, self.text_slider.frame_dim):
+            if point_collides(mpos, self.text_slider.frame_dim):
                 if self.state == ChoosePlaysetFrame.PLAYSET_OPTIONS_FOCUSED:
                     self.text_slider.select()
 

@@ -10,6 +10,7 @@ from graphics import page_t, colored_page_t, surface_with_position_t, rendered_s
 from event_queue_manager import Event
 from constants import Colors, Fonts, R_ID, IIMAGE, color_t, id_t
 from clock import Clock
+from collections.abc import Sequence
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -626,6 +627,83 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     trace.extend(ext)
 
             return trace
+
+    @override
+    def select_by_keys(self, keys: Sequence[DropDownKey]) -> None:
+        """
+        Makes the selection by the keys.
+        Sets the scroll value if necessary.
+        """
+
+        if len(keys) == 0 or self.state not in\
+            [
+                ExpandableDropdownMenu.NOTHING_SELECTED,
+                ExpandableDropdownMenu.OPTION_SELECTED,
+                ExpandableDropdownMenu.DEFERRED_MENU_SHOWN,
+                ExpandableDropdownMenu.FOCUS_DEFERRED
+            ]:
+            return
+
+        hash_key: DropDownKey = keys[0]
+
+        if hash_key in self.expanded_dropdown_menus:
+
+            option_index: int = self.dropdown_keys.index(hash_key)
+            self.deferred_dropdown_menu = self.expanded_dropdown_menus[hash_key]
+
+            self.state = ExpandableDropdownMenu.FOCUS_DEFERRED
+
+            #setting the scroll index if necessary
+            if option_index < self.scroll_index:
+
+                self.scroll_index = option_index
+                self.dropdown_options = self.get_options_n_showed()
+
+                self.selected_index = 0
+
+            elif option_index > (self.scroll_index + self.n_options_shown):
+
+                self.scroll_index = option_index - self.n_options_shown
+                self.dropdown_options = self.get_options_n_showed()
+
+                self.selected_index = self.n_options_scroll() - 1
+
+            else:
+
+                self.selected_index = (option_index - self.scroll_index)
+
+            self.deferred_dropdown_menu.select_by_keys(keys[1:])
+
+        else:
+
+            if hash_key in self.dropdown_keys:
+
+                option_index = self.dropdown_keys.index(hash_key)
+                self.deferred_dropdown_menu = None
+
+                self.state = ExpandableDropdownMenu.OPTION_SELECTED
+
+                if option_index < self.scroll_index:
+
+                    self.scroll_index = option_index
+                    self.dropdown_options = self.get_options_n_showed()
+
+                    self.selected_index = 0
+
+                elif option_index > (self.scroll_index + self.n_options_shown):
+
+                    self.scroll_index = option_index - self.n_options_shown
+                    self.dropdown_options = self.get_options_n_showed()
+
+                    self.selected_index = self.n_options_scroll() - 1
+
+                else:
+
+                    self.selected_index = (option_index - self.scroll_index)
+
+        self.raise_prerender_flag()
+
+
 
     @override
     def move_up(self) -> None:

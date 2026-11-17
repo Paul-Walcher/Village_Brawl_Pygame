@@ -568,14 +568,14 @@ class ExpandableDropdownMenu(DropdownMenu):
                                                                             )
                         )
 
-        self.prerender()
+        self.raise_prerender_flag()
 
     def select_by_keys(self, keys: Sequence[DropDownKey]) -> None:
         """
         Selects a given endpoint using the dropdownkeys.
         """
 
-        if len(tuple_keys) <= 0 or self.state not in\
+        if len(keys) == 0 or self.state not in\
             [
                 ExpandableDropdownMenu.NOTHING_SELECTED,
                 ExpandableDropdownMenu.OPTION_SELECTED,
@@ -593,7 +593,7 @@ class ExpandableDropdownMenu(DropdownMenu):
 
             self.state = ExpandableDropdownMenu.FOCUS_DEFERRED
 
-            self.deferred_dropdown_menu.select_by_tuples(tuple_keys[1:])
+            self.deferred_dropdown_menu.select_by_keys(keys[1:])
 
         else:
 
@@ -603,6 +603,8 @@ class ExpandableDropdownMenu(DropdownMenu):
                 self.deferred_dropdown_menu = None
 
                 self.state = ExpandableDropdownMenu.OPTION_SELECTED
+
+        self.raise_prerender_flag()
 
     def select_by_tuples(self, tuple_keys: Sequence[tuple[str]]) -> None:
         """

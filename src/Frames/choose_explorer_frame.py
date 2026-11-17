@@ -10,6 +10,7 @@ from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives
 import graphics
 from clock import Clock
 from modules import Modules
+import camera
 
 from templates.explorer_card_template import Explorer_Card_Template, ExplorerCardInfo
 

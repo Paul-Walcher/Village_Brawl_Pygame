@@ -561,7 +561,7 @@ class DropdownMenu(Frame):
             self.selected_index += self.moves_buffered
             self.selected_index %= self.n_options
 
-                self.raise_prerender_flag()
+            self.raise_prerender_flag()
 
             self.moves_buffered = 0
 
