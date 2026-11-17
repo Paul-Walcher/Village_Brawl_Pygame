@@ -40,7 +40,7 @@ from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.widgets.text_input import TextInput
 from Frames.widgets.dropdown_menu import DropdownMenu
-from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu, option_trace_t, expandable_dropdown_options_t
+from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu, option_trace_t, expandable_dropdown_options_t, tuple_dropdown_mapping_t
 from Frames.widgets.scrollable_dropdown_menu import (
                                                         ScrollableDropdownMenu,
                                                         scrollable_tuple_options_t,
@@ -821,6 +821,10 @@ class RenderableCardListviewer(Frame):
         self.dropdown_menu_tuple_options_dict: scrollable_tuple_options_t = None
         """
         The dropdown menu options as the tuple dictionary.
+        """
+        self.dropdown_menu_tuple_dropdownkey_dict: tuple_dropdown_mapping_t = None
+        """
+        The mapping from tuples to dropdown keys.
         """
         self.dropdown_menu_options_dict: scrollable_dropdown_options_t = None
         """
@@ -2283,7 +2287,8 @@ class RenderableCardListviewer(Frame):
         Creates the own dropdown menu.
         """
         self.dropdown_menu_tuple_options_dict = self.create_dropdown_menu_dict()
-        self.dropdown_menu_options_dict = ScrollableDropdownMenu.page_keys_to_dropdownkey(
+        self.dropdown_menu_options_dict,\
+        self.dropdown_menu_tuple_dropdownkey_dict = ScrollableDropdownMenu.page_keys_to_dropdownkey(
                                                                                             self.dropdown_menu_tuple_options_dict,
                                                                                             Colors.WHITE,
                                                                                             Colors.BLACK

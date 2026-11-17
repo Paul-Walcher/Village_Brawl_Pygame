@@ -109,7 +109,7 @@ class DropdownMenu(Frame):
         """
         The highlighted pages.
         """
-        self.selected_index: int = initial_selected_index
+        self._selected_index: int = initial_selected_index
         """
         The selected index.
         """
@@ -244,6 +244,27 @@ class DropdownMenu(Frame):
 
         #start rerendering
         self.rerender()
+
+    @property
+    def selected_index(self) -> int:
+        return self._selected_index
+
+    @selected_index.setter
+    def selected_index(self, new_idx: int) -> None:
+        """
+        Pushes the new option selected event if appropriate.
+        """
+
+        if new_idx != self._selected_index:
+
+            self._selected_index = new_idx
+
+            self.push_event(
+                                DropdownMenu.NewOptionHighlightedEvent(
+                                                                        self.selected_index,
+                                                                        graphics.colored_page_to_str(self.highlighted_options[self.selected_index])
+                                                                        )
+                            )
 
     def n_options(self) -> int:
         """
@@ -397,8 +418,6 @@ class DropdownMenu(Frame):
         self.moves_buffered = 0
         self.state = DropdownMenu.NOTHING_SELECTED
 
-        self.push_event(DropdownMenu.NewOptionHighlightedEvent(DropdownMenu.NOTHING_SELECTED_INDEX, None))
-
         self.raise_prerender_flag()
 
     def select_option(self, index: int) -> None:
@@ -407,11 +426,38 @@ class DropdownMenu(Frame):
         Jumps to the option at the index.
         """
 
+        if index < 0 or index > self.n_options():
+            return #invalid
+
         self.selected_index = index
         self.moves_buffered = 0
         self.state = DropdownMenu.OPTION_SELECTED
 
         self.raise_prerender_flag()
+
+    def select_option_by_page(self, page: colored_page_t) -> None:
+        """
+        Selects the option given at the index.
+        """
+
+        if page not in self.options:
+            return
+
+        self.selected_index = self.options.index(page)
+        self.moves_buffered = 0
+        self.state = DropdownMenu.OPTION_SELECTED
+
+    def select_option_by_highlighted_page(self, page: colored_page_t) -> None:
+        """
+        Selects the option given at the index.
+        """
+
+        if page not in self.highlighted_options:
+            return
+
+        self.selected_index = self.highlighted_options.index(page)
+        self.moves_buffered = 0
+        self.state = DropdownMenu.OPTION_SELECTED
 
     def render_select_animation(self) -> None:
         """
@@ -514,13 +560,7 @@ class DropdownMenu(Frame):
         if self.state in self.move_states:
             self.selected_index += self.moves_buffered
             self.selected_index %= self.n_options
-            if self.moves_buffered != 0:
-                self.push_event(
-                                    DropdownMenu.NewOptionHighlightedEvent(
-                                                                            self.selected_index,
-                                                                            graphics.colored_page_to_str(self.highlighted_options[self.selected_index])
-                                                                            )
-                                )
+
                 self.raise_prerender_flag()
 
             self.moves_buffered = 0

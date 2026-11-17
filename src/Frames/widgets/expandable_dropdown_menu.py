@@ -11,6 +11,7 @@ from event_queue_manager import Event
 from constants import Colors, Fonts, R_ID, color_t, id_t
 from clock import Clock
 from enum import Enum, auto
+from collections.abc import Sequence
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
@@ -20,6 +21,39 @@ class DropDownKey:
     """
     Class used for defining a dropdown key.
     """
+
+    @staticmethod
+    def from_tuple(
+                    tp: tuple[str],
+                    text_color: color_t = Colors.WHITE,
+                    highlighted_text_color: color_t = Colors.BLACK
+                    ) -> DropDownKey:
+        """
+        Creates a dropdown key frmo the given tuple.
+        A color is not necessary for hash based accessing.
+        """
+        return DropDownKey(
+                            option_page=graphics.page_to_colored_page(page=list(tp), text_color=text_color),
+                            highlighted_option_page=graphics.page_to_colored_page(page=list(tp), text_color=highlighted_text_color)
+                            )
+
+    @staticmethod
+    def tuples_to_dropdownkeys(
+                                tps: Sequence[tuple[str]],
+                                text_color: color_t = Colors.WHITE,
+                                highlighted_text_color: color_t = Colors.BLACK
+                                ) -> list[DropDownKey]:
+        """
+        Transforms a sequence of tuples into a
+        list of dropdownkeys.
+        """
+        return list(
+                    map(
+                        lambda tp: DropDownKey.from_tuple(tp=tp, text_color=text_color, highlighted_text_color=highlighted_text_color),
+                        tps
+                        )
+                    )
+
     def __init__(self, option_page: colored_page_t, highlighted_option_page: colored_page_t):
         self.option_page: colored_page_t = option_page
         self.highlighted_option_page: colored_page_t = highlighted_option_page
@@ -31,7 +65,8 @@ class DropDownKey:
         if type(other) != DropDownKey:
             return False
 
-        if (self.option_page == other.option_page) and (self.highlighted_option_page == other.highlighted_option_page):
+        if (graphics.colored_page_to_str(self.option_page) == graphics.colored_page_to_str(other.option_page))\
+            and (graphics.colored_page_to_str(self.highlighted_option_page) == graphics.colored_page_to_str(other.highlighted_option_page)):
             return True
         else:
             return False
@@ -66,6 +101,7 @@ type expandable_tuple_options_t = dict[tuple[str, ...], expandable_tuple_options
 type expandable_dropdown_options_t = dict[DropDownKey, expandable_dropdown_options_t | None]
 type option_trace_element_t = tuple[DropDownKey, int]
 type option_trace_t = list[option_trace_element_t]
+type tuple_dropdown_mapping_t = dict[ tuple[ tuple[str] ], DropDownKey ]
 
 class ExpandableDropdownMenu(DropdownMenu):
     """
@@ -133,9 +169,11 @@ class ExpandableDropdownMenu(DropdownMenu):
     def page_keys_to_dropdownkey(
                                     options_dict: expandable_tuple_options_t,
                                     text_color: color_t,
-                                    highlighted_text_color: color_t
+                                    highlighted_text_color: color_t,
 
-                                    ) -> expandable_dropdown_options_t:
+                                    prev_tuple: tuple[str] = None #the previous tuple, if its a recursive call
+
+                                    ) -> tuple[expandable_dropdown_options_t, dict[ tuple[ tuple[str] ] ], DropDownKey]:
         """
         Given a dictionary with keys like:
 
@@ -160,9 +198,15 @@ class ExpandableDropdownMenu(DropdownMenu):
                     }
         This function returns the same dictionary, but with the tuple keys
         transformed into (colored_page, highlighted_colored_page) tuples.
+
+        The second argument that is returned is a mapping of tuples: dropdownkey.
+
+        E.g. in the returned dict for options the key
+        (("line 1", "line 2"), ("E",)) -> Dropdownkey for ("E",)
         """
 
         back_dict: expandable_dropdown_options_t = {}
+        mapping_dict: dict[ tuple[tuple[str]], DropDownKey ] = {}
 
         for key, value in options_dict.items():
 
@@ -174,21 +218,29 @@ class ExpandableDropdownMenu(DropdownMenu):
 
                 new_value: Any = value
 
+                #mapping dict
+                tuple_key: tuple[tuple[str]] = (key,)
+                if prev_tuple is not None:
+                    tuple_key = (*prev_tuple, key)
+
                 if type(value) == dict:
                     new_value = ExpandableDropdownMenu.page_keys_to_dropdownkey(
                                                                                     options_dict=value,
                                                                                     text_color=text_color,
-                                                                                    highlighted_text_color=highlighted_text_color
+                                                                                    highlighted_text_color=highlighted_text_color,
+
+                                                                                    prev_tuple=tuple_key
                                                                                     )
 
                 new_key = DropDownKey(option_page=option_page, highlighted_option_page=highlighted_option_page)
 
                 back_dict[new_key] = new_value
+                mapping_dict[tuple_key] = new_key
 
             else:
                 back_dict[key] = value
 
-        return back_dict
+        return (back_dict, mapping_dict)
 
     def __init__(
                 self,
@@ -312,6 +364,26 @@ class ExpandableDropdownMenu(DropdownMenu):
 
         return max_depth, max_length
 
+    #property override
+    @DropdownMenu.selected_index.setter
+    @override
+    def selected_index(self, new_idx: int) -> None:
+        """
+        Fires a new option highlighted event.
+        """
+
+        if self._selected_index != new_idx:
+
+            self._selected_index = new_idx
+
+            self.push_event(
+                ExpandableDropdownMenu.NewOptionHighlightedEvent(
+
+                    option_keys=[self.dropdown_keys[self.selected_index]],
+                    indices=[self.selected_index],
+                    selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index])]
+                )
+            )
 
     def is_deferred(self) -> bool:
         """
@@ -428,14 +500,6 @@ class ExpandableDropdownMenu(DropdownMenu):
         self.moves_buffered = 0
         self.state = DropdownMenu.NOTHING_SELECTED
 
-        self.push_event(
-                        ExpandableDropdownMenu.NewOptionHighlightedEvent(
-                                                                            option_keys=[self.dropdown_keys[self.selected_index]],
-                                                                            indices=[ExpandableDropdownMenu.NOTHING_SELECTED_INDEX],
-                                                                            selected_option_strings=[None]
-                                                                        )
-                        )
-
         self.raise_prerender_flag()
 
     def select_option_expanded(self, option_trace: option_trace_t) -> None:
@@ -506,6 +570,53 @@ class ExpandableDropdownMenu(DropdownMenu):
 
         self.prerender()
 
+    def select_by_keys(self, keys: Sequence[DropDownKey]) -> None:
+        """
+        Selects a given endpoint using the dropdownkeys.
+        """
+
+        if len(tuple_keys) <= 0 or self.state not in\
+            [
+                ExpandableDropdownMenu.NOTHING_SELECTED,
+                ExpandableDropdownMenu.OPTION_SELECTED,
+                ExpandableDropdownMenu.DEFERRED_MENU_SHOWN,
+                ExpandableDropdownMenu.FOCUS_DEFERRED
+            ]:
+            return
+
+        hash_key: DropDownKey = keys[0]
+
+        if hash_key in self.expanded_dropdown_menus:
+
+            self.selected_index = self.dropdown_keys.index(hash_key)
+            self.deferred_dropdown_menu = self.expanded_dropdown_menus[hash_key]
+
+            self.state = ExpandableDropdownMenu.FOCUS_DEFERRED
+
+            self.deferred_dropdown_menu.select_by_tuples(tuple_keys[1:])
+
+        else:
+
+            if hash_key in self.dropdown_keys:
+
+                self.selected_index = self.dropdown_keys.index(hash_key)
+                self.deferred_dropdown_menu = None
+
+                self.state = ExpandableDropdownMenu.OPTION_SELECTED
+
+    def select_by_tuples(self, tuple_keys: Sequence[tuple[str]]) -> None:
+        """
+        Selects a given endpoint by
+        transforming the tuple keys into dropdownkeys.
+        """
+
+        if len(tuple_keys) == 0:
+            return
+
+        #converting to keys, then selecting by keys.
+        keys: list[DropDownKey] = DropDownKey.tuples_to_dropdownkeys(tps=tuple_keys)
+        self.select_by_keys(keys)
+
 
     @override
     def prerender(self) -> None:
@@ -562,16 +673,6 @@ class ExpandableDropdownMenu(DropdownMenu):
             else:
                 self.deferred_dropdown_menu = None
                 self.state = DropdownMenu.OPTION_SELECTED
-
-            if self.moves_buffered != 0:
-
-                self.push_event(
-                                    ExpandableDropdownMenu.NewOptionHighlightedEvent(
-                                                                                        option_keys=[self.dropdown_keys[self.selected_index]],
-                                                                                        indices=[self.selected_index],
-                                                                                        selected_option_strings=[graphics.colored_page_to_str(self.highlighted_options[self.selected_index])]
-                                                                                        )
-                                )
 
             self.moves_buffered = 0
 
