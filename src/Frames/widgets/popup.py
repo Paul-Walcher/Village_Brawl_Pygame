@@ -182,15 +182,21 @@ class Popup(Frame):
                     hmargin: float = 0.1, #the horizontal margin
                     vmargin: float = 0.05, #the vertical margin
 
+                    text_hmargin: float = 0.2, #margin for the text
+                    text_vmargin: float = 0.1, #margin for the text
+
+                    inner_option_hmargin: float = 0.2, #inner hmargin for an option
+                    inner_option_vmargin: float = 0.1, #inner vmargin for an option.
+
                     text_to_options_height_p: float = 0.65, #the percentage of height the text gets vs the options.
                     options_free_space_p: float = 0.2, #the percentage of free space divided between the options
 
                     #if a dividing line is shown
                     dividing_space_p: float = 0.1, #percentage of self.height used to divide the options from the text
                     dividing_line_shown: bool = True,
-                    dividing_line_width_p: float = 0.8, #width of the dividing line relative to self.width
-                    dividing_line_height_p: float = 0.2, #height of the dividing line relative to dividing_space_p
-                    dividing_line_color: color_t = Colors.GRAY,
+                    dividing_line_width_p: float = 1.0, #width of the dividing line relative to self.width
+                    dividing_line_height_p: float = 0.1, #height of the dividing line relative to dividing_space_p
+                    dividing_line_color: color_t = Colors.WHITE,
 
                     #outline
                     outline_size_p: float = 0.02, #The size of the outline relative to min(self.width, self.height)
@@ -313,6 +319,14 @@ class Popup(Frame):
         """
         The frame_dim for the popup text.
         """
+        self.text_hmargin: float = text_hmargin
+        """
+        Horizontal margin for the text frame dim.
+        """
+        self.text_vmargin: float = text_vmargin
+        """
+        Vertical margin for the text frame dim.
+        """
         self.divide_frame_dim: pygame.Rect = None
         """
         The frame dim for dividing the text from the options.
@@ -329,12 +343,12 @@ class Popup(Frame):
         """
         Vmargin for the options.
         """
-        self.option_text_hmargin: float = 0.4
+        self.option_text_hmargin: float = inner_option_hmargin
         """
         The horizontal margin for the text
         frame inside an option.
         """
-        self.option_text_vmargin: float = 0.2
+        self.option_text_vmargin: float = inner_option_vmargin
         """
         The vertical margin for the text
         frame inside an option.
@@ -447,6 +461,7 @@ class Popup(Frame):
         self.divide_frame_dim,\
         self.option_frame_dim = graphics.split_rect_vertically(self.relative_inner_frame_dim, percentages)
 
+        self.text_frame_dim = graphics.apply_margins(self.text_frame_dim, self.text_hmargin, self.text_vmargin)
         self.option_frame_dim = graphics.apply_margins(self.option_frame_dim, self.option_frame_hmargin, self.option_frame_vmargin)
 
         self.options_free_space = int(self.option_frame_dim.width * self.options_free_space_p)

@@ -2609,20 +2609,29 @@ class RenderableCardListviewer(Frame):
 
             ret: Frame = self.group_deletion_popup.tick()
 
-            for event in self.group_deletion_popup.poll_events():
+            if ret is None:
+                self.group_deletion_popup = None
+                self.group_to_delete = None
+                self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
 
-                if event.type == Popup.EventTypes.OPTION_SELECTED:
+            else:
 
-                    #checking the option
-                    if event.option_index == 0:
-                        #YES
-                        self.delete_group(self.group_to_delete)
+                for event in self.group_deletion_popup.poll_events():
 
-                    #normal state
-                    self.focus()
-                    self.group_deletion_popup = None
+                    if event.type == Popup.EventTypes.OPTION_SELECTED:
 
-                    self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+                        #checking the option
+                        if event.option_index == 0:
+                            #YES
+                            self.delete_group(self.group_to_delete)
+
+                        #normal state
+                        self.focus()
+                        self.group_deletion_popup = None
+
+                        self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+                        self.group_to_delete = None
 
             self.key_clock.start()
 
