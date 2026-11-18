@@ -14,6 +14,8 @@ from constants import (
                         point_t
                         )
 
+import calculations
+
 
 class Camera:
     """
@@ -285,39 +287,80 @@ class Camera:
 
         screen.blit(surface, (x, y))
 
-    def get_mouse_position(self) -> tuple[int, int]:
+    def transform_point(self, point: point_t) -> point_t:
         """
-        Gets the actual mouse position, using the zoom
-        and offset.
+        Transforms the given point from the usual
+        screen space into the camera space.
         """
 
-        x, y = pygame.mouse.get_pos()
+        x: float = None
+        y: float = None
+
+        x, y = point
 
         #positioning x and y relative to the own x and y
         x -= self.frame_dim.x
         y -= self.frame_dim.y
 
         #now applying the offsets
-        x -= int(self._x_offset)
-        y -= int(self._y_offset)
+        x -= self._x_offset
+        y -= self._y_offset
 
         #applying the zoom
         swidth: int = self.frame_dim.width
         sheight: int = self.frame_dim.height
 
-        new_width: int = int(swidth * self._current_zoom)
-        new_height: int = int(sheight * self._current_zoom)
+        new_width: float = swidth * self._current_zoom
+        new_height: float = sheight * self._current_zoom
 
-        extra_width: int = (new_width - swidth)
-        extra_height: int = (new_height - sheight)
+        extra_width: float = (new_width - swidth)
+        extra_height: float = (new_height - sheight)
 
-        x += extra_width // 2
-        y += extra_height // 2
+        x += extra_width / 2
+        y += extra_height / 2
 
-        x //= self._current_zoom
-        y //= self._current_zoom
+        x /= self._current_zoom
+        y /= self._current_zoom
 
-        return (x, y)
+
+        return (int(x), int(y))
+
+    def get_mouse_position(self) -> point_t:
+        """
+        Gets the actual mouse position in camera space,
+        using the zoom and offset.
+        """
+
+        return (self.transform_point(pygame.mouse.get_pos()))
+
+    def viewport(self) -> pygame.Rect:
+        """
+        Returns the viewport, i.e.
+        the rectangle of what is currently rendered.
+        """
+        x: int = 0
+        y: int = 0
+
+        x, y = self.transform_point((self.frame_dim.x, self.frame_dim.y))
+        #getting width and height
+        width: int = int(self.frame_dim.width / self._current_zoom)
+        height: int = int(self.frame_dim.height / self._current_zoom)
+
+        return pygame.Rect(x, y, width, height)
+
+    def point_visible(self, point: point_t) -> bool:
+        """
+        Checks if a point is inside the viewport.
+        """
+        return calculations.point_collides(point=point, rect=self.viewport())
+
+    def rect_visible(self, rect: pygame.Rect) -> bool:
+        """
+        Checks if a rectangle intersects with the viewport.
+        """
+        return calculations.rect_collides(rect1=rect, rect2=self.viewport())
+
+
 
 #creating a usable camera
 global_camera: Camera = None

@@ -40,6 +40,7 @@ from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.widgets.text_input import TextInput
 from Frames.widgets.dropdown_menu import DropdownMenu
+from Frames.widgets.popup import Popup
 from Frames.widgets.expandable_dropdown_menu import ExpandableDropdownMenu, option_trace_t, expandable_dropdown_options_t, tuple_dropdown_mapping_t
 from Frames.widgets.scrollable_dropdown_menu import (
                                                         ScrollableDropdownMenu,
@@ -151,6 +152,8 @@ class RenderableCardListviewer(Frame):
 
     DECKNAME_SELECTED_ANIMATION: id_t = R_ID()
     MENU_BUTTON_SELECTED_ANIMATION: id_t = R_ID()
+
+    GROUP_DELETION_POPUP_SHOWN: id_t = R_ID()
 
     #==================================
     # VIEW STATES
@@ -1299,6 +1302,9 @@ class RenderableCardListviewer(Frame):
         """
         The saved main list index before any selection process.
         """
+        self.group_deletion_popup: Popup = Popup(
+
+                                                    )
 
         #==================================
         # FINAL ADJUSTMENTS
@@ -2797,8 +2803,6 @@ class RenderableCardListviewer(Frame):
 
         self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
 
-
-
     def initialize_deckname_selected_animation(self):
 
         self.deckname_rendered_and_positions_copy = self.deckname_rendered_and_positions
@@ -3019,8 +3023,15 @@ class RenderableCardListviewer(Frame):
             self.enter_pressed()
 
 
+    #==================================
+    # GROUP DELETION
+    #==================================
 
-
+    def initialize_group_deletion(self) -> None:
+        """
+        Initializes group deletion.
+        """
+        pass
 
     #==================================
     # EXTERNAL USER ACTIONS
