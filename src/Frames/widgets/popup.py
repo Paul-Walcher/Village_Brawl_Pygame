@@ -65,21 +65,21 @@ class Popup(Frame):
 
                     ):
 
-            option_text: colored_page_t = option_text
+            self.option_text: colored_page_t = option_text
             """
             The option text.
             """
 
-            if option_text is None:
-                option_text = EMPTY_COLORED_PAGE()
+            if self.option_text is None:
+                self.option_text = EMPTY_COLORED_PAGE()
 
-            highlighted_option_text: colored_page_t = highlighted_option_text
+            self.highlighted_option_text: colored_page_t = highlighted_option_text
             """
             The highlighted option text
             """
 
-            if highlighted_option_text is None:
-                highlighted_option_text = graphics.copy_colored_page(option_text)
+            if self.highlighted_option_text is None:
+                self.highlighted_option_text = graphics.copy_colored_page(option_text)
 
             self.background_color: color_t = background_color
             """
@@ -182,32 +182,28 @@ class Popup(Frame):
                     hmargin: float = 0.1, #the horizontal margin
                     vmargin: float = 0.05, #the vertical margin
 
-                    text_to_options_height_p: float = 0.7, #the percentage of height the text gets vs the options.
+                    text_to_options_height_p: float = 0.65, #the percentage of height the text gets vs the options.
                     options_free_space_p: float = 0.2, #the percentage of free space divided between the options
 
                     #if a dividing line is shown
-                    dividing_space_p: float = 0.75, #percentage of self.height used to divide the options from the text
-                    dividing_line_shown: bool = False,
+                    dividing_space_p: float = 0.1, #percentage of self.height used to divide the options from the text
+                    dividing_line_shown: bool = True,
                     dividing_line_width_p: float = 0.8, #width of the dividing line relative to self.width
-                    dividing_line_height_p: float = 0.5, #height of the dividing line relative to dividing_space_p
+                    dividing_line_height_p: float = 0.2, #height of the dividing line relative to dividing_space_p
                     dividing_line_color: color_t = Colors.GRAY,
 
                     #outline
-                    outline_size_p: float = 0.05, #The size of the outline relative to min(self.width, self.height)
+                    outline_size_p: float = 0.02, #The size of the outline relative to min(self.width, self.height)
                     outline_color: color_t = Colors.WHITE,
 
                     select_animation_duration: float = 400,#ms
                     selected_animation_size_decrease_percentage: float = 0.5
                     ):
 
-        Frame.__init__(
-                        frame_enum=FrameEnums.POPUP_WIDGET,
-                        frame_dim=frame_dim,
-                        data=data,
-                        parent_frame=parent_frame,
-                        focus_group=focus_group,
-                        has_focus=has_focus
-                        )
+        self._option_index: int = focused_option_index
+        """
+        The index of the selected option.
+        """
 
         #now saving all variables
 
@@ -237,7 +233,7 @@ class Popup(Frame):
         Overall vertical margin.
         """
 
-        self.text_to_options_height_p: float = self.text_to_options_height_p
+        self.text_to_options_height_p: float = text_to_options_height_p
         """
         The percentage of height the text gets vs the options.
         """
@@ -325,6 +321,24 @@ class Popup(Frame):
         """
         The frame dim for the options.
         """
+        self.option_frame_hmargin: float = 0.2
+        """
+        Hmargin for the options.
+        """
+        self.option_frame_vmargin: float = 0.1
+        """
+        Vmargin for the options.
+        """
+        self.option_text_hmargin: float = 0.4
+        """
+        The horizontal margin for the text
+        frame inside an option.
+        """
+        self.option_text_vmargin: float = 0.2
+        """
+        The vertical margin for the text
+        frame inside an option.
+        """
         self.options_free_space: float = None
         """
         The actual amount of space dividing the options.
@@ -363,10 +377,6 @@ class Popup(Frame):
         """
         The intro delay clock
         """
-        self._option_index: int = focused_option_index
-        """
-        The index of the selected option.
-        """
         self.state: id_t = Popup.ACTIVE
         """
         Current State.
@@ -376,6 +386,15 @@ class Popup(Frame):
         if self.options is not None and len(self.options) == 0:
             self.options = None
 
+        Frame.__init__(
+                        self,
+                        frame_enum=FrameEnums.POPUP_WIDGET,
+                        frame_dim=frame_dim,
+                        data=data,
+                        parent_frame=parent_frame,
+                        focus_group=focus_group,
+                        has_focus=has_focus
+                        )
         self.rerender()
 
     @property
@@ -428,6 +447,8 @@ class Popup(Frame):
         self.divide_frame_dim,\
         self.option_frame_dim = graphics.split_rect_vertically(self.relative_inner_frame_dim, percentages)
 
+        self.option_frame_dim = graphics.apply_margins(self.option_frame_dim, self.option_frame_hmargin, self.option_frame_vmargin)
+
         self.options_free_space = int(self.option_frame_dim.width * self.options_free_space_p)
 
         #now, we get the option frames by distributing this free space among the options
@@ -442,7 +463,7 @@ class Popup(Frame):
             #getting the width for each option
             option_w: int = option_space // len(self.options)
 
-            cx: int = bracket_w // 2
+            cx: int = bracket_w // 2 + self.option_frame_dim.x
 
             self.all_options_frame_dims = []
             for i in range(len(self.options)):
@@ -484,27 +505,40 @@ class Popup(Frame):
                 self.options_frame_dim_margins.append(opt_frame)
                 self.highlighted_options_frame_dim_margins.append(highlighted_opt_frame)
 
-                self.rendered_options.append(
-                                                graphics.render_page_from_chars_color(
-                                                                                        font=self.font,
-                                                                                        page=opt.option_text,
-                                                                                        frame=opt_frame,
-                                                                                        centered=True,
-                                                                                        vertical_centered=True,
-                                                                                        line_margin_as_percentage=0.05
-                                                                                        )
-                                            )
 
-                self.rendered_highlighted_options.append(
-                                                            graphics.render_page_from_chars_color(
-                                                                                                    font=self.font,
-                                                                                                    page=opt.highlighted_option_text,
-                                                                                                    frame=highlighted_opt_frame,
-                                                                                                    centered=True,
-                                                                                                    vertical_centered=True,
-                                                                                                    line_margin_as_percentage=0.05
-                                                                                                    )
-                                                        )
+                if opt.option_text != graphics.EMPTY_COLORED_PAGE():
+
+                    opt_text_frame: pygame.Rect = graphics.apply_margins(opt_frame, self.option_text_hmargin, self.option_text_vmargin)
+
+                    self.rendered_options.append(
+                                                    graphics.render_page_from_chars_color(
+                                                                                            font=self.font,
+                                                                                            page=opt.option_text,
+                                                                                            frame=opt_text_frame,
+                                                                                            centered=True,
+                                                                                            vertical_centered=True,
+                                                                                            line_margin_as_percentage=0.05
+                                                                                            )
+                                                )
+                else:
+                    self.rendered_options.append(None)
+
+                if opt.highlighted_option_text != graphics.EMPTY_COLORED_PAGE():
+
+                    opt_text_frame: pygame.Rect = graphics.apply_margins(highlighted_opt_frame, self.option_text_hmargin, self.option_text_vmargin)
+
+                    self.rendered_highlighted_options.append(
+                                                                graphics.render_page_from_chars_color(
+                                                                                                        font=self.font,
+                                                                                                        page=opt.highlighted_option_text,
+                                                                                                        frame=opt_text_frame,
+                                                                                                        centered=True,
+                                                                                                        vertical_centered=True,
+                                                                                                        line_margin_as_percentage=0.05
+                                                                                                        )
+                                                            )
+                else:
+                    self.rendered_highlighted_options.append(None)
 
         else:
             self.rendered_options = None
@@ -529,8 +563,8 @@ class Popup(Frame):
 
         #getting the dividing line rectangle
 
-        dividing_line_width: int = int(divide_frame_dim.width * self.dividing_line_width_p)
-        dividing_line_height: int = int(divide_frame_dim.height * self.dividing_line_height_p)
+        dividing_line_width: int = int(self.divide_frame_dim.width * self.dividing_line_width_p)
+        dividing_line_height: int = int(self.divide_frame_dim.height * self.dividing_line_height_p)
 
         divide_x: int = self.divide_frame_dim.x + (self.divide_frame_dim.width - dividing_line_width) // 2
         divide_y: int = self.divide_frame_dim.y + (self.divide_frame_dim.height - dividing_line_height) // 2
@@ -569,12 +603,14 @@ class Popup(Frame):
                 if i == self.option_index:
                     #highlighted
                     self.surface.fill(opt.highlighted_background_color, rect=highlighted_opt_frame)
-                    graphics.render_rendered_surface_position_tuples(screen=self.surface, rspt=r_highlighted_option_text)
+                    if r_highlighted_option_text is not None:
+                        graphics.render_rendered_surface_position_tuples(screen=self.surface, rspt=r_highlighted_option_text)
 
                 else:
                     #not highlighted
                     self.surface.fill(opt.background_color, rect=opt_frame)
-                    graphics.render_rendered_surface_position_tuples(screen=self.surface, rspt=r_option_text)
+                    if r_opt_text is not None:
+                        graphics.render_rendered_surface_position_tuples(screen=self.surface, rspt=r_opt_text)
 
         #drawing the text
         if self.text is not None:
@@ -582,12 +618,12 @@ class Popup(Frame):
 
         #drawing the dividing line
         if self.dividing_line_shown:
-            pygame.draw.rect(self.dividing_line_color, self.dividing_line_rect)
+            pygame.draw.rect(self.surface, self.dividing_line_color, self.dividing_line_rect)
 
         #outline
-        if not fequal(self.outline_size_p, 0):
+        if not fequal(self.outline_size_p, 0.0):
             #drawing the outline
-            pygame.draw.rect(self.outline_color, self.frame_dim, width=self.outline_size)
+            pygame.draw.rect(self.surface, self.outline_color, pygame.Rect(0, 0, self.width, self.height), width=self.outline_size)
 
     @override
     def on_focus_lost(self, gained_focus_frame: Frame) -> None:
@@ -647,6 +683,9 @@ class Popup(Frame):
             self.add_pygame_key_callback(key=pygame.K_RETURN, data=None, putback=False, func=self.enter_pressed)
             self.add_pygame_key_callback(key=KeyAlternatives.ENTER_ALTERNATIVE, data=None, putback=False, func=self.enter_pressed)
 
+            self.add_pygame_key_callback(key=pygame.K_ESCAPE, data=None, putback=False, func=self.escape_pressed)
+            self.add_pygame_key_callback(key=KeyAlternatives.BACK_KEY, data=None, putback=False, func=self.escape_pressed)
+
     def left_pressed(self, event: pygame.event.Event, data: Any) -> None:
         """
         If left is pressed, the selected option changes
@@ -666,7 +705,7 @@ class Popup(Frame):
         If left is pressed, the selected option changes
         """
 
-        if self.options is not None and len(self.options) > 0 and self.option_index > -1:
+        if self.options is not None and len(self.options) > 0 and self.option_index < len(self.options)-1:
 
             new_idx = self.option_index
             new_idx += 1
@@ -685,6 +724,12 @@ class Popup(Frame):
             and self.option_index > -1 and self.option_index < len(self.options):
 
             self.initialize_selection_animation()
+
+    def escape_pressed(self, event: pygame.event.Event, data: Any) -> None:
+        """
+        On escape pressed.
+        """
+        return Frame.EventCallback.EXIT
 
     #======================
     # SELECTION ANIMATION
@@ -729,7 +774,7 @@ class Popup(Frame):
                                                                                                     page=self.options[self.option_index].highlighted_option_text,
                                                                                                     frame=shrunken_frame,
                                                                                                     centered=True,
-                                                                                                    highlighted=True,
+                                                                                                    vertical_centered=True,
                                                                                                     line_margin_as_percentage=0.05
                                                                                                     )
             #replacing the highlighted rendered option
@@ -738,7 +783,7 @@ class Popup(Frame):
         else:
 
             #shrink the frame, then render the text
-            P: float = 2 * (1.0 - percentage)
+            P: float = (2 * percentage - 1.0)
             margin: float = (1.0 - P) * self.selected_animation_size_decrease_percentage
 
             shrunken_frame: pygame.Rect = graphics.apply_margins(
@@ -751,11 +796,12 @@ class Popup(Frame):
                                                                                                     page=self.options[self.option_index].highlighted_option_text,
                                                                                                     frame=shrunken_frame,
                                                                                                     centered=True,
-                                                                                                    highlighted=True,
+                                                                                                    vertical_centered=True,
                                                                                                     line_margin_as_percentage=0.05
                                                                                                     )
             #replacing the highlighted rendered option
             self.rendered_highlighted_options[self.option_index] = new_rendered_page
+            self.raise_prerender_flag()
 
     def finalize_select_animation(self) -> None:
         """
@@ -768,6 +814,7 @@ class Popup(Frame):
         self.state = Popup.ACTIVE
 
         self._push_option_selected_event()
+        self.raise_prerender_flag()
 
     @override
     def tick(self) -> None:
@@ -783,7 +830,10 @@ class Popup(Frame):
 
         if self.state == Popup.SELECT_ANIMATION_PLAYING:
             self.render_select_animation()
+            self.raise_prerender_flag()
 
         if self.prerender_flag_raised():
             self.prerender()
             self.reset_prerender_flag()
+
+        return self

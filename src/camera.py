@@ -348,19 +348,6 @@ class Camera:
 
         return pygame.Rect(x, y, width, height)
 
-    def point_visible(self, point: point_t) -> bool:
-        """
-        Checks if a point is inside the viewport.
-        """
-        return calculations.point_collides(point=point, rect=self.viewport())
-
-    def rect_visible(self, rect: pygame.Rect) -> bool:
-        """
-        Checks if a rectangle intersects with the viewport.
-        """
-        return calculations.rect_collides(rect1=rect, rect2=self.viewport())
-
-
 
 #creating a usable camera
 global_camera: Camera = None

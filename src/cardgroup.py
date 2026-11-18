@@ -27,7 +27,8 @@ class Cardgroup:
 
     IS_COPYLIST_KEY: str = "is_copylist"
     IS_MUTABLE_KEY: str = "mutable"
-    IS_RENAMABLE_KEY: str = "renamable" #if the group is renamable or not
+    IS_RENAMABLE_KEY: str = "renamable"
+    IS_DELETEABLE_KEY: str = "deleteable"
     CARDLIST_KEY: str = "cardlist"
     MAX_CARDS_SELECTED_KEY: str = "max_cards_selected"
     MAX_SIZE_KEY: str = "max_size"
@@ -55,6 +56,7 @@ class Cardgroup:
                                         Cardgroup.IS_COPYLIST_KEY,
                                         Cardgroup.IS_MUTABLE_KEY,
                                         Cardgroup.IS_RENAMABLE_KEY,
+                                        Cardgroup.IS_DELETEABLE_KEY,
                                         Cardgroup.MAX_CARDS_SELECTED_KEY,
                                         Cardgroup.MAX_SIZE_KEY
                                         ]
@@ -136,6 +138,7 @@ class Cardgroup:
                     is_copylist: bool = False,
                     is_mutable: bool = True,
                     is_renamable: bool = True,
+                    is_deleteable: bool = True,
                     max_cards_selected: int = INFINITE,
                     max_size: int = INFINITE
 
@@ -152,6 +155,7 @@ class Cardgroup:
         new_group[Cardgroup.IS_COPYLIST_KEY] = is_copylist
         new_group[Cardgroup.IS_MUTABLE_KEY] = is_mutable
         new_group[Cardgroup.IS_RENAMABLE_KEY] = is_renamable
+        new_group[Cardgroup.IS_DELETEABLE_KEY] = is_deleteable
         new_group[Cardgroup.MAX_CARDS_SELECTED_KEY] = max_cards_selected
         new_group[Cardgroup.MAX_SIZE_KEY] = max_size
 
@@ -263,6 +267,21 @@ class Cardgroup:
 
         if is_renamable is not None:
             group[Cardgroup.IS_RENAMABLE_KEY] = is_renamable
+
+        return ret
+
+    @staticmethod
+    def is_deleteable(group: group_t, deleteable: bool = None) -> bool:
+        """
+        If deleteable is None: Returns deleteable.
+        If deleteable is not None: deleteable will be set, and
+        the previous deleteable will be returned.
+        """
+
+        ret: bool = group[Cardgroup.IS_DELETEABLE_KEY]
+
+        if deleteable is not None:
+            group[Cardgroup.IS_DELETEABLE_KEY] = deleteable
 
         return ret
 

@@ -117,6 +117,13 @@ class RenderableCardListviewer(Frame):
                                                             [("Group creation failed", INFO_TEXT_ERROR_COLOR)]
                                                             ]
 
+    #group deletion disabled
+    GROUP_UNDELETEABLE_FADING_DURATION: float = 5000#ms
+    GROUP_UNDELETEABLE_INFO_PAGE: colored_page_t = [
+                                                        [("This group cannot", INFO_TEXT_ERROR_COLOR)],
+                                                        [("be deleted", INFO_TEXT_ERROR_COLOR)]
+                                                    ]
+
     #==================================
     # STATES
     #==================================
@@ -545,7 +552,9 @@ class RenderableCardListviewer(Frame):
                     #dropdown menu
                     dropdown_menu_hlen_p: float = 0.5,
                     dropdown_menu_vlen_p: float = 0.4,
-
+                    #popup margins
+                    popup_hmargin: float = 0.5, #Horizontal margin for the popup frame dim
+                    popup_vmargin: float = 0.4, #Vertical margin for the popup frame dim
 
                     #info text specifications
                     info_text_hlen_p: float = 0.3,#horizontal length percentage
@@ -571,6 +580,13 @@ class RenderableCardListviewer(Frame):
                     menu_button_selected_animation_duration: float = 400,#ms
                     card_snapback_duration: float = 200#ms, time it takes for a card to snap back and do the card pressed animation in reverse
                     ):
+
+        #variables pre init
+
+        self.group_deletion_popup: Popup = None
+        """
+        The group deletion popup. Is shown before group deletion for confirmation.
+        """
 
         Frame.__init__(
                             self,
@@ -611,6 +627,12 @@ class RenderableCardListviewer(Frame):
         """
         The initially shown group. Gets set later on if it is None.
         """
+        self.group_to_delete: str = None
+        """
+        The reference to the group to delete.
+        If currently no such deletion process is
+        active, this is None.
+        """
         self.group_name_color: color_t = group_name_color
         """
         Color the name of the group will be shown in.
@@ -644,6 +666,20 @@ class RenderableCardListviewer(Frame):
         self.inner_area: pygame.Rect = None
         """
         The inner area is the frame inside the without the border.
+        """
+        self.popup_hmargin: float = popup_hmargin
+        """
+        Horizontal margin for the popup frame dim,
+        relative to self.inner_frame.
+        """
+        self.popup_vmargin: float = popup_vmargin
+        """
+        Vertical margin for the popup frame dim,
+        relative to self.inner_frame.
+        """
+        self.popup_frame_dim: pygame.Rect = None
+        """
+        Frame dimension for any popup.
         """
 
         #==================================
@@ -1302,9 +1338,6 @@ class RenderableCardListviewer(Frame):
         """
         The saved main list index before any selection process.
         """
-        self.group_deletion_popup: Popup = Popup(
-
-                                                    )
 
         #==================================
         # FINAL ADJUSTMENTS
@@ -1314,7 +1347,8 @@ class RenderableCardListviewer(Frame):
                                                                     cardlist=self.full_cardlist,
                                                                     is_copylist=True,
                                                                     is_mutable=False,
-                                                                    is_renamable=False
+                                                                    is_renamable=False,
+                                                                    is_deleteable=False
                                                                     )
         #adding the full cardlist to the group
         self.groups[RenderableCardListviewer.FULL_CARDLIST_NAME] = full_cardlist_group
@@ -1343,6 +1377,27 @@ class RenderableCardListviewer(Frame):
         """
         self.prev_state = self._state
         self._state = new_state
+
+    #==================================
+    # ON FOCUS CHANGES
+    #==================================
+
+    @override
+    def on_focus_gained(self, lost_focus_frame: Frame) -> None:
+        """
+        @override on_focus_gained.
+        """
+
+        #state change
+        if lost_focus_frame is self.group_deletion_popup:
+            self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+    @override
+    def on_focus_lost(self, gained_focus_frame: Frame) -> None:
+        """
+        @override on_focus_lost
+        """
+        pass
 
     #==================================
     # VALIDITY CHECKS
@@ -1432,6 +1487,9 @@ class RenderableCardListviewer(Frame):
                                         self.height - 2*self.border_height
 
                                         )
+        relative_inner_frame_dim = graphics.position_relative(anchor_rect=self.frame_dim, make_relative_rect=self.inner_area)
+        #popup frame
+        self.popup_frame_dim = graphics.apply_margins(relative_inner_frame_dim, self.popup_hmargin, self.popup_vmargin)
         #calculating actual border outline sizes
         self.border_outline_width = int(self.border_width * self.border_frame_outline_margin)
         self.border_outline_height = int(self.border_height * self.border_frame_outline_margin)
@@ -1558,6 +1616,8 @@ class RenderableCardListviewer(Frame):
         self.menu_button_focused_image_rendered,\
         self.menu_button_focused_image_rendered_pos = graphics.img_load_and_position_smoothscale(self.menu_button_focused_image, self.menu_button_frame)
 
+
+
         """
         -----------------------------------------
         CARD POSITION CALCULATIONS
@@ -1649,6 +1709,10 @@ class RenderableCardListviewer(Frame):
             self.surface.blit(self.full_image_surface, (0, 0))
         elif self.focused_text_input_subframe is not None:
             self.focused_text_input_subframe.render(self.surface)
+
+        #checking for group deletion popup
+        if self.state == RenderableCardListviewer.GROUP_DELETION_POPUP_SHOWN:
+            self.group_deletion_popup.render(self.surface)
 
     def create_deckname_text(self) -> None:
         """
@@ -2280,8 +2344,17 @@ class RenderableCardListviewer(Frame):
 
                 elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.DELETE_GROUP_OPTION_KEY:
 
+                    dgroup = selection[0]
                     #initializes group deletion
-                    self.initialize_group_deletion()
+                    if Cardgroup.is_deleteable(group=self.groups[dgroup]):
+                        self.initialize_group_deletion(group_to_delete=dgroup)
+                    else:
+
+                        self.print_info_text(
+                                                text_page=RenderableCardListviewer.GROUP_UNDELETEABLE_INFO_PAGE,
+                                                text_color=RenderableCardListviewer.INFO_TEXT_ERROR_COLOR,
+                                                fade_duration=RenderableCardListviewer.GROUP_UNDELETEABLE_FADING_DURATION
+                                                )
 
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.CREATE_GROUP_OPTION_KEY:
                     self.initialize_deck_creation_frame()
@@ -2352,7 +2425,8 @@ class RenderableCardListviewer(Frame):
             RenderableCardListviewer.MOVING_ALL_ROWS_UP,
             RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION,
             RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION,
-            RenderableCardListviewer.CARD_SNAPBACK_ANIMATION
+            RenderableCardListviewer.CARD_SNAPBACK_ANIMATION,
+            RenderableCardListviewer.GROUP_DELETION_POPUP_SHOWN
         )
 
         return (
@@ -2530,6 +2604,25 @@ class RenderableCardListviewer(Frame):
 
             if ret is None:
                 self.finalize_deck_creation_frame()
+
+        elif self.state == RenderableCardListviewer.GROUP_DELETION_POPUP_SHOWN:
+
+            ret: Frame = self.group_deletion_popup.tick()
+
+            for event in self.group_deletion_popup.poll_events():
+
+                if event.type == Popup.EventTypes.OPTION_SELECTED:
+
+                    #checking the option
+                    if event.option_index == 0:
+                        #YES
+                        self.delete_group(self.group_to_delete)
+
+                    #normal state
+                    self.focus()
+                    self.group_deletion_popup = None
+
+                    self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
 
             self.key_clock.start()
 
@@ -3027,11 +3120,62 @@ class RenderableCardListviewer(Frame):
     # GROUP DELETION
     #==================================
 
-    def initialize_group_deletion(self) -> None:
+    def initialize_group_deletion(self, group_to_delete: str) -> None:
         """
         Initializes group deletion.
+        Creates the popup, then changes the state.
         """
-        pass
+
+        self.group_deletion_popup = Popup(
+                                            frame_dim=self.popup_frame_dim,
+                                            data=None,
+                                            parent_frame=self,
+                                            focus_group=self.focus_group,
+                                            has_focus=True,
+                                            font=self.font,
+                                            text=[
+                                                    [("Do you really want", Colors.WHITE)],
+                                                    [("to delete group", Colors.WHITE)],
+                                                    [(f"{group_to_delete}?", Colors.WHITE)]
+                                                ],
+                                            background_color=Colors.BLACK,
+                                            options=[
+                                                        Popup.Option(
+                                                                        option_text=graphics.str_to_colored_page(text="YES", text_color=Colors.WHITE),
+                                                                        highlighted_option_text=graphics.str_to_colored_page(text="YES", text_color=Colors.BLACK),
+                                                                        background_color=Colors.BLACK,
+                                                                        highlighted_background_color=Colors.CYAN
+                                                                    ),
+                                                        Popup.Option(
+                                                                        option_text=graphics.str_to_colored_page(text="NO", text_color=Colors.WHITE),
+                                                                        highlighted_option_text=graphics.str_to_colored_page(text="NO", text_color=Colors.BLACK),
+                                                                        background_color=Colors.BLACK,
+                                                                        highlighted_background_color=Colors.CYAN
+                                                                    )
+                                                    ]
+                                            )
+
+        self.clear_pygame_events()
+
+        self.group_to_delete = group_to_delete
+        self.state = RenderableCardListviewer.GROUP_DELETION_POPUP_SHOWN
+
+    def delete_group(self, group_to_delete: str) -> None:
+        """
+        Deletes the current group.
+        """
+
+        del self.groups[group_to_delete]
+
+        if self.shown_group == group_to_delete:
+            self.shown_group = list(self.groups.keys())[0] #any random group will do. At least the full cardlist will be available.
+            self.rerender()
+
+        else:
+            #only reconstruct the dropdownmenu
+            self.create_dropdown_menu()
+
+        self.group_to_delete = None
 
     #==================================
     # EXTERNAL USER ACTIONS
