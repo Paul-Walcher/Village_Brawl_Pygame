@@ -12,6 +12,7 @@ from context_data import ContextData
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.widgets.text_input import TextInput
+from Frames.widgets.renderable_card_listviewer import RenderableCardListviewer
 
 from Frames.cardinfo_frames.cardinfo_frame import CardinfoFrame
 
@@ -49,8 +50,6 @@ class ShowExplorerStartingCardsFrame(Frame):
         self.rerender()
 
     def rerender(self):
-
-        from Frames.widgets.renderable_card_listviewer import RenderableCardListviewer
 
         self.widgets = []
 

@@ -21,7 +21,6 @@ from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from Frames.empty_frame import EmptyFrame
 from Frames.test_frame import TestFrame
-from Frames.show_explorer_starting_cards_frame import ShowExplorerStartingCardsFrame
 from Frames.widgets.textbox import Textbox
 from Frames.widgets.image_slider import ImageSlider
 from Frames.widgets.text_slider import TextSlider

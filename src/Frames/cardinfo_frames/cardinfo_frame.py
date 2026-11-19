@@ -297,6 +297,23 @@ class CardinfoFrame(Frame):
         #since this is relative x, y changes do not matter
         self.relative_inner_frame_dim = graphics.position_relative(anchor_rect=self.info_frame_dim, make_relative_rect=self.inner_frame_dim)
 
+    def set_slide_positions(self, start_pos: point_t = None, end_pos: point = None) -> None:
+        """
+        Sets start and end positions. Not possible when currently sliding.
+        """
+
+        if start_pos is not None:
+            self.slide_startpos = start_pos
+        if end_pos is not None:
+            self.slide_endpos = end_pos
+
+        #if we are currently sliding, restart the sliding
+        if self.state == CardinfoFrame.SLIDING_IN:
+            self.start_sliding_in()
+        elif self.state == CardinfoFrame.SLIDING_OUT:
+            self.start_sliding_out()
+
+
     @override
     def bind_events(self):
 
@@ -476,6 +493,7 @@ class CardinfoFrame(Frame):
         if self.state == CardinfoFrame.TEXTBOX_FOCUSED:
             self.description_textbox.set_outline_size(0)
             self.state = CardinfoFrame.NOTHING_FOCUSED
+            self.raise_prerender_flag()
         elif self.state == CardinfoFrame.NOTHING_FOCUSED:
             self._next_frame = self.parent_frame #might be none
             self.raise_exit_flag()

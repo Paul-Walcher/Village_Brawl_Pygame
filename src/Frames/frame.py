@@ -70,6 +70,7 @@ class Frame(EventQueueManager):
         FOCUS_CHANGED: id_t = R_ID()
         SUBFRAME_CREATED: id_t = R_ID()
         SUBFRAME_DELETED: id_t = R_ID()
+        VISUAL_UPDATE: id_t = R_ID() #something visually changed in the frame
 
     class FocusChangedEvent(Event):
 
@@ -108,6 +109,15 @@ class Frame(EventQueueManager):
 
             return Frame.SubframDeletedEvent(self.deleted_subframe, self.n_subframes_active)
 
+    class VisualUpdateEvent(Event):
+
+        def __init__(self):
+
+            Event.__init__(self, etype=Frame.EventTypes.VISUAL_UPDATE, data=None)
+
+        def copy(self) -> Frame.VisualUpdateEvent:
+
+            return Frame.VisualUpdateEvent()
 
 
     class EventCallback(Event):
@@ -732,7 +742,11 @@ class Frame(EventQueueManager):
     def reset_prerender_flag(self) -> None:
         """
         Resets the prerender flag, after prerendering was done.
+        Also pushes a visual update event.
         """
+        if self.__prerender_flag_raised:
+            #change occured
+            self.push_event(Frame.VisualUpdateEvent())
         self.__prerender_flag_raised = False
 
     def prerender_flag_raised(self) -> bool:

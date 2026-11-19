@@ -1742,6 +1742,13 @@ class RenderableCardListviewer(Frame):
         #checking for group deletion popup
         if self.state == RenderableCardListviewer.GROUP_DELETION_POPUP_SHOWN:
             self.group_deletion_popup.render(self.surface)
+        elif self.state in [
+                                RenderableCardListviewer.CARDINFO_SLIDING_IN,
+                                RenderableCardListviewer.CARDINFO_SHOWN,
+                                RenderableCardListviewer.CARDINFO_SLIDING_OUT
+                            ]:
+
+            self.cardinfo_frame.render(self.surface)
 
     def create_deckname_text(self) -> None:
         """
@@ -2464,7 +2471,9 @@ class RenderableCardListviewer(Frame):
             RenderableCardListviewer.DECKNAME_SELECTED_ANIMATION,
             RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION,
             RenderableCardListviewer.CARD_SNAPBACK_ANIMATION,
-            RenderableCardListviewer.GROUP_DELETION_POPUP_SHOWN
+            RenderableCardListviewer.GROUP_DELETION_POPUP_SHOWN,
+            RenderableCardListviewer.CARDINFO_SLIDING_IN,
+            RenderableCardListviewer.CARDINFO_SLIDING_OUT
         )
 
         return (
@@ -2672,6 +2681,54 @@ class RenderableCardListviewer(Frame):
                         self.group_to_delete = None
 
             self.key_clock.start()
+
+        #==========================
+        # CARDINFO
+        #==========================
+
+        elif self.state == RenderableCardListviewer.CARDINFO_SLIDING_IN:
+
+            ret = self.cardinfo_frame.tick()
+
+            if ret is not self.cardinfo_frame:
+                #start sliding back from the current position
+                self.cardinfo_frame.set_slide_positions(start_pos=(self.width // 2, 0), end_pos=(self.cardinfo_frame.x, self.cardinfo_frame.y))
+                self.cardinfo_frame.start_sliding_out()
+
+                self.state = RenderableCardListviewer.CARDINFO_SLIDING_OUT
+
+            for event in self.cardinfo_frame.poll_events():
+
+                if event.type == CardinfoFrame.EventTypes.SLIDING_IN_FINISHED:
+                    self.state = RenderableCardListviewer.CARDINFO_SHOWN
+
+        elif self.state == RenderableCardListviewer.CARDINFO_SHOWN:
+
+            ret = self.cardinfo_frame.tick()
+
+            if ret is not self.cardinfo_frame:
+
+                self.cardinfo_frame.start_sliding_out()
+                self.cardinfo_frame.reset_exit_flag()
+                self.state = RenderableCardListviewer.CARDINFO_SLIDING_OUT
+
+            events: list[Event] = self.cardinfo_frame.poll_events()
+
+            for event in events:
+
+                if event.type == Frame.EventTypes.VISUAL_UPDATE:
+                    self.raise_prerender_flag()
+
+        elif self.state == RenderableCardListviewer.CARDINFO_SLIDING_OUT:
+
+            self.cardinfo_frame.tick()
+
+            for event in self.cardinfo_frame.poll_events():
+
+                if event.type == CardinfoFrame.EventTypes.SLIDING_OUT_FINISHED:
+                    self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+                    self.cardinfo_frame = None
 
         # Only redraw when visible state changed, an explicit invalidation was
         # raised elsewhere, or a continuously animated element needs a new frame.
@@ -3191,11 +3248,14 @@ class RenderableCardListviewer(Frame):
             self.cardinfo_frame = cinfo_frame_class(
                                                         explorer_enum=cinfo.card_enum,
                                                         modules=self.modules,
-                                                        frame_dim=self.frame_dim.copy(),
+                                                        frame_dim=pygame.Rect(0, 0, self.width, self.height),
                                                         parent_frame=self,
-                                                        focus_group=self.focus_group(),
+                                                        focus_group=self.focus_group,
                                                         has_focus=True,
 
+                                                        shown_side=CardinfoFrame.RIGHT_SIDE,
+                                                        start_position=(self.width // 2, 0),
+                                                        end_position=(0, 0),
                                                         slide_duration=self.cardinfo_frame_sliding_duration
                                                     )
 
@@ -3203,14 +3263,20 @@ class RenderableCardListviewer(Frame):
             #normal cardinfo frame initialization
             self.cardinfo_frame = cinfo_frame_class(
                                                         cardinfo=cinfo,
-                                                        modules=self.modules,
-                                                        frame_dim=self.frame_dim.copy(),
+                                                        frame_dim=pygame.Rect(0, 0, self.width, self.height),
                                                         parent_frame=self,
-                                                        focus_group=self.focus_group(),
+                                                        focus_group=self.focus_group,
                                                         has_focus=True,
 
+                                                        shown_side=CardinfoFrame.RIGHT_SIDE,
+                                                        start_position=(self.width // 2, 0),
+                                                        end_position=(0, 0),
                                                         slide_duration=self.cardinfo_frame_sliding_duration
                                                     )
+
+        #sliding in, and setting state
+        self.cardinfo_frame.start_sliding_in()
+        self.state = RenderableCardListviewer.CARDINFO_SLIDING_IN
 
 
     #==================================
