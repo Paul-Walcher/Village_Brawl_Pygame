@@ -354,6 +354,10 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         Fires a new option highlighted event.
         """
 
+        if new_idx < 0 or new_idx >= self.n_options_shown:
+            self._selected_index = new_idx
+            return
+
         if self._selected_index != new_idx:
 
             self._selected_index = new_idx
@@ -810,15 +814,18 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             self.selected_index += self.moves_buffered
 
             #if we hit the the ceiling, and scrolling is possible, try scrolling up
-            if self.selected_index < 0 and prev_sindex >= 0:
+            if self.selected_index < 0 and prev_sindex >= 0 and self.scroll_index > 0:
                 self.selected_index = 0
                 self.state = ScrollableDropdownMenu.SCROLLING_UP
                 self.initialize_scrolling_up()
             #if we hit the bottom, and scrolling is possible, try scrolling down
-            elif self.selected_index >= self.n_options_scroll():
+            elif self.selected_index >= self.n_options_shown and prev_sindex < self.n_options_shown and self.scroll_index < len(self.dropdown_keys) - self.n_options_shown:
                 self.selected_index = self.n_options_scroll() - 1
                 self.state = ScrollableDropdownMenu.SCROLLING_DOWN
                 self.initialize_scrolling_down()
+
+            self.selected_index = max(0, self.selected_index)
+            self.selected_index = min(self.n_options_shown-1, self.selected_index)
 
             #after a move, check if we need to show another dropdown menu
             if self.state not in [ScrollableDropdownMenu.SCROLLING_UP, ScrollableDropdownMenu.SCROLLING_DOWN]:

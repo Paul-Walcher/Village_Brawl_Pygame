@@ -190,6 +190,7 @@ class Colors:
     CYAN = (0, 255, 255)
     DARK_CYAN = (0, 114, 114)
     ULTRA_DARK_CYAN = (0, 38, 38)
+    DARK_TURQUOISE = (0, 206, 209)
     LIGHT_ORANGE = (255, 144, 0)
     GRAY = (127, 127, 127)
     DARK_GRAY = (109, 109, 109)

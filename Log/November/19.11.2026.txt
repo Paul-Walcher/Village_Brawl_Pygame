@@ -4,8 +4,12 @@ TODO:
 In RenderableCardListviewer:
 
 1.) Implement a way to show the cardinfo in renderable_card_listviewer
+
+#DONE
+
 2.) Implement label to show the current main list states
 3.) Implement menu option to switch between main list states (info, selection, grouping, …)
 4.) Implement Card selection, and card moving on long enter pressed.
 5.) Implement Card groupings
 6.) Implement Events
+7.) Implement a palette class to change the look of the renderable_cardlistviewer.

@@ -39,6 +39,7 @@ from cardgroup import Cardgroup, group_t, group_dict_t, cardlist_t
 #widgets
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
+from Frames.widgets.label import Label
 from Frames.widgets.text_input import TextInput
 from Frames.widgets.dropdown_menu import DropdownMenu
 from Frames.widgets.popup import Popup
@@ -85,6 +86,8 @@ class RenderableCardListviewer(Frame):
             self.group_selection_enabled: bool = True
             self.group_creation_enabled: bool = True
             self.group_deletion_enabled: bool = True
+            self.main_list_state_info_panel_shown: bool = True  #if the info panel for the main list is shown,
+                                                                #that depicts what actions can be carried out in the main list.
 
     #full cardlist name key
     FULL_CARDLIST_NAME: str = "Full Cardlist"
@@ -232,6 +235,14 @@ class RenderableCardListviewer(Frame):
         #group deletion
         DELETE_GROUP_OPTION_KEY: tuple[str] = ("Delete Deck",)
         DELETE_GROUP_OPTIONS_SHOWN_AMOUNT: int = 5
+        #show main list state
+        MAIN_LIST_STATE_INFO_PANEL_KEY: tuple[str] = ("Editing State Info Panel",)
+
+        #options in the main list state
+        SHOW_MAIN_LIST_STATE_KEY: tuple[str] = ("Show Editing State",)
+        HIDE_MAIN_LIST_STATE_KEY: tuple[str] = ("Hide Editing State",)
+
+        MAIN_LIST_STATE_ACTION_SHOWN_AMOUNT: int = 5
 
     #==================================
     # SORTING FUNCTIONS
@@ -573,6 +584,18 @@ class RenderableCardListviewer(Frame):
                     info_text_color: color_t = None,
                     info_text_warning_color: color_t = None,
                     info_text_error_color: color_t = None,
+
+                    #main list state info panel
+
+                    main_list_state_info_panel_width_p: float = 0.2, #Percentage of width used relative to self.main_list_frame.
+                    main_list_state_info_panel_height_p: float = 0.1, #Percentage of height used relative too self.main_list_frame.
+                    main_list_state_info_panel_hmargin: float = 0.2, #Horizontal margin for the info panel
+                    main_list_state_info_panel_vmargin: float = 0.1, #Vertical margin for the info panel
+                    main_list_state_info_panel_alpha: int = 200, #Alpha value for the info panel.
+
+                    main_list_state_info_panel_background_color: color_t = Colors.CYAN, #Background color for the info panel.
+                    main_list_state_info_panel_outline_color: color_t = Colors.BLACK, #Outline color of the info panel.
+                    main_list_state_info_panel_shown: bool = True, #if the info panel starts out shown or not.
 
                     #group features
                     group_feature_state: RenderableCardListviewer.FeatureState = None,
@@ -989,6 +1012,59 @@ class RenderableCardListviewer(Frame):
         """
 
         #==================================
+        # MAIN LIST STATE INFO PANEL
+        #==================================
+
+        self.main_list_state_info_panel_frame: pygame.Rect = None
+        """
+        The panel that shows the main list state.
+        """
+        self.main_list_state_info_panel_inner_frame: pygame.Rect = None
+        """
+        Panel after applying info panel margins
+        """
+        self.main_list_state_info_panel_surface: pygame.Surface = None
+        """
+        The surface for the info panel.
+        """
+        self.main_list_state_info_panel_width_p: float = main_list_state_info_panel_width_p
+        """
+        Percentage of width used relative to self.main_list_frame.
+        """
+        self.main_list_state_info_panel_height_p: float = main_list_state_info_panel_height_p
+        """
+        Percentage of height used relative too self.main_list_frame.
+        """
+        self.main_list_state_info_panel_hmargin: float = main_list_state_info_panel_hmargin
+        """
+        Horizontal margin for the info panel
+        """
+        self.main_list_state_info_panel_vmargin: float = main_list_state_info_panel_vmargin
+        """
+        Vertical margin for the info panel
+        """
+        self.main_list_state_info_panel: Label = None
+        """
+        The actual label for the info panel.
+        """
+        self.main_list_state_info_panel_alpha: int = main_list_state_info_panel_alpha
+        """
+        Alpha value for the info panel.
+        """
+        self.main_list_state_info_panel_background_color: color_t = main_list_state_info_panel_background_color
+        """
+        Background color for the info panel.
+        """
+        self.main_list_state_info_panel_outline_color: color_t = main_list_state_info_panel_outline_color
+        """
+        Outline color of the info panel.
+        """
+        self.main_list_state_info_panel_shown: bool = main_list_state_info_panel_shown
+        """
+        If the info panel is shown or not.
+        """
+
+        #==================================
         # CARD PREVIEW
         #==================================
 
@@ -1176,7 +1252,7 @@ class RenderableCardListviewer(Frame):
         """
         The previous state, saved.
         """
-        self.main_list_state: id_t = RenderableCardListviewer.MainListState.INFO_STATE
+        self._main_list_state: id_t = RenderableCardListviewer.MainListState.INFO_STATE
         """
         The main list action state. Starts out as selection state.
         """
@@ -1407,6 +1483,32 @@ class RenderableCardListviewer(Frame):
         self.prev_state = self._state
         self._state = new_state
 
+    @property
+    def main_list_state(self) -> id_t:
+        return self._main_list_state
+
+    @main_list_state.setter
+    def main_list_state(self, new_state: id_t) -> None:
+        """
+        Sets the new state, then changes all visual objects
+        tied to the main list state.
+        """
+
+        if self._main_list_state != new_state:
+            self._main_list_state = new_state
+
+            if self.main_list_state_info_panel_frame is not None:
+                if self.group_feature_state.main_list_state_info_panel_shown:
+                    self.main_list_state_info_panel = Label(
+                                                                frame_dim=graphics.position_relative(
+                                                                                                        anchor_rect=self.main_list_state_info_panel_frame,
+                                                                                                        make_relative_rect=self.main_list_state_info_panel_inner_frame
+                                                                                                        ),
+                                                                font=self.font,
+                                                                label_page=self.get_main_list_state_info_panel_page(),
+                                                                background_color=self.main_list_state_info_panel_background_color
+                                                            )
+
     #==================================
     # ON FOCUS CHANGES
     #==================================
@@ -1481,6 +1583,8 @@ class RenderableCardListviewer(Frame):
         VALIDITY CHECK
         """
         self._check_validity()
+
+        self.main_list_state = RenderableCardListviewer.MainListState.INFO_STATE
 
         """
         INFO TEXT
@@ -1654,13 +1758,23 @@ class RenderableCardListviewer(Frame):
         """
 
         #getting the inner area for the cardlist
-        self.main_list_frame = self.inner_area.copy()
+        self.main_list_frame = relative_inner_frame_dim.copy()
 
         self.main_list_frame.y += self.menu_label_frame.height
         self.main_list_frame.height -= self.menu_label_frame.height
 
         #getting the inner main list
         self.inner_main_list_frame = graphics.apply_margins(self.main_list_frame, self.main_list_hmargin, self.main_list_vmargin)
+
+        """
+        -----------------------------------------
+        MAIN LIST STATE INFO PANEL
+        -----------------------------------------
+        """
+
+        self.create_main_list_state_info_panel()
+
+
 
         self.create_dropdown_menu()
         #now getting the card positions
@@ -1723,6 +1837,10 @@ class RenderableCardListviewer(Frame):
         #bliting the widgets onto the label
         self.surface.blit(self.menu_label_surface, self.menu_label_surface_pos)
 
+        #rendering the main list state info panel
+        if self.main_list_state_info_panel_shown and self.group_feature_state.main_list_state_info_panel_shown:
+            self.render_main_list_state_info_panel(self.surface, self.main_list_state_info_panel_frame.x, self.main_list_state_info_panel_frame.y)
+
         if self.info_text_active():
             self.info_text_surface.fill((*Colors.BLACK, self.info_text_surface_alpha))
             for surf, pos in self.info_text_rendered:
@@ -1779,6 +1897,79 @@ class RenderableCardListviewer(Frame):
                                                                                         centered=True,
                                                                                         vertical_centered=True
                                                                                     )
+
+    def create_main_list_state_info_panel(self) -> None:
+        """
+        Creates the info panel surface and all
+        components necessary.
+        """
+        mlsip_width: int = int(self.main_list_state_info_panel_width_p * self.main_list_frame.width)
+        mlsip_height: int = int(self.main_list_state_info_panel_height_p * self.main_list_frame.height)
+
+        #getting the position for the info panel
+
+        self.main_list_state_info_panel_frame = pygame.Rect(
+                                                                (self.main_list_frame.x + self.main_list_frame.width - mlsip_width),
+                                                                (self.main_list_frame.y + self.main_list_frame.height - mlsip_height),
+                                                                mlsip_width,
+                                                                mlsip_height
+                                                            )
+
+        self.main_list_state_info_panel_inner_frame = graphics.apply_margins(
+                                                                        self.main_list_state_info_panel_frame,
+                                                                        self.main_list_state_info_panel_hmargin,
+                                                                        self.main_list_state_info_panel_vmargin
+                                                                        )
+
+        #creating the surface
+        self.main_list_state_info_panel_surface = pygame.Surface((mlsip_width, mlsip_height), pygame.SRCALPHA)
+
+        self.main_list_state_info_panel = Label(
+                                                    frame_dim=graphics.position_relative(
+                                                                                            anchor_rect=self.main_list_state_info_panel_frame,
+                                                                                            make_relative_rect=self.main_list_state_info_panel_inner_frame
+                                                                                            ),
+                                                    font=self.font,
+                                                    label_page=self.get_main_list_state_info_panel_page(),
+                                                    background_color=self.main_list_state_info_panel_background_color
+                                                )
+
+    def render_main_list_state_info_panel(self, screen: pygame.Surface, x: int, y: int):
+        """
+        Renders the info panel.
+        """
+
+        self.main_list_state_info_panel_surface.set_alpha(255)
+        self.main_list_state_info_panel_surface.fill(Colors.BLACK)
+
+        pygame.draw.rect(
+                            self.main_list_state_info_panel_surface,
+                            self.main_list_state_info_panel_outline_color,
+                            pygame.Rect(0, 0, self.main_list_state_info_panel_frame.width, self.main_list_state_info_panel_frame.height)
+                        )
+
+        #now drawing the label
+        self.main_list_state_info_panel.render(self.main_list_state_info_panel_surface)
+        self.main_list_state_info_panel_surface.set_alpha(self.main_list_state_info_panel_alpha)
+
+        screen.blit(self.main_list_state_info_panel_surface, (x, y))
+
+    def get_main_list_state_info_panel_page(self) -> colored_page_t:
+        """
+        Returns the page to be shown
+        for the main list state info panel.
+        """
+
+        #dictionary
+        main_list_state_to_page: dict[id_t, colored_page_t] = {
+
+            RenderableCardListviewer.MainListState.INFO_STATE: [[("Info State Active", Colors.BLACK)]],
+            RenderableCardListviewer.MainListState.SELECTION_STATE: [[("Selection State Active", Colors.ORANGE)]],
+            RenderableCardListviewer.MainListState.GROUPING_STATE: [[("Grouping State Active", Colors.GREEN)]]
+
+                                                                }
+
+        return main_list_state_to_page[self.main_list_state]
 
     def recalculate_main_list_positions(self, keep_current_state: bool = False) -> None:
 
@@ -2330,6 +2521,25 @@ class RenderableCardListviewer(Frame):
 
         mdict[RenderableCardListviewer.MENU_OPTIONS.DISPLAY_TYPE_KEY] = display_options_dict
 
+        #main list states
+        main_list_state_dict = {}
+
+        if self.group_feature_state.main_list_state_info_panel_shown:
+
+            if self.main_list_state_info_panel_shown:
+
+                main_list_state_dict[RenderableCardListviewer.MENU_OPTIONS.HIDE_MAIN_LIST_STATE_KEY] = None
+
+            else:
+
+                main_list_state_dict[RenderableCardListviewer.MENU_OPTIONS.SHOW_MAIN_LIST_STATE_KEY] = None
+
+        if len(main_list_state_dict) > 0:
+
+            main_list_state_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.MAIN_LIST_STATE_ACTION_SHOWN_AMOUNT
+
+            mdict[RenderableCardListviewer.MENU_OPTIONS.MAIN_LIST_STATE_INFO_PANEL_KEY] = main_list_state_dict
+
         return mdict
 
 
@@ -2400,6 +2610,20 @@ class RenderableCardListviewer(Frame):
                                                 text_color=RenderableCardListviewer.INFO_TEXT_ERROR_COLOR,
                                                 fade_duration=RenderableCardListviewer.GROUP_UNDELETEABLE_FADING_DURATION
                                                 )
+
+                elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.MAIN_LIST_STATE_INFO_PANEL_KEY:
+                    
+                    #main list state
+                    if selection == RenderableCardListviewer.MENU_OPTIONS.SHOW_MAIN_LIST_STATE_KEY:
+                        self.main_list_state_info_panel_shown = True
+                        self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+                        self.create_dropdown_menu()
+                        self.raise_prerender_flag()
+                    elif selection == RenderableCardListviewer.MENU_OPTIONS.HIDE_MAIN_LIST_STATE_KEY:
+                        self.main_list_state_info_panel_shown = False
+                        self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+                        self.create_dropdown_menu()
+                        self.raise_prerender_flag()
 
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.CREATE_GROUP_OPTION_KEY:
                     self.initialize_deck_creation_frame()
