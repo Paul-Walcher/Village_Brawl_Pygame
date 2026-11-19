@@ -589,8 +589,8 @@ class RenderableCardListviewer(Frame):
 
                     main_list_state_info_panel_width_p: float = 0.2, #Percentage of width used relative to self.main_list_frame.
                     main_list_state_info_panel_height_p: float = 0.1, #Percentage of height used relative too self.main_list_frame.
-                    main_list_state_info_panel_hmargin: float = 0.2, #Horizontal margin for the info panel
-                    main_list_state_info_panel_vmargin: float = 0.1, #Vertical margin for the info panel
+                    main_list_state_info_panel_hmargin: float = 0.1, #Horizontal margin for the info panel
+                    main_list_state_info_panel_vmargin: float = 0.25, #Vertical margin for the info panel
                     main_list_state_info_panel_alpha: int = 200, #Alpha value for the info panel.
 
                     main_list_state_info_panel_background_color: color_t = Colors.CYAN, #Background color for the info panel.

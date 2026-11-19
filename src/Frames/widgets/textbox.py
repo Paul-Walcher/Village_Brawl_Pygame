@@ -35,7 +35,8 @@ class Textbox(Frame):
                     vmargin: float = 0.2,
                     line_margin_p: float = 0.02, #percentage of space between lines relative to self.height
                     pagenumber_color: color_t = Colors.WHITE, #color of the pagenumber
-                    startpage_index: int = 0, #the starting page.
+                    startpage_index: int = 0 #the starting page.
+
                 ):
 
         Frame.__init__(
@@ -132,6 +133,11 @@ class Textbox(Frame):
         """
         Color of the the pagenumber.
         """
+        self.centering_data: list[tuple[bool, bool]] = None
+        """
+        The centering data. Each tuple represents:
+        centered, vertical centered.
+        """
 
         self.rerender()
 
@@ -164,6 +170,9 @@ class Textbox(Frame):
         #creating the pages
         self.pages = graphics.page_by_chars_color(self.text, line_length=self.chars_per_line, paragraph_length=self.lines_per_page)
         self.n_pages = len(self.pages)
+
+        if self.centering_data is None:
+            self.centering_data = [(True, True) for i in range(self.n_pages)]
 
         if self.page_index >= self.n_pages:
             self.page_index = 0
@@ -201,12 +210,15 @@ class Textbox(Frame):
         text_frame, distance_frame, number_frame = graphics.split_rect_vertically(relative_inner_frame_dim, split_percentages)
 
         #creating the textlabel
+        tcentered, tvcentered = self.centering_data[self.page_index]
         self.rendered_page_label = Label(
                                             frame_dim=text_frame,
                                             font=self.font,
                                             label_page=self.pages[self.page_index],
                                             background_color=self.background_color,
-                                            line_margin_percentage=self.line_margin_p
+                                            line_margin_percentage=self.line_margin_p,
+                                            text_centered=tcentered,
+                                            text_vertical_centered=tvcentered
                                             )
 
         if self.pagenumber_shown:
@@ -222,35 +234,49 @@ class Textbox(Frame):
                                                     )
 
 
-    def add_pages(self, pages: list[colored_page_t]) -> None:
+    def add_pages(self, pages: list[colored_page_t], centering_data: list[tuple[bool, bool]] = None) -> None:
         """
         Adds the given pages at the end of the textbox
         """
+
+        if centering_data is None:
+            centering_data = [(True, True) for i in range(len(pages))]
+
         if self.pages is not None:
             self.pages.extend(pages)
+            self.centering_data.extend(centering_data)
         else:
             self.pages = pages
+            self.centering_data = centering_data.copy()
+
         self.n_pages = len(self.pages)
 
         self.prerender()
 
-    def insert_page(self, index: int, page: colored_page_t) -> None:
+    def insert_page(self, index: int, page: colored_page_t, centering_data: tuple[bool, bool] = None) -> None:
         """
         Inserts the given page at index into self.pages.
         If the index is too small, it gets inserted at 0,
         if it is too large it is inserted at the end.
         """
+        if centered_data is None:
+            centered_data = (True, True)
+
         if self.pages is None:
             self.pages = [page]
+            self.centering_data = [centering_data]
         else:
             if index < 0:
                 self.pages.insert(0, page)
+                self.centering_data.insert(0, centering_data)
 
             elif index >= self.n_pages:
                 self.pages.append(page)
+                self.centering_data.append(centering_data)
 
             else:
                 self.pages.insert(index, page)
+                self.centering_data.insert(index, centering_data)
 
         self.n_pages += 1
 

@@ -12,7 +12,7 @@ class Tag_Template(ABC):
     def __init__(
                 self,
                 type_enum: int,
-                own_enum: int,
+                own_enum: str,
                 tag_color: tuple[int, int, int] = Colors.STANDARD_TEXT_COLOR
                 ):
 
@@ -20,11 +20,11 @@ class Tag_Template(ABC):
         """
         Defines the type of card this tag belongs to.
         """
-        self.own_enum: int = own_enum
+        self.own_enum: str = own_enum
         """
         Enum identifier for this specific tag class.
         """
-        self.tag_tab: str = f" "*5
+        self.tag_tab: str = f" "*10
         """
         Extra indentation for the tag description.
         """
@@ -35,6 +35,10 @@ class Tag_Template(ABC):
         self.tag_color = tag_color
         """
         Color the description will be printed in.
+        """
+        self.divider: str = "-" * int(len(self.own_enum) * 1.5)
+        """
+        Divider between name and data.
         """
 
     def __repr__(self):

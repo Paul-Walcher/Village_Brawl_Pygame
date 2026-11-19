@@ -724,23 +724,6 @@ def get_center_with_rect_as_rect(outer_rect: pygame.Rect, inner_rect: pygame.Rec
 
     return pygame.Rect(x, y, inner_rect.width, inner_rect.height)
 
-def apply_margins(rect: pygame.Rect, h_margin_percentage: float=0.0, v_margin_percentage: float=0.0) -> pygame.Rect:
-    """
-    Returns rect after applying the margin percentages.
-
-    Negative margins mean expanding the frame by the given percentage,
-    positive margins mean decreasing the frame by the given percentage.
-    """
-    if h_margin_percentage > 1.0 or v_margin_percentage > 1.0:
-        raise RuntimeError("Margins can not be greater than 1.0 (Returned frame cant have negative size)")
-
-    margin_rect = pygame.Rect(  int(rect.x + rect.width * h_margin_percentage / 2),
-                                int(rect.y + rect.height * v_margin_percentage / 2),
-                                int(rect.width * (1.0 - h_margin_percentage)),
-                                int(rect.height * (1.0 - v_margin_percentage))
-                                )
-    return margin_rect
-
 def split_rect_horizontally(rect: pygame.Rect, percentages: list[float]) -> list[pygame.Rect]:
     """
     Splits the given rect into rects where each rect starts where the last ends,
@@ -904,3 +887,22 @@ def position_relative_point(anchor_point: point_t, make_relative_point: point_t)
     if it was relative to anchor_point.
     """
     return (make_relative_point[0] - anchor_point[0], make_relative_point[1] - anchor_point[1])
+
+def apply_margins(rect: pygame.Rect, h_margin_percentage: float=0.0, v_margin_percentage: float=0.0) -> pygame.Rect:
+    """
+    Returns rect after applying the margin percentages.
+
+    Negative margins mean expanding the frame by the given percentage,
+    positive margins mean decreasing the frame by the given percentage.
+    """
+    if h_margin_percentage > 1.0 or v_margin_percentage > 1.0:
+        raise RuntimeError("Margins can not be greater than 1.0 (Returned frame cant have negative size)")
+
+    margin_rect = pygame.Rect(  int(rect.x + rect.width * h_margin_percentage / 2),
+                                int(rect.y + rect.height * v_margin_percentage / 2),
+                                int(rect.width * (1.0 - h_margin_percentage)),
+                                int(rect.height * (1.0 - v_margin_percentage))
+                                )
+    margin_rect = get_center_with_rect_as_rect(outer_rect=rect, inner_rect=margin_rect)
+    
+    return margin_rect

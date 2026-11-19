@@ -40,6 +40,9 @@ class Label(Frame):
                 label_page: colored_page_t = None, #the text renderd onto self.frame_dim, as colored text
                 selected_label_page: colored_page_t = None, #the text for the page when it is selected
 
+                text_centered: bool = True, #if the text is centered.
+                text_vertical_centered: bool = True, #if the text is vertically entered
+
                 background_image_path: str = None, #the image used as a background.
                 selected_background_image_path: str = None, #the image used as background in the selected state
 
@@ -106,6 +109,14 @@ class Label(Frame):
         self.font = font
         """
         The font used for the text.
+        """
+        self.text_centered: bool = text_centered
+        """
+        If the text inside the label is centered or not.
+        """
+        self.text_vertical_centered: bool = text_vertical_centered
+        """
+        If the text inside the label is vertically centered or not.
         """
         self.label_page: colored_page_t = label_page
         """
@@ -225,8 +236,8 @@ class Label(Frame):
                                                                                 page=self.label_page,
                                                                                 frame=self.relative_inner_text_frame_dim,
                                                                                 text_color=Colors.STANDARD_TEXT_COLOR,
-                                                                                centered=True,
-                                                                                vertical_centered=True,
+                                                                                centered=self.text_centered,
+                                                                                vertical_centered=self.text_vertical_centered,
                                                                                 line_margin_as_percentage=self.line_margin_percentage
                                                                                 )
 
@@ -237,8 +248,8 @@ class Label(Frame):
                                                                                         page=self.selected_label_page,
                                                                                         frame=self.relative_inner_selected_text_frame_dim,
                                                                                         text_color=Colors.STANDARD_TEXT_COLOR,
-                                                                                        centered=True,
-                                                                                        vertical_centered=True,
+                                                                                        centered=self.text_centered,
+                                                                                        vertical_centered=self.text_vertical_centered,
                                                                                         line_margin_as_percentage=self.line_margin_percentage
                                                                                         )
 

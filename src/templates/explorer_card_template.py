@@ -94,7 +94,8 @@ class ExplorerCardInfo(Renderable_CardInfo):
 
         textbox_ref.add_pages(einfo_pages)
 
-        tag_headline_page = [[[graphics.NP(0), ("Tags", Colors.STANDARD_TEXT_COLOR)]]]
+        tag_headline_page = [[[("Tags", Colors.STANDARD_TEXT_COLOR)]]]
+        tag_headline_centering_data = [(True, True)]
         tag_pages = []
 
         for tag in self.tags:
@@ -105,14 +106,25 @@ class ExplorerCardInfo(Renderable_CardInfo):
                 tag_pages.append((line, tag.tag_color))
                 tag_pages.append(graphics.NL)
 
-        tag_pages = graphics.page_by_chars_color(tag_pages, line_length=chars_per_line, paragraph_length=lines_per_page)
-        if tag_pages:
-            last_page = tag_pages[-1]
-            if len(last_page) < lines_per_page:
-                last_page.extend([[]] * (lines_per_page - len(last_page)))
+            #new page
+            tag_pages.append(graphics.NP(0))
 
-            textbox_ref.add_pages(tag_headline_page)
-            textbox_ref.add_pages(tag_pages)
+
+        if tag_pages:
+            tag_pages = graphics.page_by_chars_color(tag_pages, line_length=chars_per_line, paragraph_length=lines_per_page)
+
+            #adding new lines for not full pages
+            for i in range(len(tag_pages)):
+                page: colored_page_t = tag_pages[i]
+                n_lines: int = len(page)
+
+                if n_lines < lines_per_page:
+                    page.extend([[] for j in range(lines_per_page - n_lines)])
+
+            tag_centering_data = [(False, True) for i in range(len(tag_pages))]
+
+            textbox_ref.add_pages(tag_headline_page, centering_data=tag_headline_centering_data)
+            textbox_ref.add_pages(tag_pages, centering_data=tag_centering_data)
 
         return page_parts
 
