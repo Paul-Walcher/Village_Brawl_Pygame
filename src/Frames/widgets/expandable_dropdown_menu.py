@@ -427,41 +427,60 @@ class ExpandableDropdownMenu(DropdownMenu):
 
         #rerendering the dropdown menu
         DropdownMenu.rerender(self)
-        #adding the other dropdown menus
+        #clearing dropdown menus
         self.expanded_dropdown_menus = {}
         #we need to cut the frame of the current dopdown menu from the frame for the remaining dropdowns
         expanded_frame_dim = self.original_frame_dim.copy()
         expanded_frame_dim.x = self.frame_dim.x + self.frame_dim.width
         expanded_frame_dim.width -= self.frame_dim.width
-        #adding dropdown menus recursively
-        for key, eoptions in self.dictionary_options.items():
-            if eoptions is not None:
 
-                new_dropdown = ExpandableDropdownMenu(
-                                                        expanded_frame_dim.copy(),
-                                                        options=eoptions.copy(),
-                                                        precalculated_depth_and_max_length=(
-                                                            self.max_depth - 1,
-                                                            self.max_length
-                                                        ),
-                                                        parent_frame=self.parent_frame,
-                                                        dropdown_parent=self,
-                                                        font=self.font,
-                                                        background_color=self.background_color,
-                                                        highlighted_background_color=self.highlighted_background_color,
-                                                        in_option_line_margin_p=self.in_option_line_margin_p,
-                                                        line_margin_p=self.line_margin_p,
-                                                        line_color=self.line_color,
-                                                        lines_shown=self.lines_shown,
-                                                        outline_size_p=self.outline_size_p,
-                                                        outline_color=self.outline_color,
-                                                        text_margins_percentage=self.text_margins_percentage,
-                                                        highlighted_text_margins_percentage=self.highlighted_text_margins_percentage,
-                                                        initial_selected_index=ExpandableDropdownMenu.NOTHING_SELECTED_INDEX,
-                                                        selected_animation_duration=self.selected_animation_duration
-                                                    )
 
-                self.expanded_dropdown_menus[key] = new_dropdown #associating the dropdown with the corresponding option
+    def get_expanded_dropdown_menu(self, key: DropDownKey) -> ScrollableDropdownMenu:
+        """
+        Creates and returns the requested menu lazily,
+        or returns None.
+        """
+
+        value = self.full_options_dict[key]
+
+        if type(value) != dict:
+            return None
+
+        #so it is a dict
+        if key not in self.expanded_dropdown_menus:
+
+            #POSSIBLE ERROR: if self.frame_width != self.with_arrows_frame_dim.width
+            expanded_frame_dim: pygame.Rect = self.original_frame_dim.copy()
+            expanded_frame_dim.x = self.frame_dim.x + self.frame_dim.width
+            expanded_frame_dim.width -= self.frame_dim.width
+
+            new_dropdown = ExpandableDropdownMenu(
+                                                    expanded_frame_dim.copy(),
+                                                    options=value.copy(),
+                                                    precalculated_depth_and_max_length=(
+                                                        self.max_depth - 1,
+                                                        self.max_length
+                                                    ),
+                                                    parent_frame=self.parent_frame,
+                                                    dropdown_parent=self,
+                                                    font=self.font,
+                                                    background_color=self.background_color,
+                                                    highlighted_background_color=self.highlighted_background_color,
+                                                    in_option_line_margin_p=self.in_option_line_margin_p,
+                                                    line_margin_p=self.line_margin_p,
+                                                    line_color=self.line_color,
+                                                    lines_shown=self.lines_shown,
+                                                    outline_size_p=self.outline_size_p,
+                                                    outline_color=self.outline_color,
+                                                    text_margins_percentage=self.text_margins_percentage,
+                                                    highlighted_text_margins_percentage=self.highlighted_text_margins_percentage,
+                                                    initial_selected_index=ExpandableDropdownMenu.NOTHING_SELECTED_INDEX,
+                                                    selected_animation_duration=self.selected_animation_duration
+                                                )
+
+            self.expanded_dropdown_menus[key] = new_dropdown #associating the dropdown with the corresponding option
+
+        return self.expanded_dropdown_menus[key]
 
     @override
     def move_up(self) -> None:
@@ -543,8 +562,9 @@ class ExpandableDropdownMenu(DropdownMenu):
         #selects the option with subselecting deferred dropdown menus
         coption, state = option_trace[0]
         self.selected_index = self.options.index(coption)
-        if type(self.full_options_dict[coption]) == dict:
-            self.deferred_dropdown_menu = self.expanded_dropdown_menus[coption]
+
+        self.deferred_dropdown_menu = self.get_expanded_dropdown_menu(coption)
+        if self.deferred_dropdown_menu is not None:
             #getting if it is a full end or not
             self.deferred_dropdown_menu.select_option_expanded(option_trace[1:])
 
@@ -619,9 +639,10 @@ class ExpandableDropdownMenu(DropdownMenu):
 
         self.state = ExpandableDropdownMenu.OPTION_SELECTED
 
-        if dkey in self.expanded_dropdown_menus:
+        self.deferred_dropdown_menu = self.get_expanded_dropdown_menu(dkey)
 
-            self.deferred_dropdown_menu = self.expanded_dropdown_menus[dkey]
+        if self.deferred_dropdown_menu is not None:
+
             self.state = ExpandableDropdownMenu.FOCUS_DEFERRED
             self.deferred_dropdown_menu.select_options_deferred(indices[1:])
 
@@ -643,10 +664,10 @@ class ExpandableDropdownMenu(DropdownMenu):
 
         hash_key: DropDownKey = keys[0]
 
-        if hash_key in self.expanded_dropdown_menus:
+        self.deferred_dropdown_menu = self.get_expanded_dropdown_menu(hash_key)
+        if self.deferred_dropdown_menu is not None:
 
             self.selected_index = self.dropdown_keys.index(hash_key)
-            self.deferred_dropdown_menu = self.expanded_dropdown_menus[hash_key]
 
             self.state = ExpandableDropdownMenu.FOCUS_DEFERRED
 
@@ -657,7 +678,6 @@ class ExpandableDropdownMenu(DropdownMenu):
             if hash_key in self.dropdown_keys:
 
                 self.selected_index = self.dropdown_keys.index(hash_key)
-                self.deferred_dropdown_menu = None
 
                 self.state = ExpandableDropdownMenu.OPTION_SELECTED
 
@@ -726,11 +746,10 @@ class ExpandableDropdownMenu(DropdownMenu):
             self.selected_index %= self.n_options()
 
             #after a move, check if we need to show another dropdown menu
-            if self.options_key_from_index(self.index) in self.expanded_dropdown_menus:
-                self.deferred_dropdown_menu = self.expanded_dropdown_menus[self.options_key_from_index(index)]
+            self.deferred_dropdown_menu = self.get_expanded_dropdown_menu(self.options_key_from_index(self.index))
+            if self.deferred_dropdown_menu is not None:
                 self.state = ExpandableDropdownMenu.DEFERRED_MENU_SHOWN
             else:
-                self.deferred_dropdown_menu = None
                 self.state = DropdownMenu.OPTION_SELECTED
 
             self.moves_buffered = 0
