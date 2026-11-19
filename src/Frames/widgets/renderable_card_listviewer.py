@@ -1772,6 +1772,15 @@ class RenderableCardListviewer(Frame):
         if not keep_current_state:
             gcards = Cardgroup.cardlist(group=self.groups[self.shown_group])
             gcards = [(key, value) for key, value in gcards.items()]
+            if self.main_list_view_state == RenderableCardListviewer.SHOW_EACH_CARD:
+                #give each card its own entry
+                new_gcards: cardlist_t = []
+
+                for key, value in gcards:
+                    new_gcards.extend([(key, 1) for i in range(value)])
+
+                gcards = new_gcards
+
             self.main_list_cards = self.sorting_function(gcards)
 
             self.selected_card_index = 0
@@ -3205,9 +3214,15 @@ class RenderableCardListviewer(Frame):
         group_dict: group_t = self.groups[self.shown_group]
         #creating the cardlist
         cardlist_dict: cardlist_t = {}
-        #filling the cardlist
+        #filling the cardlist.
+        #Filling is independent from the cardlist, since the values
+        #for each cardclass will be summed.
         for (cardclass, amount) in self.main_list_cards:
-            cardlist_dict[cardclass] = amount
+
+            if cardclass not in cardlist_dict:
+                cardlist_dict[cardclass] = 0
+
+            cardlist_dict[cardclass] += amount
 
         new_group: group_t = Cardgroup.copy_group(self.groups[self.shown_group])
         Cardgroup.cardlist(group=new_group, cardlist=cardlist_dict)

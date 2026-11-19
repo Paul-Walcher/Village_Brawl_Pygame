@@ -1,0 +1,6 @@
+
+TODO:
+
+1.) Implement a way to show the cardinfo in renderable_card_listviewer
+2.) Implement menu option to switch between main list states (info, selection, grouping, …)
+3.) 
