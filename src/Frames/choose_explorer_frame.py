@@ -16,10 +16,11 @@ from templates.explorer_card_template import Explorer_Card_Template, ExplorerCar
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
-from Frames.explorer_info_frame import ExplorerInfoFrame
 from Frames.widgets.label import Label
 from Frames.widgets.custom_same_size_slider import CustomSameSizeSlider
-from Frames.cardinfo_frame import CardinfoFrame
+
+from Frames.cardinfo_frames.cardinfo_frame import CardinfoFrame
+from Frames.cardinfo_frames.explorer_info_frame import ExplorerInfoFrame
 
 from context_data import ContextData
 

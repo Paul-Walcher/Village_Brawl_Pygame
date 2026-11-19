@@ -5,8 +5,6 @@ import os
 import pygame
 import threading
 
-
-from Frames.cardinfo_frame import CardinfoFrame
 from constants import PLAYSETS_FOLDER, Colors, Fonts, Fontsizes, KeyAlternatives, Alpha, IIMAGE, STANDARD_BACKSIDES, R_ID,\
                         EXPLORER_STARTING_ICONS_AND_LABELS, color_t, point_t, as_point, Mouse
 import graphics
@@ -28,8 +26,9 @@ from Frames.widgets.textbox import Textbox
 from Frames.widgets.image_slider import ImageSlider
 from Frames.widgets.text_slider import TextSlider
 from Frames.widgets.labeled_image_slider import LabeledImageSlider
-from Frames.cardinfo_frame import CardinfoFrame
 from Frames.widgets.slider import Slider
+
+from Frames.cardinfo_frames.cardinfo_frame import CardinfoFrame
 
 from context_data import ContextData
 
