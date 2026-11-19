@@ -13,7 +13,7 @@ from templates.explorer_template import ExplorerInfo
 
 #Infoframes
 from Frames.cardinfo_frames.cardinfo_frame import CardinfoFrame
-from Frames.cardinfo_frames.cardinfo_frame import ExplorerInfoFrame
+from Frames.cardinfo_frames.explorer_info_frame import ExplorerInfoFrame
 
 def map_cardinfo_to_info_frame(cinfo_class: Type[Renderable_CardInfo]) -> Type[CardinfoFrame]:
     """
