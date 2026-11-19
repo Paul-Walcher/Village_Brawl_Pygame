@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any, Type, Callable, override
 
 from templates.renderable_cardinfo import Renderable_CardInfo
+from templates.playset_entity import PlaysetEntity
 from constants import INFINITE
 """
 This class defines a cardgroup class.
@@ -9,6 +10,9 @@ A cardgroup is a group of cards with its defining properties.
 """
 #group types
 type cardlist_t = dict[ Type[Renderable_CardInfo], int ] # (class reference: amount)
+type cardorder_t = list[ tuple[ Type[PlaysetEntity], int ] ] #a list of tuples in order,
+                                                             #each tuple is cardclass, then
+                                                             # the number of successive cards
 
 type group_t = dict[str, Any] #group type. The data type for a group transformed into a dictionary
 type group_dict_t = dict[str, group_t] #name: group
@@ -30,6 +34,7 @@ class Cardgroup:
     IS_RENAMABLE_KEY: str = "renamable"
     IS_DELETEABLE_KEY: str = "deleteable"
     CARDLIST_KEY: str = "cardlist"
+    CARDORDER_KEY: str = "cardorder"
     MAX_CARDS_SELECTED_KEY: str = "max_cards_selected"
     MAX_SIZE_KEY: str = "max_size"
 
@@ -44,6 +49,13 @@ class Cardgroup:
         Copies a cardlist.
         """
         return cardlist.copy()
+
+    @staticmethod
+    def copy_cardorder(cardorder: cardorder_t) -> cardorder_t:
+        """
+        Copies a given cardorder.
+        """
+        return cardorder.copy()
 
     @staticmethod
     def copy_group(group: group_t) -> group_t:
@@ -66,6 +78,7 @@ class Cardgroup:
         """
 
         new_group[Cardgroup.CARDLIST_KEY] = Cardgroup.copy_cardlist(group[Cardgroup.CARDLIST_KEY])
+        new_group[Cardgroup.CARDORDER_KEY] = Cardgroup.copy_cardorder(group[Cardgroup.CARDORDER_KEY])
 
         for KEY in straight_copies:
             new_group[KEY] = group[KEY]
@@ -135,6 +148,7 @@ class Cardgroup:
     @staticmethod
     def create_group(
                     cardlist: cardlist_t = None, #if it is None, it gets created as an empty cardlist
+                    cardorder: cardorder_t = None,
                     is_copylist: bool = False,
                     is_mutable: bool = True,
                     is_renamable: bool = True,
@@ -148,10 +162,20 @@ class Cardgroup:
         This function returns the group created.
         """
 
+        if cardlist is None:
+            cardlist = {}
+
+        if cardorder is None:
+            #default cardorder
+            cardorder = []
+            for (cclass, amount) in cardlist.items():
+
+                cardorder.append((cclass, amount))
 
         new_group: group_t = {}
 
         new_group[Cardgroup.CARDLIST_KEY] = Cardgroup.copy_cardlist(cardlist)
+        new_group[Cardgroup.CARDORDER_KEY] = Cardgroup.copy_cardorder(cardorder)
         new_group[Cardgroup.IS_COPYLIST_KEY] = is_copylist
         new_group[Cardgroup.IS_MUTABLE_KEY] = is_mutable
         new_group[Cardgroup.IS_RENAMABLE_KEY] = is_renamable
@@ -301,6 +325,24 @@ class Cardgroup:
             group[Cardgroup.CARDLIST_KEY] = Cardgroup.copy_cardlist(cardlist)
 
         return ret
+
+    @staticmethod
+    def cardorder(group: group_t, cardorder: cardorder_t = None) -> cardorder_t:
+        """
+        If cardorder is None: Returns cardorder.
+        If cardorder is not None: cardorder will be set, and
+        the previous cardorder will be returned.
+
+        This only returns a copy.
+        """
+
+        ret: cardorder_t = Cardgroup.copy_cardorder(group[Cardgroup.CARDORDER_KEY])
+
+        if cardorder is not None:
+            group[Cardgroup.CARDORDER_KEY] = Cardgroup.copy_cardorder(cardorder)
+
+        return ret
+
 
     @staticmethod
     def max_cards_selected(group: group_t, max_cards_selected: int = None) -> int:

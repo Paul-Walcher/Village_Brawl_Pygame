@@ -34,7 +34,7 @@ from copy import deepcopy
 from templates.renderable_cardinfo import Renderable_CardInfo
 from templates.playset_entity import PlaysetEntity
 
-from cardgroup import Cardgroup, group_t, group_dict_t, cardlist_t
+from cardgroup import Cardgroup, group_t, group_dict_t, cardlist_t, cardorder_t
 
 #widgets
 from Frames.frame import Frame
@@ -1998,13 +1998,15 @@ class RenderableCardListviewer(Frame):
 
         if not keep_current_state:
             gcards = Cardgroup.cardlist(group=self.groups[self.shown_group])
+            gcardorder: cardorder_t = Cardgroup.cardorder(group=self.groups[self.shown_group])
             gcards = [(key, value) for key, value in gcards.items()]
             if self.main_list_view_state == RenderableCardListviewer.SHOW_EACH_CARD:
                 #give each card its own entry
                 new_gcards: cardlist_t = []
 
-                for key, value in gcards:
-                    new_gcards.extend([(key, 1) for i in range(value)])
+                for (cclass, amount) in gcardorder:
+                    for i in range(amount):
+                        new_gcards.append((cclass, 1))
 
                 gcards = new_gcards
 
@@ -2612,7 +2614,7 @@ class RenderableCardListviewer(Frame):
                                                 )
 
                 elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.MAIN_LIST_STATE_INFO_PANEL_KEY:
-                    
+
                     #main list state
                     if selection == RenderableCardListviewer.MENU_OPTIONS.SHOW_MAIN_LIST_STATE_KEY:
                         self.main_list_state_info_panel_shown = True
