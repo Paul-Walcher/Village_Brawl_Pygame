@@ -15,17 +15,17 @@ from templates.explorer_template import ExplorerInfo
 from Frames.cardinfo_frames.cardinfo_frame import CardinfoFrame
 from Frames.cardinfo_frames.cardinfo_frame import ExplorerInfoFrame
 
-def map_cardinfo_to_info_frame(cinfo: Type[Renderable_CardInfo]) -> Type[CardinfoFrame]:
+def map_cardinfo_to_info_frame(cinfo_class: Type[Renderable_CardInfo]) -> Type[CardinfoFrame]:
     """
     Maps cinfo as a renderable cardinfo to the info
     frame that shows the most detailed information for this card.
     """
 
     #checking if cinfo is a renderable_cardinfo or a subclass of renderable_cardinfo
-    if not issubclass(cinfo, Renderable_CardInfo):
+    if not issubclass(cinfo_class, Renderable_CardInfo):
         raise RuntimeError("The given class is no subclass of Renderable_CardInfo")
 
-    if issubclass(cinfo, ExplorerInfo):
+    if issubclass(cinfo_class, ExplorerInfo):
         #return the explorer info frame
         return ExplorerInfoFrame
 

@@ -32,6 +32,7 @@ from modules import Modules
 from event_queue_manager import Event
 from copy import deepcopy
 from templates.renderable_cardinfo import Renderable_CardInfo
+from templates.playset_entity import PlaysetEntity
 
 from cardgroup import Cardgroup, group_t, group_dict_t, cardlist_t
 
@@ -50,6 +51,9 @@ from Frames.widgets.scrollable_dropdown_menu import (
                                                         scrollable_option_trace_element_t
                                                     )
 
+from Frames.cardinfo_frames.cardinfo_frame import CardinfoFrame
+from Frames.cardinfo_frames.explorer_info_frame import ExplorerInfoFrame
+from Frames.cardinfo_frames.cardinfo_to_info_frame import map_cardinfo_to_info_frame
 
 #TODO
 #
@@ -162,6 +166,10 @@ class RenderableCardListviewer(Frame):
 
     GROUP_DELETION_POPUP_SHOWN: id_t = R_ID()
 
+    CARDINFO_SLIDING_IN: id_t = R_ID() #the cardinfo is currently sliding in
+    CARDINFO_SHOWN: id_t = R_ID() #in this state, the cardinfo is shown
+    CARDINFO_SLIDING_OUT: id_t = R_ID() #the cardinfo is sliding out.
+
     #==================================
     # VIEW STATES
     #==================================
@@ -174,8 +182,9 @@ class RenderableCardListviewer(Frame):
     #==================================
 
     class MainListState:
-        OBSERVER_STATE: id_t = R_ID() #state where no main list action can be done by pressing enter
+        INFO_STATE: id_t = R_ID() #state where no main list action can be done by pressing enter
         SELECTION_STATE: id_t = R_ID() #state in which cards can be selected
+        GROUPING_STATE: id_t = R_ID() #state in which cards can be grouped and groupings will be shown.
 
     #==================================
     # MENU OPTIONS
@@ -475,6 +484,7 @@ class RenderableCardListviewer(Frame):
                     frame_dim: pygame.Rect,  #frame dimension, into which it is rendered into
                     full_cardlist: cardlist_t, #a dictionary of {RenderableCard(Class): amount}
                     groups: group_dict_t,  #must include at least one group. is {name: {"cardlist": {renderable_card: amount}, "mutable": (False/True), "is_copylist": (False/True)}}
+                    modules: Modules, #reference to the loaded modules.
                     special_info_frames: dict[ Type[Renderable_CardInfo], dict[ tuple[str], Type[Frame] ] ] = None,
                     #a dictionary like: {cardclass: (list_of_groups_this_info_frame_will_be_used, instantiated frame)}
                     #for the card as key, when it is clicked the frame given as value[1] will be used in all groups in value[0] instead of the normal infopage
@@ -578,7 +588,8 @@ class RenderableCardListviewer(Frame):
                     fastscroll_duration: float = 50,#ms for fast scrolling
                     deckname_selected_animation_duration: float = 400,#ms
                     menu_button_selected_animation_duration: float = 400,#ms
-                    card_snapback_duration: float = 200#ms, time it takes for a card to snap back and do the card pressed animation in reverse
+                    card_snapback_duration: float = 200,#ms, time it takes for a card to snap back and do the card pressed animation in reverse
+                    cardinfo_frame_sliding_duration: float = 400#ms
                     ):
 
         #variables pre init
@@ -610,6 +621,10 @@ class RenderableCardListviewer(Frame):
         self.groups: dict[str, group_t] = Cardgroup.get_groups_from_group_dict(groups)
         """
         A deepcopy of the given groups.
+        """
+        self.modules: Modules = modules
+        """
+        Reference to the given loaded modules class.
         """
         self.max_group_number: int = Cardgroup.max_group_number(group_dict=groups)
         """
@@ -960,6 +975,20 @@ class RenderableCardListviewer(Frame):
         """
 
         #==================================
+        # CARDINFO
+        #==================================
+
+        self.cardinfo_frame: CardinfoFrame = None
+        """
+        If this frame is not None, it means this frame
+        has the focus and is overlayed on top of the main list.
+        """
+        self.cardinfo_frame_sliding_duration: float = cardinfo_frame_sliding_duration
+        """
+        Sliding duration of the cardinfo frame.
+        """
+
+        #==================================
         # CARD PREVIEW
         #==================================
 
@@ -1147,7 +1176,7 @@ class RenderableCardListviewer(Frame):
         """
         The previous state, saved.
         """
-        self.main_list_action_state: id_t = RenderableCardListviewer.MainListState.SELECTION_STATE
+        self.main_list_state: id_t = RenderableCardListviewer.MainListState.INFO_STATE
         """
         The main list action state. Starts out as selection state.
         """
@@ -2812,6 +2841,13 @@ class RenderableCardListviewer(Frame):
         elif self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
             self.dropdown_menu.select()
 
+        elif self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+
+            #depends on the main list state
+            if self.main_list_state == RenderableCardListviewer.MainListState.INFO_STATE:
+                #show the cardinfo
+                self.initialize_cardinfo_frame()
+
     def long_enter_pressed(self):
         pass
 
@@ -3132,6 +3168,49 @@ class RenderableCardListviewer(Frame):
             self.long_enter_pressed()
         else:
             self.enter_pressed()
+
+    #==================================
+    # CARDINFO FRAME
+    #==================================
+
+    def initialize_cardinfo_frame(self) -> None:
+        """
+        Initializes the cardinfo frame by sliding in.
+        """
+
+        #getting the class and most specific info
+        cclass: Type[PlaysetEntity] = self.main_list_cards[self.selected_card_index][0]
+        #getting the info class
+        cinfo: Renderable_CardInfo = cclass.info()
+        cinfo_class: Type[Renderable_CardInfo] = type(cinfo)
+        #now getting the most specific cardinfo class
+        cinfo_frame_class: Type[CardinfoFrame] = map_cardinfo_to_info_frame(cinfo_class=cinfo_class)
+        #now initializing the cardinfo
+        if issubclass(cinfo_frame_class, ExplorerInfoFrame):
+            #special initialization
+            self.cardinfo_frame = cinfo_frame_class(
+                                                        explorer_enum=cinfo.card_enum,
+                                                        modules=self.modules,
+                                                        frame_dim=self.frame_dim.copy(),
+                                                        parent_frame=self,
+                                                        focus_group=self.focus_group(),
+                                                        has_focus=True,
+
+                                                        slide_duration=self.cardinfo_frame_sliding_duration
+                                                    )
+
+        elif issubclass(cinfo_frame_class, CardinfoFrame):
+            #normal cardinfo frame initialization
+            self.cardinfo_frame = cinfo_frame_class(
+                                                        cardinfo=cinfo,
+                                                        modules=self.modules,
+                                                        frame_dim=self.frame_dim.copy(),
+                                                        parent_frame=self,
+                                                        focus_group=self.focus_group(),
+                                                        has_focus=True,
+
+                                                        slide_duration=self.cardinfo_frame_sliding_duration
+                                                    )
 
 
     #==================================

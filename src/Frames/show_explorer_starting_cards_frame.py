@@ -138,6 +138,7 @@ class ShowExplorerStartingCardsFrame(Frame):
 
                                                         full_cardlist=full_cardlist,
                                                         groups=group_dict,
+                                                        modules=self.modules,
                                                         shown_group="Deck 1",
                                                         parent_frame=self,
                                                         focus_group=self.focus_group,
