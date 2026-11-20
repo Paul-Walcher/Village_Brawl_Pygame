@@ -130,6 +130,12 @@ class RenderableCardListviewer(Frame):
                                                         [("This group cannot", INFO_TEXT_ERROR_COLOR)],
                                                         [("be deleted", INFO_TEXT_ERROR_COLOR)]
                                                     ]
+    #after scrolling
+    CURRENT_ROW_SHOWN_FADING_DURATION: float = 2500#ms
+    GET_CURRENT_ROW_SHOWN_INFO_PAGE: Callable[[int, int], colored_page_t] = lambda current_row, max_row: \
+                                                                                [
+                                                                                    [(f"{" "*10}Row {current_row}/{max_row}{" "*10}", Colors.YELLOW)]
+                                                                                ]
 
     #==================================
     # STATES
@@ -3050,6 +3056,15 @@ class RenderableCardListviewer(Frame):
                 self.initialize_move_one_row_up()
             else:
                 self.selected_card_index -= self.cards_per_line
+                #printing the row info
+                current_row: int = self.selected_card_index // self.cards_per_line
+                max_rows: int = len(self.main_list_cards_rects)
+
+                self.print_info_text(
+                                        text_page=RenderableCardListviewer.GET_CURRENT_ROW_SHOWN_INFO_PAGE(current_row+1, max_rows),
+                                        text_color=Colors.YELLOW,
+                                        fade_duration=RenderableCardListviewer.CURRENT_ROW_SHOWN_FADING_DURATION
+                                    )
 
         elif self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
             self.dropdown_menu.move_up()
@@ -3092,12 +3107,30 @@ class RenderableCardListviewer(Frame):
             elif len(self.rendered_rows) < (self.cards_per_line * self.cards_per_column):
                 self.selected_card_index += self.cards_per_line
                 self.selected_card_index %= self.n_cards_shown
+                #printing the row info
+                current_row: int = self.selected_card_index // self.cards_per_line
+                max_rows: int = len(self.main_list_cards_rects)
+
+                self.print_info_text(
+                                        text_page=RenderableCardListviewer.GET_CURRENT_ROW_SHOWN_INFO_PAGE(current_row+1, max_rows),
+                                        text_color=Colors.YELLOW,
+                                        fade_duration=RenderableCardListviewer.CURRENT_ROW_SHOWN_FADING_DURATION
+                                    )
             elif (self.selected_card_index + self.cards_per_line) not in [x[1] for x in self.rendered_rows]:
 
                 self.state = RenderableCardListviewer.MOVING_ONE_ROW_DOWN
                 self.initialize_move_one_row_down()
             else:
                 self.selected_card_index += self.cards_per_line
+                #printing the row info
+                current_row: int = self.selected_card_index // self.cards_per_line
+                max_rows: int = len(self.main_list_cards_rects)
+
+                self.print_info_text(
+                                        text_page=RenderableCardListviewer.GET_CURRENT_ROW_SHOWN_INFO_PAGE(current_row+1, max_rows),
+                                        text_color=Colors.YELLOW,
+                                        fade_duration=RenderableCardListviewer.CURRENT_ROW_SHOWN_FADING_DURATION
+                                    )
 
         elif self.state == RenderableCardListviewer.DROPDOWN_MENU_ACTIVE:
             self.dropdown_menu.move_down()
@@ -3174,6 +3207,17 @@ class RenderableCardListviewer(Frame):
 
         self.selected_card_index -= self.cards_per_line
 
+        #printing the row info
+        current_row: int = self.selected_card_index // self.cards_per_line
+        max_rows: int = len(self.main_list_cards_rects)
+
+        self.print_info_text(
+                                text_page=RenderableCardListviewer.GET_CURRENT_ROW_SHOWN_INFO_PAGE(current_row+1, max_rows),
+                                text_color=Colors.YELLOW,
+                                fade_duration=RenderableCardListviewer.CURRENT_ROW_SHOWN_FADING_DURATION
+                            )
+
+
         self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
 
 
@@ -3205,6 +3249,16 @@ class RenderableCardListviewer(Frame):
 
         self.selected_card_index += self.cards_per_line
 
+        #printing the row info
+        current_row: int = self.selected_card_index // self.cards_per_line
+        max_rows: int = len(self.main_list_cards_rects)
+
+        self.print_info_text(
+                                text_page=RenderableCardListviewer.GET_CURRENT_ROW_SHOWN_INFO_PAGE(current_row+1, max_rows),
+                                text_color=Colors.YELLOW,
+                                fade_duration=RenderableCardListviewer.CURRENT_ROW_SHOWN_FADING_DURATION
+                            )
+
         self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
 
     #moving all rows up
@@ -3230,6 +3284,16 @@ class RenderableCardListviewer(Frame):
 
         self.main_list_yscroll = 0
         self.main_list_yscroll_copy = 0
+
+        #printing the row info
+        current_row: int = self.selected_card_index // self.cards_per_line
+        max_rows: int = len(self.main_list_cards_rects)
+
+        self.print_info_text(
+                                text_page=RenderableCardListviewer.GET_CURRENT_ROW_SHOWN_INFO_PAGE(current_row+1, max_rows),
+                                text_color=Colors.YELLOW,
+                                fade_duration=RenderableCardListviewer.CURRENT_ROW_SHOWN_FADING_DURATION
+                            )
 
         self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
 
