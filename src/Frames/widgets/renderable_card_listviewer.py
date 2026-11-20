@@ -89,6 +89,12 @@ class RenderableCardListviewer(Frame):
             self.main_list_state_info_panel_shown: bool = True  #if the info panel for the main list is shown,
                                                                 #that depicts what actions can be carried out in the main list.
 
+            #main list states
+
+            #info state is always enabled
+            self.selection_main_list_state_enabled: bool = True
+            self.moving_main_list_state_enabled: bool = True
+
     #full cardlist name key
     FULL_CARDLIST_NAME: str = "Full Cardlist"
 
@@ -134,7 +140,7 @@ class RenderableCardListviewer(Frame):
     CURRENT_ROW_SHOWN_FADING_DURATION: float = 2500#ms
     GET_CURRENT_ROW_SHOWN_INFO_PAGE: Callable[[int, int], colored_page_t] = lambda current_row, max_row: \
                                                                                 [
-                                                                                    [(f"{" "*10}Row {current_row}/{max_row}{" "*10}", Colors.YELLOW)]
+                                                                                    [(f"{" "*15}Row {current_row}/{max_row}{" "*15}", Colors.YELLOW)]
                                                                                 ]
 
     #==================================
@@ -193,7 +199,13 @@ class RenderableCardListviewer(Frame):
     class MainListState:
         INFO_STATE: id_t = R_ID() #state where no main list action can be done by pressing enter
         SELECTION_STATE: id_t = R_ID() #state in which cards can be selected
-        GROUPING_STATE: id_t = R_ID() #state in which cards can be grouped and groupings will be shown.
+        MOVING_STATE: id_t = R_ID() #state in which cards can be moved around, changing the order
+
+    main_list_state_to_background_color_mapping: dict[id_t, color_r] = {
+                                                                            MainListState.INFO_STATE: Colors.YELLOW,
+                                                                            MainListState.SELECTION_STATE: Colors.ORANGE,
+                                                                            MainListState.MOVING_STATE: Colors.GREEN
+                                                                        }
 
     #==================================
     # MENU OPTIONS
@@ -249,6 +261,16 @@ class RenderableCardListviewer(Frame):
         HIDE_MAIN_LIST_STATE_KEY: tuple[str] = ("Hide Editing State",)
 
         MAIN_LIST_STATE_ACTION_SHOWN_AMOUNT: int = 5
+
+        #editing state
+        CHANGE_EDITING_STATE_KEY: tuple[str] = ("Change Editing State",)
+
+        #all editing options
+        CHANGE_EDITING_TO_INFO_STATE_KEY: tuple[str] = ("Info State",)
+        CHANGE_EDITING_TO_SELECTION_STATE_KEY: tuple[str] = ("Selection State",)
+        CHANGE_EDITING_TO_MOVING_STATE_KEY: tuple[str] = ("Moving State",)
+
+        CHANGE_EDITING_STATE_SHOWN_AMOUNT: int = 5
 
     #==================================
     # SORTING FUNCTIONS
@@ -567,12 +589,12 @@ class RenderableCardListviewer(Frame):
                     card_text_description_color: color_t = Colors.BLACK,
                     #either showing with amount or not
                     main_list_view_state: id_t = None,
+                    initial_main_list_state: id_t = None,
                     #shadow offsets for the cards
                     cardshadow_hoffset_p: float = 0.075,
                     cardshadow_voffset_p: float = 0.075,
                     cardshadow_alpha: int = 120,
                     selected_card_size_increase_percentage: float = 0.05,
-                    selected_cardshadow_color: color_t = Colors.YELLOW,
                     selected_cardshadow_alpha: int = 120,
                     #margin between timage and any text rendered below
                     subtext_margin: float = 0.2,
@@ -599,7 +621,7 @@ class RenderableCardListviewer(Frame):
                     main_list_state_info_panel_vmargin: float = 0.25, #Vertical margin for the info panel
                     main_list_state_info_panel_alpha: int = 200, #Alpha value for the info panel.
 
-                    main_list_state_info_panel_background_color: color_t = Colors.CYAN, #Background color for the info panel.
+                    main_list_state_info_panel_background_color: color_t = Colors.BLACK, #Background color for the info panel.
                     main_list_state_info_panel_outline_color: color_t = Colors.BLACK, #Outline color of the info panel.
                     main_list_state_info_panel_shown: bool = True, #if the info panel starts out shown or not.
 
@@ -1105,10 +1127,6 @@ class RenderableCardListviewer(Frame):
         """
         The percentage of the size increase when a card is in the selected state.
         """
-        self.selected_cardshadow_color: color_t = selected_cardshadow_color
-        """
-        Color for the selected cardshadow.
-        """
         self.selected_cardshadow_alpha: int = selected_cardshadow_alpha
         """
         Alpha value of the selected cardshadow.
@@ -1258,7 +1276,7 @@ class RenderableCardListviewer(Frame):
         """
         The previous state, saved.
         """
-        self._main_list_state: id_t = RenderableCardListviewer.MainListState.INFO_STATE
+        self._main_list_state: id_t = initial_main_list_state
         """
         The main list action state. Starts out as selection state.
         """
@@ -1466,6 +1484,9 @@ class RenderableCardListviewer(Frame):
 
         #setting the shown group
         self.shown_group = (shown_group if shown_group is not None else list(self.groups.keys())[0])
+
+        if self._main_list_state is None:
+            self._main_list_state = RenderableCardListviewer.MainListState.INFO_STATE
 
         #rerendering
         self.rerender()
@@ -1969,9 +1990,9 @@ class RenderableCardListviewer(Frame):
         #dictionary
         main_list_state_to_page: dict[id_t, colored_page_t] = {
 
-            RenderableCardListviewer.MainListState.INFO_STATE: [[("Info State Active", Colors.BLACK)]],
+            RenderableCardListviewer.MainListState.INFO_STATE: [[("Info State Active", Colors.WHITE)]],
             RenderableCardListviewer.MainListState.SELECTION_STATE: [[("Selection State Active", Colors.ORANGE)]],
-            RenderableCardListviewer.MainListState.GROUPING_STATE: [[("Grouping State Active", Colors.GREEN)]]
+            RenderableCardListviewer.MainListState.MOVING_STATE: [[("Moving State Active", Colors.GREEN)]]
 
                                                                 }
 
@@ -2248,7 +2269,7 @@ class RenderableCardListviewer(Frame):
                         id_index != self.selected_card_index
                         or self.state != RenderableCardListviewer.MAIN_LIST_FOCUSED
                     )
-                    else (*Colors.YELLOW, self.selected_cardshadow_alpha)
+                    else (*RenderableCardListviewer.main_list_state_to_background_color_mapping[self.main_list_state], self.selected_cardshadow_alpha)
                 )
 
                 # Shadow surfaces are identical for cards with equal size and
@@ -2548,6 +2569,34 @@ class RenderableCardListviewer(Frame):
 
             mdict[RenderableCardListviewer.MENU_OPTIONS.MAIN_LIST_STATE_INFO_PANEL_KEY] = main_list_state_dict
 
+        #any other state needs to be possible
+        if  self.group_feature_state.selection_main_list_state_enabled\
+            or self.group_feature_state.moving_main_list_state_enabled:
+
+            change_main_list_state_dict = {}
+
+            if self.main_list_state != RenderableCardListviewer.MainListState.INFO_STATE:
+
+                change_main_list_state_dict[RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_INFO_STATE_KEY] = None
+
+            if  (self.group_feature_state.selection_main_list_state_enabled\
+                and self.main_list_state != RenderableCardListviewer.MainListState.SELECTION_STATE):
+
+                change_main_list_state_dict[RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_SELECTION_STATE_KEY] = None
+
+            if  (self.group_feature_state.moving_main_list_state_enabled\
+                and self.main_list_state != RenderableCardListviewer.MainListState.MOVING_STATE):
+
+                change_main_list_state_dict[RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_MOVING_STATE_KEY] = None
+
+            #adding the shown amount key
+            change_main_list_state_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_STATE_SHOWN_AMOUNT
+
+            #adding the dict to the main dict
+
+            mdict[RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_STATE_KEY] = change_main_list_state_dict
+
+
         return mdict
 
 
@@ -2632,6 +2681,21 @@ class RenderableCardListviewer(Frame):
                         self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
                         self.create_dropdown_menu()
                         self.raise_prerender_flag()
+
+                elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_STATE_KEY:
+
+                    #new state
+                    new_state: id_t = None
+
+                    if selection == RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_INFO_STATE_KEY:
+                        new_state = RenderableCardListviewer.MainListState.INFO_STATE
+                    elif selection == RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_SELECTION_STATE_KEY:
+                        new_state = RenderableCardListviewer.MainListState.SELECTION_STATE
+                    elif selection == RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_MOVING_STATE_KEY:
+                        new_state = RenderableCardListviewer.MainListState.MOVING_STATE
+
+                    self._change_main_list_state(new_state=new_state)
+
 
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.CREATE_GROUP_OPTION_KEY:
                     self.initialize_deck_creation_frame()
@@ -3629,6 +3693,32 @@ class RenderableCardListviewer(Frame):
             self.create_dropdown_menu()
 
         self.group_to_delete = None
+
+    #==================================
+    # MAIN LIST STATE CHANGING
+    #==================================
+
+    def _change_main_list_state(self, new_state: id_t) -> None:
+        """
+        Changes the main list state, and performs any
+        finalizing optimizations.
+        """
+
+        #finalization
+        if self.main_list_state == RenderableCardListviewer.MainListState.INFO_STATE:
+            pass
+        elif self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
+            pass
+        elif self.main_list_state == RenderableCardListviewer.MainListState.MOVING_STATE:
+            pass
+
+        #setting the new state
+        self.main_list_state = new_state
+
+        self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+        self.create_dropdown_menu()
+
+        self.raise_prerender_flag()
 
     #==================================
     # EXTERNAL USER ACTIONS
