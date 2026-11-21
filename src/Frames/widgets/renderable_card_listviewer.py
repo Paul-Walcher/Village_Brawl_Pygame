@@ -98,6 +98,8 @@ class RenderableCardListviewer(Frame):
     #full cardlist name key
     FULL_CARDLIST_NAME: str = "Full Cardlist"
 
+    #for selected cards amount
+    SELECTED_CARDS_AMOUNT_KEY: str = "Selected Cards Amount"
     # Limits keep browsing through a large collection from retaining every
     # scaled surface indefinitely.
     CARD_IMAGE_CACHE_LIMIT: int = 256
@@ -142,6 +144,14 @@ class RenderableCardListviewer(Frame):
                                                                                 [
                                                                                     [(f"{" "*15}Row {current_row}/{max_row}{" "*15}", Colors.YELLOW)]
                                                                                 ]
+
+    MAX_SELECTED_CARDS_REACHED_FADING_DURATION: float = 5000#ms
+    GET_MAX_SELECTED_CARDS_REACHED_INFO_PAGE: Callable[[int, int], colored_page_t] = lambda currently_selected, max_selected: \
+                                                                                        [
+                                                                                            [("Selecting this card would overstep", INFO_TEXT_ERROR_COLOR)],
+                                                                                            [("the maximum amount of cards selectable.", INFO_TEXT_ERROR_COLOR)],
+                                                                                            [(f"{currently_selected}/{max_selected} currently selected.")]
+                                                                                        ]
 
     #==================================
     # STATES
@@ -629,6 +639,8 @@ class RenderableCardListviewer(Frame):
                     select_main_list_state_color: color_t = Colors.ORANGE,
                     moving_main_list_state_color: color_t = Colors.GREEN,
 
+                    card_selected_in_selection_state_color: color_t = Colors.YELLOW,
+
                     #group features
                     group_feature_state: RenderableCardListviewer.FeatureState = None,
 
@@ -1112,6 +1124,10 @@ class RenderableCardListviewer(Frame):
         """
         Color of the text inside the info panel for the moving main list state.
         """
+        self.card_selected_in_selection_state_color: color_t = card_selected_in_selection_state_color
+        """
+        Color of the cards selected in the selection state.
+        """
 
         #==================================
         # CARD PREVIEW
@@ -1285,6 +1301,16 @@ class RenderableCardListviewer(Frame):
         """
         The index of the currently selected card.
         Used to index the card information in self.main_list_cards_dict
+        """
+        self.selection_state_selected_indices: dict[str, dict[int, bool]] = {}
+        """
+        The selected indices during the selection state.
+        If a selected index is selected its value is True, if its not
+        its False or not inside the dict.
+        There is also the number of cards selected key.
+
+        For each group one selection dict might exist,
+        they are created lazily.
         """
         self._state: id_t = RenderableCardListviewer.NOTHING_FOCUSED
         """
@@ -1543,7 +1569,7 @@ class RenderableCardListviewer(Frame):
         """
 
         if self._main_list_state != new_state:
-            self._main_list_state = new_state
+            self._change_main_list_state(new_state)
 
             if self.main_list_state_info_panel_frame is not None:
                 if self.group_feature_state.main_list_state_info_panel_shown:
@@ -1633,6 +1659,8 @@ class RenderableCardListviewer(Frame):
         self._check_validity()
 
         self.main_list_state = RenderableCardListviewer.MainListState.INFO_STATE
+        #resetting selection indices
+        self.selection_state_selected_indices = {}
 
         """
         INFO TEXT
@@ -1821,8 +1849,6 @@ class RenderableCardListviewer(Frame):
         """
 
         self.create_main_list_state_info_panel()
-
-
 
         self.create_dropdown_menu()
         #now getting the card positions
@@ -2209,6 +2235,9 @@ class RenderableCardListviewer(Frame):
         base_image_width = self.cardimage_width
         base_image_height = self.cardimage_height
 
+        selected_image_width: int = int(0.7 * base_image_width)
+        selected_image_height: int = int(0.7 * base_image_height)
+
         for cy in row_positions[first_row:after_last_row]:
             for id_index, main_list_cards_idx, img_rect, text_rect in self.main_list_cards_rects[cy]:
                 self.rendered_rows.append((cy, id_index, main_list_cards_idx, img_rect, text_rect))
@@ -2217,17 +2246,48 @@ class RenderableCardListviewer(Frame):
                 # Cache the image at its normal layout size. Card-press
                 # animation changes the rectangle every tick, so cache the
                 # stable base surface and scale that surface for the animation.
+
+
+                img_render_width: int = base_image_width
+                img_render_height: int = base_image_height
+
+                base_full_rect: pygame.Rect = pygame.Rect(0, 0,
+                                                            img_rect.width+text_rect.width,
+                                                            img_rect.height+text_rect.height
+                                                            )
+
+                positioned_base_full_rect: pygame.Rect = base_full_rect.copy()
+
+                positioned_base_full_rect.x = img_rect.x
+                positioned_base_full_rect.y = img_rect.y + self.main_list_yscroll
+
+                #changing appearance for selected cards
+                if self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
+                    if self.shown_group in self.selection_state_selected_indices:
+
+                        gsdict = self.selection_state_selected_indices[self.shown_group]
+
+                        if id_index in gsdict and gsdict[id_index]:
+
+                            img_render_width = selected_image_width
+                            img_render_height = selected_image_height
+
                 image_key = (
                     cinfo.card_image_path,
-                    base_image_width,
-                    base_image_height
+                    img_render_width,
+                    img_render_height
                 )
                 cached_image = self.card_render_cache.get(image_key)
                 if cached_image is None:
-                    cached_image = graphics.img_load_and_position_smoothscale(
+
+                    img_size_rect: pygame.Rect = pygame.Rect(0, 0, image_key[1], image_key[2])
+                    img_surf, pos = graphics.img_load_and_position_smoothscale(
                         cinfo.card_image_path,
-                        pygame.Rect(0, 0, base_image_width, base_image_height)
+                        img_size_rect
                     )
+                    pos = graphics.get_center_with_rect(outer_rect=base_full_rect, inner_rect=img_size_rect)
+                    #correcting the position
+                    cached_image = (img_surf, pos)
                     self.card_render_cache[image_key] = cached_image
                     if len(self.card_render_cache) > self.CARD_IMAGE_CACHE_LIMIT:
                         self.card_render_cache.popitem(last=False)
@@ -2275,12 +2335,13 @@ class RenderableCardListviewer(Frame):
                         img_render_pos[1] - img_y_inc // 2
                     )
 
-                shadow_rect = pygame.Rect(
-                    img_render_pos[0],
-                    img_render_pos[1],
-                    img.get_width(),
-                    img.get_height()
-                )
+                rendered_img_rect: pygame.Rect = pygame.Rect(
+                                                                img_render_pos[0],
+                                                                img_render_pos[1],
+                                                                img.get_width(),
+                                                                img.get_height()
+                                                            )
+                shadow_rect = rendered_img_rect.copy()
                 shadow_rect.x += int(self.cardshadow_hoffset_p * shadow_rect.width)
                 shadow_rect.y += int(self.cardshadow_voffset_p * shadow_rect.height)
 
@@ -2292,6 +2353,7 @@ class RenderableCardListviewer(Frame):
                     )
                     else (*RenderableCardListviewer.main_list_state_to_background_color_mapping[self.main_list_state], self.selected_cardshadow_alpha)
                 )
+
 
                 # Shadow surfaces are identical for cards with equal size and
                 # color; reuse them instead of allocating one every frame.
@@ -2306,7 +2368,41 @@ class RenderableCardListviewer(Frame):
                 else:
                     self.shadow_render_cache.move_to_end(shadow_key)
 
-                self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
+                #the selection color if this card is currently selected during selection state
+                if  self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE\
+                    and self.shown_group in self.selection_state_selected_indices:
+                    #checking if this card is selected
+                    gsdict = self.selection_state_selected_indices[self.shown_group]
+
+                    if  id_index in gsdict and\
+                        gsdict[id_index]:
+
+                        select_color: color_t = None
+
+                        if id_index != self.selected_card_index:
+                            select_color = (*self.card_selected_in_selection_state_color, self.cardshadow_alpha)
+                        else:
+
+                            r1, g1, b1 = self.card_selected_in_selection_state_color
+                            r2, g2, b2 = RenderableCardListviewer.main_list_state_to_background_color_mapping[self.main_list_state]
+
+                            select_color = (
+                                                (r1 + r2) // 2,
+                                                (g1 + g2) // 2,
+                                                (b1 + b2) // 2,
+                                                self.cardshadow_alpha
+                                            )
+
+
+                        selection_rect = graphics.apply_margins(rendered_img_rect, -0.25, -0.25)
+                        self.surface.fill(select_color, rect=selection_rect)
+
+                    else:
+                        self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
+
+                else:
+                    self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
+                    
                 self.surface.blit(img, img_render_pos)
 
                 card_subtext: str = self.get_card_subtext(
@@ -2673,6 +2769,7 @@ class RenderableCardListviewer(Frame):
                 elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTION_KEY:
 
                     self.shown_group = selection[0]
+
                     self.reload_current_group()
 
                 elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.DELETE_GROUP_OPTION_KEY:
@@ -2715,7 +2812,7 @@ class RenderableCardListviewer(Frame):
                     elif selection == RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_MOVING_STATE_KEY:
                         new_state = RenderableCardListviewer.MainListState.MOVING_STATE
 
-                    self._change_main_list_state(new_state=new_state)
+                    self.main_list_state = new_state
 
 
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.CREATE_GROUP_OPTION_KEY:
@@ -3249,6 +3346,54 @@ class RenderableCardListviewer(Frame):
                 #show the cardinfo
                 self.initialize_cardinfo_frame()
 
+            elif self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
+
+                self.card_selection_triggered()
+
+    def card_selection_triggered(self) -> None:
+        """
+        When a card is supposed to be selected during
+        cardselection state.
+        """
+        cgroup: group_t = self.groups[self.shown_group]
+        #getting max selection amount
+        max_selected: int = Cardgroup.max_cards_selected(cgroup)
+
+        #getting the main list index
+        mlist_idx = self.main_list_cards_dict[self.selected_card_index][0]
+
+        amount: int = self.main_list_cards[mlist_idx][1]
+
+        if self.shown_group not in self.selection_state_selected_indices:
+            self.selection_state_selected_indices[self.shown_group] = {}
+            self.selection_state_selected_indices[self.shown_group][RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY] = 0
+
+        gsdict = self.selection_state_selected_indices[self.shown_group]
+        current_amount = gsdict[RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY]
+
+        if  self.selected_card_index not in gsdict\
+            or not gsdict[self.selected_card_index]:
+
+            if (current_amount + amount) > max_selected:
+
+                self.print_info_text(
+                                        text_page=RenderableCardListviewer.GET_MAX_SELECTED_CARDS_REACHED_INFO_PAGE(current_amount, max_selected),
+                                        text_color=RenderableCardListviewer.INFO_TEXT_ERROR_COLOR,
+                                        fade_duration=RenderableCardListviewer.MAX_SELECTED_CARDS_REACHED_FADING_DURATION
+                                        )
+            else:
+
+                gsdict[self.selected_card_index] = True
+                gsdict[RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY] += amount
+                self.raise_prerender_flag()
+
+        else:
+            #card is already selected
+            gsdict[self.selected_card_index] = False
+            gsdict[RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY] -= amount
+            self.raise_prerender_flag()
+
+
     def long_enter_pressed(self):
         pass
 
@@ -3703,6 +3848,9 @@ class RenderableCardListviewer(Frame):
         Deletes the current group.
         """
 
+        if group_to_delete in self.selection_state_selected_indices:
+            del self.selection_state_selected_indices[group_to_delete]
+
         del self.groups[group_to_delete]
 
         if self.shown_group == group_to_delete:
@@ -3734,7 +3882,7 @@ class RenderableCardListviewer(Frame):
             pass
 
         #setting the new state
-        self.main_list_state = new_state
+        self._main_list_state = new_state
 
         self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
         self.create_dropdown_menu()
