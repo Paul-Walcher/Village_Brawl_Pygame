@@ -748,6 +748,7 @@ class ExpandableDropdownMenu(DropdownMenu):
             #after a move, check if we need to show another dropdown menu
             self.deferred_dropdown_menu = self.get_expanded_dropdown_menu(self.options_key_from_index(self.index))
             if self.deferred_dropdown_menu is not None:
+                self.deferred_dropdown_menu.unselect_options()
                 self.state = ExpandableDropdownMenu.DEFERRED_MENU_SHOWN
             else:
                 self.state = DropdownMenu.OPTION_SELECTED

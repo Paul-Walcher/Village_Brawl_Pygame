@@ -135,6 +135,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                     text_margins_percentage: tuple[int, int] = (0.4, 0.4),
                     highlighted_text_margins_percentage: tuple[int, int] = (0.1, 0.1),
                     initial_selected_index = -1,
+                    show_number_of_options_for_scrolling: bool = False,
                     selected_animation_duration: float = 400,#ms
                     scrolling_animation_duration: float = 300#ms
 
@@ -231,6 +232,10 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
         self.dropdown_options: list[DropDownKey] = None
         """
         The current option pages shown.
+        """
+        self.show_number_of_options_for_scrolling: bool = show_number_of_options_for_scrolling
+        """
+        If the number of options for scrolling is shown.
         """
 
         self.n_options_shown: int = -1
@@ -381,7 +386,8 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
         if self._scroll_index != val:
             self._scroll_index = val
-            self.rerender_arrow_text()
+            if self.show_number_of_options_for_scrolling:
+                self.rerender_arrow_text()
 
     #getting the index of the option box the mouse is hovering over
     @override
@@ -507,11 +513,29 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
                                                         int(self.original_frame_dim.height * self.arrow_frame_margin / 2)
                                                         )
 
-            #splitting percentages
-            split_p: list[float] = [(1.0 - self.arrow_to_text_margin), self.arrow_to_text_margin]
-            #getting the text and image frames.
-            self.top_arrow_text_frame, self.top_arrow_frame = graphics.split_rect_vertically(topframe, split_p)
-            self.bottom_arrow_frame, self.bottom_arrow_text_frame = graphics.split_rect_vertically(bottomframe, split_p[::-1])
+            self.top_arrow_surface = pygame.Surface((topframe.width, topframe.height), pygame.SRCALPHA)
+            self.bottom_arrow_surface = pygame.Surface((bottomframe.width, bottomframe.height), pygame.SRCALPHA)
+
+            self.top_arrow_text_framet = None #frame for the text on top
+            self.top_arrow_frame = None #frame for the top arrow image
+
+            self.bottom_arrow_text_frame = None #frame for the text at the bottom
+            self.bottom_arrow_frame = None #frame for the bottom arrow image
+
+            if self.show_number_of_options_for_scrolling:
+
+                #splitting percentages
+                split_p: list[float] = [(1.0 - self.arrow_to_text_margin), self.arrow_to_text_margin]
+                #getting the text and image frames.
+                self.top_arrow_text_frame, self.top_arrow_frame = graphics.split_rect_vertically(topframe, split_p)
+                self.bottom_arrow_frame, self.bottom_arrow_text_frame = graphics.split_rect_vertically(bottomframe, split_p[::-1])
+
+                self.rerender_arrow_text()
+
+            else:
+
+                self.top_arrow_frame = topframe.copy()
+                self.bottom_arrow_frame = bottomframe.copy()
 
             #rendering the arrows
             self.top_arrow_rendered, self.top_arrow_pos  = graphics.img_load_and_position(  ScrollableDropdownMenu.ARROW_IMG_PATH,
@@ -521,18 +545,15 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             #rotating the bottom arrow
             self.bottom_arrow_rendered = pygame.transform.rotate(self.bottom_arrow_rendered, 180.0)
             #surfaces
-            self.top_arrow_surface = pygame.Surface((topframe.width, topframe.height), pygame.SRCALPHA)
-            self.bottom_arrow_surface = pygame.Surface((bottomframe.width, bottomframe.height), pygame.SRCALPHA)
 
-            self.rerender_arrow_text()
-            self.raise_prerender_flag()
+        self.raise_prerender_flag()
 
     def rerender_arrow_text(self) -> None:
         """
         Rerenders the text above the arrows.
         """
         #if no arrows are shown, return
-        if not self.arrows_shown:
+        if not self.arrows_shown or not self.show_number_of_options_for_scrolling:
             return
 
         topnum: int = self.scroll_index
@@ -569,11 +590,15 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
             self.top_arrow_surface.fill(Colors.TRANSPARENT)
             self.bottom_arrow_surface.fill(Colors.TRANSPARENT)
 
-            self.top_arrow_surface.blit(self.top_arrow_rendered, self.top_arrow_pos)
-            graphics.render_rendered_surface_position_tuples(self.top_arrow_surface, self.top_arrow_text_rendered)
+            if self.scroll_index > 0:
+                self.top_arrow_surface.blit(self.top_arrow_rendered, self.top_arrow_pos)
+                if self.show_number_of_options_for_scrolling:
+                    graphics.render_rendered_surface_position_tuples(self.top_arrow_surface, self.top_arrow_text_rendered)
 
-            self.bottom_arrow_surface.blit(self.bottom_arrow_rendered, self.bottom_arrow_pos)
-            graphics.render_rendered_surface_position_tuples(self.bottom_arrow_surface, self.bottom_arrow_text_rendered)
+            if self.scroll_index < (len(self.dropdown_keys) - self.n_options_shown):
+                self.bottom_arrow_surface.blit(self.bottom_arrow_rendered, self.bottom_arrow_pos)
+                if self.show_number_of_options_for_scrolling:
+                    graphics.render_rendered_surface_position_tuples(self.bottom_arrow_surface, self.bottom_arrow_text_rendered)
 
     @override
     def render(self, screen):
@@ -844,6 +869,7 @@ class ScrollableDropdownMenu(ExpandableDropdownMenu):
 
                 self.deferred_dropdown_menu = self.get_expanded_dropdown_menu(self.dropdown_options[self.selected_index])
                 if self.deferred_dropdown_menu is not None:
+                    self.deferred_dropdown_menu.unselect_options()
                     self.state = ExpandableDropdownMenu.DEFERRED_MENU_SHOWN
                 else:
                     self.state = DropdownMenu.OPTION_SELECTED

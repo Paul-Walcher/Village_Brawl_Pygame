@@ -620,10 +620,14 @@ class RenderableCardListviewer(Frame):
                     main_list_state_info_panel_hmargin: float = 0.1, #Horizontal margin for the info panel
                     main_list_state_info_panel_vmargin: float = 0.25, #Vertical margin for the info panel
                     main_list_state_info_panel_alpha: int = 200, #Alpha value for the info panel.
-
                     main_list_state_info_panel_background_color: color_t = Colors.BLACK, #Background color for the info panel.
                     main_list_state_info_panel_outline_color: color_t = Colors.BLACK, #Outline color of the info panel.
                     main_list_state_info_panel_shown: bool = True, #if the info panel starts out shown or not.
+
+                    #colors for the main list states
+                    info_main_list_state_color: color_t = Colors.WHITE,
+                    select_main_list_state_color: color_t = Colors.ORANGE,
+                    moving_main_list_state_color: color_t = Colors.GREEN,
 
                     #group features
                     group_feature_state: RenderableCardListviewer.FeatureState = None,
@@ -1093,6 +1097,23 @@ class RenderableCardListviewer(Frame):
         """
 
         #==================================
+        # MAIN LIST STATE COLORS
+        #==================================
+
+        self.info_main_list_state_color: color_t = info_main_list_state_color
+        """
+        Color of the text inside the info panel for the info main list state.
+        """
+        self.select_main_list_state_color: color_t = select_main_list_state_color
+        """
+        Color of the text inside the info panel for the selection main list state.
+        """
+        self.moving_main_list_state_color: color_t = moving_main_list_state_color
+        """
+        Color of the text inside the info panel for the moving main list state.
+        """
+
+        #==================================
         # CARD PREVIEW
         #==================================
 
@@ -1253,7 +1274,7 @@ class RenderableCardListviewer(Frame):
         """
         self.info_text_fading_clock: Clock = Clock()
         """
-        The clock for calculating the info tetx fadeout.
+        The clock for calculating the info text fadeout.
         """
 
         #==================================
@@ -1990,9 +2011,9 @@ class RenderableCardListviewer(Frame):
         #dictionary
         main_list_state_to_page: dict[id_t, colored_page_t] = {
 
-            RenderableCardListviewer.MainListState.INFO_STATE: [[("Info State Active", Colors.WHITE)]],
-            RenderableCardListviewer.MainListState.SELECTION_STATE: [[("Selection State Active", Colors.ORANGE)]],
-            RenderableCardListviewer.MainListState.MOVING_STATE: [[("Moving State Active", Colors.GREEN)]]
+            RenderableCardListviewer.MainListState.INFO_STATE: [[("Info State Active", self.info_main_list_state_color)]],
+            RenderableCardListviewer.MainListState.SELECTION_STATE: [[("Selection State Active", self.select_main_list_state_color)]],
+            RenderableCardListviewer.MainListState.MOVING_STATE: [[("Moving State Active", self.moving_main_list_state_color)]]
 
                                                                 }
 
