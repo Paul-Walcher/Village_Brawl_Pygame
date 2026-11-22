@@ -86,9 +86,9 @@ class RenderableCardListviewer(Frame):
             self.group_selection_enabled: bool = True
             self.group_creation_enabled: bool = True
             self.group_deletion_enabled: bool = True
+            self.group_importing_enabled: bool = True
             self.main_list_state_info_panel_shown: bool = True  #if the info panel for the main list is shown,
                                                                 #that depicts what actions can be carried out in the main list.
-
             #main list states
 
             #info state is always enabled
@@ -188,7 +188,9 @@ class RenderableCardListviewer(Frame):
     DECKNAME_SELECTED_ANIMATION: id_t = R_ID()
     MENU_BUTTON_SELECTED_ANIMATION: id_t = R_ID()
 
+    #popups
     GROUP_DELETION_POPUP_SHOWN: id_t = R_ID()
+    GROUP_IMPORTING_POPUP_SHOWN: id_t = R_ID()
 
     CARDINFO_SLIDING_IN: id_t = R_ID() #the cardinfo is currently sliding in
     CARDINFO_SHOWN: id_t = R_ID() #in this state, the cardinfo is shown
@@ -254,13 +256,16 @@ class RenderableCardListviewer(Frame):
         DISPLAY_OPTIONS_SHOWN_AMOUNT: int = 5
 
         #group selection
-        SELECT_GROUP_OPTION_KEY: tuple[str] = ("Select Deck",)
+        SELECT_GROUP_OPTION_KEY: tuple[str] = ("Select Group",)
         SELECT_GROUP_OPTIONS_SHOWN_AMOUNT: int = 5
         #group creation
-        CREATE_GROUP_OPTION_KEY: tuple[str] = ("Create Deck",)
+        CREATE_GROUP_OPTION_KEY: tuple[str] = ("Create Group",)
         #group deletion
-        DELETE_GROUP_OPTION_KEY: tuple[str] = ("Delete Deck",)
+        DELETE_GROUP_OPTION_KEY: tuple[str] = ("Delete Group",)
         DELETE_GROUP_OPTIONS_SHOWN_AMOUNT: int = 5
+        #group importing
+        IMPORT_GROUP_OPTION_KEY: tuple[str] = ("Import ",)
+        IMPORT_GROUP_OPTIONS_SHOWN_AMOUNT: int = 5
         #show main list state
         MAIN_LIST_STATE_INFO_PANEL_KEY: tuple[str] = ("Editing State Info Panel",)
 
@@ -662,6 +667,10 @@ class RenderableCardListviewer(Frame):
         self.group_deletion_popup: Popup = None
         """
         The group deletion popup. Is shown before group deletion for confirmation.
+        """
+        self.group_importing_popup: Popup = None
+        """
+        Confirmation for group importing.
         """
 
         Frame.__init__(
@@ -1292,6 +1301,15 @@ class RenderableCardListviewer(Frame):
         """
 
         #==================================
+        # GROUP IMPORT
+        #==================================
+
+        self.group_import_tuple: tuple[str, str] = None
+        """
+        This specifies: (group_to_import_into, group_to_import_from)
+        """
+
+        #==================================
         # INTERNAL VARIABLES
         #==================================
 
@@ -1511,6 +1529,10 @@ class RenderableCardListviewer(Frame):
         self.cards_rects_before_enter_index: int = -1
         """
         The saved main list index before any selection process.
+        """
+        self.currently_moving_cards_indices: list[int] = []
+        """
+        List of the currently moving cards.
         """
 
         #==================================
@@ -1932,6 +1954,8 @@ class RenderableCardListviewer(Frame):
         #checking for group deletion popup
         if self.state == RenderableCardListviewer.GROUP_DELETION_POPUP_SHOWN:
             self.group_deletion_popup.render(self.surface)
+        elif self.state == RenderableCardListviewer.GROUP_IMPORTING_POPUP_SHOWN:
+            self.group_importing_popup.render(self.surface)
         elif self.state in [
                                 RenderableCardListviewer.CARDINFO_SLIDING_IN,
                                 RenderableCardListviewer.CARDINFO_SHOWN,
@@ -2497,7 +2521,7 @@ class RenderableCardListviewer(Frame):
     # GROUP ACTIONS
     #==================================
 
-    def reload_current_group(self) -> None:
+    def reload_current_group(self, keep_current_state: bool = False) -> None:
         """
         Does all rerendering needed after
         changing the current group,
@@ -2506,7 +2530,7 @@ class RenderableCardListviewer(Frame):
 
         self.create_deckname_text()
         self.create_decksize_text()
-        self.recalculate_main_list_positions()
+        self.recalculate_main_list_positions(keep_current_state=keep_current_state)
 
         self.raise_prerender_flag()
 
@@ -2639,6 +2663,12 @@ class RenderableCardListviewer(Frame):
             deletion_group_dict = groups_dict.copy()
             deletion_group_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.DELETE_GROUP_OPTIONS_SHOWN_AMOUNT
             mdict[RenderableCardListviewer.MENU_OPTIONS.DELETE_GROUP_OPTION_KEY] = deletion_group_dict
+
+        if self.group_feature_state.group_importing_enabled:
+
+            importing_group_dict = groups_dict.copy()
+            importing_group_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.IMPORT_GROUP_OPTIONS_SHOWN_AMOUNT
+            mdict[RenderableCardListviewer.MENU_OPTIONS.IMPORT_GROUP_OPTION_KEY] = importing_group_dict
 
         #sorting types
         sorting_options_dict = {
@@ -2777,6 +2807,11 @@ class RenderableCardListviewer(Frame):
                                                 fade_duration=RenderableCardListviewer.GROUP_UNDELETEABLE_FADING_DURATION
                                                 )
 
+                elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.IMPORT_GROUP_OPTION_KEY:
+
+                    self.group_import_tuple = (self.shown_group, selection[0])
+                    self.initialize_group_importing()
+
                 elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.MAIN_LIST_STATE_INFO_PANEL_KEY:
 
                     #main list state
@@ -2875,6 +2910,7 @@ class RenderableCardListviewer(Frame):
             RenderableCardListviewer.MENU_BUTTON_SELECTED_ANIMATION,
             RenderableCardListviewer.CARD_SNAPBACK_ANIMATION,
             RenderableCardListviewer.GROUP_DELETION_POPUP_SHOWN,
+            RenderableCardListviewer.GROUP_IMPORTING_POPUP_SHOWN,
             RenderableCardListviewer.CARDINFO_SLIDING_IN,
             RenderableCardListviewer.CARDINFO_SLIDING_OUT
         )
@@ -3082,6 +3118,33 @@ class RenderableCardListviewer(Frame):
                         self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
 
                         self.group_to_delete = None
+
+            self.key_clock.start()
+
+        elif self.state == RenderableCardListviewer.GROUP_IMPORTING_POPUP_SHOWN:
+
+            ret: Frame = self.group_importing_popup.tick()
+
+            if ret is None:
+                self.group_importing_popup = None
+                self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
+
+            else:
+
+                for event in self.group_importing_popup.poll_events():
+
+                    if event.type == Popup.EventTypes.OPTION_SELECTED:
+
+                        #checking the option
+                        if event.option_index == 0:
+                            #YES
+                            self.trigger_group_importing()
+
+                        #normal state
+                        self.focus()
+                        self.group_importing_popup = None
+
+                        self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
 
             self.key_clock.start()
 
@@ -3891,7 +3954,96 @@ class RenderableCardListviewer(Frame):
 
         return cards_dict
 
+    #==================================
+    # GROUP IMPORTING
+    #==================================
 
+    def initialize_group_importing(self) -> None:
+        """
+        Initializes group importing.
+        Creates the popup, then changes the state.
+        """
+
+        if self.group_import_tuple is None:
+            return
+
+        import_into_group, import_from_group = self.group_import_tuple
+
+        self.group_importing_popup = Popup(
+                                            frame_dim=self.popup_frame_dim,
+                                            data=None,
+                                            parent_frame=self,
+                                            focus_group=self.focus_group,
+                                            has_focus=True,
+                                            font=self.font,
+                                            text=[
+                                                    [("Do you really want", Colors.WHITE)],
+                                                    [("to import group", Colors.WHITE)],
+                                                    [(f"{import_from_group} into", Colors.WHITE)],
+                                                    [(f"{import_into_group}?", Colors.WHITE)]
+                                                ],
+                                            background_color=Colors.BLACK,
+                                            options=[
+                                                        Popup.Option(
+                                                                        option_text=graphics.str_to_colored_page(text="YES", text_color=Colors.WHITE),
+                                                                        highlighted_option_text=graphics.str_to_colored_page(text="YES", text_color=Colors.BLACK),
+                                                                        background_color=Colors.BLACK,
+                                                                        highlighted_background_color=Colors.CYAN
+                                                                    ),
+                                                        Popup.Option(
+                                                                        option_text=graphics.str_to_colored_page(text="NO", text_color=Colors.WHITE),
+                                                                        highlighted_option_text=graphics.str_to_colored_page(text="NO", text_color=Colors.BLACK),
+                                                                        background_color=Colors.BLACK,
+                                                                        highlighted_background_color=Colors.CYAN
+                                                                    )
+                                                    ]
+                                            )
+
+        self.clear_pygame_events()
+
+        self.state = RenderableCardListviewer.GROUP_IMPORTING_POPUP_SHOWN
+
+    def trigger_group_importing(self) -> None:
+        """
+        Actually handles the group importing.
+        This directly changes the group in self.groups.
+        """
+
+        import_into_groupname, import_from_groupname = self.group_import_tuple
+        import_into_group, import_from_group = self.groups[import_into_groupname], self.groups[import_from_groupname]
+
+        into_group_clist: cardlist_t = Cardgroup.cardlist(import_into_group)
+        from_group_clist: cardlist_t = Cardgroup.cardlist(import_from_group)
+
+        new_dict = into_group_clist.copy()
+
+        for (cardclass, amount) in from_group_clist.items():
+
+            if cardclass not in new_dict:
+                new_dict[cardclass] = 0
+
+            new_dict[cardclass] += amount
+
+        #adding the new group
+        Cardgroup.cardlist(group=import_into_group, cardlist=new_dict)
+
+        #setting the cardorder
+        prev_order: cardorder_t = Cardgroup.cardorder(import_into_group)
+        if prev_order is None:
+            prev_order = []
+        from_order: cardorder_t = Cardgroup.cardorder(import_from_group)
+        if from_order is None:
+            from_order = []
+
+        prev_order.extend(from_order)
+
+        Cardgroup.cardorder(group=import_into_group, cardorder=prev_order)
+
+        if import_into_groupname == self.shown_group:
+            self.reload_current_group(keep_current_state=False)
+
+
+        self.group_import_tuple = None
 
     #==================================
     # GROUP DELETION
