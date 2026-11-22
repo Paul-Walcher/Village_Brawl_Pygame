@@ -2402,7 +2402,7 @@ class RenderableCardListviewer(Frame):
 
                 else:
                     self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
-                    
+
                 self.surface.blit(img, img_render_pos)
 
                 card_subtext: str = self.get_card_subtext(
@@ -3348,54 +3348,16 @@ class RenderableCardListviewer(Frame):
 
             elif self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
 
-                self.card_selection_triggered()
-
-    def card_selection_triggered(self) -> None:
-        """
-        When a card is supposed to be selected during
-        cardselection state.
-        """
-        cgroup: group_t = self.groups[self.shown_group]
-        #getting max selection amount
-        max_selected: int = Cardgroup.max_cards_selected(cgroup)
-
-        #getting the main list index
-        mlist_idx = self.main_list_cards_dict[self.selected_card_index][0]
-
-        amount: int = self.main_list_cards[mlist_idx][1]
-
-        if self.shown_group not in self.selection_state_selected_indices:
-            self.selection_state_selected_indices[self.shown_group] = {}
-            self.selection_state_selected_indices[self.shown_group][RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY] = 0
-
-        gsdict = self.selection_state_selected_indices[self.shown_group]
-        current_amount = gsdict[RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY]
-
-        if  self.selected_card_index not in gsdict\
-            or not gsdict[self.selected_card_index]:
-
-            if (current_amount + amount) > max_selected:
-
-                self.print_info_text(
-                                        text_page=RenderableCardListviewer.GET_MAX_SELECTED_CARDS_REACHED_INFO_PAGE(current_amount, max_selected),
-                                        text_color=RenderableCardListviewer.INFO_TEXT_ERROR_COLOR,
-                                        fade_duration=RenderableCardListviewer.MAX_SELECTED_CARDS_REACHED_FADING_DURATION
-                                        )
-            else:
-
-                gsdict[self.selected_card_index] = True
-                gsdict[RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY] += amount
-                self.raise_prerender_flag()
-
-        else:
-            #card is already selected
-            gsdict[self.selected_card_index] = False
-            gsdict[RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY] -= amount
-            self.raise_prerender_flag()
+                self.card_selection_triggered(select_all=False)
 
 
     def long_enter_pressed(self):
-        pass
+
+        if self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
+            #if the selection main list state is active, select all
+            if self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
+
+                self.card_selection_triggered(select_all=True)
 
     def back_pressed(self):
 
@@ -3797,6 +3759,149 @@ class RenderableCardListviewer(Frame):
         #sliding in, and setting state
         self.cardinfo_frame.start_sliding_in()
         self.state = RenderableCardListviewer.CARDINFO_SLIDING_IN
+
+    #==================================
+    # CARD SELECTION
+    #==================================
+
+    def card_selection_triggered(self, select_all: bool = False) -> None:
+        """
+        When a card is supposed to be selected during
+        cardselection state.
+
+        If select all all cards of the same cardclass
+        inside the group will be selected if the
+        current card is not selected, otherwise unselected.
+        """
+        cgroup: group_t = self.groups[self.shown_group]
+        #getting max selection amount
+        max_selected: int = Cardgroup.max_cards_selected(cgroup)
+
+        if self.shown_group not in self.selection_state_selected_indices:
+            self.selection_state_selected_indices[self.shown_group] = {}
+            self.selection_state_selected_indices[self.shown_group][RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY] = 0
+
+        gsdict = self.selection_state_selected_indices[self.shown_group]
+        current_amount = gsdict[RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY]
+
+        #getting the main list index
+        mlist_idx = self.main_list_cards_dict[self.selected_card_index][0]
+
+        cardclass: Type[Renderable_CardInfo] = self.main_list_cards[mlist_idx][0]
+
+        amount: int = -1 #amount of cards selected.
+
+        select_state: bool = False
+
+        if self.selected_card_index in gsdict:
+            select_state = gsdict[self.selected_card_index]
+
+        if select_all:
+
+            amount = 0
+            for i in range(self.n_cards_shown):
+
+                    cmain_idx: int = self.main_list_cards_dict[i][0]
+                    cclass: Type[Renderable_CardInfo] = self.main_list_cards[cmain_idx][0]
+
+                    gs_state: bool = False
+                    if i in gsdict:
+                        gs_state = gsdict[i]
+
+                    if cclass == cardclass and gs_state != select_state: #we want a select change
+                        amount += self.main_list_cards[cmain_idx][1]
+
+        else:
+            amount = self.main_list_cards[mlist_idx][1]
+
+        if  self.selected_card_index not in gsdict\
+            or not gsdict[self.selected_card_index]:
+
+            if (current_amount + amount) > max_selected:
+
+                self.print_info_text(
+                                        text_page=RenderableCardListviewer.GET_MAX_SELECTED_CARDS_REACHED_INFO_PAGE(current_amount, max_selected),
+                                        text_color=RenderableCardListviewer.INFO_TEXT_ERROR_COLOR,
+                                        fade_duration=RenderableCardListviewer.MAX_SELECTED_CARDS_REACHED_FADING_DURATION
+                                        )
+            else:
+
+                #select all
+                if select_all:
+
+                    for i in range(self.n_cards_shown):
+
+                            cmain_idx: int = self.main_list_cards_dict[i][0]
+                            cclass: Type[Renderable_CardInfo] = self.main_list_cards[cmain_idx][0]
+
+                            if cclass == cardclass:
+                                gsdict[i] = True
+
+                else:
+                    gsdict[self.selected_card_index] = True
+
+                gsdict[RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY] += amount
+                self.raise_prerender_flag()
+
+        else:
+
+            #select all
+            if select_all:
+
+                for i in range(self.n_cards_shown):
+
+                        cmain_idx: int = self.main_list_cards_dict[i][0]
+                        cclass: Type[Renderable_CardInfo] = self.main_list_cards[cmain_idx][0]
+
+                        if cclass == cardclass:
+                            gsdict[i] = False
+
+            else:
+                gsdict[self.selected_card_index] = False
+
+            gsdict[RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY] -= amount
+            self.raise_prerender_flag()
+
+    def get_selected_cards(self) -> dict[str, dict[Type[Renderable_CardInfo], int]]:
+        """
+        Returns a dictionary like:
+
+        {
+            groupname: {
+                        cardclass: amount
+                            }
+        },
+
+        which is the selected cards, grouped by groupname and mapped to
+        the amount of the same class selected.
+        """
+
+        cards_dict: dict[str, dict[Type[Renderable_CardInfo], int]] = {}
+
+        for (groupname, select_dict) in self.selection_state_selected_indices.items():
+
+            new_dict: dict[Type[Renderable_CardInfo], int] = {}
+
+            for (id_index, select_state) in select_dict.items():
+
+                if id_index == RenderableCardListviewer.SELECTED_CARDS_AMOUNT_KEY:
+                    continue
+                #map it to the main list index if it is a selected card
+                if select_state:
+                    main_list_idx: int = self.main_list_cards_dict[id_index][0]
+
+                    cclass, _ = self.main_list_cards[main_list_idx]
+
+                    if cclass not in new_dict:
+                        new_dict[cclass] = 0
+
+                    new_dict[cclass] += 1
+
+            if len(new_dict) > 0:
+                cards_dict[groupname] = new_dict
+
+        return cards_dict
+
 
 
     #==================================
