@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Type, Any, Callable, override
 from bisect import bisect_left, bisect_right
 from collections import OrderedDict
+from itertools import islice
 
 import pygame
 
@@ -3517,7 +3518,17 @@ class RenderableCardListviewer(Frame):
             #if the selection main list state is active, select all
             if self.main_list_state == RenderableCardListviewer.MainListState.INFO_STATE:
 
-                self.initialize_card_moving()
+                if not self.card_moving_active:
+                    self.initialize_card_moving()
+                else:
+                    #getting the cardclass, trying to delete
+                    if self.selected_card_index not in self.moving_indices:
+
+                        #try to delete the selected cardclass
+                        mlist_idx: int = self.main_list_cards_dict[self.selected_card_index][0]
+                        cclass, amount = self.main_list_cards[mlist_idx]
+
+                        self.remove_last_added_card_with_same_cardclass_from_moving_cards(cclass)
 
             elif self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
 
@@ -3902,6 +3913,68 @@ class RenderableCardListviewer(Frame):
         self.moving_indices[self.selected_card_index] = True
         if len(self.rendered_moving_indices) < (self.max_moving_cards_shown)-1:
             self.rendered_moving_indices.append(self.selected_card_index)
+
+    def remove_last_added_card_with_same_cardclass_from_moving_cards(self, cardclass: Type[PlaysetEntity]):
+        """
+        Removes the last card that was added that has the same cardclass
+        as the class given.
+        If no card has the same class, this method does nothing.
+        """
+
+        if not self.card_moving_active:
+            return
+
+        index_to_delete: int = None
+        for (idx, moving) in reversed(self.moving_indices.items()):
+
+            if index_to_delete is not None:
+                break
+
+            if moving:
+
+                #getting the cardclass
+                main_list_idx: int = self.main_list_cards_dict[idx][0]
+                idx_cardclass, amount = self.main_list_cards[main_list_idx]
+
+                if idx_cardclass == cardclass:
+                    index_to_delete = idx
+
+        if index_to_delete is not None:
+            #deleting
+            del self.moving_indices[index_to_delete]
+
+            #reforming the moving indices
+            if index_to_delete in self.rendered_moving_indices:
+
+                self.rendered_moving_indices.remove(index_to_delete)
+
+                new_idx: int = -1
+                moving: bool = False
+
+                for new_idx, moving in islice(
+                                                self.moving_indices.items(),
+                                                self.max_moving_cards_shown - 1,
+                                                None
+                                            ):
+                    if moving:
+                        self.rendered_moving_indices.append(new_idx)
+                        break
+
+            #if we deleted the last entry, finalize the moving
+            if len(self.moving_indices) == 0:
+                self.finalize_moving_card()
+
+    def finalize_moving_card(self) -> None:
+        """
+        Finalizes the moving state.
+        """
+
+        self.moving_indices = None
+        self.rendered_moving_indices = None
+
+        self.card_moving_active = False
+
+
 
     #==================================
     # CARDINFO FRAME
