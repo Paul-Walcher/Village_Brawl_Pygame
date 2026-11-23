@@ -637,10 +637,12 @@ class RenderableCardListviewer(Frame):
                     main_list_state_info_panel_outline_color: color_t = Colors.BLACK, #Outline color of the info panel.
                     main_list_state_info_panel_shown: bool = True, #if the info panel starts out shown or not.
 
+                    #card moving
+                    max_moving_cards_shown: int = 10, #the maximum of picked up cards shown while moving.
+
                     #colors for the main list states
                     info_main_list_state_color: color_t = Colors.WHITE,
                     select_main_list_state_color: color_t = Colors.ORANGE,
-                    moving_main_list_state_color: color_t = Colors.GREEN,
 
                     card_selected_in_selection_state_color: color_t = Colors.YELLOW,
 
@@ -648,7 +650,7 @@ class RenderableCardListviewer(Frame):
                     group_feature_state: RenderableCardListviewer.FeatureState = None,
 
                     #enter states
-                    time_until_long_enter_pressed: float = 500,#ms, how long until the long enter state is reached
+                    time_until_long_enter_pressed: float = 400,#ms, how long until the long enter state is reached
                     #percentage when card is selected
                     card_pressed_size_change_percentage: float = 0.25,
                     #delay between inputs
@@ -1127,10 +1129,6 @@ class RenderableCardListviewer(Frame):
         """
         Color of the text inside the info panel for the selection main list state.
         """
-        self.moving_main_list_state_color: color_t = moving_main_list_state_color
-        """
-        Color of the text inside the info panel for the moving main list state.
-        """
         self.card_selected_in_selection_state_color: color_t = card_selected_in_selection_state_color
         """
         Color of the cards selected in the selection state.
@@ -1308,6 +1306,34 @@ class RenderableCardListviewer(Frame):
         """
         This specifies: (group_to_import_into, group_to_import_from)
         """
+
+        #==================================
+        # CARD MOVING
+        #==================================
+
+        self.moving_indices: OrderedDict[int, bool] = None
+        """
+        If the index is not inside this dict, it means it is not moving.
+        If it is, and the entry is true, it means the index of the card is currently moving.
+        """
+        self.rendered_moving_indices: list[int] = None
+        """
+        The actual rendered indices.
+        Gets recalculated only when picking up cards.
+        """
+        self.max_moving_cards_shown: int = max_moving_cards_shown
+        """
+        Maximum amount of picked up cards shown while moving cards.
+        """
+        self.rendered_moving_cards_width_offset: int = None
+        """
+        The width offset for showing each moving card.
+        """
+        self.rendered_moving_cards_height_offset: int = None
+        """
+        The height offset for showing each moving card.
+        """
+        self.card_moving_active: bool = False
 
         #==================================
         # INTERNAL VARIABLES
@@ -2091,6 +2117,10 @@ class RenderableCardListviewer(Frame):
         self.main_list_cwidth = (self.inner_main_list_frame.width - self.main_list_hseparator_width) // self.cards_per_line
         self.main_list_cheight = (self.inner_main_list_frame.height - self.main_list_vseparator_height) // self.cards_per_column
 
+        #setting the movement offsets
+        self.rendered_moving_cards_width_offset = self.main_list_cwidth // self.max_moving_cards_shown
+        self.rendered_moving_cards_height_offset = self.main_list_cheight // self.max_moving_cards_shown
+
         if not keep_current_state:
             gcards = Cardgroup.cardlist(group=self.groups[self.shown_group])
             gcardorder: cardorder_t = Cardgroup.cardorder(group=self.groups[self.shown_group])
@@ -2227,7 +2257,6 @@ class RenderableCardListviewer(Frame):
         if self.selected_card_index < 0 or self.selected_card_index >= self.n_cards_shown:
             self.selected_card_index = 0
 
-
     def render_list_with_yscroll(self) -> None:
         """
         Renders only visible card rows and reuses cached image, text, and
@@ -2253,236 +2282,311 @@ class RenderableCardListviewer(Frame):
         first_row = bisect_left(row_positions, visible_top)
         after_last_row = bisect_right(row_positions, visible_bottom)
 
+        for cy in row_positions[first_row:after_last_row]:
+            for id_index, main_list_cards_idx, img_rect, text_rect in self.main_list_cards_rects[cy]:
+
+                if self.card_moving_active:
+                    if id_index in self.moving_indices and self.moving_indices[id_index]:
+                        continue
+
+                self.render_individual_card(
+                                                cy=cy,
+                                                id_index=id_index,
+                                                main_list_cards_idx=main_list_cards_idx,
+                                                img_rect=img_rect,
+                                                text_rect=text_rect
+                                            )
+
+        if self.card_moving_active:
+
+            #getting the rects
+            base_main_list_cards_index,\
+            base_img_rect,\
+            base_text_rect,\
+            base_cy                              = self.main_list_cards_dict[self.selected_card_index]
+
+            base_img_rect = base_img_rect.copy()
+            base_text_rect = base_text_rect.copy()
+            #getting the offset
+            base_img_rect.x -= 2 * self.rendered_moving_cards_width_offset
+            base_img_rect.y -= 2 * self.rendered_moving_cards_height_offset
+
+            base_text_rect.x -= 2 * self.rendered_moving_cards_width_offset
+            base_text_rect.y -= 2 * self.rendered_moving_cards_height_offset
+
+            #adding offsets for showing the cards
+            base_img_rect.x += len(self.rendered_moving_indices) * self.rendered_moving_cards_width_offset
+            base_img_rect.y -= len(self.rendered_moving_indices) * self.rendered_moving_cards_height_offset
+
+            base_text_rect.x += len(self.rendered_moving_indices) * self.rendered_moving_cards_width_offset
+            base_text_rect.y -= len(self.rendered_moving_indices) * self.rendered_moving_cards_height_offset
+
+            for id_index in self.rendered_moving_indices[::-1]:
+
+                main_list_cards_idx,\
+                img_rect,\
+                text_rect,\
+                cy                              = self.main_list_cards_dict[id_index]
+
+                #render from back to front
+                self.render_individual_card(
+                                                cy=base_cy,
+                                                id_index=id_index,
+                                                main_list_cards_idx=main_list_cards_idx,
+                                                img_rect=base_img_rect,
+                                                text_rect=base_text_rect
+                                            )
+
+                #shifting
+                base_img_rect.x -= self.rendered_moving_cards_width_offset
+                base_img_rect.y += self.rendered_moving_cards_height_offset
+
+                base_text_rect.x -= self.rendered_moving_cards_width_offset
+                base_text_rect.y += self.rendered_moving_cards_height_offset
+
+
+
+
+
+    def render_individual_card(
+                                self,
+                                cy: int,
+                                id_index: int,
+                                main_list_cards_idx: int,
+                                img_rect: pygame.Rect,
+                                text_rect: pygame.Rect
+                                ) -> None:
+        """
+        Renders the individual card at id_index.
+        """
+
         base_image_width = self.cardimage_width
         base_image_height = self.cardimage_height
 
         selected_image_width: int = int(0.7 * base_image_width)
         selected_image_height: int = int(0.7 * base_image_height)
 
-        for cy in row_positions[first_row:after_last_row]:
-            for id_index, main_list_cards_idx, img_rect, text_rect in self.main_list_cards_rects[cy]:
-                self.rendered_rows.append((cy, id_index, main_list_cards_idx, img_rect, text_rect))
-                cinfo = self.main_list_cards[main_list_cards_idx][0].info()
+        self.rendered_rows.append((cy, id_index, main_list_cards_idx, img_rect, text_rect))
+        cinfo = self.main_list_cards[main_list_cards_idx][0].info()
 
-                # Cache the image at its normal layout size. Card-press
-                # animation changes the rectangle every tick, so cache the
-                # stable base surface and scale that surface for the animation.
+        # Cache the image at its normal layout size. Card-press
+        # animation changes the rectangle every tick, so cache the
+        # stable base surface and scale that surface for the animation.
+
+        img_render_width: int = base_image_width
+        img_render_height: int = base_image_height
+
+        base_full_rect: pygame.Rect = pygame.Rect(0, 0,
+                                                    img_rect.width+text_rect.width,
+                                                    img_rect.height+text_rect.height
+                                                    )
+
+        positioned_base_full_rect: pygame.Rect = base_full_rect.copy()
+
+        positioned_base_full_rect.x = img_rect.x
+        positioned_base_full_rect.y = img_rect.y + self.main_list_yscroll
+
+        #changing appearance for selected cards
+        if self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
+            if self.shown_group in self.selection_state_selected_indices:
+
+                gsdict = self.selection_state_selected_indices[self.shown_group]
+
+                if id_index in gsdict and gsdict[id_index]:
+
+                    img_render_width = selected_image_width
+                    img_render_height = selected_image_height
+
+        image_key = (
+            cinfo.card_image_path,
+            img_render_width,
+            img_render_height
+        )
+        cached_image = self.card_render_cache.get(image_key)
+        if cached_image is None:
+
+            img_size_rect: pygame.Rect = pygame.Rect(0, 0, image_key[1], image_key[2])
+            img_surf, pos = graphics.img_load_and_position_smoothscale(
+                cinfo.card_image_path,
+                img_size_rect
+            )
+            pos = graphics.get_center_with_rect(outer_rect=base_full_rect, inner_rect=img_size_rect)
+            #correcting the position
+            cached_image = (img_surf, pos)
+            self.card_render_cache[image_key] = cached_image
+            if len(self.card_render_cache) > self.CARD_IMAGE_CACHE_LIMIT:
+                self.card_render_cache.popitem(last=False)
+        else:
+            self.card_render_cache.move_to_end(image_key)
+
+        img, base_img_pos = cached_image
+        img_pos = base_img_pos
+
+        if (
+            img_rect.width != base_image_width
+            or img_rect.height != base_image_height
+        ) and base_image_width > 0 and base_image_height > 0:
+            scale_x = img_rect.width / base_image_width
+            scale_y = img_rect.height / base_image_height
+            scaled_size = (
+                max(1, int(round(img.get_width() * scale_x))),
+                max(1, int(round(img.get_height() * scale_y)))
+            )
+            img = pygame.transform.smoothscale(img, scaled_size)
+            img_pos = (
+                int(round(base_img_pos[0] * scale_x)),
+                int(round(base_img_pos[1] * scale_y))
+            )
+
+        img_render_pos = (
+            img_rect.x + img_pos[0],
+            img_rect.y + img_pos[1] + self.main_list_yscroll
+        )
+
+        if (
+            self.selected_card_index == id_index
+            and self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED
+        ):
+            # Scale the selected card slightly. Use integer dimensions
+            # because pygame.transform.scale expects integer sizes.
+            img_x_inc = max(1, int(round(img.get_width() * 0.1)))
+            img_y_inc = max(1, int(round(img.get_height() * 0.1)))
+            img = pygame.transform.scale(
+                img,
+                (img.get_width() + img_x_inc, img.get_height() + img_y_inc)
+            )
+            img_render_pos = (
+                img_render_pos[0] - img_x_inc // 2,
+                img_render_pos[1] - img_y_inc // 2
+            )
+
+        rendered_img_rect: pygame.Rect = pygame.Rect(
+                                                        img_render_pos[0],
+                                                        img_render_pos[1],
+                                                        img.get_width(),
+                                                        img.get_height()
+                                                    )
+        shadow_rect = rendered_img_rect.copy()
+        shadow_rect.x += int(self.cardshadow_hoffset_p * shadow_rect.width)
+        shadow_rect.y += int(self.cardshadow_voffset_p * shadow_rect.height)
+
+        shadow_color = (
+            (*Colors.BLACK, self.cardshadow_alpha)
+            if (
+                id_index != self.selected_card_index
+                or self.state != RenderableCardListviewer.MAIN_LIST_FOCUSED
+            )
+            else (*RenderableCardListviewer.main_list_state_to_background_color_mapping[self.main_list_state], self.selected_cardshadow_alpha)
+        )
 
 
-                img_render_width: int = base_image_width
-                img_render_height: int = base_image_height
+        # Shadow surfaces are identical for cards with equal size and
+        # color; reuse them instead of allocating one every frame.
+        shadow_key = (shadow_rect.size, shadow_color)
+        shadow_surf = self.shadow_render_cache.get(shadow_key)
+        if shadow_surf is None:
+            shadow_surf = pygame.Surface(shadow_rect.size, pygame.SRCALPHA)
+            shadow_surf.fill(shadow_color)
+            self.shadow_render_cache[shadow_key] = shadow_surf
+            if len(self.shadow_render_cache) > self.SHADOW_CACHE_LIMIT:
+                self.shadow_render_cache.popitem(last=False)
+        else:
+            self.shadow_render_cache.move_to_end(shadow_key)
 
-                base_full_rect: pygame.Rect = pygame.Rect(0, 0,
-                                                            img_rect.width+text_rect.width,
-                                                            img_rect.height+text_rect.height
-                                                            )
+        #the selection color if this card is currently selected during selection state
+        if  self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE\
+            and self.shown_group in self.selection_state_selected_indices:
+            #checking if this card is selected
+            gsdict = self.selection_state_selected_indices[self.shown_group]
 
-                positioned_base_full_rect: pygame.Rect = base_full_rect.copy()
+            if  id_index in gsdict and\
+                gsdict[id_index]:
 
-                positioned_base_full_rect.x = img_rect.x
-                positioned_base_full_rect.y = img_rect.y + self.main_list_yscroll
+                select_color: color_t = None
 
-                #changing appearance for selected cards
-                if self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
-                    if self.shown_group in self.selection_state_selected_indices:
-
-                        gsdict = self.selection_state_selected_indices[self.shown_group]
-
-                        if id_index in gsdict and gsdict[id_index]:
-
-                            img_render_width = selected_image_width
-                            img_render_height = selected_image_height
-
-                image_key = (
-                    cinfo.card_image_path,
-                    img_render_width,
-                    img_render_height
-                )
-                cached_image = self.card_render_cache.get(image_key)
-                if cached_image is None:
-
-                    img_size_rect: pygame.Rect = pygame.Rect(0, 0, image_key[1], image_key[2])
-                    img_surf, pos = graphics.img_load_and_position_smoothscale(
-                        cinfo.card_image_path,
-                        img_size_rect
-                    )
-                    pos = graphics.get_center_with_rect(outer_rect=base_full_rect, inner_rect=img_size_rect)
-                    #correcting the position
-                    cached_image = (img_surf, pos)
-                    self.card_render_cache[image_key] = cached_image
-                    if len(self.card_render_cache) > self.CARD_IMAGE_CACHE_LIMIT:
-                        self.card_render_cache.popitem(last=False)
+                if id_index != self.selected_card_index:
+                    select_color = (*self.card_selected_in_selection_state_color, self.cardshadow_alpha)
                 else:
-                    self.card_render_cache.move_to_end(image_key)
 
-                img, base_img_pos = cached_image
-                img_pos = base_img_pos
+                    r1, g1, b1 = self.card_selected_in_selection_state_color
+                    r2, g2, b2 = RenderableCardListviewer.main_list_state_to_background_color_mapping[self.main_list_state]
 
-                if (
-                    img_rect.width != base_image_width
-                    or img_rect.height != base_image_height
-                ) and base_image_width > 0 and base_image_height > 0:
-                    scale_x = img_rect.width / base_image_width
-                    scale_y = img_rect.height / base_image_height
-                    scaled_size = (
-                        max(1, int(round(img.get_width() * scale_x))),
-                        max(1, int(round(img.get_height() * scale_y)))
-                    )
-                    img = pygame.transform.smoothscale(img, scaled_size)
-                    img_pos = (
-                        int(round(base_img_pos[0] * scale_x)),
-                        int(round(base_img_pos[1] * scale_y))
-                    )
+                    select_color = (
+                                        (r1 + r2) // 2,
+                                        (g1 + g2) // 2,
+                                        (b1 + b2) // 2,
+                                        self.cardshadow_alpha
+                                    )
 
-                img_render_pos = (
-                    img_rect.x + img_pos[0],
-                    img_rect.y + img_pos[1] + self.main_list_yscroll
+
+                selection_rect = graphics.apply_margins(rendered_img_rect, -0.25, -0.25)
+                self.surface.fill(select_color, rect=selection_rect)
+
+            else:
+                self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
+
+        else:
+            self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
+
+        self.surface.blit(img, img_render_pos)
+
+        card_subtext: str = self.get_card_subtext(
+                                                    y_position=cy,
+                                                    id_index=id_index,
+                                                    main_list_index=main_list_cards_idx,
+                                                    img_rect=img_rect,
+                                                    text_rect=text_rect
+                                                    )
+
+        if card_subtext is not None:
+
+            base_text_width, base_text_height = self._base_text_render_size
+            text_key = (card_subtext, base_text_width, base_text_height)
+            trend = self.text_render_cache.get(text_key)
+
+            if trend is None:
+                trend = graphics.render_page_from_chars(
+                    self.font,
+                    [card_subtext],
+                    pygame.Rect(0, 0, base_text_width, base_text_height),
+                    self.card_text_description_color,
+                    centered=True,
+                    vertical_centered=True
                 )
+                self.text_render_cache[text_key] = trend
 
-                if (
-                    self.selected_card_index == id_index
-                    and self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED
-                ):
-                    # Scale the selected card slightly. Use integer dimensions
-                    # because pygame.transform.scale expects integer sizes.
-                    img_x_inc = max(1, int(round(img.get_width() * 0.1)))
-                    img_y_inc = max(1, int(round(img.get_height() * 0.1)))
-                    img = pygame.transform.scale(
-                        img,
-                        (img.get_width() + img_x_inc, img.get_height() + img_y_inc)
-                    )
-                    img_render_pos = (
-                        img_render_pos[0] - img_x_inc // 2,
-                        img_render_pos[1] - img_y_inc // 2
-                    )
+            # The text rectangle also changes during the pressed-card
+            # animation. Scale the cached text layout instead of
+            # rendering the same string again at every animation step.
+            if base_text_width > 0 and base_text_height > 0:
+                text_scale_x = text_rect.width / base_text_width
+                text_scale_y = text_rect.height / base_text_height
+            else:
+                text_scale_x = 1.0
+                text_scale_y = 1.0
 
-                rendered_img_rect: pygame.Rect = pygame.Rect(
-                                                                img_render_pos[0],
-                                                                img_render_pos[1],
-                                                                img.get_width(),
-                                                                img.get_height()
-                                                            )
-                shadow_rect = rendered_img_rect.copy()
-                shadow_rect.x += int(self.cardshadow_hoffset_p * shadow_rect.width)
-                shadow_rect.y += int(self.cardshadow_voffset_p * shadow_rect.height)
-
-                shadow_color = (
-                    (*Colors.BLACK, self.cardshadow_alpha)
-                    if (
-                        id_index != self.selected_card_index
-                        or self.state != RenderableCardListviewer.MAIN_LIST_FOCUSED
+            for surf, pos in trend:
+                if text_scale_x != 1.0 or text_scale_y != 1.0:
+                    scaled_text_size = (
+                        max(1, int(round(surf.get_width() * text_scale_x))),
+                        max(1, int(round(surf.get_height() * text_scale_y)))
                     )
-                    else (*RenderableCardListviewer.main_list_state_to_background_color_mapping[self.main_list_state], self.selected_cardshadow_alpha)
+                    rendered_text = pygame.transform.scale(surf, scaled_text_size)
+                    rendered_text_pos = (
+                        int(round(pos[0] * text_scale_x)),
+                        int(round(pos[1] * text_scale_y))
+                    )
+                else:
+                    rendered_text = surf
+                    rendered_text_pos = pos
+
+                self.surface.blit(
+                    rendered_text,
+                    (
+                        rendered_text_pos[0] + text_rect.x,
+                        rendered_text_pos[1] + text_rect.y + self.main_list_yscroll
+                    )
                 )
-
-
-                # Shadow surfaces are identical for cards with equal size and
-                # color; reuse them instead of allocating one every frame.
-                shadow_key = (shadow_rect.size, shadow_color)
-                shadow_surf = self.shadow_render_cache.get(shadow_key)
-                if shadow_surf is None:
-                    shadow_surf = pygame.Surface(shadow_rect.size, pygame.SRCALPHA)
-                    shadow_surf.fill(shadow_color)
-                    self.shadow_render_cache[shadow_key] = shadow_surf
-                    if len(self.shadow_render_cache) > self.SHADOW_CACHE_LIMIT:
-                        self.shadow_render_cache.popitem(last=False)
-                else:
-                    self.shadow_render_cache.move_to_end(shadow_key)
-
-                #the selection color if this card is currently selected during selection state
-                if  self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE\
-                    and self.shown_group in self.selection_state_selected_indices:
-                    #checking if this card is selected
-                    gsdict = self.selection_state_selected_indices[self.shown_group]
-
-                    if  id_index in gsdict and\
-                        gsdict[id_index]:
-
-                        select_color: color_t = None
-
-                        if id_index != self.selected_card_index:
-                            select_color = (*self.card_selected_in_selection_state_color, self.cardshadow_alpha)
-                        else:
-
-                            r1, g1, b1 = self.card_selected_in_selection_state_color
-                            r2, g2, b2 = RenderableCardListviewer.main_list_state_to_background_color_mapping[self.main_list_state]
-
-                            select_color = (
-                                                (r1 + r2) // 2,
-                                                (g1 + g2) // 2,
-                                                (b1 + b2) // 2,
-                                                self.cardshadow_alpha
-                                            )
-
-
-                        selection_rect = graphics.apply_margins(rendered_img_rect, -0.25, -0.25)
-                        self.surface.fill(select_color, rect=selection_rect)
-
-                    else:
-                        self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
-
-                else:
-                    self.surface.blit(shadow_surf, (shadow_rect.x, shadow_rect.y))
-
-                self.surface.blit(img, img_render_pos)
-
-                card_subtext: str = self.get_card_subtext(
-                                                            y_position=cy,
-                                                            id_index=id_index,
-                                                            main_list_index=main_list_cards_idx,
-                                                            img_rect=img_rect,
-                                                            text_rect=text_rect
-                                                            )
-
-                if card_subtext is not None:
-
-                    base_text_width, base_text_height = self._base_text_render_size
-                    text_key = (card_subtext, base_text_width, base_text_height)
-                    trend = self.text_render_cache.get(text_key)
-
-                    if trend is None:
-                        trend = graphics.render_page_from_chars(
-                            self.font,
-                            [card_subtext],
-                            pygame.Rect(0, 0, base_text_width, base_text_height),
-                            self.card_text_description_color,
-                            centered=True,
-                            vertical_centered=True
-                        )
-                        self.text_render_cache[text_key] = trend
-
-                    # The text rectangle also changes during the pressed-card
-                    # animation. Scale the cached text layout instead of
-                    # rendering the same string again at every animation step.
-                    if base_text_width > 0 and base_text_height > 0:
-                        text_scale_x = text_rect.width / base_text_width
-                        text_scale_y = text_rect.height / base_text_height
-                    else:
-                        text_scale_x = 1.0
-                        text_scale_y = 1.0
-
-                    for surf, pos in trend:
-                        if text_scale_x != 1.0 or text_scale_y != 1.0:
-                            scaled_text_size = (
-                                max(1, int(round(surf.get_width() * text_scale_x))),
-                                max(1, int(round(surf.get_height() * text_scale_y)))
-                            )
-                            rendered_text = pygame.transform.scale(surf, scaled_text_size)
-                            rendered_text_pos = (
-                                int(round(pos[0] * text_scale_x)),
-                                int(round(pos[1] * text_scale_y))
-                            )
-                        else:
-                            rendered_text = surf
-                            rendered_text_pos = pos
-
-                        self.surface.blit(
-                            rendered_text,
-                            (
-                                rendered_text_pos[0] + text_rect.x,
-                                rendered_text_pos[1] + text_rect.y + self.main_list_yscroll
-                            )
-                        )
 
     def render_full_image(self, cinfo: Renderable_CardInfo) -> None:
         """
@@ -3396,7 +3500,11 @@ class RenderableCardListviewer(Frame):
             #depends on the main list state
             if self.main_list_state == RenderableCardListviewer.MainListState.INFO_STATE:
                 #show the cardinfo
-                self.initialize_cardinfo_frame()
+                if self.card_moving_active and self.key_pressed(pygame.K_LSHIFT):
+                    self.add_current_card_to_moving_cards()
+                else:
+
+                    self.initialize_cardinfo_frame()
 
             elif self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
 
@@ -3407,7 +3515,11 @@ class RenderableCardListviewer(Frame):
 
         if self.state == RenderableCardListviewer.MAIN_LIST_FOCUSED:
             #if the selection main list state is active, select all
-            if self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
+            if self.main_list_state == RenderableCardListviewer.MainListState.INFO_STATE:
+
+                self.initialize_card_moving()
+
+            elif self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
 
                 self.card_selection_triggered(select_all=True)
 
@@ -3759,6 +3871,37 @@ class RenderableCardListviewer(Frame):
             self.long_enter_pressed()
         else:
             self.enter_pressed()
+
+    #==================================
+    # CARD MOVING
+    #==================================
+
+    def initialize_card_moving(self) -> None:
+        """
+        Initializes card movement.
+        """
+
+        self.moving_indices = OrderedDict()
+        self.moving_indices[self.selected_card_index] = True
+
+        self.rendered_moving_indices = [self.selected_card_index]
+
+        self.card_moving_active = True
+
+    def add_current_card_to_moving_cards(self) -> None:
+        """
+        Adds the current card to the moving cards.
+        """
+
+        if not self.card_moving_active\
+            or (self.selected_card_index in self.moving_indices and self.moving_indices[self.selected_card_index]):
+
+            return
+
+        #otherwise add the card
+        self.moving_indices[self.selected_card_index] = True
+        if len(self.rendered_moving_indices) < (self.max_moving_cards_shown)-1:
+            self.rendered_moving_indices.append(self.selected_card_index)
 
     #==================================
     # CARDINFO FRAME
@@ -4164,6 +4307,9 @@ class RenderableCardListviewer(Frame):
 
         new_group: group_t = Cardgroup.copy_group(self.groups[self.shown_group])
         Cardgroup.cardlist(group=new_group, cardlist=cardlist_dict)
+        #setting the cardorder
+        last_cardorder: cardorder_t = Cardgroup.cardorder(group_dict)
+        Cardgroup.cardorder(group=new_group, cardorder=last_cardorder)
 
         #saving to the current groups
         self.groups[self.shown_group] = new_group

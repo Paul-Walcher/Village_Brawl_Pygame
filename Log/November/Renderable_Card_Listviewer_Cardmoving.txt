@@ -1,0 +1,192 @@
+Moving Implementation:
+
+In the info state, after a long press the card should be moved.
+
+Then while in the moving state, if alt+enter is pressed, another card gets added to the moving 
+cards. When enter is pressed, the cards are inserted at the pressed position.
+
+MOVING_STATE_ACTIVE: id_t = R_ID()
+
+__init__()
+-----------
+
+self.moving_indices: OrderedDict[int, bool] = None
+"""
+If the index is not inside this dict, it means it is not moving.
+If it is, and the entry is true, it means the index of the card is currently moving.
+"""
+self.rendered_moving_indices: list[int] = None
+"""
+The actual rendered indices.
+Gets recalculated only when picking up cards
+"""
+self.max_moving_cards_shown: int = …
+"""
+Max moving cards shown
+"""
+
+self.rendered_moving_cards_width_offset: int = None
+self.rendered_moving_cards_height_offset: int = None
+
+rerender():
+-----------
+
+self.rendered_moving_cards_width_offset = cardwidth // self.max_moving_cards_shown
+self.rendered_moving_cards_height_offset = cardheight // self.max_moving_cards_shown
+
+
+prerender():
+------------
+
+#when rendering cards:
+
+if id_index in self.moving_indices and self.moving_indices[id_index]:
+	continue #no rendering
+
+#getting the moving parts
+if self.rendered_moving_indices is not None and len(self.rendered_moving_indices) > 0:
+	#getting the selected index rect
+	selected_index_rect = …
+
+	moving_pos_x = selected_index_rect.x + len(self.rendered_moving_indices) * self.rendered_moving_cards_width_offset
+	moving_pos_y = selected_index_rect.y + len(self.rendered_moving_indices) * self.rendered_moving_cards_height_offset
+
+	for idx in self.rendered_moving_indices[::-1]:
+		
+		render card with id_index idx at (moving_pos_x, moving_pos_y)
+
+		moving_pos_x -= self.rendered_moving_cards_width_offset	
+		moving_pos_y -= self.rendered_moving_cards_height_offset	
+
+
+long_enter_pressed():
+---------------------
+
+if self.state == MAIN_LIST_FOCUSED:
+	if self.main_list_state == INFO_STATE:
+		
+		self.initialize_card_moving()
+
+elif self.state == MOVING_CARDS:
+	self.add_card_to_moving_cards([self.selected_card_index])
+
+enter():
+--------
+
+if self.state == MOVING_CARDS:
+
+	if alt is pressed:
+		self.add_card_to_moving_cards([self.selected_index])
+else:
+	self.finish_moving_cards()
+
+initialize_card_moving():
+-------------------------
+
+self.moving_indices = [self.selected_card_index]
+self.rendered_moving_indices = [self.selected_card_index]
+
+self.state = MOVING_CARDS
+
+add_cards_to_moving_cards(cards_to_add: list[int]):
+---------------------------------------------------
+
+for card_idx in cards_to_add:
+	
+	if card_idx in self.moving_indices nd self.moving_indices[card_idx]:
+		continue
+
+	self.moving_indices[card_idx] = True
+	if len(self.rendered_moving_indices) < (self.max_moving_cards_shown - 1):
+		self.rendered_moving_indices.append(card_idx)
+
+finish_moving_cards():
+----------------------
+
+#creates the new order, then reloads the group
+
+insert_idx: int = self.selected_card_index
+copied_cardorder = Cardgroup.cardorder(self.groups[self.shown_group])
+
+final_sorted_indices = [idx for (idx, moving) in self.moving_indices.items() if moving]
+
+final_sorted_idx: int = 0
+cardgroup_idx: int = 0
+cardsum: int = 0
+
+new_cardorder = []
+new_inserted_order = []
+
+apt_insert_index: int = insert_idx
+
+while cardgroup_idx < len(copied_cardorder):
+	
+	cardclass, amount = copied_cardorder[cardgroup_idx]
+	cardsum += amount
+
+	found_cards: int = 0
+
+	while final_sorted_idx < len(final_sorted_indices):
+		
+		if final_sorted_indices[final_sorted_idx] >= cardsum:
+			break
+		
+		if final_sorted_indices[final_sorted_idx] < insert_idx:
+			apt_insert_index -= 1
+
+		found_cards += 1
+		final_sorted_idx += 1
+
+	new_cardorder.append( (cardclass, amount - found_cards) )
+	if found_cards > 0:
+		new_inserted_order.append(( cardclass, found_cards))
+
+	cardgroup_idx += 1
+
+
+
+#now inserting 
+inserted: bool = False
+for i in range(len(new_cardorder)):
+	
+
+	if inserted:
+		break
+
+	cardclass, amount = new_cardorder[i]
+
+	if apt_insert_index < amount:
+		#insert here
+		
+		left_amount: int = apt_insert_index
+		right_amount: int = amount - apt_insert_index
+
+		#inserting
+		left_split = new_cardorder[:i]
+		right_split = new_cardorder[i+1:]
+
+		middle_part = []
+
+		if left_amount > 0:
+			middle_part.append(( cardclass, left_amount ))
+
+		middle_part.extend(new_inserted_order)
+
+		if right_amount > 0:
+			middle_part.append(( cardclass, right_amount))
+		
+			
+		inserted = True
+		break
+	else:
+		apt_insert_index -= amount
+
+
+if not inserted:
+	new_cardorder.extend(new_inserted_order)
+
+#reloading and setting the state
+self.state = MAIN_LIST_FOCUSED
+self.reload_group(keep_state=False)
+
+

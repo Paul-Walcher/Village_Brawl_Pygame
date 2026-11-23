@@ -7,11 +7,10 @@ In RenderableCardListviewer:
 2.) Implement label to show the current main list states
 3.) Implement menu option to switch between main list states (info, selection, grouping, …)
 4.) Implement Card selection
+5.) Implement Card group importing.
 
 #DONE
 
-
-5.) Implement Card group importing.
 6.) Implement Card Moving
 7.) Implement Card Searching
 8.) Implement Card adding / removing
