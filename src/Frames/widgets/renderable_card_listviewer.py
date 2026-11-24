@@ -2227,19 +2227,27 @@ class RenderableCardListviewer(Frame):
         self.rendered_moving_cards_height_offset = self.main_list_cheight // self.max_moving_cards_shown
 
         if not keep_current_state:
-            gcards = Cardgroup.cardlist(group=self.groups[self.shown_group])
-            gcardorder: cardorder_t = Cardgroup.cardorder(
-                group=self.groups[self.shown_group])
-            gcards = [(key, value) for key, value in gcards.items()]
+
+            gcards = []
+            gcardorder: cardorder_t = Cardgroup.cardorder(group=self.groups[self.shown_group])
+
             if self.main_list_view_state == RenderableCardListviewer.SHOW_EACH_CARD:
                 # give each card its own entry
-                new_gcards: cardlist_t = []
+                gcards = []
 
                 for (cclass, amount) in gcardorder:
                     for i in range(amount):
-                        new_gcards.append((cclass, 1))
+                        gcards.append((cclass, 1))
 
-                gcards = new_gcards
+            elif self.main_list_view_state == RenderableCardListviewer.SHOW_WITH_AMOUNT:
+
+                gcards = []
+
+                #no cardorder needed, construct from cardlist
+                clist: cardlist_t = Cardgroup.cardlist(group=self.groups[self.shown_group])
+
+                for (cclass, amount) in clist.items():
+                    gcards.append((cclass, amount))
 
             self.main_list_cards = self.sorting_function(gcards)
 
@@ -2484,8 +2492,8 @@ class RenderableCardListviewer(Frame):
         Renders the individual card at id_index.
         """
 
-        base_image_width = self.cardimage_width
-        base_image_height = self.cardimage_height
+        base_image_width = img_rect.width
+        base_image_height = img_rect.height
 
         selected_image_width: int = int(0.7 * base_image_width)
         selected_image_height: int = int(0.7 * base_image_height)
@@ -2502,7 +2510,7 @@ class RenderableCardListviewer(Frame):
         img_render_height: int = base_image_height
 
         base_full_rect: pygame.Rect = pygame.Rect(0, 0,
-                                                  img_rect.width+text_rect.width,
+                                                  img_rect.width,
                                                   img_rect.height+text_rect.height
                                                   )
 
@@ -2537,7 +2545,7 @@ class RenderableCardListviewer(Frame):
                 img_size_rect
             )
             pos = graphics.get_center_with_rect(
-                outer_rect=base_full_rect, inner_rect=img_size_rect)
+                outer_rect=base_full_rect, inner_rect=pygame.Rect(0, 0, img_surf.get_width(), img_surf.get_height()))
             # correcting the position
             cached_image = (img_surf, pos)
             self.card_render_cache[image_key] = cached_image
@@ -2548,22 +2556,6 @@ class RenderableCardListviewer(Frame):
 
         img, base_img_pos = cached_image
         img_pos = base_img_pos
-
-        if (
-            img_rect.width != base_image_width
-            or img_rect.height != base_image_height
-        ) and base_image_width > 0 and base_image_height > 0:
-            scale_x = img_rect.width / base_image_width
-            scale_y = img_rect.height / base_image_height
-            scaled_size = (
-                max(1, int(round(img.get_width() * scale_x))),
-                max(1, int(round(img.get_height() * scale_y)))
-            )
-            img = pygame.transform.smoothscale(img, scaled_size)
-            img_pos = (
-                int(round(base_img_pos[0] * scale_x)),
-                int(round(base_img_pos[1] * scale_y))
-            )
 
         img_render_pos = (
             img_rect.x + img_pos[0],
@@ -3641,8 +3633,13 @@ class RenderableCardListviewer(Frame):
             # depends on the main list state
             if self.main_list_state == RenderableCardListviewer.MainListState.INFO_STATE:
                 # show the cardinfo
-                if self.card_moving_active and self.key_pressed(pygame.K_LSHIFT):
-                    self.add_current_card_to_moving_cards()
+                if self.card_moving_active:
+                    if self.key_pressed(pygame.K_LSHIFT):
+                        self.add_current_card_to_moving_cards()
+                    elif self.key_pressed(pygame.K_LCTRL):
+                        self.dump_moving_cards(n_cards=1)
+                    else:
+                        self.dump_moving_cards(n_cards=len(self.moving_indices))
                 else:
 
                     self.initialize_cardinfo_frame()
@@ -4125,7 +4122,7 @@ class RenderableCardListviewer(Frame):
 
     def dump_moving_cards(self, n_cards: int):
         """
-        dumps n_cards moving cards onto the current card position.
+        dumps the first selected n_cards moving cards onto the current card position.
         Starts with the first selected card.
         """
 
@@ -4135,9 +4132,8 @@ class RenderableCardListviewer(Frame):
         # getting the first indices
         first_n_indices: list[int] = []
 
-        for i in range(len(self.moving_indices)):
+        for (idx, moving) in (self.moving_indices.items()):
 
-            idx, moving = self.moving_indices[i]
             if moving:
                 first_n_indices.append(idx)
 
@@ -4151,149 +4147,122 @@ class RenderableCardListviewer(Frame):
         for idx in first_n_indices:
             del self.moving_indices[idx]
 
+        #sorting the first n indices
+        sorted_first_n_indices: list[int] = first_n_indices.copy()
+        sorted_first_n_indices.sort()
+        first_skip_idx: int = 0 #first index referencing the element at first_n_indices
+                                #since first_n_indices is sorted, if we reach the lement skip it
+                                #the increase first_skip_idx by 1
+
+        remaining_indices_mapped: OrderedDict[int, int] = OrderedDict()
+        """
+        Maps the remaining indices of the ordered dict into the new ones.
+        """
+
+        current_cardclass: Type[ PlaysetEntity ] = None
+        current_sum: int = 0
+
+        new_cardorder: cardorder_t = []
+
+        id_index: int = 0
+        true_idx: int = 0 #the true index for the remaining moving cards.
+        dumped: bool = False #if the cards were dumped
+
+        while id_index < self.n_cards_shown:
+
+            #if this is the dump spot
+            if id_index == self.selected_card_index and not dumped:
+
+                #now adding all
+                for dump_idx in first_n_indices:
+
+                    mlist_idx: int = self.main_list_cards_dict[dump_idx][0]
+                    cardclass, amount = self.main_list_cards[mlist_idx]
+
+                    if current_cardclass is None:
+                        current_cardclass = cardclass
+                        current_sum = amount
+
+                    elif current_cardclass != cardclass:
+
+                        new_cardorder.append( (current_cardclass, current_sum) )
+
+                        current_cardclass = cardclass
+                        current_sum = amount
+
+                    else:
+                        #same cardclass
+                        current_sum += amount
+
+                #no increase, we just set dumped to true
+                dumped = True
+                #adding the true index
+                true_idx += len(first_n_indices)
+
+            elif first_skip_idx < len(sorted_first_n_indices) and id_index == sorted_first_n_indices[first_skip_idx]:
+
+                id_index += 1 #skip this index
+                first_skip_idx += 1 #skipping 1
+                #true index does not increase by 1, since this card should not exist
+
+            else:
+
+                mlist_idx: int = self.main_list_cards_dict[id_index][0]
+                cardclass, amount = self.main_list_cards[mlist_idx]
+
+                if current_cardclass is None:
+
+                    current_cardclass = cardclass
+                    current_sum = amount
+
+                elif current_cardclass != cardclass:
+
+                    new_cardorder.append( (current_cardclass, current_sum) )
+
+                    current_cardclass = cardclass
+                    current_sum = amount
+
+                else:
+                    #same cardclass
+                    current_sum += amount
+
+                #checking if the id index corresponds to a moving card, if yes, map it
+                if id_index in self.moving_indices and self.moving_indices[id_index]:
+                    remaining_indices_mapped[id_index] = true_idx
+
+                true_idx += 1 #adding the true index
+                id_index += 1
+
+        #adding the last card
+        if current_cardclass is not None and current_sum > 0:
+            new_cardorder.append( (current_cardclass, current_sum) )
+
+        #creating the new moving indices
+        self.moving_indices = OrderedDict()
+        for (idx, true_idx) in remaining_indices_mapped.items():
+            self.moving_indices[true_idx] = True
         # creating new rendered movnig indices
         self.rendered_moving_indices = []
-        for idx, moving in self.moving_indices:
+        for idx, moving in self.moving_indices.items():
 
             if (len(self.rendered_moving_indices) >= self.max_moving_cards_shown):
                 break
             if moving:
                 self.rendered_moving_indices.append(idx)
 
-        # inserting the cards into the main list
-        self.insert_dumped_cards_into_main_list(
-            first_n_indices, self.selected_card_index)
+        #reloading the group
+        #since we know the group is of the same size, we can just save the previous selected idx
 
-        # fitting the following indices
-        dumped_indices_cp: list[int] = first_n_indices.copy()
-        dumped_indices_cp.sort()
+        #setting the cardorder
+        Cardgroup.cardorder(group=self.groups[self.shown_group], cardorder=new_cardorder)
+        selected_index_save: int = self.selected_card_index
 
-        # now getting the moving cards
-        moving_cards: list[int, bool] = list(self.moving_indices.items())
-
-        dumped_indices_index: int = len(first_n_indices)-1
-        moving_cards_index: int = len(moving_cards)-1
-
-        while (dumped_indices_index >= 0) and (moving_cards_index >= 0):
-
-            idx, moving = moving_cards[moving_cards_index]
-            dumped_idx: int = dumped_indices_cp[dumped_indices_index]
-
-            if idx > dumped_idx:
-                moving_cards_index -= 1
-            else:
-                # add +1 to each index that is bigger
-                for i in range(moving_cards_index+1, len(moving_cards)):
-
-                    prev_idx, prev_moving = moving_cards[i]
-                    moving_cards[i] = (prev_idx+1, prev_moving)
-
-                dumped_index -= 1
-
-        # now we reconstruct the dict
-        self.moving_indices = OrderedDict()
-        for idx, moving in moving_cards:
-            self.moving_indices[idx] = moving
-
-        # reconstructing the rendered moving cards
-        self.rendered_moving_indices = []
-
-        for idx, moving in self.moving_indices:
-            if len(self.rendered_moving_indices) >= self.max_moving_cards_shown:
-                break
-
-            if moving:
-                self.rendered_moving_indices.append(idx)
-
-    def insert_dumped_cards_into_main_list(self, dump_indices: list[int], position: int) -> None:
-        """
-        Dumps the given card indices at the given position.
-
-        #creates the new order, then reloads the group
-        """
-        copied_cardorder: cardorder_t = Cardgroup.cardorder(
-            self.groups[self.shown_group])
-        dump_indices = dump_indices.copy()
-        dump_indices.sort()
-
-        final_sorted_idx: int = 0
-        cardgroup_idx: int = 0
-        cardsum: int = 0
-
-        new_cardorder = []
-        new_inserted_order = []
-
-        apt_insert_index: int = insert_idx
-
-        while cardgroup_idx < len(copied_cardorder):
-
-            cardclass, amount = copied_cardorder[cardgroup_idx]
-            cardsum += amount
-
-            found_cards: int = 0
-
-            while final_sorted_idx < len(final_sorted_indices):
-
-                if final_sorted_indices[final_sorted_idx] >= cardsum:
-                    break
-
-                if final_sorted_indices[final_sorted_idx] < insert_idx:
-                    apt_insert_index -= 1
-
-                found_cards += 1
-                final_sorted_idx += 1
-
-            new_cardorder.append((cardclass, amount - found_cards))
-            if found_cards > 0:
-                new_inserted_order.append((cardclass, found_cards))
-
-            cardgroup_idx += 1
-
-        # now inserting
-        inserted: bool = False
-        for i in range(len(new_cardorder)):
-
-            if inserted:
-                break
-
-                cardclass, amount = new_cardorder[i]
-
-            if apt_insert_index < amount:
-                # insert here
-
-                left_amount: int = apt_insert_index
-                right_amount: int = amount - apt_insert_index
-
-                # inserting
-                left_split = new_cardorder[:i]
-                right_split = new_cardorder[i+1:]
-
-                middle_part = []
-
-                if left_amount > 0:
-                    middle_part.append((cardclass, left_amount))
-
-                middle_part.extend(new_inserted_order)
-
-                if right_amount > 0:
-                    middle_part.append((cardclass, right_amount))
-
-                new_cardorder = left_split + middle_part + right_split
-                inserted = True
-
-            else:
-
-                apt_insert_index -= amount
-
-        if not inserted:
-            new_cardorder.extend(new_inserted_order)
-
-        # reloading and setting the state
-        # setting the cardgroup
-        Cardgroup.cardorder(
-            group=self.groups[self.shown_group], cardorder=new_cardorder)
-        self.state = RenderableCardListviewer.MAIN_LIST_FOCUSED
         self.reload_current_group(keep_current_state=False)
+
+        self.selected_card_index = selected_index_save
+
+        if len(self.moving_indices) == 0:
+            self.finalize_moving_cards()
 
     def finalize_moving_cards(self) -> None:
         """
