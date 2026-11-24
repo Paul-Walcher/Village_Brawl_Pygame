@@ -3459,6 +3459,7 @@ class RenderableCardListviewer(Frame):
             # if we're at the leftmost state, leave the main list focus
             if (self.selected_card_index % self.cards_per_line) == 0:
                 self.state = RenderableCardListviewer.NOTHING_FOCUSED
+                self.selected_card_index = -1
             else:
                 self.selected_card_index -= 1
         elif self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED:
@@ -3480,7 +3481,8 @@ class RenderableCardListviewer(Frame):
             if ((self.selected_card_index + 1) % self.cards_per_line) == 0:
                 self.state = RenderableCardListviewer.NOTHING_FOCUSED
             else:
-                self.selected_card_index += 1
+                if self.selected_card_index < self.n_cards_shown -1:
+                    self.selected_card_index += 1
 
         elif self.state == RenderableCardListviewer.MENU_BUTTON_FOCUSED:
             self.state = RenderableCardListviewer.MENU_DECKNAME_FOCUSED
@@ -3513,12 +3515,14 @@ class RenderableCardListviewer(Frame):
                     self.fastscroll_enabled = True
                     self.rowscroll_copy = self.rowscrolling_duration
                     self.rowscrolling_duration = self.fastscroll_duration
+
             elif self.fastscroll_enabled:
                 self.fastscroll_enabled = False
                 self.rowscrolling_duration = self.rowscroll_copy
             # check for going off, and if the index is in rendered rows
             if self.selected_card_index < self.cards_per_line:
-                self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
+                if not self.card_moving_active:
+                    self.state = RenderableCardListviewer.MENU_BUTTON_FOCUSED
             elif (self.selected_card_index - self.cards_per_line) not in [x[1] for x in self.rendered_rows]:
                 self.state = RenderableCardListviewer.MOVING_ONE_ROW_UP
                 self.initialize_move_one_row_up()
@@ -3654,18 +3658,19 @@ class RenderableCardListviewer(Frame):
             # if the selection main list state is active, select all
             if self.main_list_state == RenderableCardListviewer.MainListState.INFO_STATE:
 
-                if not self.card_moving_active:
-                    self.initialize_card_moving()
-                else:
-                    # getting the cardclass, trying to delete
-                    if self.selected_card_index not in self.moving_indices:
+                if self.main_list_view_state != RenderableCardListviewer.SHOW_WITH_AMOUNT:
+                    if not self.card_moving_active:
+                        self.initialize_card_moving()
+                    else:
+                        # getting the cardclass, trying to delete
+                        if self.selected_card_index not in self.moving_indices:
 
-                        # try to delete the selected cardclass
-                        mlist_idx: int = self.main_list_cards_dict[self.selected_card_index][0]
-                        cclass, amount = self.main_list_cards[mlist_idx]
+                            # try to delete the selected cardclass
+                            mlist_idx: int = self.main_list_cards_dict[self.selected_card_index][0]
+                            cclass, amount = self.main_list_cards[mlist_idx]
 
-                        self.remove_last_added_card_with_same_cardclass_from_moving_cards(
-                            cclass)
+                            self.remove_last_added_card_with_same_cardclass_from_moving_cards(
+                                cclass)
 
             elif self.main_list_state == RenderableCardListviewer.MainListState.SELECTION_STATE:
 
@@ -4166,12 +4171,12 @@ class RenderableCardListviewer(Frame):
 
         id_index: int = 0
         true_idx: int = 0 #the true index for the remaining moving cards.
-        dumped: bool = False #if the cards were dumped
 
         while id_index < self.n_cards_shown:
 
             #if this is the dump spot
-            if id_index == self.selected_card_index and not dumped:
+            if id_index == self.selected_card_index:
+
 
                 #now adding all
                 for dump_idx in first_n_indices:
@@ -4194,10 +4199,28 @@ class RenderableCardListviewer(Frame):
                         #same cardclass
                         current_sum += amount
 
-                #no increase, we just set dumped to true
-                dumped = True
+                #placing the current idx
+                mlist_idx: int = self.main_list_cards_dict[id_index][0]
+                cardclass, amount = self.main_list_cards[mlist_idx]
+
+                if current_cardclass is None:
+                    current_cardclass = cardclass
+                    current_sum = amount
+
+                elif current_cardclass != cardclass:
+
+                    new_cardorder.append( (current_cardclass, current_sum) )
+
+                    current_cardclass = cardclass
+                    current_sum = amount
+
+                else:
+                    #same cardclass
+                    current_sum += amount
+
                 #adding the true index
-                true_idx += len(first_n_indices)
+                true_idx += len(first_n_indices) + 1
+                id_index += 1
 
             elif first_skip_idx < len(sorted_first_n_indices) and id_index == sorted_first_n_indices[first_skip_idx]:
 
@@ -4253,9 +4276,11 @@ class RenderableCardListviewer(Frame):
         #reloading the group
         #since we know the group is of the same size, we can just save the previous selected idx
 
-        #setting the cardorder
+
         Cardgroup.cardorder(group=self.groups[self.shown_group], cardorder=new_cardorder)
         selected_index_save: int = self.selected_card_index
+        #setting the sorting function to no order
+        self.sorting_function = RenderableCardListviewer.SortingFunctions.no_order
 
         self.reload_current_group(keep_current_state=False)
 
