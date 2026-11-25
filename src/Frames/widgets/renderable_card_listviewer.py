@@ -2249,7 +2249,19 @@ class RenderableCardListviewer(Frame):
                 for (cclass, amount) in clist.items():
                     gcards.append((cclass, amount))
 
-            self.main_list_cards = self.sorting_function(gcards)
+            if self.sorting_function is not RenderableCardListviewer.SortingFunctions.no_order:
+                #sort and reconstruct cardorder
+                self.main_list_cards = self.sorting_function(gcards)
+                #reset the sorting function
+                self.sorting_function = RenderableCardListviewer.SortingFunctions.no_order
+
+                new_cardorder: cardorder_t = self.cardorder_from_main_list_cards()
+                Cardgroup.cardorder(group=self.groups[self.shown_group], cardorder=new_cardorder)
+
+            else:
+
+                self.main_list_cards = gcards
+
 
             self.selected_card_index = 0
             self.main_list_yscroll = 0
@@ -2388,6 +2400,7 @@ class RenderableCardListviewer(Frame):
         # checking the selected index
         if self.selected_card_index < 0 or self.selected_card_index >= self.n_cards_shown:
             self.selected_card_index = 0
+
 
     def render_list_with_yscroll(self) -> None:
         """
@@ -2980,32 +2993,22 @@ class RenderableCardListviewer(Frame):
 
                 if selection == RenderableCardListviewer.MENU_OPTIONS.RANDOMIZED_SORTING:
                     self.sorting_function = RenderableCardListviewer.SortingFunctions.randomized
-                    self.main_list_cards = self.sorting_function(
-                        self.main_list_cards)
                     self.recalculate_main_list_positions()
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.NAME_DESCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.name_descending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.name_descending
-                        self.main_list_cards = self.sorting_function(
-                            self.main_list_cards)
                         self.recalculate_main_list_positions()
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.NAME_ASCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.name_ascending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.name_ascending
-                        self.main_list_cards = self.sorting_function(
-                            self.main_list_cards)
                         self.recalculate_main_list_positions()
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.AMOUNT_DESCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.amount_descending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_descending
-                        self.main_list_cards = self.sorting_function(
-                            self.main_list_cards)
                         self.recalculate_main_list_positions()
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.AMOUNT_ASCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.amount_ascending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_ascending
-                        self.main_list_cards = self.sorting_function(
-                            self.main_list_cards)
                         self.recalculate_main_list_positions()
                 # display types
                 elif selection == RenderableCardListviewer.MENU_OPTIONS.SHOW_EACH_CARD_DISPLAY_TYPE:
@@ -4177,6 +4180,24 @@ class RenderableCardListviewer(Frame):
             #if this is the dump spot
             if id_index == self.selected_card_index:
 
+                #placing the current idx
+                mlist_idx: int = self.main_list_cards_dict[id_index][0]
+                cardclass, amount = self.main_list_cards[mlist_idx]
+
+                if current_cardclass is None:
+                    current_cardclass = cardclass
+                    current_sum = amount
+
+                elif current_cardclass != cardclass:
+
+                    new_cardorder.append( (current_cardclass, current_sum) )
+
+                    current_cardclass = cardclass
+                    current_sum = amount
+
+                else:
+                    #same cardclass
+                    current_sum += amount
 
                 #now adding all
                 for dump_idx in first_n_indices:
@@ -4198,25 +4219,6 @@ class RenderableCardListviewer(Frame):
                     else:
                         #same cardclass
                         current_sum += amount
-
-                #placing the current idx
-                mlist_idx: int = self.main_list_cards_dict[id_index][0]
-                cardclass, amount = self.main_list_cards[mlist_idx]
-
-                if current_cardclass is None:
-                    current_cardclass = cardclass
-                    current_sum = amount
-
-                elif current_cardclass != cardclass:
-
-                    new_cardorder.append( (current_cardclass, current_sum) )
-
-                    current_cardclass = cardclass
-                    current_sum = amount
-
-                else:
-                    #same cardclass
-                    current_sum += amount
 
                 #adding the true index
                 true_idx += len(first_n_indices) + 1
@@ -4864,3 +4866,43 @@ class RenderableCardListviewer(Frame):
             cclass, amount = self.main_list_cards[main_list_cards_index]
 
             return (cclass, 1)
+
+    def cardorder_from_main_list_cards(self) -> cardorder_t:
+        """
+        Returns a cardorder constructed from self.main_list_cards.
+        """
+
+        if self.main_list_cards is None:
+            return None
+
+        new_order: cardorder_t = []
+
+        current_cardclass: Type[PlaysetEntity] = None
+        current_sum: int = 0
+
+        for (cclass, amount) in self.main_list_cards:
+
+            if current_cardclass is None:
+
+                current_cardclass = cclass
+                current_sum = 0
+
+            elif current_cardclass != cclass:
+
+                #new entry
+                new_order.append( (current_cardclass, current_sum) )
+
+                current_cardclass = cclass
+                current_sum = amount
+
+            else:
+
+                #same class
+                current_sum += amount
+
+        #now if anything is left append it as well
+        if current_cardclass is not None and current_sum > 0:
+
+            new_order.append( (current_cardclass, current_sum) )
+
+        return new_order
