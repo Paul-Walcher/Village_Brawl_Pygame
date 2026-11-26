@@ -3,11 +3,17 @@ This module contains the tag classes.
 A tag categorizes a Playset Entity belonging
 to the category of cards having the same tag.
 """
+from __future__ import annotations
+from typing import Type, Any, Callable, override, TYPE_CHECKING
+
 from constants import Colors
 from abc import abstractmethod, ABC
 from templates.type_enums import TypeEnums
 
+
 class Tag_Template(ABC):
+
+    str_to_tag: dict[str, Type[ Tag_Template ] ] = {}
 
     def __init__(
                 self,
@@ -40,6 +46,11 @@ class Tag_Template(ABC):
         """
         Divider between name and data.
         """
+
+        #adding to Tag_Template to str_to_tag
+        if self.own_enum not in Tag_Template.str_to_tag:
+            Tag_Template.str_to_tag[self.own_enum] = type(self)
+
 
     def __repr__(self):
         """

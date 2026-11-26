@@ -20,6 +20,14 @@ class Renderable_CardInfo:
     the container class to Renderable_CardInfo.render_info_page_parts
     """
 
+    tag_to_card_enum: dict[ Type[Tag_Template], set[int] ] = {}
+    """
+    This maps the tag template class to a set of enums,
+    representing the cards that have such a tag.
+    """
+
+
+
     class InfoPagePartContainer:
         """
         Container class for the various items constituating
@@ -94,6 +102,7 @@ class Renderable_CardInfo:
                 colored_description: colored_text_t = None,
                 card_image_path: str = "",
                 standard_image_path: str = "",
+                tags: list[Tag_Template] = None,
                 description_line_length: int = 40,
                 description_lines_per_page: int = 5
                 ):
@@ -109,6 +118,10 @@ class Renderable_CardInfo:
         self.name_color: color_t = name_color
         """
         Color of the headline, which renders the name of this card.
+        """
+        self._tags: list[Tag_Template] = []
+        """
+        The list of Tags pertaining to this card.
         """
         self._description: str = description
         """
@@ -157,6 +170,29 @@ class Renderable_CardInfo:
         """
         Number of pages in the colored description. Is -1 if self._colored_description_pages is None.
         """
+
+    @property
+    def tags(self) -> list[Tag_Template]:
+        return self._tags
+
+    @tags.setter
+    def tags(self, new_tags: list[Tag_Template]) -> None:
+
+        #removing own tags
+        for tag in self._tags:
+
+            Renderable_CardInfo.tag_to_card_enum[ type(tag) ].discard(self.card_enum)
+
+        self._tags = new_tags
+
+        for tag in self._tags:
+
+            key: Type[Tag_Template] = type(tag)
+
+            if key not in Renderable_CardInfo.tag_to_card_enum:
+                Renderable_CardInfo.tag_to_card_enum[key] = set()
+
+            Renderable_CardInfo.tag_to_card_enum[key].add(self.card_enum)
 
     @property
     def description(self):

@@ -1,82 +1,83 @@
 
-from enum import Enum, auto
+from constants import R_ID, id_t
+#use R_ID to give each enum an Individual id
 
-class ExplorerEnums(Enum):
+class ExplorerEnums:
 
-    BASIC_EXPLORER = auto()
+    BASIC_EXPLORER: id_t = R_ID()
 
-class ExplorerCardEnums(Enum):
+class ExplorerCardEnums:
 
-    EXAMPLE_CARD_1 = auto()
-    EXAMPLE_CARD_2 = auto()
-    EXAMPLE_CARD_3 = auto()
-    EXAMPLE_CARD_4 = auto()
-    EXAMPLE_CARD_5 = auto()
-    EXAMPLE_CARD_6 = auto()
-    EXAMPLE_CARD_7 = auto()
-    EXAMPLE_CARD_8 = auto()
-    EXAMPLE_CARD_9 = auto()
-    EXAMPLE_CARD_10 = auto()
+    EXAMPLE_CARD_1: id_t = R_ID()
+    EXAMPLE_CARD_2: id_t = R_ID()
+    EXAMPLE_CARD_3: id_t = R_ID()
+    EXAMPLE_CARD_4: id_t = R_ID()
+    EXAMPLE_CARD_5: id_t = R_ID()
+    EXAMPLE_CARD_6: id_t = R_ID()
+    EXAMPLE_CARD_7: id_t = R_ID()
+    EXAMPLE_CARD_8: id_t = R_ID()
+    EXAMPLE_CARD_9: id_t = R_ID()
+    EXAMPLE_CARD_10: id_t = R_ID()
 
-    SMALL_REST = auto()
+    SMALL_REST: id_t = R_ID()
 
-class VillageCardEnums(Enum):
+class VillageCardEnums:
     pass
 
-class ItemEnums(Enum):
+class ItemEnums:
 
-    REST_MARKER = auto()
+    REST_MARKER: id_t = R_ID()
 
-class ExplorerSupporterEnums(Enum):
+class ExplorerSupporterEnums:
     pass
 
-class VillageSupporterEnums(Enum):
+class VillageSupporterEnums:
     pass
 
-class PackEnums(Enum):
+class PackEnums:
     pass
 
-class BiomeCardEnums(Enum):
+class BiomeCardEnums:
     pass
 
-class BiomeEnums(Enum):
+class BiomeEnums:
     pass
 
-class BlueprintEnums(Enum):
+class BlueprintEnums:
     pass
 
-class BossEnums(Enum):
+class BossEnums:
     pass
 
-class BuildingEnums(Enum):
+class BuildingEnums:
     pass
 
-class MinibossEnums(Enum):
+class MinibossEnums:
     pass
 
-class ObjectiveEnums(Enum):
+class ObjectiveEnums:
     pass
 
-class ScenarioEnums(Enum):
+class ScenarioEnums:
     pass
 
-class VillageBossEnums(Enum):
+class VillageBossEnums:
     pass
 
-class VillageEnums(Enum):
+class VillageEnums:
     pass
 
-class VillagerEnums(Enum):
+class VillagerEnums:
     pass
 
-class VillageBossCardEnums(Enum):
+class VillageBossCardEnums:
     pass
 
-class VillageCardEnums(Enum):
+class VillageCardEnums:
     pass
 
-class BossCardEnums(Enum):
+class BossCardEnums:
     pass
 
-class MinibossCardEnums(Enum):
+class MinibossCardEnums:
     pass

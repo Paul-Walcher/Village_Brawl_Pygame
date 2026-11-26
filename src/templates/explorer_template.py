@@ -72,12 +72,15 @@ class ExplorerInfo(Renderable_CardInfo):
                 ):
 
 
-        super().__init__(   name=name,
+        super().__init__(
+                            self,
+                            name=name,
                             name_color=name_color,
                             description=description,
                             colored_description=colored_description,
                             card_image_path=card_image_path,
-                            standard_image_path=standard_image_path
+                            standard_image_path=standard_image_path,
+                            tags=tags
                             )
 
         """
@@ -113,8 +116,6 @@ class ExplorerInfo(Renderable_CardInfo):
         #stats
         #lives
         self.lives = lives
-        #tags
-        self.tags = (tags if tags is not None else [])
         #inventory size
         self.inventory_size = inventory_size
         #ability_activation_phases

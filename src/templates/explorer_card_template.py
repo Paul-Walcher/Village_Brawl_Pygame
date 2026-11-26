@@ -44,10 +44,10 @@ class ExplorerCardInfo(Renderable_CardInfo):
                                         description,
                                         description_color,
                                         card_image_path,
-                                        standard_image_path
+                                        standard_image_path,
+                                        tags=tags
                                         )
 
-        self.tags = (tags if tags is not None else [])
         self.max_per_deck = max_per_deck
         self.activation_phases = (activation_phases if activation_phases is not None else [])
         self.playable_locations = (playable_locations if playable_locations is not None else [])

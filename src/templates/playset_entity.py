@@ -32,7 +32,8 @@ class PlaysetEntity(Frame):
         """
         pass
 
-    def __init__(   self,
+    def __init__(
+                    self,
                     modules: Modules,
                     entity_type: TypeEnums,
                     frame_enum: FrameEnums = FrameEnums.PLAYSET_ENTITY,
@@ -43,7 +44,16 @@ class PlaysetEntity(Frame):
                     has_focus: bool = False #no focus by default
                     ):
 
-        super().__init__(frame_enum=frame_enum, data=data, frame_dim=frame_dim, parent_frame=parent_frame, focus_group=focus_group, has_focus=has_focus)
+        PlaysetEntity.__init__(
+
+                                self,
+                                frame_enum=frame_enum,
+                                data=data,
+                                frame_dim=frame_dim,
+                                parent_frame=parent_frame,
+                                focus_group=focus_group,
+                                has_focus=has_focus
+                                )
 
         self.modules: Modules = modules
         """
