@@ -1,0 +1,56 @@
+
+Standalone:
+-----------
+
+FeatureState
+Constants
+States
+Menu_Options
+SortingFunctions
+FocusedTextInputFrame
+RenderableCardListviewerPalette
+
+
+Each class gets a reference to the RenderableCardlistviewer.
+
+AttributeObjects -> the attributes
+
+InfoTextFunctionality
+RenderingFunctionality [Includes position recalculation]
+
+Animations:
+-----------
+RowMovement
+CardAnimations
+FullImageFunctionality
+
+Functionality:
+--------------
+
+MenuLabel
+	-> DropdownMenu
+		-> MenuSelectionFunctionality
+		-> MenuCreationFunctionality
+		-> MenuDeletionFunctionality
+		-> MenuSortingFunctionality
+		-> ChangeViewStateFunctionality
+		-> ImportGroupFunctionality
+		-> ChangeMainListStateFunctionality
+
+	-> MenuButton
+	-> Deckname (Includes selected animation, deck renaming)
+	-> Decksize
+
+
+InputManagement
+TickFunctionality
+ValidityCheck
+group_functions
+
+InfoStateFunctionality
+	-> CardinfoFrameFunctionality
+	-> MovingFunctionality
+
+SelectionStateFunctionality
+
+

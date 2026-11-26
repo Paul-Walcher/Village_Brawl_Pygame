@@ -12,8 +12,8 @@ In RenderableCardListviewer:
 
 #DONE
 
-7.) Implement Card Searching
-8.) Decompose renderable cardlistviewer into smaller parts.
+7.) Decompose renderable cardlistviewer into smaller parts.
+8.) Implement Card Searching
 9.) Implement Card adding / removing state
 10.) Implement Events
 11.) Implement a palette class to change the look of the renderable_cardlistviewer.

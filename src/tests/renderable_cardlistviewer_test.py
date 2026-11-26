@@ -14,7 +14,7 @@ from modules import Modules
 
 from Frames.frame import Frame
 from Frames.intro_frame import IntroFrame
-from Frames.widgets.renderable_card_listviewer import RenderableCardListviewer
+from Frames.widgets.renderable_card_listviewer.renderable_card_listviewer import RenderableCardListviewer
 from Frames.show_explorer_starting_cards_frame import ShowExplorerStartingCardsFrame
 
 from playsets.example_playset.enums import ExplorerEnums
