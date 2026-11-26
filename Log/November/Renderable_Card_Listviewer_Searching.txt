@@ -1,0 +1,21 @@
+
+Seaching can be accessed through the dropdownmenu,
+or through a key combination.
+
+When searching, following search options should be possible:
+
+Searching by text takes the given text and puts it into a regular
+expression, then searches each card by its name in cardinfo.
+Cards that are in the full cardlist, but not in the current group
+will also be shown, but in a special state indicating it is not
+inside the current group.
+
+You can engulf the whole search in " quotes to
+make the whole term treated as one search string.
+
+If -I or -i or -intern or -Intern is leading, no cards outside
+the current group will be shown in the search.
+To instead search with this term, use "\" leading
+in front of the term.
+
+If @ immediately followed by 
