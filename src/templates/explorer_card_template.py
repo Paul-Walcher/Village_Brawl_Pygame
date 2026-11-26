@@ -1,17 +1,21 @@
 """
 Template for any explorer.
 """
+from __future__ import annotations
+from typing import Type, Any, Callable
+
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 
 import constants
 import graphics
-from constants import Fonts, Colors
+from constants import Fonts, Colors, id_t
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 
 from templates.renderable_cardinfo import Renderable_CardInfo
 from templates.playset_entity import PlaysetEntity
+from templates.type_enums import TypeEnums
 from calculations import Weightlist
 """
 class CardTag:
@@ -20,8 +24,10 @@ class CardTag:
 
 class ExplorerCardInfo(Renderable_CardInfo):
 
-    def __init__(   self,
-                    card_enum: int = -1,
+    def __init__(
+                    self,
+                    card_enum: id_t = None,
+                    playset_entity_reference: Type[PlaysetEntity] = None,
                     name: str = "",
                     name_color: tuple = (255, 255, 255),
                     description: str = "",
@@ -37,8 +43,11 @@ class ExplorerCardInfo(Renderable_CardInfo):
                     ):
 
 
-        Renderable_CardInfo.__init__(   self,
+        Renderable_CardInfo.__init__(
+                                        self,
                                         card_enum,
+                                        TypeEnums.EXPLORER_CARD,
+                                        playset_entity_reference,
                                         name,
                                         name_color,
                                         description,

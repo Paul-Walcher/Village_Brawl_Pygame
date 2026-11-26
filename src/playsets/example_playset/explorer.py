@@ -34,6 +34,7 @@ class Basic_Explorer(Explorer_Template):
         einfo.name = ["Basic Explorer"]
         einfo.name_color = Colors.LIGHT_ORANGE
         einfo.card_enum = enums.ExplorerEnums.BASIC_EXPLORER
+        einfo.playset_entity_reference = Basic_Explorer
         einfo.description = "Basic Explorer. Has no special abilities."
         einfo.description_color = [(einfo.description, Colors.STANDARD_TEXT_COLOR)]
 

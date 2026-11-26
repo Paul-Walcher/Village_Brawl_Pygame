@@ -24,7 +24,6 @@ from constants import (
 from enum import Enum, auto
 import graphics
 from clock import Clock
-from modules import Modules
 import constants
 from event_queue_manager import Event
 from abc import abstractmethod

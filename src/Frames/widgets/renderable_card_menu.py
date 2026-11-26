@@ -13,7 +13,6 @@ from constants import (
 )
 import graphics
 from clock import Clock
-from modules import Modules
 import constants
 from event_queue_manager import Event
 from copy import deepcopy

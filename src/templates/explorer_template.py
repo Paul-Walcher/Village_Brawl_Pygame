@@ -2,6 +2,9 @@
 """
 Template for any explorer.
 """
+from __future__ import annotations
+from typing import Type, Any, Callable
+
 import pygame
 from abc import ABC, abstractmethod
 from enum import Enum, auto
@@ -9,12 +12,13 @@ from enum import Enum, auto
 from deck import Deck
 
 import constants
-from constants import Colors, Fonts
+from constants import Colors, Fonts, id_t
 import graphics
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 from templates.playset_entity import PlaysetEntity
+from templates.type_enums import TypeEnums
 
 from templates.renderable_cardinfo import Renderable_CardInfo
 from copy import deepcopy
@@ -51,7 +55,8 @@ class ExplorerInfo(Renderable_CardInfo):
     def __init__(self,
                 name: str = "",
                 name_color: tuple = (255, 255, 255),
-                explorer_enum = None,
+                card_enum: id_t = None,
+                playset_entity_reference: Type[PlaysetEntity] = None,
                 description: str = "",
                 colored_description: str = "",
                 card_image_path: str = "",
@@ -72,23 +77,24 @@ class ExplorerInfo(Renderable_CardInfo):
                 ):
 
 
-        super().__init__(
-                            self,
-                            name=name,
-                            name_color=name_color,
-                            description=description,
-                            colored_description=colored_description,
-                            card_image_path=card_image_path,
-                            standard_image_path=standard_image_path,
-                            tags=tags
-                            )
+        Renderable_CardInfo.__init__(
+                                    self,
+                                    card_enum=card_enum,
+                                    type_enum=TypeEnums.EXPLORER,
+                                    playset_entity_reference=playset_entity_reference,
+                                    name=name,
+                                    name_color=name_color,
+                                    description=description,
+                                    colored_description=colored_description,
+                                    card_image_path=card_image_path,
+                                    standard_image_path=standard_image_path,
+                                    tags=tags
+                                    )
 
         """
         NOTE: Everything unlockable should be unlockable via items, buildings, villagers, ...,
         not directly through the menu.
         """
-        #reference to the explorer enum
-        self.explorer_enum = explorer_enum
 
         #starting items. these need to be the enums from items_mappings.
         #starting items are {name_enum: amount}

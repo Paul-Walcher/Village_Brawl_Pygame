@@ -34,6 +34,7 @@ class Example_Card_1(Explorer_Card_Template):
                         name = ["Example Card 1"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_1,
+                        playset_entity_reference=Example_Card_1,
                         description = "Example Card",
                         description_color = [("Example Card", Colors.STANDARD_TEXT_COLOR)],
                         tags = [],
@@ -59,6 +60,7 @@ class Example_Card_2(Explorer_Card_Template):
                         name = ["Example Card 2"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_2,
+                        playset_entity_reference=Example_Card_2,
                         description = "Example Card",
                         description_color = [("Example Card", Colors.STANDARD_TEXT_COLOR)],
                         tags = [],
@@ -84,6 +86,7 @@ class Example_Card_3(Explorer_Card_Template):
                         name = ["Example Card 3"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_3,
+                        playset_entity_reference=Example_Card_3,
                         description = "Example Card",
                         description_color = [("Example Card", Colors.STANDARD_TEXT_COLOR)],
                         tags = [],
@@ -109,6 +112,7 @@ class Example_Card_4(Explorer_Card_Template):
                         name = ["Example Card 4"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_4,
+                        playset_entity_reference=Example_Card_4,
                         description = "Example Card",
                         description_color = [("Example Card", Colors.STANDARD_TEXT_COLOR)],
                         tags = [],
@@ -134,6 +138,7 @@ class Example_Card_5(Explorer_Card_Template):
                         name = ["Example Card 5"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_5,
+                        playset_entity_reference=Example_Card_5,
                         description = "Example Card",
                         description_color = [("Example Card", Colors.STANDARD_TEXT_COLOR)],
                         tags = [],
@@ -159,6 +164,7 @@ class Example_Card_6(Explorer_Card_Template):
                         name = ["Example Card 6"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_6,
+                        playset_entity_reference=Example_Card_6,
                         description = "Example Card",
                         description_color = [("Example Card", Colors.STANDARD_TEXT_COLOR)],
                         tags = [],
@@ -184,6 +190,7 @@ class Example_Card_7(Explorer_Card_Template):
                         name = ["Example Card 7"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_7,
+                        playset_entity_reference=Example_Card_7,
                         description = "Example Card",
                         description_color = [("Example Card", Colors.STANDARD_TEXT_COLOR)],
                         tags = [],
@@ -210,6 +217,7 @@ class Example_Card_8(Explorer_Card_Template):
                         name = ["Example Card 8"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_8,
+                        playset_entity_reference=Example_Card_8,
                         description = "Example Card",
                         description_color = [("Example Card", Colors.STANDARD_TEXT_COLOR)],
                         tags = [],
@@ -236,6 +244,7 @@ class Example_Card_9(Explorer_Card_Template):
                         name = ["Example Card 9"],
                         name_color = Colors.WHITE,
                         card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_9,
+                        playset_entity_reference=Example_Card_9,
                         description = "Example Card",
                         description_color = [("Example Card", Colors.STANDARD_TEXT_COLOR)],
                         tags = [],
@@ -260,7 +269,8 @@ class Example_Card_10(Explorer_Card_Template):
         cinfo = ExplorerCardInfo(
                         name = ["Example Card 10"],
                         name_color = Colors.WHITE,
-                        card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_4,
+                        card_enum = enums.ExplorerCardEnums.EXAMPLE_CARD_10,
+                        playset_entity_reference=Example_Card_10,
                         description = "Example Card",
                         description_color = [("Example Card", Colors.STANDARD_TEXT_COLOR)],
                         tags = [],
@@ -290,6 +300,7 @@ class Small_Rest(Explorer_Card_Template):
         cinfo.name_color = Colors.STANDARD_TEXT_COLOR
 
         cinfo.card_enum = enums.ExplorerCardEnums.SMALL_REST
+        cinfo.playset_entity_reference = Small_Rest
         cinfo.description = "This card generates 1 Rest Token."
         cinfo.description_color = [("This card generates 1 Rest Token", Colors.STANDARD_TEXT_COLOR)]
         cinfo.tags = [

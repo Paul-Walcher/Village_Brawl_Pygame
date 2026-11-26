@@ -1,5 +1,9 @@
 from __future__ import annotations
 from typing import Any, Callable, Type, override
+from types import ModuleType
+import inspect
+
+from templates.playset_entity import PlaysetEntity
 
 """
 Loads the modules
@@ -48,6 +52,16 @@ class Modules:
         modules.mappings = importlib.import_module(f"{playset}.mappings")
         modules.enums = importlib.import_module(f"{playset}.enums")
 
+        #creating all infos once to initialize all info data in renderable cardinfo
+        for (name, internal_module) in vars(modules).items():
+            for (iname, obj) in vars(internal_module).items():
+
+                if inspect.isclass(obj):
+                    if issubclass(obj, PlaysetEntity):
+
+                        #create an info to add it to the known mappings in renderable cardinfo
+                        cinfo = obj.info()
+
         return modules
 
 
@@ -68,7 +82,6 @@ class Modules:
         self.objectives_module = None
         self.packs_module = None
         self.scenarios_module = None
-        self.supporters_module = None
         self.village_boss_cards_module = None
         self.village_bosses_module = None
         self.village_cards_module = None

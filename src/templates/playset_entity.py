@@ -1,16 +1,19 @@
 from __future__ import annotations
-from typing import Callable, Any
+from typing import Callable, Any, TYPE_CHECKING
 from types import ModuleType
 
 from Frames.frame import Frame
 from Frames.frame_enums import FrameEnums
 import constants
-from modules import Modules
+from constants import id_t, R_ID
 from templates.type_enums import TypeEnums
 from Frames.frame_enums import FrameEnums
 from phases import Phases, phase_transition_t, PhaseInfo
+
 from templates.renderable_cardinfo import Renderable_CardInfo
 
+if TYPE_CHECKING:
+    from modules import Modules
 
 class PlaysetEntity(Frame):
 
@@ -35,7 +38,6 @@ class PlaysetEntity(Frame):
     def __init__(
                     self,
                     modules: Modules,
-                    entity_type: TypeEnums,
                     frame_enum: FrameEnums = FrameEnums.PLAYSET_ENTITY,
                     data: Any = None,
                     frame_dim: pygame.Rect = constants.FULLSCREEN,
@@ -44,16 +46,16 @@ class PlaysetEntity(Frame):
                     has_focus: bool = False #no focus by default
                     ):
 
-        PlaysetEntity.__init__(
+        Frame.__init__(
 
-                                self,
-                                frame_enum=frame_enum,
-                                data=data,
-                                frame_dim=frame_dim,
-                                parent_frame=parent_frame,
-                                focus_group=focus_group,
-                                has_focus=has_focus
-                                )
+                        self,
+                        frame_enum=frame_enum,
+                        data=data,
+                        frame_dim=frame_dim,
+                        parent_frame=parent_frame,
+                        focus_group=focus_group,
+                        has_focus=has_focus
+                        )
 
         self.modules: Modules = modules
         """
@@ -74,10 +76,7 @@ class PlaysetEntity(Frame):
         Direct reference to the tags.
         Defined for readability
         """
-        self.entity_type: TypeEnums = entity_type
-        """
-        The type of this entity.
-        """
+
 
     def tick(
                 self,

@@ -18,6 +18,7 @@ from Frames.widgets.renderable_card_listviewer import RenderableCardListviewer
 from Frames.show_explorer_starting_cards_frame import ShowExplorerStartingCardsFrame
 
 from playsets.example_playset.enums import ExplorerEnums
+from templates.renderable_cardinfo import Renderable_CardInfo
 
 MOUSE_ENABLE_FLAG: str = "-enable-mouse"
 MOUSE_DISABLED_FLAG: str = "-disable-mouse"

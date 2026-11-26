@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Type, Any, Callable, override
+from typing import Type, Any, Callable, override, TYPE_CHECKING
 from bisect import bisect_left, bisect_right
 from collections import OrderedDict
 from itertools import islice
@@ -29,7 +29,6 @@ import constants
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock
-from modules import Modules
 from event_queue_manager import Event
 from copy import deepcopy
 from templates.renderable_cardinfo import Renderable_CardInfo
@@ -56,6 +55,9 @@ from Frames.widgets.scrollable_dropdown_menu import (
 from Frames.cardinfo_frames.cardinfo_frame import CardinfoFrame
 from Frames.cardinfo_frames.explorer_info_frame import ExplorerInfoFrame
 from Frames.cardinfo_frames.cardinfo_to_info_frame import map_cardinfo_to_info_frame
+
+if TYPE_CHECKING:
+    from modules import Modules
 
 # TODO
 #

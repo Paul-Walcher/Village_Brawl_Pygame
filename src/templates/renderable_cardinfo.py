@@ -1,12 +1,17 @@
 from __future__ import annotations
+from typing import Type, Any, Callable, override, TYPE_CHECKING
 
 import pygame
 
-from constants import Colors, Fonts, fequal, color_t
+from constants import Colors, Fonts, fequal, color_t, id_t
 import graphics
 from graphics import text_t, colored_text_t ,page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from Frames.widgets.textbox import Textbox
 from Frames.widgets.label import Label
+from templates.type_enums import card_enum_t, type_enum_t, identifier_t
+
+if TYPE_CHECKING:
+    from templates.playset_entity import PlaysetEntity
 
 class Renderable_CardInfo:
     """
@@ -20,10 +25,15 @@ class Renderable_CardInfo:
     the container class to Renderable_CardInfo.render_info_page_parts
     """
 
-    tag_to_card_enum: dict[ Type[Tag_Template], set[int] ] = {}
+    tag_to_identifier: dict[ Type[Tag_Template], set[ identifier_t ] ] = {}
     """
-    This maps the tag template class to a set of enums,
+    This maps the tag template class to a set of tuples like (type_enum, card_enum),
     representing the cards that have such a tag.
+    """
+
+    identifier_to_playset_entity: dict[ identifier_t, Type[PlaysetEntity] ] = {}
+    """
+    Mapping from an identifier to a playset entity.
     """
 
 
@@ -95,7 +105,9 @@ class Renderable_CardInfo:
 
     def __init__(self,
 
-                card_enum: int = -1, #reference to the card this cardinfo portrays
+                card_enum: id_t = None, #reference to the card this cardinfo portrays
+                type_enum: id_t = None,
+                playset_entity_reference: Type[PlaysetEntity] = None,
                 name: page_t = "",
                 name_color: color_t = Colors.BLACK,
                 description: str = "",
@@ -107,9 +119,23 @@ class Renderable_CardInfo:
                 description_lines_per_page: int = 5
                 ):
 
-        self.card_enum: int = card_enum
+        #for setting card and type enums
+        self._tags: list[Tag_Template] = []
+        self._card_enum: id_t = None
+        self._type_enum: id_t = None
+        self._playset_entity_reference: Type[PlaysetEntity] = None
+
+        self.card_enum: id_t = card_enum
         """
         Reference to the card this cardinfo portrays.
+        """
+        self.type_enum: id_t = type_enum
+        """
+        Enum of the type of the card this info refers to.
+        """
+        self.playset_entity_reference: Type[PlaysetEntity] = playset_entity_reference
+        """
+        Reference to the Playset entity class this info is about.
         """
         self.name: page_t = name
         """
@@ -118,10 +144,6 @@ class Renderable_CardInfo:
         self.name_color: color_t = name_color
         """
         Color of the headline, which renders the name of this card.
-        """
-        self._tags: list[Tag_Template] = []
-        """
-        The list of Tags pertaining to this card.
         """
         self._description: str = description
         """
@@ -171,6 +193,103 @@ class Renderable_CardInfo:
         Number of pages in the colored description. Is -1 if self._colored_description_pages is None.
         """
 
+    def _remove_enums_from_mappings(self) -> None:
+        """
+        Removes all references of this cards enums
+        for all of its tags in tag_to_identifier
+        """
+
+        if (self.card_enum is None or self.type_enum is None or self._tags is None):
+            return
+
+        enums: tuple[id_t, id_t] = (self.type_enum, self.card_enum)
+        for tag in self._tags:
+            Renderable_CardInfo.tag_to_identifier[ type(tag) ].discard(enums)
+
+    def _add_enums_to_mappings(self) -> None:
+        """
+        Adds all references of this cards enums
+        for all of its tags in tag_to_identifier
+        """
+
+        if (self.card_enum is None or self.type_enum is None or self._tags is None):
+            return
+
+        enums: tuple[id_t, id_t] = (self.type_enum, self.card_enum)
+        for tag in self._tags:
+
+            tagtype: Type[Tag_Template] = type(tag)
+
+            if tagtype not in Renderable_CardInfo.tag_to_identifier:
+                Renderable_CardInfo.tag_to_identifier[tagtype] = set()
+
+            Renderable_CardInfo.tag_to_identifier[ tagtype ].add(enums)
+
+
+    @property
+    def card_enum(self) -> id_t:
+        return self._card_enum
+
+    @card_enum.setter
+    def card_enum(self, new_enum: id_t) -> None:
+
+        if self.card_enum == new_enum:
+            return
+
+        if self._card_enum is not None:
+            self._remove_enums_from_mappings()
+            if self._type_enum is not None and self._playset_entity_reference is not None:
+                del Renderable_CardInfo.identifier_to_playset_entity[(self._type_enum, self._card_enum)]
+
+        self._card_enum = new_enum
+        if self._card_enum is not None:
+            self._add_enums_to_mappings()
+
+            if self._type_enum is not None and self._playset_entity_reference is not None:
+                Renderable_CardInfo.identifier_to_playset_entity[(self._type_enum, self._card_enum)] = self._playset_entity_reference
+
+    @property
+    def type_enum(self) -> id_t:
+        return self._type_enum
+
+    @type_enum.setter
+    def type_enum(self, new_tenum: id_t) -> None:
+
+        if self._type_enum == new_tenum:
+            return
+
+        if self._type_enum is not None:
+            self._remove_enums_from_mappings()
+            if self._card_enum is not None and self._playset_entity_reference is not None:
+                del Renderable_CardInfo.identifier_to_playset_entity[(self._type_enum, self._card_enum)]
+
+        self._type_enum = new_tenum
+        if self._type_enum is not None:
+            self._add_enums_to_mappings()
+            if self._card_enum is not None and self._playset_entity_reference is not None:
+                Renderable_CardInfo.identifier_to_playset_entity[(self._type_enum, self._card_enum)] = self._playset_entity_reference
+
+    @property
+    def playset_entity_reference(self) -> Type[PlaysetEntity]:
+        return self._playset_entity_reference
+
+    @playset_entity_reference.setter
+    def playset_entity_reference(self, new_ref: Type[PlaysetEntity]) -> None:
+
+        if self._playset_entity_reference == new_ref:
+            return
+
+        if self._playset_entity_reference is not None:
+            if self._card_enum is not None and self._type_enum is not None:
+                del Renderable_CardInfo.identifier_to_playset_entity[(self._type_enum, self._card_enum)]
+
+        self._playset_entity_reference = new_ref
+
+        if self._playset_entity_reference is not None:
+            if self._card_enum is not None and self._type_enum is not None:
+                Renderable_CardInfo.identifier_to_playset_entity[(self._type_enum, self._card_enum)] = self._playset_entity_reference
+
+
     @property
     def tags(self) -> list[Tag_Template]:
         return self._tags
@@ -178,21 +297,13 @@ class Renderable_CardInfo:
     @tags.setter
     def tags(self, new_tags: list[Tag_Template]) -> None:
 
-        #removing own tags
-        for tag in self._tags:
-
-            Renderable_CardInfo.tag_to_card_enum[ type(tag) ].discard(self.card_enum)
+        if self._tags is not None:
+            self._remove_enums_from_mappings()
 
         self._tags = new_tags
 
-        for tag in self._tags:
-
-            key: Type[Tag_Template] = type(tag)
-
-            if key not in Renderable_CardInfo.tag_to_card_enum:
-                Renderable_CardInfo.tag_to_card_enum[key] = set()
-
-            Renderable_CardInfo.tag_to_card_enum[key].add(self.card_enum)
+        if self._tags is not None:
+            self._add_enums_to_mappings()
 
     @property
     def description(self):

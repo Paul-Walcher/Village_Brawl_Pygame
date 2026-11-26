@@ -18,7 +18,6 @@ from constants import (
 import graphics
 from graphics import page_t, colored_page_t, surface_with_position_t, rendered_surface_position_tuples_t
 from clock import Clock
-from modules import Modules
 import constants
 
 from event_queue_manager import EventQueueManager, Event
