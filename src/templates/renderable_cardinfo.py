@@ -10,6 +10,8 @@ from Frames.widgets.textbox import Textbox
 from Frames.widgets.label import Label
 from templates.type_enums import card_enum_t, type_enum_t, identifier_t
 
+from bisect import bisect_left, bisect_right
+
 if TYPE_CHECKING:
     from templates.playset_entity import PlaysetEntity
 
@@ -120,7 +122,7 @@ class Renderable_CardInfo:
                 ):
 
         #for setting card and type enums
-        self._tags: list[Tag_Template] = []
+        self._tags: list[Tag_Template] = [] #tags are sorted by own_enum
         self._card_enum: id_t = None
         self._type_enum: id_t = None
         self._playset_entity_reference: Type[PlaysetEntity] = None
@@ -192,6 +194,94 @@ class Renderable_CardInfo:
         """
         Number of pages in the colored description. Is -1 if self._colored_description_pages is None.
         """
+
+    def add_tag(self, tag: Tag_Template) -> None:
+        """
+        Adds the given tag to the existing tags.
+        """
+        if self._tags is None:
+            self._tags = []
+
+        insertion_point: int = bisect_left(self._tags, id(type(tag)), key=lambda innert_tag: id(type(innert_tag)))
+        self._tags.insert(insertion_point, tag)
+
+    def remove_tags(
+                    self,
+                    tag_t: Type[Tag_Template],
+                    condition: Callable[[Tag_Template], bool] | None = None
+                ) -> list[Tag_Template]:
+        """
+        Removes the tags of the given type that satisfy the condition.
+        Returns the removed Tag Templates.
+        """
+
+        if self._tags is None:
+            return []
+
+        # Getting indices
+        left_idx: int = bisect_left(
+            self._tags,
+            id(tag_t),
+            key=lambda inner_tag: id(type(inner_tag))
+        )
+
+        right_idx: int = bisect_right(
+            self._tags,
+            id(tag_t),
+            key=lambda inner_tag: id(type(inner_tag))
+        )
+
+        same_type_tags = self._tags[left_idx:right_idx]
+
+        if condition is None:
+            del self._tags[left_idx:right_idx]
+            return same_type_tags
+
+        removed_tags: list[Tag_Template] = []
+        remaining_tags: list[Tag_Template] = []
+
+        for tag in same_type_tags:
+            if condition(tag):
+                removed_tags.append(tag)
+            else:
+                remaining_tags.append(tag)
+
+        self._tags[left_idx:right_idx] = remaining_tags
+
+        return removed_tags
+
+    def get_tags(
+                    self,
+                    tag_t: Type[Tag_Template],
+                    condition: Callable[[Tag_Template], bool] | None = None
+                ) -> list[Tag_Template]:
+        """
+        Removes the tags of the given type that satisfy the condition.
+        Returns the removed Tag Templates.
+        """
+
+        if self._tags is None:
+            return []
+
+        # Getting indices
+        left_idx: int = bisect_left(
+            self._tags,
+            id(tag_t),
+            key=lambda inner_tag: id(type(inner_tag))
+        )
+
+        right_idx: int = bisect_right(
+            self._tags,
+            id(tag_t),
+            key=lambda inner_tag: id(type(inner_tag))
+        )
+
+        same_type_tags = self._tags[left_idx:right_idx]
+
+        if condition is not None:
+            same_type_tags = [tag for tag in same_type_tags if condition(tag)]
+
+        return same_type_tags
 
     def _remove_enums_from_mappings(self) -> None:
         """
@@ -304,6 +394,7 @@ class Renderable_CardInfo:
 
         if self._tags is not None:
             self._add_enums_to_mappings()
+            self._tags.sort(key=lambda tag: id(type(tag)))
 
     @property
     def description(self):

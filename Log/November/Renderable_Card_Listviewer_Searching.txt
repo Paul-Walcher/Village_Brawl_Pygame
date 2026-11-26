@@ -18,4 +18,44 @@ the current group will be shown in the search.
 To instead search with this term, use "\" leading
 in front of the term.
 
-If @ immediately followed by 
+If @ immediately followed by a string, the search searches for tags with the regular expression
+given. Immediately after the regular expression, you can narrow the search down by
+adding ; then immediately adding a tag variable, and one of the following: (=, !=, <, >, <=, >=),
+then a value. This specifies which playsetentities that have tags obeying the rules are being searched.
+You can stack multiple conditions on top using ;.
+Then You can add another part to the search using |. If after that a @ follows a new
+tag search will be added. A search string not started by @ refers to a normal name search.
+
+#now implementation
+
+__init__():
+-----------
+
+self.playset_entity_to_cinfo: dict[ Type[PlaysetEntities], Renderable_Cardinfo ]
+#will be constructed in rerender
+self.tag_to_playset_entities: dict[ Type[Tag_Template],  set[Type[PlaysetEntity]] = None
+#will be constructed in rerender
+#this maps
+
+
+rerender():
+-----------
+
+self.playset_entity_to_cinfo = {}
+self.tag_to_playset_entities = {}
+
+full_cardlist_group: group_t = self.groups[RenderableCardlistviewer.FULL_CARDLIST_KEY]
+full_cardlist: cardlist_t = Cardgroup.cardlist(group=full_cardlist_group)
+
+for (pe_type, amount) in full_cardlist.items():
+
+		cinfo: Renderable_CardInfo = pe_type.info()
+
+		self.playset_entity_to_cinfo[pe_type] = cinfo
+
+		for tag in cinfo.tags:
+
+				if tag not in self.tag_to_playset_entities:
+						self.tag_to_playset_entities[tag] = set()
+
+				self.tag_to_playset_entities[tag].add(pe_type)
