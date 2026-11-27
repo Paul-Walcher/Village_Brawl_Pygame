@@ -64,6 +64,17 @@ from Frames.widgets.renderable_card_listviewer.featurestate import FeatureState
 from Frames.widgets.renderable_card_listviewer.constants import *
 from Frames.widgets.renderable_card_listviewer.states import *
 from Frames.widgets.renderable_card_listviewer.menu.menu_options import MENU_OPTIONS
+from Frames.widgets.renderable_card_listviewer.sorting_functions import SortingFunctions
+
+if TYPE_CHECKING:
+    from Frames.widgets.renderable_card_listviewer.group_functions\
+    import (
+            listviewer_cardlist_element_t,
+            listviewer_cardlist_t
+            )
+
+    from Frames.widgets.renderable_card_listviewer.sorting_functions\
+    import cardlist_sorting_function_t
 
 # TODO
 #
@@ -78,11 +89,6 @@ from Frames.widgets.renderable_card_listviewer.menu.menu_options import MENU_OPT
 
 # types
 # (class reference, amount)
-type listviewer_cardlist_element_t = tuple[Type[Renderable_CardInfo], int]
-type listviewer_cardlist_t = list[listviewer_cardlist_element_t]
-
-type cardlist_sorting_function_t = Callable[[
-    listviewer_cardlist_t], listviewer_cardlist_t]
 
 
 class RenderableCardListviewer(Frame):
@@ -142,71 +148,6 @@ class RenderableCardListviewer(Frame):
         MainListState.SELECTION_STATE: Colors.ORANGE
     }
 
-
-    # ==================================
-    # SORTING FUNCTIONS
-    # ==================================
-
-    class SortingFunctions:
-        """
-        Functions to sort cardlists.
-        Each cardlist is: [(RenderableCard (Class), amount)]
-        """
-
-        @staticmethod
-        def no_order(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
-            """
-            Returns the cardlist in the same order as
-            it was before.
-            """
-            return cardlist
-
-        @staticmethod
-        def randomized(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
-            """
-            Returns the cardlist after a random shuffle.
-            """
-            cardlist_copy = cardlist.copy()
-            random.shuffle(cardlist_copy)
-            return cardlist_copy
-
-        @staticmethod
-        def name_descending(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
-            """
-            Sorts by name descending.
-            """
-            clist = cardlist.copy()
-            clist.sort(key=lambda x: x[0].info().name)
-            return clist
-
-        @staticmethod
-        def name_ascending(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
-            """
-            Sorts by name ascending.
-            """
-            clist = cardlist.copy()
-            clist.sort(key=lambda x: x[0].info().name)
-            clist.reverse()
-            return clist
-
-        @staticmethod
-        def amount_descending(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
-            """
-            Sorts by amount descending.
-            """
-            clist = cardlist.copy()
-            clist.sort(key=lambda x: x[1])
-            return clist
-
-        @staticmethod
-        def amount_ascending(cardlist: listviewer_cardlist_t) -> listviewer_cardlist_t:
-            """
-            Sorts by amount ascending.
-            """
-            clist = cardlist.copy()
-            clist.sort(key=lambda x: x[1])
-            clist.reverse()
-            return clist
 
     # ==================================
     # SUBFRAMES
@@ -609,7 +550,7 @@ class RenderableCardListviewer(Frame):
         Color the name of the group will be shown in.
         """
         self.sorting_function: cardlist_sorting_function_t = (
-            sorting_function if sorting_function is not None else RenderableCardListviewer.SortingFunctions.name_descending)
+            sorting_function if sorting_function is not None else SortingFunctions.name_descending)
         """
         The sorting function used for sorting self.cardlist.
         Sorts by name descending on default.
@@ -2090,11 +2031,11 @@ class RenderableCardListviewer(Frame):
                 for (cclass, amount) in clist.items():
                     gcards.append((cclass, amount))
 
-            if self.sorting_function is not RenderableCardListviewer.SortingFunctions.no_order:
+            if self.sorting_function is not SortingFunctions.no_order:
                 #sort and reconstruct cardorder
                 self.main_list_cards = self.sorting_function(gcards)
                 #reset the sorting function
-                self.sorting_function = RenderableCardListviewer.SortingFunctions.no_order
+                self.sorting_function = SortingFunctions.no_order
 
                 new_cardorder: cardorder_t = self.cardorder_from_main_list_cards()
                 Cardgroup.cardorder(group=self.groups[self.shown_group], cardorder=new_cardorder)
@@ -2833,23 +2774,23 @@ class RenderableCardListviewer(Frame):
                 selection: tuple[str] = full_trace[-1]
 
                 if selection == MENU_OPTIONS.RANDOMIZED_SORTING:
-                    self.sorting_function = RenderableCardListviewer.SortingFunctions.randomized
+                    self.sorting_function = SortingFunctions.randomized
                     self.recalculate_main_list_positions()
                 elif selection == MENU_OPTIONS.NAME_DESCENDING_SORTING:
-                    if self.sorting_function is not RenderableCardListviewer.SortingFunctions.name_descending:
-                        self.sorting_function = RenderableCardListviewer.SortingFunctions.name_descending
+                    if self.sorting_function is not SortingFunctions.name_descending:
+                        self.sorting_function = SortingFunctions.name_descending
                         self.recalculate_main_list_positions()
                 elif selection == MENU_OPTIONS.NAME_ASCENDING_SORTING:
-                    if self.sorting_function is not RenderableCardListviewer.SortingFunctions.name_ascending:
-                        self.sorting_function = RenderableCardListviewer.SortingFunctions.name_ascending
+                    if self.sorting_function is not SortingFunctions.name_ascending:
+                        self.sorting_function = SortingFunctions.name_ascending
                         self.recalculate_main_list_positions()
                 elif selection == MENU_OPTIONS.AMOUNT_DESCENDING_SORTING:
-                    if self.sorting_function is not RenderableCardListviewer.SortingFunctions.amount_descending:
-                        self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_descending
+                    if self.sorting_function is not SortingFunctions.amount_descending:
+                        self.sorting_function = SortingFunctions.amount_descending
                         self.recalculate_main_list_positions()
                 elif selection == MENU_OPTIONS.AMOUNT_ASCENDING_SORTING:
-                    if self.sorting_function is not RenderableCardListviewer.SortingFunctions.amount_ascending:
-                        self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_ascending
+                    if self.sorting_function is not SortingFunctions.amount_ascending:
+                        self.sorting_function = SortingFunctions.amount_ascending
                         self.recalculate_main_list_positions()
                 # display types
                 elif selection == MENU_OPTIONS.SHOW_EACH_CARD_DISPLAY_TYPE:
@@ -4123,7 +4064,7 @@ class RenderableCardListviewer(Frame):
         Cardgroup.cardorder(group=self.groups[self.shown_group], cardorder=new_cardorder)
         selected_index_save: int = self.selected_card_index
         #setting the sorting function to no order
-        self.sorting_function = RenderableCardListviewer.SortingFunctions.no_order
+        self.sorting_function = SortingFunctions.no_order
 
         self.reload_current_group(keep_current_state=False)
 
