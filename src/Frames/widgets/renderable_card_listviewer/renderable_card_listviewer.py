@@ -63,6 +63,7 @@ if TYPE_CHECKING:
 from Frames.widgets.renderable_card_listviewer.featurestate import FeatureState
 from Frames.widgets.renderable_card_listviewer.constants import *
 from Frames.widgets.renderable_card_listviewer.states import *
+from Frames.widgets.renderable_card_listviewer.menu.menu_options import MENU_OPTIONS
 
 # TODO
 #
@@ -141,75 +142,6 @@ class RenderableCardListviewer(Frame):
         MainListState.SELECTION_STATE: Colors.ORANGE
     }
 
-    # ==================================
-    # MENU OPTIONS
-    # ==================================
-
-    class MENU_OPTIONS:
-        """
-        This class provides the option keys
-        for the (dropdown) menu.
-        """
-
-        @staticmethod
-        def get_option_from_traceback(traceback: scrollable_option_trace_t) -> scrollable_option_trace_element_t:
-            """
-            Returns the last element of the scrollable option trace.
-            """
-            return traceback[-1]
-
-        SHOWN_AMOUNT: int = 5  # shown amount of options
-
-        # sorting
-        SORTING_OPTION_KEY: tuple[str] = ("Sort Group",)
-        # suboptions
-        RANDOMIZED_SORTING: tuple[str] = ("Randomized",)
-        NAME_DESCENDING_SORTING: tuple[str] = ("Name Descending",)
-        NAME_ASCENDING_SORTING: tuple[str] = ("Name Ascending",)
-        AMOUNT_DESCENDING_SORTING: tuple[str] = ("Amount Descending",)
-        AMOUNT_ASCENDING_SORTING: tuple[str] = ("Amount Ascending",)
-        # shown_amount
-        SORTING_OPTIONS_SHOWN_AMOUNT: int = 5
-
-        # display type
-        DISPLAY_TYPE_KEY: tuple[str] = ("Display Type",)
-        # options for display type
-        SHOW_EACH_CARD_DISPLAY_TYPE: tuple[str] = ("Show Each Card",)
-        SHOW_WITH_AMOUNT_DISPLAY_TYPE: tuple[str] = ("Show With Amount",)
-        # shown amount
-        DISPLAY_OPTIONS_SHOWN_AMOUNT: int = 5
-
-        # group selection
-        SELECT_GROUP_OPTION_KEY: tuple[str] = ("Select Group",)
-        SELECT_GROUP_OPTIONS_SHOWN_AMOUNT: int = 5
-        # group creation
-        CREATE_GROUP_OPTION_KEY: tuple[str] = ("Create Group",)
-        # group deletion
-        DELETE_GROUP_OPTION_KEY: tuple[str] = ("Delete Group",)
-        DELETE_GROUP_OPTIONS_SHOWN_AMOUNT: int = 5
-        # group importing
-        IMPORT_GROUP_OPTION_KEY: tuple[str] = ("Import ",)
-        IMPORT_GROUP_OPTIONS_SHOWN_AMOUNT: int = 5
-        # show main list state
-        MAIN_LIST_STATE_INFO_PANEL_KEY: tuple[str] = (
-            "Editing State Info Panel",)
-
-        # options in the main list state
-        SHOW_MAIN_LIST_STATE_KEY: tuple[str] = ("Show Editing State",)
-        HIDE_MAIN_LIST_STATE_KEY: tuple[str] = ("Hide Editing State",)
-
-        MAIN_LIST_STATE_ACTION_SHOWN_AMOUNT: int = 5
-
-        # editing state
-        CHANGE_EDITING_STATE_KEY: tuple[str] = ("Change Editing State",)
-
-        # all editing options
-        CHANGE_EDITING_TO_INFO_STATE_KEY: tuple[str] = ("Info State",)
-        CHANGE_EDITING_TO_SELECTION_STATE_KEY: tuple[str] = (
-            "Selection State",)
-        CHANGE_EDITING_TO_MOVING_STATE_KEY: tuple[str] = ("Moving State",)
-
-        CHANGE_EDITING_STATE_SHOWN_AMOUNT: int = 5
 
     # ==================================
     # SORTING FUNCTIONS
@@ -2792,7 +2724,7 @@ class RenderableCardListviewer(Frame):
         """
 
         mdict = {
-            ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.SHOWN_AMOUNT
+            ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: MENU_OPTIONS.SHOWN_AMOUNT
         }
 
         groups_dict = {(G,): None for G in self.groups.keys()
@@ -2802,48 +2734,48 @@ class RenderableCardListviewer(Frame):
         if self.group_feature_state.group_selection_enabled:
 
             selection_groups_dict = groups_dict.copy()
-            selection_groups_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTIONS_SHOWN_AMOUNT
-            mdict[RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTION_KEY] = selection_groups_dict
+            selection_groups_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = MENU_OPTIONS.SELECT_GROUP_OPTIONS_SHOWN_AMOUNT
+            mdict[MENU_OPTIONS.SELECT_GROUP_OPTION_KEY] = selection_groups_dict
 
         if self.group_feature_state.group_creation_enabled:
 
-            mdict[RenderableCardListviewer.MENU_OPTIONS.CREATE_GROUP_OPTION_KEY] = None
+            mdict[MENU_OPTIONS.CREATE_GROUP_OPTION_KEY] = None
 
         if self.group_feature_state.group_deletion_enabled:
 
             deletion_group_dict = groups_dict.copy()
-            deletion_group_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.DELETE_GROUP_OPTIONS_SHOWN_AMOUNT
-            mdict[RenderableCardListviewer.MENU_OPTIONS.DELETE_GROUP_OPTION_KEY] = deletion_group_dict
+            deletion_group_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = MENU_OPTIONS.DELETE_GROUP_OPTIONS_SHOWN_AMOUNT
+            mdict[MENU_OPTIONS.DELETE_GROUP_OPTION_KEY] = deletion_group_dict
 
         if self.group_feature_state.group_importing_enabled:
 
             importing_group_dict = groups_dict.copy()
-            importing_group_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.IMPORT_GROUP_OPTIONS_SHOWN_AMOUNT
-            mdict[RenderableCardListviewer.MENU_OPTIONS.IMPORT_GROUP_OPTION_KEY] = importing_group_dict
+            importing_group_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = MENU_OPTIONS.IMPORT_GROUP_OPTIONS_SHOWN_AMOUNT
+            mdict[MENU_OPTIONS.IMPORT_GROUP_OPTION_KEY] = importing_group_dict
 
         # sorting types
         sorting_options_dict = {
-            RenderableCardListviewer.MENU_OPTIONS.RANDOMIZED_SORTING: None,
-            RenderableCardListviewer.MENU_OPTIONS.NAME_DESCENDING_SORTING: None,
-            RenderableCardListviewer.MENU_OPTIONS.NAME_ASCENDING_SORTING: None,
-            ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.SORTING_OPTIONS_SHOWN_AMOUNT
+            MENU_OPTIONS.RANDOMIZED_SORTING: None,
+            MENU_OPTIONS.NAME_DESCENDING_SORTING: None,
+            MENU_OPTIONS.NAME_ASCENDING_SORTING: None,
+            ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: MENU_OPTIONS.SORTING_OPTIONS_SHOWN_AMOUNT
         }
 
         if self.main_list_view_state == SHOW_WITH_AMOUNT:
 
-            sorting_options_dict[RenderableCardListviewer.MENU_OPTIONS.AMOUNT_DESCENDING_SORTING] = None
-            sorting_options_dict[RenderableCardListviewer.MENU_OPTIONS.AMOUNT_ASCENDING_SORTING] = None
+            sorting_options_dict[MENU_OPTIONS.AMOUNT_DESCENDING_SORTING] = None
+            sorting_options_dict[MENU_OPTIONS.AMOUNT_ASCENDING_SORTING] = None
 
-        mdict[RenderableCardListviewer.MENU_OPTIONS.SORTING_OPTION_KEY] = sorting_options_dict
+        mdict[MENU_OPTIONS.SORTING_OPTION_KEY] = sorting_options_dict
 
         # display types
         display_options_dict = {
-            RenderableCardListviewer.MENU_OPTIONS.SHOW_EACH_CARD_DISPLAY_TYPE: None,
-            RenderableCardListviewer.MENU_OPTIONS.SHOW_WITH_AMOUNT_DISPLAY_TYPE: None,
-            ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: RenderableCardListviewer.MENU_OPTIONS.DISPLAY_OPTIONS_SHOWN_AMOUNT
+            MENU_OPTIONS.SHOW_EACH_CARD_DISPLAY_TYPE: None,
+            MENU_OPTIONS.SHOW_WITH_AMOUNT_DISPLAY_TYPE: None,
+            ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY: MENU_OPTIONS.DISPLAY_OPTIONS_SHOWN_AMOUNT
         }
 
-        mdict[RenderableCardListviewer.MENU_OPTIONS.DISPLAY_TYPE_KEY] = display_options_dict
+        mdict[MENU_OPTIONS.DISPLAY_TYPE_KEY] = display_options_dict
 
         # main list states
         main_list_state_dict = {}
@@ -2852,17 +2784,17 @@ class RenderableCardListviewer(Frame):
 
             if self.main_list_state_info_panel_shown:
 
-                main_list_state_dict[RenderableCardListviewer.MENU_OPTIONS.HIDE_MAIN_LIST_STATE_KEY] = None
+                main_list_state_dict[MENU_OPTIONS.HIDE_MAIN_LIST_STATE_KEY] = None
 
             else:
 
-                main_list_state_dict[RenderableCardListviewer.MENU_OPTIONS.SHOW_MAIN_LIST_STATE_KEY] = None
+                main_list_state_dict[MENU_OPTIONS.SHOW_MAIN_LIST_STATE_KEY] = None
 
         if len(main_list_state_dict) > 0:
 
-            main_list_state_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.MAIN_LIST_STATE_ACTION_SHOWN_AMOUNT
+            main_list_state_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = MENU_OPTIONS.MAIN_LIST_STATE_ACTION_SHOWN_AMOUNT
 
-            mdict[RenderableCardListviewer.MENU_OPTIONS.MAIN_LIST_STATE_INFO_PANEL_KEY] = main_list_state_dict
+            mdict[MENU_OPTIONS.MAIN_LIST_STATE_INFO_PANEL_KEY] = main_list_state_dict
 
         # any other state needs to be possible
         if self.group_feature_state.selection_main_list_state_enabled:
@@ -2871,19 +2803,19 @@ class RenderableCardListviewer(Frame):
 
             if self.main_list_state != MainListState.INFO_STATE:
 
-                change_main_list_state_dict[RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_INFO_STATE_KEY] = None
+                change_main_list_state_dict[MENU_OPTIONS.CHANGE_EDITING_TO_INFO_STATE_KEY] = None
 
             if (self.group_feature_state.selection_main_list_state_enabled
                     and self.main_list_state != MainListState.SELECTION_STATE):
 
-                change_main_list_state_dict[RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_SELECTION_STATE_KEY] = None
+                change_main_list_state_dict[MENU_OPTIONS.CHANGE_EDITING_TO_SELECTION_STATE_KEY] = None
 
             # adding the shown amount key
-            change_main_list_state_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_STATE_SHOWN_AMOUNT
+            change_main_list_state_dict[ScrollableDropdownMenu.N_OPTIONS_SHOWN_KEY] = MENU_OPTIONS.CHANGE_EDITING_STATE_SHOWN_AMOUNT
 
             # adding the dict to the main dict
 
-            mdict[RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_STATE_KEY] = change_main_list_state_dict
+            mdict[MENU_OPTIONS.CHANGE_EDITING_STATE_KEY] = change_main_list_state_dict
 
         return mdict
 
@@ -2900,44 +2832,44 @@ class RenderableCardListviewer(Frame):
                 full_trace: list[tuple[str]] = event.selected_option_tuples
                 selection: tuple[str] = full_trace[-1]
 
-                if selection == RenderableCardListviewer.MENU_OPTIONS.RANDOMIZED_SORTING:
+                if selection == MENU_OPTIONS.RANDOMIZED_SORTING:
                     self.sorting_function = RenderableCardListviewer.SortingFunctions.randomized
                     self.recalculate_main_list_positions()
-                elif selection == RenderableCardListviewer.MENU_OPTIONS.NAME_DESCENDING_SORTING:
+                elif selection == MENU_OPTIONS.NAME_DESCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.name_descending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.name_descending
                         self.recalculate_main_list_positions()
-                elif selection == RenderableCardListviewer.MENU_OPTIONS.NAME_ASCENDING_SORTING:
+                elif selection == MENU_OPTIONS.NAME_ASCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.name_ascending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.name_ascending
                         self.recalculate_main_list_positions()
-                elif selection == RenderableCardListviewer.MENU_OPTIONS.AMOUNT_DESCENDING_SORTING:
+                elif selection == MENU_OPTIONS.AMOUNT_DESCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.amount_descending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_descending
                         self.recalculate_main_list_positions()
-                elif selection == RenderableCardListviewer.MENU_OPTIONS.AMOUNT_ASCENDING_SORTING:
+                elif selection == MENU_OPTIONS.AMOUNT_ASCENDING_SORTING:
                     if self.sorting_function is not RenderableCardListviewer.SortingFunctions.amount_ascending:
                         self.sorting_function = RenderableCardListviewer.SortingFunctions.amount_ascending
                         self.recalculate_main_list_positions()
                 # display types
-                elif selection == RenderableCardListviewer.MENU_OPTIONS.SHOW_EACH_CARD_DISPLAY_TYPE:
+                elif selection == MENU_OPTIONS.SHOW_EACH_CARD_DISPLAY_TYPE:
                     if self.main_list_view_state != SHOW_EACH_CARD:
                         self.main_list_view_state = SHOW_EACH_CARD
                         self.recalculate_main_list_positions()
 
-                elif selection == RenderableCardListviewer.MENU_OPTIONS.SHOW_WITH_AMOUNT_DISPLAY_TYPE:
+                elif selection == MENU_OPTIONS.SHOW_WITH_AMOUNT_DISPLAY_TYPE:
                     if self.main_list_view_state != SHOW_WITH_AMOUNT:
                         self.main_list_view_state = SHOW_WITH_AMOUNT
                         self.recalculate_main_list_positions()
 
                 # group selection
-                elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.SELECT_GROUP_OPTION_KEY:
+                elif full_trace[0] == MENU_OPTIONS.SELECT_GROUP_OPTION_KEY:
 
                     self.shown_group = selection[0]
 
                     self.reload_current_group()
 
-                elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.DELETE_GROUP_OPTION_KEY:
+                elif full_trace[0] == MENU_OPTIONS.DELETE_GROUP_OPTION_KEY:
 
                     dgroup = selection[0]
                     # initializes group deletion
@@ -2951,38 +2883,38 @@ class RenderableCardListviewer(Frame):
                             fade_duration=RenderableCardListviewer.GROUP_UNDELETEABLE_FADING_DURATION
                         )
 
-                elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.IMPORT_GROUP_OPTION_KEY:
+                elif full_trace[0] == MENU_OPTIONS.IMPORT_GROUP_OPTION_KEY:
 
                     self.group_import_tuple = (self.shown_group, selection[0])
                     self.initialize_group_importing()
 
-                elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.MAIN_LIST_STATE_INFO_PANEL_KEY:
+                elif full_trace[0] == MENU_OPTIONS.MAIN_LIST_STATE_INFO_PANEL_KEY:
 
                     # main list state
-                    if selection == RenderableCardListviewer.MENU_OPTIONS.SHOW_MAIN_LIST_STATE_KEY:
+                    if selection == MENU_OPTIONS.SHOW_MAIN_LIST_STATE_KEY:
                         self.main_list_state_info_panel_shown = True
                         self.state = MAIN_LIST_FOCUSED
                         self.create_dropdown_menu()
                         self.raise_prerender_flag()
-                    elif selection == RenderableCardListviewer.MENU_OPTIONS.HIDE_MAIN_LIST_STATE_KEY:
+                    elif selection == MENU_OPTIONS.HIDE_MAIN_LIST_STATE_KEY:
                         self.main_list_state_info_panel_shown = False
                         self.state = MAIN_LIST_FOCUSED
                         self.create_dropdown_menu()
                         self.raise_prerender_flag()
 
-                elif full_trace[0] == RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_STATE_KEY:
+                elif full_trace[0] == MENU_OPTIONS.CHANGE_EDITING_STATE_KEY:
 
                     # new state
                     new_state: id_t = None
 
-                    if selection == RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_INFO_STATE_KEY:
+                    if selection == MENU_OPTIONS.CHANGE_EDITING_TO_INFO_STATE_KEY:
                         new_state = MainListState.INFO_STATE
-                    elif selection == RenderableCardListviewer.MENU_OPTIONS.CHANGE_EDITING_TO_SELECTION_STATE_KEY:
+                    elif selection == MENU_OPTIONS.CHANGE_EDITING_TO_SELECTION_STATE_KEY:
                         new_state = MainListState.SELECTION_STATE
 
                     self.main_list_state = new_state
 
-                elif selection == RenderableCardListviewer.MENU_OPTIONS.CREATE_GROUP_OPTION_KEY:
+                elif selection == MENU_OPTIONS.CREATE_GROUP_OPTION_KEY:
                     self.initialize_deck_creation_frame()
 
     def create_dropdown_menu(self) -> None:
