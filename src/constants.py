@@ -13,7 +13,10 @@ pygame.init()
 """
 Types
 """
-type color_t = tuple[int, int, int] | tuple[int, int, int, int]
+
+type color_rgb_t = tuple[int, int, int]
+type color_rgba_t = tuple[int, int, int, int]
+type color_t = color_rgb_t | color_rgba_t
 type point_t = tuple[int, int]
 
 def as_point(rect: pygame.Rect) -> point_t:
@@ -174,6 +177,24 @@ class Colors:
     """
 
     T = lambda c: (*c, 255)
+
+    def rgba(color: color_t, alpha: int = None) -> color_rgba_t:
+        """
+        Gives the color and alpha value,
+        or sets the alpha value.
+        """
+
+        if alpha is None:
+
+            if len(color) == 3:
+                alpha = 255
+            elif len(color) == 4:
+                alpha = color[3]
+            else:
+                raise RuntimeError("Wrong color type given.")
+
+        return (color[0], color[1], color[2], alpha)
+
     """
     Gives a color an alpha dimension.
     """

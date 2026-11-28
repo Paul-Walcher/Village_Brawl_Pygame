@@ -179,134 +179,18 @@ class RenderableCardListviewer(Frame):
         # the name of the first shown group, must be the name of a group or None
         shown_group: str = None,
 
-        font: pygame.font.Font = Fonts.STANDARD_FONT,
-
-        # card dimensions
-        cards_per_line: int = 8,
-        cards_per_column: int = 4,
-
-        # the sorting function that is employed for all groups, when the groups are shown
-        sorting_function: cardlist_sorting_function_t = None,
-        # determines if while typing the searched up cards should be shown
-        search_while_typing: bool = True,
-
-        # what percentage of the height is used of the menu_label, and what percentage of width is used
-        menu_label_menu_button_hmargin: float = 0.2,
-        menu_label_decksize_text_hmargin: float = 0.2,
-        menu_label_vmargin: float = 0.1,
-        menu_label_highlighted_color: color_t = Colors.YELLOW,
-        menu_label_highlighted_alpha: int = 64,
-        # full image data
-        full_image_background_color: color_t = Colors.BLACK,
-        full_image_background_alpha: int = 180,
-        cardtext_hmargin: float = 0.2,
-        cardtext_vmargin: float = 0.2,
-        # distances inside the label, so the text wont be right at the border
-        menu_label_inner_hmargin: float = 0.1,
-        menu_label_inner_vmargin: float = 0.1,
-        menu_label_color: color_t = Colors.BLACK,
-        menu_label_text_color: color_t = Colors.WHITE,
-        # alpha of the menu label
-        menu_label_alpha: int = 200,
-        # margins for the main list
-        main_list_hmargin: float = 0.1,
-        main_list_vmargin: float = 0.1,
-        # how much the cards should be separated, based on the cardlist width and height
-        main_list_separator_h_percentage: float = 0.1,
-        main_list_separator_v_percentage: float = 0.1,
-        # menu label assets
-        menu_button_unfocused_image: str = MENU_BUTTON_UNFOCUSED_IMAGE,
-        menu_button_focused_image: str = MENU_BUTTON_FOCUSED_IMAGE,
-        # in which color the group name will be shown
-        group_name_color: color_t = Colors.WHITE,
-        # what percentage of width and height is used for the border
-        border_frame_margin: float = 0.02,
-        # fill color of the border
-        border_frame_color: color_t = Colors.DARK_CYAN,
-        # the frame outline is drawn once on the outer edge and once in the inner edge
-        border_frame_outline_margin: float = 0.2,
-        border_frame_outline_color: color_t = Colors.BLACK,
-        # background color of the list
-        main_list_color: color_t = Colors.CYAN,
-        # margins for the cards inside the main list
-        inner_frame_hmargin: float = 0.1,
-        inner_frame_vmargin: float = 0.05,
-        # description text shown under a card
-        card_text_description_color: color_t = Colors.BLACK,
         # either showing with amount or not
         main_list_view_state: id_t = None,
         initial_main_list_state: id_t = None,
-        # shadow offsets for the cards
-        cardshadow_hoffset_p: float = 0.075,
-        cardshadow_voffset_p: float = 0.075,
-        cardshadow_alpha: int = 120,
-        selected_card_size_increase_percentage: float = 0.05,
-        selected_cardshadow_alpha: int = 120,
-        # margin between timage and any text rendered below
-        subtext_margin: float = 0.2,
-        # dropdown menu
-        dropdown_menu_hlen_p: float = 0.5,
-        dropdown_menu_vlen_p: float = 0.4,
-        # popup margins
-        popup_hmargin: float = 0.5,  # Horizontal margin for the popup frame dim
-        popup_vmargin: float = 0.4,  # Vertical margin for the popup frame dim
 
-        # info text specifications
-        info_text_hlen_p: float = 0.3,  # horizontal length percentage
-        info_text_vlen_p: float = 0.15,  # vertical length percentage
-        info_text_surface_alpha: int = 180,
-        info_text_color: color_t = None,
-        info_text_warning_color: color_t = None,
-        info_text_error_color: color_t = None,
-
-        # main list state info panel
-
-        # Percentage of width used relative to self.main_list_frame.
-        main_list_state_info_panel_width_p: float = 0.2,
-        # Percentage of height used relative too self.main_list_frame.
-        main_list_state_info_panel_height_p: float = 0.1,
-        # Horizontal margin for the info panel
-        main_list_state_info_panel_hmargin: float = 0.1,
-        # Vertical margin for the info panel
-        main_list_state_info_panel_vmargin: float = 0.25,
-        # Alpha value for the info panel.
-        main_list_state_info_panel_alpha: int = 200,
-        # Background color for the info panel.
-        main_list_state_info_panel_background_color: color_t = Colors.BLACK,
-        # Outline color of the info panel.
-        main_list_state_info_panel_outline_color: color_t = Colors.BLACK,
-        # if the info panel starts out shown or not.
-        main_list_state_info_panel_shown: bool = True,
-
-        # card moving
         # the maximum of picked up cards shown while moving.
         max_moving_cards_shown: int = 10,
-
-        # colors for the main list states
-        info_main_list_state_color: color_t = Colors.WHITE,
-        select_main_list_state_color: color_t = Colors.ORANGE,
-
-        card_selected_in_selection_state_color: color_t = Colors.YELLOW,
 
         # group features
         group_feature_state: FeatureState = None,
 
-        # enter states
-        # ms, how long until the long enter state is reached
-        time_until_long_enter_pressed: float = 400,
-        # percentage when card is selected
-        card_pressed_size_change_percentage: float = 0.25,
         # delay between inputs
-        key_delay: float = 200,  # ms
-        # ms when scrolling one row upor down, this is the duration it takes
-        rowscrolling_duration: float = 300,
-        rowscrolling_all_duration: float = 500,  # ms #rowscrolling all rows up
-        fastscroll_duration: float = 50,  # ms for fast scrolling
-        deckname_selected_animation_duration: float = 400,  # ms
-        menu_button_selected_animation_duration: float = 400,  # ms
-        # ms, time it takes for a card to snap back and do the card pressed animation in reverse
-        card_snapback_duration: float = 200,
-        cardinfo_frame_sliding_duration: float = 400  # ms
+        key_delay: float = 200  # ms
     ):
 
         # variables pre init
@@ -334,14 +218,12 @@ class RenderableCardListviewer(Frame):
         # ==================================
 
         # deepcopying, to avoid altering the references
-        self.full_cardlist: cardlist_t = Cardgroup.copy_cardlist(
-            cardlist=full_cardlist)
+        self.full_cardlist: cardlist_t = Cardgroup.copy_cardlist(cardlist=full_cardlist)
         """
         The full cardlist. In the form of: Class Type Reference: amount.
         Should contain all cards available.
         """
-        self.groups: dict[str, group_t] = Cardgroup.get_groups_from_group_dict(
-            groups)
+        self.groups: dict[str, group_t] = Cardgroup.get_groups_from_group_dict(groups)
         """
         A deepcopy of the given groups.
         """
@@ -349,8 +231,7 @@ class RenderableCardListviewer(Frame):
         """
         Reference to the given loaded modules class.
         """
-        self.max_group_number: int = Cardgroup.max_group_number(
-            group_dict=groups)
+        self.max_group_number: int = Cardgroup.max_group_number(group_dict=groups)
         """
         The maximum number of groups.
         """
@@ -373,50 +254,14 @@ class RenderableCardListviewer(Frame):
         If currently no such deletion process is
         active, this is None.
         """
-        self.group_name_color: color_t = group_name_color
-        """
-        Color the name of the group will be shown in.
-        """
-        self.sorting_function: cardlist_sorting_function_t = (
-            sorting_function if sorting_function is not None else SortingFunctions.name_descending)
+        self.sorting_function: cardlist_sorting_function_t = SortingFunctions.no_order
         """
         The sorting function used for sorting self.cardlist.
         Sorts by name descending on default.
         """
-        self.cards_per_line: int = cards_per_line
-        """
-        Number of cards per line shown in the editor.
-        """
-        self.cards_per_column: int = cards_per_column
-        """
-        Number of cards per column shown in the editor.
-        """
-        self.font: pygame.font.Font = font
-        """
-        The font used for all text.
-        """
-        self.card_text_description_color: color_t = card_text_description_color
-        """
-        The color used for any description text under the card images shown.
-        """
-        self.search_while_typing: bool = search_while_typing
-        """
-        Clarifies whether a preview of the cards matching the current search string
-        should be used after every key input. Might be slowing down the program if True.
-        """
         self.inner_area: pygame.Rect = None
         """
         The inner area is the frame inside the without the border.
-        """
-        self.popup_hmargin: float = popup_hmargin
-        """
-        Horizontal margin for the popup frame dim,
-        relative to self.inner_frame.
-        """
-        self.popup_vmargin: float = popup_vmargin
-        """
-        Vertical margin for the popup frame dim,
-        relative to self.inner_frame.
         """
         self.popup_frame_dim: pygame.Rect = None
         """
@@ -463,61 +308,11 @@ class RenderableCardListviewer(Frame):
         """
         Actual height of the menu label.
         """
-        self.menu_label_vmargin: float = menu_label_vmargin
-        """
-        The percentage of height used for the menu bar relative to self.inner_area.height.
-        """
-        self.menu_label_inner_hmargin: float = menu_label_inner_hmargin
-        """
-        The horizontal margin applied to self.menu_label_frame to create self.inner_menu_label_frame.
-        """
-        self.menu_label_inner_vmargin: float = menu_label_vmargin
-        """
-        The vertical margin applied to self.menu_label_frame to create self.inner_menu_label_frame.
-        """
-        self.menu_label_menu_button_hmargin: float = menu_label_menu_button_hmargin
-        """
-        The percentage of width occupied by the menu button relative to self.inner_menu_label_frame.width.
-        """
-        self.menu_label_decksize_text_hmargin: float = menu_label_decksize_text_hmargin
-        """
-        The percentage of width occupied by the decksize text relative to self.inner_menu_label_frame.width.
-        """
-        self.menu_label_color: color_t = menu_label_color
-        """
-        Color of the menu label.
-        """
-        self.menu_label_text_color: color_t = menu_label_text_color
-        """
-        Color of the text rendered onto the menu.
-        """
-        self.menu_label_alpha: int = menu_label_alpha
-        """
-        Alpha value of the menu label.
-        """
-        self.menu_label_highlighted_color: color_t = menu_label_highlighted_color
-        """
-        Color for the highlighted menu label, layed on top
-        of the background.
-        """
-        self.menu_label_highlighted_alpha: int = menu_label_highlighted_alpha
-        """
-        Alpha value for the highlighted menu label, to blend
-        into the menu label background.
-        """
 
         # ==================================
         # MENU BUTTON
         # ==================================
 
-        self.menu_button_unfocused_image: str = menu_button_unfocused_image
-        """
-        Path to the image used as the unfocused menu button image.
-        """
-        self.menu_button_focused_image: str = menu_button_focused_image
-        """
-        Path to the image used as the focused menu button image.
-        """
         self.menu_button_unfocused_image_rendered: pygame.Surface = None
         """
         The rendered image of the unfocused menu button.
@@ -547,10 +342,6 @@ class RenderableCardListviewer(Frame):
         self.menu_button_frame_copy: pygame.Surface = None
         """
         Copy of the original selected menu button surface for animation purposes.
-        """
-        self.menu_button_selected_animation_duration: point_t = menu_button_selected_animation_duration
-        """
-        Copy of the original selected menu button position for animation purposes.
         """
 
         # ==================================
@@ -917,27 +708,6 @@ class RenderableCardListviewer(Frame):
         """
         Alpha value of the info text surface.
         """
-        self.info_text_hlen_p: float = info_text_hlen_p
-        """
-        Width of the info text as a percentage relative to self.width.
-        """
-        self.info_text_vlen_p: float = info_text_vlen_p
-        """
-        Height of the info text as a percentage relative to self.height.
-        """
-        # info text colors
-        self.info_text_color: color_t = info_text_color
-        """
-        The standard info text color for the text.
-        """
-        self.info_text_warning_color: color_t = info_text_warning_color
-        """
-        The color for the info text for when a warning is displayed.
-        """
-        self.info_text_error_color: color_t = info_text_error_color
-        """
-        The color for the info text for when an error is displayed.
-        """
         # fadeout time saved
         self.current_info_text_fadeout_duration: float = 0
         """
@@ -1167,10 +937,6 @@ class RenderableCardListviewer(Frame):
         self.deckname_selected_animation_clock: Clock = Clock()
         """
         Clock for the select animation of the deck name in the menu bar.
-        """
-        self.deckname_selected_animation_duration: float = deckname_selected_animation_duration
-        """
-        Duration of the select animation of the deck name in the menu bar.
         """
         self.menu_button_selected_animation_clock: Clock = Clock()
         """
