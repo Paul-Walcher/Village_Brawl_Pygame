@@ -158,3 +158,168 @@ class Palette:
         Vertical margin for the popup frame dim,
         relative to self.inner_frame.
         """
+
+        # ==================================
+        # MAIN LIST
+        # ==================================
+
+        self.main_list_hmargin: float = main_list_hmargin
+        """
+        Horizontal margin for creating self.inner_main_list_frame.
+        """
+        self.main_list_vmargin: float = main_list_vmargin
+        """
+        Vertical margin for creating self.inner_main_list_frame.
+        """
+        self.main_list_separator_h_percentage: float = main_list_separator_h_percentage
+        """
+        Percentage of the width used for separating the card images as a
+        percentage of self.inner_main_list_frame.width.
+        """
+        self.main_list_separator_v_percentage: float = main_list_separator_v_percentage
+        """
+        Percentage of the height used for separating the card images as a
+        percentage of self.inner_main_list_frame.height.
+        """
+        self.main_list_color: color_rgba_t = main_list_color
+        """
+        Background color of the main list.
+        """
+
+        # ==================================
+        # BORDER
+        # ==================================
+
+        self.border_frame_margin: float = border_frame_margin
+        """
+        For calculating the size of the border, relative to self.width and self.height.
+        """
+        self.border_frame_color: color_rgb_t = border_frame_color
+        """
+        Color of the border frame.
+        """
+        self.border_frame_outline_margin: float = border_frame_outline_margin
+        """
+        The percentage used to calculate the border outline size.
+        Relative to self.border_width, self.border_height.
+        """
+        self.border_frame_outline_color: color_rgb_t = border_frame_outline_color
+        """
+        The color of the outline of the border frame.
+        """
+
+        # ==================================
+        # FULL IMAGE
+        # ==================================
+
+        self.full_image_background_color: color_rgb_t = full_image_background_color
+        """
+        Background color when rendering the full image of a card.
+        """
+        self.full_image_background_alpha: color_t = full_image_background_alpha
+        """
+        The alpha value applied to the background when rendering the full image of a card.
+        """
+
+        # ==================================
+        # MAIN LIST STATE COLORS
+        # ==================================
+
+        self.info_main_list_state_color: color_rgb_t = info_main_list_state_color
+        """
+        Color of the text inside the info panel for the info main list state.
+        """
+        self.select_main_list_state_color: color_rgb_t = select_main_list_state_color
+        """
+        Color of the text inside the info panel for the selection main list state.
+        """
+        self.card_selected_in_selection_state_color: color_rgb_t = card_selected_in_selection_state_color
+        """
+        Color of the cards selected in the selection state.
+        """
+
+        # ==================================
+        # MAIN LIST STATE INFO PANEL
+        # ==================================
+
+        self.main_list_state_info_panel_width_p: float = main_list_state_info_panel_width_p
+        """
+        Percentage of width used relative to self.main_list_frame.
+        """
+        self.main_list_state_info_panel_height_p: float = main_list_state_info_panel_height_p
+        """
+        Percentage of height used relative too self.main_list_frame.
+        """
+        self.main_list_state_info_panel_hmargin: float = main_list_state_info_panel_hmargin
+        """
+        Horizontal margin for the info panel
+        """
+        self.main_list_state_info_panel_vmargin: float = main_list_state_info_panel_vmargin
+        """
+        Vertical margin for the info panel
+        """
+        self.main_list_state_info_panel_alpha: int = main_list_state_info_panel_alpha
+        """
+        Alpha value for the info panel.
+        """
+        self.main_list_state_info_panel_background_color: color_rgb_t = main_list_state_info_panel_background_color
+        """
+        Background color for the info panel.
+        """
+        self.main_list_state_info_panel_outline_color: color_rgb_t = main_list_state_info_panel_outline_color
+        """
+        Outline color of the info panel.
+        """
+        self.main_list_state_info_panel_shown: bool = main_list_state_info_panel_shown
+        """
+        If the info panel is shown or not.
+        """
+
+        # ==================================
+        # CARD PREVIEW
+        # ==================================
+
+        self.cardtext_hmargin: float = cardtext_hmargin
+        """
+        The cardtext horizontal margin applied to the rectangle
+        the cards description text will be rendered into.
+        """
+        self.cardtext_vmargin: float = cardtext_vmargin
+        """
+        The cardtext vertical margin applied to the rectangle
+        the cards description text will be rendered into.
+        """
+        self.cardshadow_hoffset_p: float = cardshadow_hoffset_p
+        """
+        The percentage of the horizontal offset of the cardshadow vs the card.
+        """
+        self.cardshadow_voffset_p: float = cardshadow_voffset_p
+        """
+        The percentage of the vertical offset of the cardshadow vs the card.
+        """
+        self.cardshadow_alpha: int = cardshadow_alpha
+        """
+        The alpha value of the cardshadow.
+        """
+        self.subtext_margin: float = subtext_margin
+        """
+        The percentage of height the description text of a card occupies.
+        Relative to self.main_list_cheight.
+        """
+        self.selected_card_size_increase_percentage: float = selected_card_size_increase_percentage
+        """
+        The percentage of the size increase when a card is in the selected state.
+        """
+        self.selected_cardshadow_alpha: int = selected_cardshadow_alpha
+        """
+        Alpha value of the selected cardshadow.
+        """
+
+        # ==================================
+        # ANIMATION DURATION
+        # ==================================
+
+        self.cardinfo_frame_sliding_duration: float = cardinfo_frame_sliding_duration
+        """
+        Sliding duration of the cardinfo frame.
+        """

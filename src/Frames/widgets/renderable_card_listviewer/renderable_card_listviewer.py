@@ -339,7 +339,7 @@ class RenderableCardListviewer(Frame):
         """
         Copy of the original unselected menu button position for animation purposes.
         """
-        self.menu_button_frame_copy: pygame.Surface = None
+        self.menu_button_frame_copy: pygame.Rect = None
         """
         Copy of the original selected menu button surface for animation purposes.
         """
@@ -379,16 +379,6 @@ class RenderableCardListviewer(Frame):
         """
         The frame for the dropdown menu, relative to self.frame.
         """
-        self.dropdown_menu_hlen_p: float = dropdown_menu_hlen_p
-        """
-        The horizontal percentage of self.inner_area,
-        being the width of self.dropdown_menu_frame.
-        """
-        self.dropdown_menu_vlen_p: float = dropdown_menu_vlen_p
-        """
-        The vertical percentage of self.inner_area,
-        being the height of self.dropdown_menu_frame.
-        """
         self.dropdown_menu_tuple_options_dict: scrollable_tuple_options_t = None
         """
         The dropdown menu options as the tuple dictionary.
@@ -421,48 +411,25 @@ class RenderableCardListviewer(Frame):
         """
         The frame of the main list, where the card previews are shown.
         """
-        self.main_list_hmargin: float = main_list_hmargin
-        """
-        Horizontal margin for creating self.inner_main_list_frame.
-        """
-        self.main_list_vmargin: float = main_list_vmargin
-        """
-        Vertical margin for creating self.inner_main_list_frame.
-        """
-        self.main_list_separator_h_percentage: float = main_list_separator_h_percentage
-        """
-        Percentage of the width used for separating the card images as a
-        percentage of self.inner_main_list_frame.width.
-        """
         self.main_list_hseparator_width: int = -1
         """
         The actual width that will be distributed among the
         separator space. Calculated as main_list_separator_h_percentage * self.inner_main_list_frame.width
+        """
+        self.main_list_hseparator_size: int = -1
+        """
+        Actual width of the separator between 2 individual card previews.
         """
         self.main_list_vseparator_height: int = -1
         """
         The actual height that will be distributed among the
         separator space. Calculated as main_list_separator_v_percentage * self.inner_main_list_frame.height
         """
-        self.main_list_hseparator_size: int = -1
-        """
-        Actual width of the separator between 2 individual card previews.
-        """
         self.main_list_vseparator_size: int = -1
         """
         Actual height of the separator between 2 individual card previews.
         """
-        self.main_list_separator_v_percentage: float = main_list_separator_v_percentage
-        """
-        Percentage of the height used for separating the card images as a
-        percentage of self.inner_main_list_frame.height.
-        """
-        self.main_list_color: color_t = main_list_color
-        """
-        Background color of the main list.
-        """
-        self.main_list_view_state: id_t = (
-            main_list_view_state if main_list_view_state is not None else SHOW_EACH_CARD)
+        self.main_list_view_state: id_t = (main_list_view_state if main_list_view_state is not None else SHOW_EACH_CARD)
         """
         The way the cards are portayed.
         """
@@ -479,14 +446,6 @@ class RenderableCardListviewer(Frame):
         # FULL IMAGE
         # ==================================
 
-        self.full_image_background_color: color_t = full_image_background_color
-        """
-        Background color when rendering the full image of a card.
-        """
-        self.full_image_background_alpha: color_t = full_image_background_alpha
-        """
-        The alpha value applied to the background when rendering the full image of a card.
-        """
         self.full_image_surface: pygame.Surface = None
         """
         The surface, which will be shown when a images full image is required.
@@ -500,10 +459,6 @@ class RenderableCardListviewer(Frame):
         """
         If this frame is not None, it means this frame
         has the focus and is overlayed on top of the main list.
-        """
-        self.cardinfo_frame_sliding_duration: float = cardinfo_frame_sliding_duration
-        """
-        Sliding duration of the cardinfo frame.
         """
 
         # ==================================
@@ -522,99 +477,16 @@ class RenderableCardListviewer(Frame):
         """
         The surface for the info panel.
         """
-        self.main_list_state_info_panel_width_p: float = main_list_state_info_panel_width_p
-        """
-        Percentage of width used relative to self.main_list_frame.
-        """
-        self.main_list_state_info_panel_height_p: float = main_list_state_info_panel_height_p
-        """
-        Percentage of height used relative too self.main_list_frame.
-        """
-        self.main_list_state_info_panel_hmargin: float = main_list_state_info_panel_hmargin
-        """
-        Horizontal margin for the info panel
-        """
-        self.main_list_state_info_panel_vmargin: float = main_list_state_info_panel_vmargin
-        """
-        Vertical margin for the info panel
-        """
         self.main_list_state_info_panel: Label = None
         """
         The actual label for the info panel.
-        """
-        self.main_list_state_info_panel_alpha: int = main_list_state_info_panel_alpha
-        """
-        Alpha value for the info panel.
-        """
-        self.main_list_state_info_panel_background_color: color_t = main_list_state_info_panel_background_color
-        """
-        Background color for the info panel.
-        """
-        self.main_list_state_info_panel_outline_color: color_t = main_list_state_info_panel_outline_color
-        """
-        Outline color of the info panel.
-        """
-        self.main_list_state_info_panel_shown: bool = main_list_state_info_panel_shown
-        """
-        If the info panel is shown or not.
-        """
-
-        # ==================================
-        # MAIN LIST STATE COLORS
-        # ==================================
-
-        self.info_main_list_state_color: color_t = info_main_list_state_color
-        """
-        Color of the text inside the info panel for the info main list state.
-        """
-        self.select_main_list_state_color: color_t = select_main_list_state_color
-        """
-        Color of the text inside the info panel for the selection main list state.
-        """
-        self.card_selected_in_selection_state_color: color_t = card_selected_in_selection_state_color
-        """
-        Color of the cards selected in the selection state.
         """
 
         # ==================================
         # CARD PREVIEW
         # ==================================
 
-        self.cardtext_hmargin: float = cardtext_hmargin
-        """
-        The cardtext horizontal margin applied to the rectangle
-        the cards description text will be rendered into.
-        """
-        self.cardtext_vmargin: float = cardtext_vmargin
-        """
-        The cardtext vertical margin applied to the rectangle
-        the cards description text will be rendered into.
-        """
-        self.cardshadow_hoffset_p: float = cardshadow_hoffset_p
-        """
-        The percentage of the horizontal offset of the cardshadow vs the card.
-        """
-        self.cardshadow_voffset_p: float = cardshadow_voffset_p
-        """
-        The percentage of the vertical offset of the cardshadow vs the card.
-        """
-        self.cardshadow_alpha: int = cardshadow_alpha
-        """
-        The alpha value of the cardshadow.
-        """
-        self.subtext_margin: float = subtext_margin
-        """
-        The percentage of height the description text of a card occupies.
-        Relative to self.main_list_cheight.
-        """
-        self.selected_card_size_increase_percentage: float = selected_card_size_increase_percentage
-        """
-        The percentage of the size increase when a card is in the selected state.
-        """
-        self.selected_cardshadow_alpha: int = selected_cardshadow_alpha
-        """
-        Alpha value of the selected cardshadow.
-        """
+
         self.subtext_width: int = -1
         """
         Actual width of the portion designated to the subtext
@@ -640,10 +512,6 @@ class RenderableCardListviewer(Frame):
         # BORDER
         # ==================================
 
-        self.border_frame_margin: float = border_frame_margin
-        """
-        For calculating the size of the border, relative to self.width and self.height.
-        """
         self.border_width: int = -1
         """
         The actual border width.
@@ -651,15 +519,6 @@ class RenderableCardListviewer(Frame):
         self.border_height: int = -1
         """
         The actual border height.
-        """
-        self.border_frame_color: color_t = border_frame_color
-        """
-        Color of the border frame.
-        """
-        self.border_frame_outline_margin: float = border_frame_outline_margin
-        """
-        The percentage used to calculate the border outline size.
-        Relative to self.border_width, self.border_height.
         """
         self.border_outline_width: int = -1
         """
@@ -673,10 +532,6 @@ class RenderableCardListviewer(Frame):
         """
         The actual size of the outline,
         as a minimum margin of self.border_width, self.border_height
-        """
-        self.border_frame_outline_color: color_t = border_frame_outline_color
-        """
-        The color of the outline of the border frame.
         """
         self.inner_border_corners: list[point_t] = []
         """

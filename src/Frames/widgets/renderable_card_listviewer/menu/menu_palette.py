@@ -137,3 +137,18 @@ class MenuPalette:
         """
         Duration of the select animation of the deck name in the menu bar.
         """
+
+        # ==================================
+        # DROPDOWN MENU
+        # ==================================
+
+        self.dropdown_menu_hlen_p: float = dropdown_menu_hlen_p
+        """
+        The horizontal percentage of self.inner_area,
+        being the width of self.dropdown_menu_frame.
+        """
+        self.dropdown_menu_vlen_p: float = dropdown_menu_vlen_p
+        """
+        The vertical percentage of self.inner_area,
+        being the height of self.dropdown_menu_frame.
+        """
